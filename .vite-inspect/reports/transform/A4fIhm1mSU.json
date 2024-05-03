@@ -1,0 +1,25 @@
+{
+  "resolvedId": "/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/services/sentral-service.ts",
+  "transforms": [
+    {
+      "name": "__load__",
+      "result": "import BaseService from \"./base-service\";\n\nconst url = import.meta.env.VITE_API_URL;\n\nexport default class SentralService extends BaseService {\n\n  async getSentralData<T>(kode_pengelola:any , page:any, limit:any, search?:any): Promise<T> {\n    return this.get(`${url}/pembangkit/all-no-pembina`, {kode_pengelola: kode_pengelola, page: page, limit: limit, search: search});\n  }\n  async getComboJenisKitData<T>(): Promise<T> {\n    return this.get(`${url}/filter/combo-jenis-kit`);\n  }\n  async getComboBahanBakarData<T>(jenis_pembangkit:any): Promise<T> {\n    return this.get(`${url}/filter/combo-bahan-bakar`, {jenis_pembangkit: jenis_pembangkit});\n  }\n  async getPengelolaData<T>(): Promise<T> {\n    return this.get(`${url}/filter/combo-pengelola-sentral`);\n  }\n  async getNilaiSentral<T>(): Promise<T> {\n    return this.get(`${url}pembangkit/sentral-nilai`);\n  }\n  async getNilaiMesin<T>(): Promise<T> {\n    return this.get(`${url}pembangkit/mesin-nilai`);\n  }\n}",
+      "start": 1709026302403,
+      "end": 1709026302403
+    },
+    {
+      "name": "vite:esbuild",
+      "result": "import BaseService from \"./base-service\";\nconst url = import.meta.env.VITE_API_URL;\nexport default class SentralService extends BaseService {\n  async getSentralData(kode_pengelola, page, limit, search) {\n    return this.get(`${url}/pembangkit/all-no-pembina`, { kode_pengelola, page, limit, search });\n  }\n  async getComboJenisKitData() {\n    return this.get(`${url}/filter/combo-jenis-kit`);\n  }\n  async getComboBahanBakarData(jenis_pembangkit) {\n    return this.get(`${url}/filter/combo-bahan-bakar`, { jenis_pembangkit });\n  }\n  async getPengelolaData() {\n    return this.get(`${url}/filter/combo-pengelola-sentral`);\n  }\n  async getNilaiSentral() {\n    return this.get(`${url}pembangkit/sentral-nilai`);\n  }\n  async getNilaiMesin() {\n    return this.get(`${url}pembangkit/mesin-nilai`);\n  }\n}\n",
+      "start": 1709026302403,
+      "end": 1709026302610,
+      "order": "normal"
+    },
+    {
+      "name": "vite:import-analysis",
+      "result": "import.meta.env = {\"VITE_API_URL\":\"https://portalapp.iconpln.co.id:5080/valiant-be/v1/\",\"VITE_USER_NODE_ENV\":\"development\",\"BASE_URL\":\"/\",\"MODE\":\"development\",\"DEV\":true,\"PROD\":false,\"SSR\":false};import BaseService from \"/src/services/base-service.ts?t=1709026301545\";\nconst url = import.meta.env.VITE_API_URL;\nexport default class SentralService extends BaseService {\n  async getSentralData(kode_pengelola, page, limit, search) {\n    return this.get(`${url}/pembangkit/all-no-pembina`, { kode_pengelola, page, limit, search });\n  }\n  async getComboJenisKitData() {\n    return this.get(`${url}/filter/combo-jenis-kit`);\n  }\n  async getComboBahanBakarData(jenis_pembangkit) {\n    return this.get(`${url}/filter/combo-bahan-bakar`, { jenis_pembangkit });\n  }\n  async getPengelolaData() {\n    return this.get(`${url}/filter/combo-pengelola-sentral`);\n  }\n  async getNilaiSentral() {\n    return this.get(`${url}pembangkit/sentral-nilai`);\n  }\n  async getNilaiMesin() {\n    return this.get(`${url}pembangkit/mesin-nilai`);\n  }\n}\n",
+      "start": 1709026302610,
+      "end": 1709026302610,
+      "order": "normal"
+    }
+  ]
+}

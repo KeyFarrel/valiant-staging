@@ -1,0 +1,29 @@
+{
+  "files": [],     
+  "compilerOptions": {
+    "types": ["vitest/globals"],
+    "module": "CommonJS",
+    "target": "ES6",
+    "sourceMap": true,
+    "baseUrl": "./",
+    "paths": {
+      "actions" :["src/service/peta-service"]
+    },
+    //"forceConsistentCasingInFileNames": true,//tambahan acep
+    //"moduleResolution": "node",//tambahan acep
+    "lib": ["dom","ESNext"]
+  },  
+  //"include": ["src/**/*"],
+  "exclude": ["node_modules", "src/**/*.spec.ts"], 
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.vitest.json"
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+<script setup lang="ts">
+import { ref } from "vue";
+import FinansialPage from "@/views/Beranda/LamanAnalitik/TabPage/FinansialTab.vue";
+import TeknisPage from "@/views/Beranda/LamanAnalitik/TabPage/TeknisTab.vue";
+// import TeknisPage from '@/views/Beranda/LamanAnalitik/TeknisPage.vue'
+
+const currentTab = ref("finansial");
+
+const showContent = (tab: string) => {
+  currentTab.value = tab;
+};
+</script>
+
+<template>
+  <div class="flex flex-col h-full px-6 bg-white rounded-lg">
+    <div class="flex">
+      <div class="mt-5 justify-beetween">
+        <button class="font-semibold hover:text-[#0099AD] border-b-4 border-[#0099AD] pb-2"
+          @click="showContent('finansial')" :class="currentTab === 'finansial'
+            ? 'text-[#0099AD]'
+            : 'text-gray-600 border-transparent'
+            ">
+          Finansial
+        </button>
+        <button class="font-semibold hover:text-[#0099AD] border-b-4 border-[#0099AD] pb-2 ml-8"
+          @click="showContent('teknis')" :class="currentTab === 'teknis'
+            ? 'text-[#0099AD]'
+            : 'text-gray-600 border-transparent'
+            ">
+          Teknis
+        </button>
+      </div>
+      <!-- <div class="ml-auto">
+        <button class="btn ml-4 text-white bg-[#0099AD] btn-outline hover:bg-[#80C1CD] border-0">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2">
+            <path
+              d="M12.6668 1.33325H3.3335C2.80306 1.33325 2.29436 1.54397 1.91928 1.91904C1.54421 2.29411 1.3335 2.80282 1.3335 3.33325V4.11325C1.3334 4.38855 1.39014 4.6609 1.50016 4.91325V4.95325C1.59435 5.16723 1.72776 5.36169 1.8935 5.52659L6.00016 9.60658V13.9999C5.99994 14.1132 6.02859 14.2247 6.08341 14.3238C6.13823 14.423 6.21742 14.5065 6.3135 14.5666C6.41959 14.6323 6.54201 14.667 6.66683 14.6666C6.77119 14.666 6.87395 14.6408 6.96683 14.5933L9.6335 13.2599C9.74344 13.2045 9.83589 13.1198 9.90061 13.015C9.96533 12.9103 9.99979 12.7897 10.0002 12.6666V9.60658L14.0802 5.52659C14.2459 5.36169 14.3793 5.16723 14.4735 4.95325V4.91325C14.5927 4.66287 14.6585 4.39044 14.6668 4.11325V3.33325C14.6668 2.80282 14.4561 2.29411 14.081 1.91904C13.706 1.54397 13.1973 1.33325 12.6668 1.33325ZM8.86016 8.85992C8.79838 8.92221 8.74949 8.99609 8.71632 9.07731C8.68314 9.15854 8.66632 9.24551 8.66683 9.33325V12.2533L7.3335 12.9199V9.33325C7.334 9.24551 7.31719 9.15854 7.28401 9.07731C7.25083 8.99609 7.20195 8.92221 7.14016 8.85992L3.60683 5.33325H12.3935L8.86016 8.85992ZM13.3335 3.99992H2.66683V3.33325C2.66683 3.15644 2.73707 2.98687 2.86209 2.86185C2.98712 2.73682 3.15669 2.66659 3.3335 2.66659H12.6668C12.8436 2.66659 13.0132 2.73682 13.1382 2.86185C13.2633 2.98687 13.3335 3.15644 13.3335 3.33325V3.99992Z"
+              fill="#ffffff" />
+          </svg>
+          Export
+        </button>
+      </div> -->
+    </div>
+  </div>
+  <div v-if="currentTab === 'finansial'">
+    <FinansialPage />
+  </div>
+  <div v-else-if="currentTab === 'teknis'">
+    <TeknisPage />
+  </div>
+</template>

@@ -1,0 +1,39 @@
+{
+  "resolvedId": "/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/components/ui/ModalWrapper.vue?vue&type=style&index=0&scoped=081c4062&lang.scss",
+  "transforms": [
+    {
+      "name": "vite:vue",
+      "result": "\n.modal-enter-active,\n.modal-leave-active {\n  transition: all 0.30s ease;\n}\n\n.modal-enter-from,\n.modal-leave-to {\n  opacity: 0;\n  transform: scale(1.1);\n}\n",
+      "start": 1709022557071,
+      "end": 1709022557071
+    },
+    {
+      "name": "vite:css",
+      "result": ".modal-enter-active,\n.modal-leave-active {\n  transition: all 0.3s ease;\n}\n\n.modal-enter-from,\n.modal-leave-to {\n  opacity: 0;\n  transform: scale(1.1);\n}",
+      "start": 1709022557071,
+      "end": 1709022557074,
+      "order": "normal"
+    },
+    {
+      "name": "vite:vue",
+      "result": ".modal-enter-active[data-v-081c4062],\n.modal-leave-active[data-v-081c4062] {\n  transition: all 0.3s ease;\n}\n.modal-enter-from[data-v-081c4062],\n.modal-leave-to[data-v-081c4062] {\n  opacity: 0;\n  transform: scale(1.1);\n}",
+      "start": 1709022557074,
+      "end": 1709022557074,
+      "order": "normal"
+    },
+    {
+      "name": "vite:css-post",
+      "result": "import { updateStyle as __vite__updateStyle, removeStyle as __vite__removeStyle } from \"/@vite/client\"\nconst __vite__id = \"/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/components/ui/ModalWrapper.vue?vue&type=style&index=0&scoped=081c4062&lang.scss\"\nconst __vite__css = \".modal-enter-active[data-v-081c4062],\\n.modal-leave-active[data-v-081c4062] {\\n  transition: all 0.3s ease;\\n}\\n.modal-enter-from[data-v-081c4062],\\n.modal-leave-to[data-v-081c4062] {\\n  opacity: 0;\\n  transform: scale(1.1);\\n}\"\n__vite__updateStyle(__vite__id, __vite__css)\nimport.meta.hot.accept()\nexport default __vite__css\nimport.meta.hot.prune(() => __vite__removeStyle(__vite__id))",
+      "start": 1709022557074,
+      "end": 1709022557074,
+      "order": "normal"
+    },
+    {
+      "name": "vite:import-analysis",
+      "result": "import { createHotContext as __vite__createHotContext } from \"/@vite/client\";import.meta.hot = __vite__createHotContext(\"/src/components/ui/ModalWrapper.vue?vue&type=style&index=0&scoped=081c4062&lang.scss\");import { updateStyle as __vite__updateStyle, removeStyle as __vite__removeStyle } from \"/@vite/client\"\nconst __vite__id = \"/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/components/ui/ModalWrapper.vue?vue&type=style&index=0&scoped=081c4062&lang.scss\"\nconst __vite__css = \".modal-enter-active[data-v-081c4062],\\n.modal-leave-active[data-v-081c4062] {\\n  transition: all 0.3s ease;\\n}\\n.modal-enter-from[data-v-081c4062],\\n.modal-leave-to[data-v-081c4062] {\\n  opacity: 0;\\n  transform: scale(1.1);\\n}\"\n__vite__updateStyle(__vite__id, __vite__css)\nimport.meta.hot.accept()\nexport default __vite__css\nimport.meta.hot.prune(() => __vite__removeStyle(__vite__id))",
+      "start": 1709022557074,
+      "end": 1709022557075,
+      "order": "normal"
+    }
+  ]
+}

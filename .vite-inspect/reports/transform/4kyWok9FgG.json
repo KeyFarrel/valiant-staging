@@ -1,0 +1,25 @@
+{
+  "resolvedId": "/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/services/detail-sentral-service.ts",
+  "transforms": [
+    {
+      "name": "__load__",
+      "result": "import BaseService from \"./base-service\";\n\nconst url = import.meta.env.VITE_API_URL;\n\nexport default class DetailSentralService extends BaseService {\n  async getSentralById<T>(id_sentral:any, kode_pengelola:any): Promise<T> {\n    return this.get(`${url}pembangkit`, {id_sentral: id_sentral, kode_pengelola: kode_pengelola});\n  }\n\n  async getMesinById<T>(id:any): Promise<T> {\n    return this.get(`${url}mesin/${id}`);\n  }\n  async updateMesinById<T>(id:any, nilai_asset_awal:number, masa_manfaat:number, tahun_nilai_perolehan:number,latitude: string, longitude: string, updated_by: string | null): Promise<T> {\n    return this.put(`${url}mesin/${id}`, {nilai_asset_awal: nilai_asset_awal, masa_manfaat: masa_manfaat, tahun_nilai_perolehan: tahun_nilai_perolehan, latitude: latitude, longitude: longitude, updated_by: updated_by});\n  }\n}",
+      "start": 1709026302521,
+      "end": 1709026302521
+    },
+    {
+      "name": "vite:esbuild",
+      "result": "import BaseService from \"./base-service\";\nconst url = import.meta.env.VITE_API_URL;\nexport default class DetailSentralService extends BaseService {\n  async getSentralById(id_sentral, kode_pengelola) {\n    return this.get(`${url}pembangkit`, { id_sentral, kode_pengelola });\n  }\n  async getMesinById(id) {\n    return this.get(`${url}mesin/${id}`);\n  }\n  async updateMesinById(id, nilai_asset_awal, masa_manfaat, tahun_nilai_perolehan, latitude, longitude, updated_by) {\n    return this.put(`${url}mesin/${id}`, { nilai_asset_awal, masa_manfaat, tahun_nilai_perolehan, latitude, longitude, updated_by });\n  }\n}\n",
+      "start": 1709026302521,
+      "end": 1709026302662,
+      "order": "normal"
+    },
+    {
+      "name": "vite:import-analysis",
+      "result": "import.meta.env = {\"VITE_API_URL\":\"https://portalapp.iconpln.co.id:5080/valiant-be/v1/\",\"VITE_USER_NODE_ENV\":\"development\",\"BASE_URL\":\"/\",\"MODE\":\"development\",\"DEV\":true,\"PROD\":false,\"SSR\":false};import BaseService from \"/src/services/base-service.ts?t=1709026301545\";\nconst url = import.meta.env.VITE_API_URL;\nexport default class DetailSentralService extends BaseService {\n  async getSentralById(id_sentral, kode_pengelola) {\n    return this.get(`${url}pembangkit`, { id_sentral, kode_pengelola });\n  }\n  async getMesinById(id) {\n    return this.get(`${url}mesin/${id}`);\n  }\n  async updateMesinById(id, nilai_asset_awal, masa_manfaat, tahun_nilai_perolehan, latitude, longitude, updated_by) {\n    return this.put(`${url}mesin/${id}`, { nilai_asset_awal, masa_manfaat, tahun_nilai_perolehan, latitude, longitude, updated_by });\n  }\n}\n",
+      "start": 1709026302664,
+      "end": 1709026302665,
+      "order": "normal"
+    }
+  ]
+}

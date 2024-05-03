@@ -1,0 +1,25 @@
+{
+  "resolvedId": "/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/store/index.ts",
+  "transforms": [
+    {
+      "name": "__load__",
+      "result": "\nclass Store {\n    private loading: boolean = false;\n    private error: boolean = false;\n    private timeOut: boolean = false;\n    private message: string | null = null;\n    private menus: any = {};\n    private addAble: boolean = false;\n    private editAble: boolean = false;\n    private deleteAble: boolean = false;\n    \n    setLoading(loading: boolean) {\n      this.loading = loading;\n    }\n  \n    setErrorMessage(message: string | null) {\n      this.message = message;\n    }\n  \n    setError(error: boolean) {\n      this.error = error;\n    }\n  \n    setTimeOut(timeOut: boolean) {\n      this.timeOut = timeOut;\n    }\n    setMessage(message: string) {\n        this.message = message;\n    }\n    getState() {\n      return {\n        loading: this.loading,\n        error: this.error,\n        timeOut: this.timeOut,\n        message: this.message,\n      };\n    }\n    setMenus(menus: any) {\n      console.log(menus);\n      this.menus = menus;\n    }\n    getMenus() {\n      return this.menus;\n    }\n    setAddAble(addAble: boolean) {\n      this.addAble = addAble;\n    }\n\n    getAddAble() {\n      return this.addAble;\n    }\n\n    setEditAble(editAble: boolean) {\n      this.editAble = editAble;\n    }\n\n    getEditAble() {\n      return this.editAble;\n    }\n\n    setDeleteAble(deleteAble: boolean) {\n      this.deleteAble = deleteAble;\n    }\n\n    getDeleteAble() {\n      return this.deleteAble;\n    }\n  }\n  \n  export const store = new Store();\n  ",
+      "start": 1709026301752,
+      "end": 1709026301752
+    },
+    {
+      "name": "vite:esbuild",
+      "result": "class Store {\n  loading = false;\n  error = false;\n  timeOut = false;\n  message = null;\n  menus = {};\n  addAble = false;\n  editAble = false;\n  deleteAble = false;\n  setLoading(loading) {\n    this.loading = loading;\n  }\n  setErrorMessage(message) {\n    this.message = message;\n  }\n  setError(error) {\n    this.error = error;\n  }\n  setTimeOut(timeOut) {\n    this.timeOut = timeOut;\n  }\n  setMessage(message) {\n    this.message = message;\n  }\n  getState() {\n    return {\n      loading: this.loading,\n      error: this.error,\n      timeOut: this.timeOut,\n      message: this.message\n    };\n  }\n  setMenus(menus) {\n    console.log(menus);\n    this.menus = menus;\n  }\n  getMenus() {\n    return this.menus;\n  }\n  setAddAble(addAble) {\n    this.addAble = addAble;\n  }\n  getAddAble() {\n    return this.addAble;\n  }\n  setEditAble(editAble) {\n    this.editAble = editAble;\n  }\n  getEditAble() {\n    return this.editAble;\n  }\n  setDeleteAble(deleteAble) {\n    this.deleteAble = deleteAble;\n  }\n  getDeleteAble() {\n    return this.deleteAble;\n  }\n}\nexport const store = new Store();\n",
+      "start": 1709026301752,
+      "end": 1709026301754,
+      "order": "normal"
+    },
+    {
+      "name": "vite:import-analysis",
+      "result": "class Store {\n  loading = false;\n  error = false;\n  timeOut = false;\n  message = null;\n  menus = {};\n  addAble = false;\n  editAble = false;\n  deleteAble = false;\n  setLoading(loading) {\n    this.loading = loading;\n  }\n  setErrorMessage(message) {\n    this.message = message;\n  }\n  setError(error) {\n    this.error = error;\n  }\n  setTimeOut(timeOut) {\n    this.timeOut = timeOut;\n  }\n  setMessage(message) {\n    this.message = message;\n  }\n  getState() {\n    return {\n      loading: this.loading,\n      error: this.error,\n      timeOut: this.timeOut,\n      message: this.message\n    };\n  }\n  setMenus(menus) {\n    console.log(menus);\n    this.menus = menus;\n  }\n  getMenus() {\n    return this.menus;\n  }\n  setAddAble(addAble) {\n    this.addAble = addAble;\n  }\n  getAddAble() {\n    return this.addAble;\n  }\n  setEditAble(editAble) {\n    this.editAble = editAble;\n  }\n  getEditAble() {\n    return this.editAble;\n  }\n  setDeleteAble(deleteAble) {\n    this.deleteAble = deleteAble;\n  }\n  getDeleteAble() {\n    return this.deleteAble;\n  }\n}\nexport const store = new Store();\n",
+      "start": 1709026301754,
+      "end": 1709026301754,
+      "order": "normal"
+    }
+  ]
+}

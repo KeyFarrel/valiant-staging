@@ -1,0 +1,25 @@
+{
+  "resolvedId": "/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/components/ui/Chips.vue",
+  "transforms": [
+    {
+      "name": "__load__",
+      "result": "<template>\n  <div class=\"bg-blue-50 border border-[#0099AD] rounded-3xl px-2 py-0.5 text-xs text-[#0099AD] mr-2 whitespace-nowrap\">\n    <span>{{ props.title }} : </span>\n    <span class=\"font-bold\">{{ props.content }}</span>\n  </div>\n</template>\n\n<script setup lang=\"ts\">\n\nconst props = defineProps({\n  title: String,\n  content: [String, Number],\n});\n</script>\n\n<style scoped></style>",
+      "start": 1709022556387,
+      "end": 1709022556387
+    },
+    {
+      "name": "vite:vue",
+      "result": "import { defineComponent as _defineComponent } from \"vue\";\nconst _sfc_main = _defineComponent({\n  __name: \"Chips\",\n  props: {\n    title: String,\n    content: [String, Number]\n  },\n  setup(__props, { expose: __expose }) {\n    __expose();\n    const props = __props;\n    const __returned__ = { props };\n    Object.defineProperty(__returned__, \"__isScriptSetup\", { enumerable: false, value: true });\n    return __returned__;\n  }\n});\nimport { toDisplayString as _toDisplayString, createElementVNode as _createElementVNode, openBlock as _openBlock, createElementBlock as _createElementBlock } from \"vue\";\nconst _hoisted_1 = { class: \"bg-blue-50 border border-[#0099AD] rounded-3xl px-2 py-0.5 text-xs text-[#0099AD] mr-2 whitespace-nowrap\" };\nconst _hoisted_2 = { class: \"font-bold\" };\nfunction _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {\n  return _openBlock(), _createElementBlock(\"div\", _hoisted_1, [\n    _createElementVNode(\n      \"span\",\n      null,\n      _toDisplayString($setup.props.title) + \" : \",\n      1\n      /* TEXT */\n    ),\n    _createElementVNode(\n      \"span\",\n      _hoisted_2,\n      _toDisplayString($setup.props.content),\n      1\n      /* TEXT */\n    )\n  ]);\n}\n_sfc_main.__hmrId = \"ad2d1d0c\";\ntypeof __VUE_HMR_RUNTIME__ !== \"undefined\" && __VUE_HMR_RUNTIME__.createRecord(_sfc_main.__hmrId, _sfc_main);\nimport.meta.hot.accept((mod) => {\n  if (!mod)\n    return;\n  const { default: updated, _rerender_only } = mod;\n  if (_rerender_only) {\n    __VUE_HMR_RUNTIME__.rerender(updated.__hmrId, updated.render);\n  } else {\n    __VUE_HMR_RUNTIME__.reload(updated.__hmrId, updated);\n  }\n});\nimport _export_sfc from \"\\0plugin-vue:export-helper\";\nexport default /* @__PURE__ */ _export_sfc(_sfc_main, [[\"render\", _sfc_render], [\"__file\", \"/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/components/ui/Chips.vue\"]]);\n",
+      "start": 1709022556387,
+      "end": 1709022557179,
+      "order": "normal"
+    },
+    {
+      "name": "vite:import-analysis",
+      "result": "import { createHotContext as __vite__createHotContext } from \"/@vite/client\";import.meta.hot = __vite__createHotContext(\"/src/components/ui/Chips.vue\");import { defineComponent as _defineComponent } from \"/node_modules/.vite/deps/vue.js?v=c095a9a5\";\nconst _sfc_main = _defineComponent({\n  __name: \"Chips\",\n  props: {\n    title: String,\n    content: [String, Number]\n  },\n  setup(__props, { expose: __expose }) {\n    __expose();\n    const props = __props;\n    const __returned__ = { props };\n    Object.defineProperty(__returned__, \"__isScriptSetup\", { enumerable: false, value: true });\n    return __returned__;\n  }\n});\nimport { toDisplayString as _toDisplayString, createElementVNode as _createElementVNode, openBlock as _openBlock, createElementBlock as _createElementBlock } from \"/node_modules/.vite/deps/vue.js?v=c095a9a5\";\nconst _hoisted_1 = { class: \"bg-blue-50 border border-[#0099AD] rounded-3xl px-2 py-0.5 text-xs text-[#0099AD] mr-2 whitespace-nowrap\" };\nconst _hoisted_2 = { class: \"font-bold\" };\nfunction _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {\n  return _openBlock(), _createElementBlock(\"div\", _hoisted_1, [\n    _createElementVNode(\n      \"span\",\n      null,\n      _toDisplayString($setup.props.title) + \" : \",\n      1\n      /* TEXT */\n    ),\n    _createElementVNode(\n      \"span\",\n      _hoisted_2,\n      _toDisplayString($setup.props.content),\n      1\n      /* TEXT */\n    )\n  ]);\n}\n_sfc_main.__hmrId = \"ad2d1d0c\";\ntypeof __VUE_HMR_RUNTIME__ !== \"undefined\" && __VUE_HMR_RUNTIME__.createRecord(_sfc_main.__hmrId, _sfc_main);\nimport.meta.hot.accept((mod) => {\n  if (!mod)\n    return;\n  const { default: updated, _rerender_only } = mod;\n  if (_rerender_only) {\n    __VUE_HMR_RUNTIME__.rerender(updated.__hmrId, updated.render);\n  } else {\n    __VUE_HMR_RUNTIME__.reload(updated.__hmrId, updated);\n  }\n});\nimport _export_sfc from \"/@id/__x00__plugin-vue:export-helper\";\nexport default /* @__PURE__ */ _export_sfc(_sfc_main, [[\"render\", _sfc_render], [\"__file\", \"/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/components/ui/Chips.vue\"]]);\n",
+      "start": 1709022557180,
+      "end": 1709022557181,
+      "order": "normal"
+    }
+  ]
+}

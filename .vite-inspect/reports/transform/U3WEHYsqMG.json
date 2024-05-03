@@ -1,0 +1,25 @@
+{
+  "resolvedId": "/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/store/storeRoleMenu.ts",
+  "transforms": [
+    {
+      "name": "__load__",
+      "result": "import { ref, computed } from \"vue\";\nimport { defineStore } from 'pinia';\nimport { useOnline } from '@vueuse/core';\n\n\nexport const useRoleMenuStore = defineStore('roleMenu',()=>{\n  const roleMenu = ref();\n  return { roleMenu };\n})",
+      "start": 1709022950180,
+      "end": 1709022950180
+    },
+    {
+      "name": "vite:esbuild",
+      "result": "import { ref, computed } from \"vue\";\nimport { defineStore } from \"pinia\";\nimport { useOnline } from \"@vueuse/core\";\nexport const useRoleMenuStore = defineStore(\"roleMenu\", () => {\n  const roleMenu = ref();\n  return { roleMenu };\n});\n",
+      "start": 1709022950180,
+      "end": 1709022950324,
+      "order": "normal"
+    },
+    {
+      "name": "vite:import-analysis",
+      "result": "import { ref, computed } from \"/node_modules/.vite/deps/vue.js?v=c095a9a5\";\nimport { defineStore } from \"/node_modules/.vite/deps/pinia.js?v=c095a9a5\";\nimport { useOnline } from \"/node_modules/.vite/deps/@vueuse_core.js?v=c095a9a5\";\nexport const useRoleMenuStore = defineStore(\"roleMenu\", () => {\n  const roleMenu = ref();\n  return { roleMenu };\n});\n",
+      "start": 1709022950324,
+      "end": 1709022950324,
+      "order": "normal"
+    }
+  ]
+}

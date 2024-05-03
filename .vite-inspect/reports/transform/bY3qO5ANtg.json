@@ -1,0 +1,25 @@
+{
+  "resolvedId": "/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/services/parameter-service.ts",
+  "transforms": [
+    {
+      "name": "__load__",
+      "result": "import BaseService from \"./base-service\";\n\nconst url = import.meta.env.VITE_API_URL;\n\nexport default class ParameterService extends BaseService {\n\n    async getParameterData<T>(page?:any, limit?:any, search?:any): Promise<T> {\n        return this.get(`${url}/parameter`, {page: page, limit: limit,search:search});\n      }\n\n      async getParameterByID<T>(id:any): Promise<T> {\n        return this.get(`${url}/parameter/${id}`);\n      }\n\n      async editParameter<T>(id:any,data:any): Promise<T> {\n        return this.put(`${url}/parameter/${id}`,data);\n      }\n\n      async addParameter<T>(data:any): Promise<T> {\n        return this.post(`${url}/parameter`,data);\n      }\n\n\n\n}\n",
+      "start": 1709026302614,
+      "end": 1709026302614
+    },
+    {
+      "name": "vite:esbuild",
+      "result": "import BaseService from \"./base-service\";\nconst url = import.meta.env.VITE_API_URL;\nexport default class ParameterService extends BaseService {\n  async getParameterData(page, limit, search) {\n    return this.get(`${url}/parameter`, { page, limit, search });\n  }\n  async getParameterByID(id) {\n    return this.get(`${url}/parameter/${id}`);\n  }\n  async editParameter(id, data) {\n    return this.put(`${url}/parameter/${id}`, data);\n  }\n  async addParameter(data) {\n    return this.post(`${url}/parameter`, data);\n  }\n}\n",
+      "start": 1709026302614,
+      "end": 1709026302682,
+      "order": "normal"
+    },
+    {
+      "name": "vite:import-analysis",
+      "result": "import.meta.env = {\"VITE_API_URL\":\"https://portalapp.iconpln.co.id:5080/valiant-be/v1/\",\"VITE_USER_NODE_ENV\":\"development\",\"BASE_URL\":\"/\",\"MODE\":\"development\",\"DEV\":true,\"PROD\":false,\"SSR\":false};import BaseService from \"/src/services/base-service.ts?t=1709026301545\";\nconst url = import.meta.env.VITE_API_URL;\nexport default class ParameterService extends BaseService {\n  async getParameterData(page, limit, search) {\n    return this.get(`${url}/parameter`, { page, limit, search });\n  }\n  async getParameterByID(id) {\n    return this.get(`${url}/parameter/${id}`);\n  }\n  async editParameter(id, data) {\n    return this.put(`${url}/parameter/${id}`, data);\n  }\n  async addParameter(data) {\n    return this.post(`${url}/parameter`, data);\n  }\n}\n",
+      "start": 1709026302682,
+      "end": 1709026302683,
+      "order": "normal"
+    }
+  ]
+}

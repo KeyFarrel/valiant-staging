@@ -1,0 +1,25 @@
+{
+  "resolvedId": "/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/plugins/themeManager/reactives.ts",
+  "transforms": [
+    {
+      "name": "__load__",
+      "result": "import { reactive, ref } from 'vue'\nimport type { DaisyThemes, ThemeOptions } from './index'\nconst isDark = ref<boolean>(\n  window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches\n)\nconst defaults = reactive<ThemeOptions>({\n  light: 'light',\n  dark: 'dark',\n  watchSystemTheme: false\n})\nconst currentTheme = ref<DaisyThemes>('default')\nconst pluginInitiated = ref<boolean>(false)\nexport { defaults, currentTheme, pluginInitiated, isDark }\n",
+      "start": 1709022556024,
+      "end": 1709022556024
+    },
+    {
+      "name": "vite:esbuild",
+      "result": "import { reactive, ref } from \"vue\";\nconst isDark = ref(\n  window.matchMedia && window.matchMedia(\"(prefers-color-scheme: dark)\").matches\n);\nconst defaults = reactive({\n  light: \"light\",\n  dark: \"dark\",\n  watchSystemTheme: false\n});\nconst currentTheme = ref(\"default\");\nconst pluginInitiated = ref(false);\nexport { defaults, currentTheme, pluginInitiated, isDark };\n",
+      "start": 1709022556024,
+      "end": 1709022557040,
+      "order": "normal"
+    },
+    {
+      "name": "vite:import-analysis",
+      "result": "import { reactive, ref } from \"/node_modules/.vite/deps/vue.js?v=c095a9a5\";\nconst isDark = ref(\n  window.matchMedia && window.matchMedia(\"(prefers-color-scheme: dark)\").matches\n);\nconst defaults = reactive({\n  light: \"light\",\n  dark: \"dark\",\n  watchSystemTheme: false\n});\nconst currentTheme = ref(\"default\");\nconst pluginInitiated = ref(false);\nexport { defaults, currentTheme, pluginInitiated, isDark };\n",
+      "start": 1709022557040,
+      "end": 1709022557040,
+      "order": "normal"
+    }
+  ]
+}

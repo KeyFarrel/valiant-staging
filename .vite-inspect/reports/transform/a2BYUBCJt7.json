@@ -1,0 +1,25 @@
+{
+  "resolvedId": "/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/components/icons/IconInfo.vue",
+  "transforms": [
+    {
+      "name": "__load__",
+      "result": "<template>\n  <svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n    <g opacity=\"0.2\">\n      <path\n        d=\"M8.00004 14.6654C4.31804 14.6654 1.33337 11.6807 1.33337 7.9987C1.33337 4.3167 4.31804 1.33203 8.00004 1.33203C11.682 1.33203 14.6667 4.3167 14.6667 7.9987C14.6667 11.6807 11.682 14.6654 8.00004 14.6654ZM7.33337 7.33203V11.332H8.66671V7.33203H7.33337ZM7.33337 4.66536V5.9987H8.66671V4.66536H7.33337Z\"\n        fill=\"black\" />\n    </g>\n  </svg>\n</template>\n\n<script setup lang=\"ts\">\n\n</script>\n\n<style scoped></style>",
+      "start": 1709022557290,
+      "end": 1709022557290
+    },
+    {
+      "name": "vite:vue",
+      "result": "const _sfc_main = {}\nimport { createElementVNode as _createElementVNode, openBlock as _openBlock, createElementBlock as _createElementBlock } from \"vue\"\n\nconst _hoisted_1 = {\n  width: \"16\",\n  height: \"16\",\n  viewBox: \"0 0 16 16\",\n  fill: \"none\",\n  xmlns: \"http://www.w3.org/2000/svg\"\n}\nconst _hoisted_2 = /*#__PURE__*/_createElementVNode(\"g\", { opacity: \"0.2\" }, [\n  /*#__PURE__*/_createElementVNode(\"path\", {\n    d: \"M8.00004 14.6654C4.31804 14.6654 1.33337 11.6807 1.33337 7.9987C1.33337 4.3167 4.31804 1.33203 8.00004 1.33203C11.682 1.33203 14.6667 4.3167 14.6667 7.9987C14.6667 11.6807 11.682 14.6654 8.00004 14.6654ZM7.33337 7.33203V11.332H8.66671V7.33203H7.33337ZM7.33337 4.66536V5.9987H8.66671V4.66536H7.33337Z\",\n    fill: \"black\"\n  })\n], -1 /* HOISTED */)\nconst _hoisted_3 = [\n  _hoisted_2\n]\n\nfunction _sfc_render(_ctx, _cache) {\n  return (_openBlock(), _createElementBlock(\"svg\", _hoisted_1, [..._hoisted_3]))\n}\n\n\n_sfc_main.__hmrId = \"9c8ebd95\"\ntypeof __VUE_HMR_RUNTIME__ !== 'undefined' && __VUE_HMR_RUNTIME__.createRecord(_sfc_main.__hmrId, _sfc_main)\nimport.meta.hot.accept(mod => {\n  if (!mod) return\n  const { default: updated, _rerender_only } = mod\n  if (_rerender_only) {\n    __VUE_HMR_RUNTIME__.rerender(updated.__hmrId, updated.render)\n  } else {\n    __VUE_HMR_RUNTIME__.reload(updated.__hmrId, updated)\n  }\n})\nimport _export_sfc from '\u0000plugin-vue:export-helper'\nexport default /*#__PURE__*/_export_sfc(_sfc_main, [['render',_sfc_render],['__file',\"/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/components/icons/IconInfo.vue\"]])",
+      "start": 1709022557290,
+      "end": 1709022557290,
+      "order": "normal"
+    },
+    {
+      "name": "vite:import-analysis",
+      "result": "import { createHotContext as __vite__createHotContext } from \"/@vite/client\";import.meta.hot = __vite__createHotContext(\"/src/components/icons/IconInfo.vue\");const _sfc_main = {}\nimport { createElementVNode as _createElementVNode, openBlock as _openBlock, createElementBlock as _createElementBlock } from \"/node_modules/.vite/deps/vue.js?v=c095a9a5\"\n\nconst _hoisted_1 = {\n  width: \"16\",\n  height: \"16\",\n  viewBox: \"0 0 16 16\",\n  fill: \"none\",\n  xmlns: \"http://www.w3.org/2000/svg\"\n}\nconst _hoisted_2 = /*#__PURE__*/_createElementVNode(\"g\", { opacity: \"0.2\" }, [\n  /*#__PURE__*/_createElementVNode(\"path\", {\n    d: \"M8.00004 14.6654C4.31804 14.6654 1.33337 11.6807 1.33337 7.9987C1.33337 4.3167 4.31804 1.33203 8.00004 1.33203C11.682 1.33203 14.6667 4.3167 14.6667 7.9987C14.6667 11.6807 11.682 14.6654 8.00004 14.6654ZM7.33337 7.33203V11.332H8.66671V7.33203H7.33337ZM7.33337 4.66536V5.9987H8.66671V4.66536H7.33337Z\",\n    fill: \"black\"\n  })\n], -1 /* HOISTED */)\nconst _hoisted_3 = [\n  _hoisted_2\n]\n\nfunction _sfc_render(_ctx, _cache) {\n  return (_openBlock(), _createElementBlock(\"svg\", _hoisted_1, [..._hoisted_3]))\n}\n\n\n_sfc_main.__hmrId = \"9c8ebd95\"\ntypeof __VUE_HMR_RUNTIME__ !== 'undefined' && __VUE_HMR_RUNTIME__.createRecord(_sfc_main.__hmrId, _sfc_main)\nimport.meta.hot.accept(mod => {\n  if (!mod) return\n  const { default: updated, _rerender_only } = mod\n  if (_rerender_only) {\n    __VUE_HMR_RUNTIME__.rerender(updated.__hmrId, updated.render)\n  } else {\n    __VUE_HMR_RUNTIME__.reload(updated.__hmrId, updated)\n  }\n})\nimport _export_sfc from \"/@id/__x00__plugin-vue:export-helper\"\nexport default /*#__PURE__*/_export_sfc(_sfc_main, [['render',_sfc_render],['__file',\"/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/components/icons/IconInfo.vue\"]])",
+      "start": 1709022557291,
+      "end": 1709022557291,
+      "order": "normal"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "resolvedId": "/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/services/auth-service.ts",
+  "transforms": [
+    {
+      "name": "__load__",
+      "result": "import BaseService from \"./base-service\";\n\nconst url = import.meta.env.VITE_API_URL;\n\nexport default class AuthService extends BaseService {\n  async login<T>(payload: any): Promise<T> {\n    try {\n      const response = await this.post(`${url}auth/login`, payload);\n      const role_id = response.data.role_id;\n      if (role_id) {\n        localStorage.setItem('role_id', role_id);\n      }\n      return response;\n    } catch (error) {\n      throw error;\n    }\n  }\n\n  async profile<T>(): Promise<T> {\n    return this.get(`${url}user/me`);\n  }\n\n  async getPermission<T>(param: any): Promise<T> {\n    return this.get(`${url}permission`, param);\n  }\n  \n  async findAllMenu<T>(): Promise<T> {\n    return this.get(`${url}rolepermission?limit=1000`);\n  }\n}\n\n",
+      "start": 1709026479867,
+      "end": 1709026479867
+    },
+    {
+      "name": "vite:esbuild",
+      "result": "import BaseService from \"./base-service\";\nconst url = import.meta.env.VITE_API_URL;\nexport default class AuthService extends BaseService {\n  async login(payload) {\n    try {\n      const response = await this.post(`${url}auth/login`, payload);\n      const role_id = response.data.role_id;\n      if (role_id) {\n        localStorage.setItem(\"role_id\", role_id);\n      }\n      return response;\n    } catch (error) {\n      throw error;\n    }\n  }\n  async profile() {\n    return this.get(`${url}user/me`);\n  }\n  async getPermission(param) {\n    return this.get(`${url}permission`, param);\n  }\n  async findAllMenu() {\n    return this.get(`${url}rolepermission?limit=1000`);\n  }\n}\n",
+      "start": 1709026479867,
+      "end": 1709026479872,
+      "order": "normal"
+    },
+    {
+      "name": "vite:import-analysis",
+      "result": "import.meta.env = {\"VITE_API_URL\":\"https://portalapp.iconpln.co.id:5080/valiant-be/v1/\",\"VITE_USER_NODE_ENV\":\"development\",\"BASE_URL\":\"/\",\"MODE\":\"development\",\"DEV\":true,\"PROD\":false,\"SSR\":false};import BaseService from \"/src/services/base-service.ts?t=1709026301545\";\nconst url = import.meta.env.VITE_API_URL;\nexport default class AuthService extends BaseService {\n  async login(payload) {\n    try {\n      const response = await this.post(`${url}auth/login`, payload);\n      const role_id = response.data.role_id;\n      if (role_id) {\n        localStorage.setItem(\"role_id\", role_id);\n      }\n      return response;\n    } catch (error) {\n      throw error;\n    }\n  }\n  async profile() {\n    return this.get(`${url}user/me`);\n  }\n  async getPermission(param) {\n    return this.get(`${url}permission`, param);\n  }\n  async findAllMenu() {\n    return this.get(`${url}rolepermission?limit=1000`);\n  }\n}\n",
+      "start": 1709026479872,
+      "end": 1709026479872,
+      "order": "normal"
+    }
+  ]
+}

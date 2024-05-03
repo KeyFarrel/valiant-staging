@@ -1,0 +1,39 @@
+{
+  "resolvedId": "/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/views/Data/RekapKertasKerja/RekapKertasKerja.vue?vue&type=style&index=0&scoped=2c3f449f&lang.scss",
+  "transforms": [
+    {
+      "name": "vite:vue",
+      "result": "\n#button-hover-putih:hover svg {\n  fill: white;\n}\n\n#button-hover-putih:hover svg path {\n  fill: white;\n}\n\nul li#pagination.selected {\n  background-color: #0099AD;\n  border-radius: 6px;\n  color: white;\n  transition: 300ms;\n}\n\nul li.selected {\n  color: #0099AD;\n  border-color: #0099AD;\n}\n",
+      "start": 1709022950561,
+      "end": 1709022950561
+    },
+    {
+      "name": "vite:css",
+      "result": "#button-hover-putih:hover svg {\n  fill: white;\n}\n\n#button-hover-putih:hover svg path {\n  fill: white;\n}\n\nul li#pagination.selected {\n  background-color: #0099AD;\n  border-radius: 6px;\n  color: white;\n  transition: 300ms;\n}\n\nul li.selected {\n  color: #0099AD;\n  border-color: #0099AD;\n}",
+      "start": 1709022950561,
+      "end": 1709022950570,
+      "order": "normal"
+    },
+    {
+      "name": "vite:vue",
+      "result": "#button-hover-putih:hover svg[data-v-2c3f449f] {\n  fill: white;\n}\n#button-hover-putih:hover svg path[data-v-2c3f449f] {\n  fill: white;\n}\nul li#pagination.selected[data-v-2c3f449f] {\n  background-color: #0099AD;\n  border-radius: 6px;\n  color: white;\n  transition: 300ms;\n}\nul li.selected[data-v-2c3f449f] {\n  color: #0099AD;\n  border-color: #0099AD;\n}",
+      "start": 1709022950570,
+      "end": 1709022950570,
+      "order": "normal"
+    },
+    {
+      "name": "vite:css-post",
+      "result": "import { updateStyle as __vite__updateStyle, removeStyle as __vite__removeStyle } from \"/@vite/client\"\nconst __vite__id = \"/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/views/Data/RekapKertasKerja/RekapKertasKerja.vue?vue&type=style&index=0&scoped=2c3f449f&lang.scss\"\nconst __vite__css = \"#button-hover-putih:hover svg[data-v-2c3f449f] {\\n  fill: white;\\n}\\n#button-hover-putih:hover svg path[data-v-2c3f449f] {\\n  fill: white;\\n}\\nul li#pagination.selected[data-v-2c3f449f] {\\n  background-color: #0099AD;\\n  border-radius: 6px;\\n  color: white;\\n  transition: 300ms;\\n}\\nul li.selected[data-v-2c3f449f] {\\n  color: #0099AD;\\n  border-color: #0099AD;\\n}\"\n__vite__updateStyle(__vite__id, __vite__css)\nimport.meta.hot.accept()\nexport default __vite__css\nimport.meta.hot.prune(() => __vite__removeStyle(__vite__id))",
+      "start": 1709022950570,
+      "end": 1709022950570,
+      "order": "normal"
+    },
+    {
+      "name": "vite:import-analysis",
+      "result": "import { createHotContext as __vite__createHotContext } from \"/@vite/client\";import.meta.hot = __vite__createHotContext(\"/src/views/Data/RekapKertasKerja/RekapKertasKerja.vue?vue&type=style&index=0&scoped=2c3f449f&lang.scss\");import { updateStyle as __vite__updateStyle, removeStyle as __vite__removeStyle } from \"/@vite/client\"\nconst __vite__id = \"/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/views/Data/RekapKertasKerja/RekapKertasKerja.vue?vue&type=style&index=0&scoped=2c3f449f&lang.scss\"\nconst __vite__css = \"#button-hover-putih:hover svg[data-v-2c3f449f] {\\n  fill: white;\\n}\\n#button-hover-putih:hover svg path[data-v-2c3f449f] {\\n  fill: white;\\n}\\nul li#pagination.selected[data-v-2c3f449f] {\\n  background-color: #0099AD;\\n  border-radius: 6px;\\n  color: white;\\n  transition: 300ms;\\n}\\nul li.selected[data-v-2c3f449f] {\\n  color: #0099AD;\\n  border-color: #0099AD;\\n}\"\n__vite__updateStyle(__vite__id, __vite__css)\nimport.meta.hot.accept()\nexport default __vite__css\nimport.meta.hot.prune(() => __vite__removeStyle(__vite__id))",
+      "start": 1709022950570,
+      "end": 1709022950570,
+      "order": "normal"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "resolvedId": "/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/store/storeGlobal.ts",
+  "transforms": [
+    {
+      "name": "__load__",
+      "result": "import { ref, computed } from \"vue\";\nimport { defineStore } from 'pinia';\nimport { useOnline } from '@vueuse/core';\n\n\nexport const useConnectionStatusStore = defineStore('connectionStatus',()=>{\n  const online = useOnline();\n  const isOnline = computed(() => { return online.value });\n  return { isOnline };\n})",
+      "start": 1709022556024,
+      "end": 1709022556024
+    },
+    {
+      "name": "vite:esbuild",
+      "result": "import { ref, computed } from \"vue\";\nimport { defineStore } from \"pinia\";\nimport { useOnline } from \"@vueuse/core\";\nexport const useConnectionStatusStore = defineStore(\"connectionStatus\", () => {\n  const online = useOnline();\n  const isOnline = computed(() => {\n    return online.value;\n  });\n  return { isOnline };\n});\n",
+      "start": 1709022556024,
+      "end": 1709022557040,
+      "order": "normal"
+    },
+    {
+      "name": "vite:import-analysis",
+      "result": "import { ref, computed } from \"/node_modules/.vite/deps/vue.js?v=c095a9a5\";\nimport { defineStore } from \"/node_modules/.vite/deps/pinia.js?v=c095a9a5\";\nimport { useOnline } from \"/node_modules/.vite/deps/@vueuse_core.js?v=c095a9a5\";\nexport const useConnectionStatusStore = defineStore(\"connectionStatus\", () => {\n  const online = useOnline();\n  const isOnline = computed(() => {\n    return online.value;\n  });\n  return { isOnline };\n});\n",
+      "start": 1709022557040,
+      "end": 1709022557040,
+      "order": "normal"
+    }
+  ]
+}

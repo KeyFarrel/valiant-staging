@@ -1,0 +1,39 @@
+{
+  "resolvedId": "/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/components/Peta/BestPerformance.vue?vue&type=style&index=0&scoped=ba7b5cbd&lang.css",
+  "transforms": [
+    {
+      "name": "vite:vue",
+      "result": "\ntd {\n  padding: 0.8rem;\n}\n",
+      "start": 1709022557176,
+      "end": 1709022557176
+    },
+    {
+      "name": "vite:css",
+      "result": "\ntd {\n  padding: 0.8rem;\n}\n",
+      "start": 1709022557176,
+      "end": 1709022557177,
+      "order": "normal"
+    },
+    {
+      "name": "vite:vue",
+      "result": "\ntd[data-v-ba7b5cbd] {\n  padding: 0.8rem;\n}\n",
+      "start": 1709022557177,
+      "end": 1709022557177,
+      "order": "normal"
+    },
+    {
+      "name": "vite:css-post",
+      "result": "import { updateStyle as __vite__updateStyle, removeStyle as __vite__removeStyle } from \"/@vite/client\"\nconst __vite__id = \"/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/components/Peta/BestPerformance.vue?vue&type=style&index=0&scoped=ba7b5cbd&lang.css\"\nconst __vite__css = \"\\ntd[data-v-ba7b5cbd] {\\n  padding: 0.8rem;\\n}\\n\"\n__vite__updateStyle(__vite__id, __vite__css)\nimport.meta.hot.accept()\nexport default __vite__css\nimport.meta.hot.prune(() => __vite__removeStyle(__vite__id))",
+      "start": 1709022557177,
+      "end": 1709022557177,
+      "order": "normal"
+    },
+    {
+      "name": "vite:import-analysis",
+      "result": "import { createHotContext as __vite__createHotContext } from \"/@vite/client\";import.meta.hot = __vite__createHotContext(\"/src/components/Peta/BestPerformance.vue?vue&type=style&index=0&scoped=ba7b5cbd&lang.css\");import { updateStyle as __vite__updateStyle, removeStyle as __vite__removeStyle } from \"/@vite/client\"\nconst __vite__id = \"/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/components/Peta/BestPerformance.vue?vue&type=style&index=0&scoped=ba7b5cbd&lang.css\"\nconst __vite__css = \"\\ntd[data-v-ba7b5cbd] {\\n  padding: 0.8rem;\\n}\\n\"\n__vite__updateStyle(__vite__id, __vite__css)\nimport.meta.hot.accept()\nexport default __vite__css\nimport.meta.hot.prune(() => __vite__removeStyle(__vite__id))",
+      "start": 1709022557177,
+      "end": 1709022557177,
+      "order": "normal"
+    }
+  ]
+}

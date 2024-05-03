@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "../vue-app-vite"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../valiant"
+		},
+		{
+			"path": "../Vue2Leaflet"
+		}
+	],
+	"settings": {}
+}

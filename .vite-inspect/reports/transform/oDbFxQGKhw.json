@@ -1,0 +1,39 @@
+{
+  "resolvedId": "/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/views/Verifikasi/TabPage/FS/KalkulasiTabPage.vue?vue&type=style&index=0&scoped=5e2cdbf5&lang.css",
+  "transforms": [
+    {
+      "name": "vite:vue",
+      "result": "\nth {\n  font-weight: 700;\n  padding: 1rem;\n}\n\n#tableHeader {\n  padding-right: 20rem;\n}\n\ntd {\n  padding: 1rem;\n}\n\n#children {\n  padding-left: 3.1rem;\n}\n",
+      "start": 1709022556771,
+      "end": 1709022556771
+    },
+    {
+      "name": "vite:css",
+      "result": "\nth {\n  font-weight: 700;\n  padding: 1rem;\n}\n\n#tableHeader {\n  padding-right: 20rem;\n}\n\ntd {\n  padding: 1rem;\n}\n\n#children {\n  padding-left: 3.1rem;\n}\n",
+      "start": 1709022556771,
+      "end": 1709022556772,
+      "order": "normal"
+    },
+    {
+      "name": "vite:vue",
+      "result": "\nth[data-v-5e2cdbf5] {\n  font-weight: 700;\n  padding: 1rem;\n}\n#tableHeader[data-v-5e2cdbf5] {\n  padding-right: 20rem;\n}\ntd[data-v-5e2cdbf5] {\n  padding: 1rem;\n}\n#children[data-v-5e2cdbf5] {\n  padding-left: 3.1rem;\n}\n",
+      "start": 1709022556772,
+      "end": 1709022556772,
+      "order": "normal"
+    },
+    {
+      "name": "vite:css-post",
+      "result": "import { updateStyle as __vite__updateStyle, removeStyle as __vite__removeStyle } from \"/@vite/client\"\nconst __vite__id = \"/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/views/Verifikasi/TabPage/FS/KalkulasiTabPage.vue?vue&type=style&index=0&scoped=5e2cdbf5&lang.css\"\nconst __vite__css = \"\\nth[data-v-5e2cdbf5] {\\n  font-weight: 700;\\n  padding: 1rem;\\n}\\n#tableHeader[data-v-5e2cdbf5] {\\n  padding-right: 20rem;\\n}\\ntd[data-v-5e2cdbf5] {\\n  padding: 1rem;\\n}\\n#children[data-v-5e2cdbf5] {\\n  padding-left: 3.1rem;\\n}\\n\"\n__vite__updateStyle(__vite__id, __vite__css)\nimport.meta.hot.accept()\nexport default __vite__css\nimport.meta.hot.prune(() => __vite__removeStyle(__vite__id))",
+      "start": 1709022556772,
+      "end": 1709022556772,
+      "order": "normal"
+    },
+    {
+      "name": "vite:import-analysis",
+      "result": "import { createHotContext as __vite__createHotContext } from \"/@vite/client\";import.meta.hot = __vite__createHotContext(\"/src/views/Verifikasi/TabPage/FS/KalkulasiTabPage.vue?vue&type=style&index=0&scoped=5e2cdbf5&lang.css\");import { updateStyle as __vite__updateStyle, removeStyle as __vite__removeStyle } from \"/@vite/client\"\nconst __vite__id = \"/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/views/Verifikasi/TabPage/FS/KalkulasiTabPage.vue?vue&type=style&index=0&scoped=5e2cdbf5&lang.css\"\nconst __vite__css = \"\\nth[data-v-5e2cdbf5] {\\n  font-weight: 700;\\n  padding: 1rem;\\n}\\n#tableHeader[data-v-5e2cdbf5] {\\n  padding-right: 20rem;\\n}\\ntd[data-v-5e2cdbf5] {\\n  padding: 1rem;\\n}\\n#children[data-v-5e2cdbf5] {\\n  padding-left: 3.1rem;\\n}\\n\"\n__vite__updateStyle(__vite__id, __vite__css)\nimport.meta.hot.accept()\nexport default __vite__css\nimport.meta.hot.prune(() => __vite__removeStyle(__vite__id))",
+      "start": 1709022556772,
+      "end": 1709022556772,
+      "order": "normal"
+    }
+  ]
+}

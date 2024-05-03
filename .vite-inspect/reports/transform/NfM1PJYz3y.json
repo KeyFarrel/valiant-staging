@@ -1,0 +1,39 @@
+{
+  "resolvedId": "/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/components/ui/ShimmerLoading.vue?vue&type=style&index=0&scoped=47ae50b2&lang.css",
+  "transforms": [
+    {
+      "name": "vite:vue",
+      "result": "\n.shimmer {\n  transform: translateX(-100%);\n  animation: shimmer 1s infinite;\n}\n\n@keyframes shimmer {\n  100% {\n    transform: translateX(100%);\n  }\n}\n",
+      "start": 1709022557248,
+      "end": 1709022557248
+    },
+    {
+      "name": "vite:css",
+      "result": "\n.shimmer {\n  transform: translateX(-100%);\n  animation: shimmer 1s infinite;\n}\n\n@keyframes shimmer {\n  100% {\n    transform: translateX(100%);\n  }\n}\n",
+      "start": 1709022557248,
+      "end": 1709022557248,
+      "order": "normal"
+    },
+    {
+      "name": "vite:vue",
+      "result": "\n.shimmer[data-v-47ae50b2] {\n  transform: translateX(-100%);\n  animation: shimmer-47ae50b2 1s infinite;\n}\n@keyframes shimmer-47ae50b2 {\n100% {\n    transform: translateX(100%);\n}\n}\n",
+      "start": 1709022557248,
+      "end": 1709022557249,
+      "order": "normal"
+    },
+    {
+      "name": "vite:css-post",
+      "result": "import { updateStyle as __vite__updateStyle, removeStyle as __vite__removeStyle } from \"/@vite/client\"\nconst __vite__id = \"/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/components/ui/ShimmerLoading.vue?vue&type=style&index=0&scoped=47ae50b2&lang.css\"\nconst __vite__css = \"\\n.shimmer[data-v-47ae50b2] {\\n  transform: translateX(-100%);\\n  animation: shimmer-47ae50b2 1s infinite;\\n}\\n@keyframes shimmer-47ae50b2 {\\n100% {\\n    transform: translateX(100%);\\n}\\n}\\n\"\n__vite__updateStyle(__vite__id, __vite__css)\nimport.meta.hot.accept()\nexport default __vite__css\nimport.meta.hot.prune(() => __vite__removeStyle(__vite__id))",
+      "start": 1709022557249,
+      "end": 1709022557249,
+      "order": "normal"
+    },
+    {
+      "name": "vite:import-analysis",
+      "result": "import { createHotContext as __vite__createHotContext } from \"/@vite/client\";import.meta.hot = __vite__createHotContext(\"/src/components/ui/ShimmerLoading.vue?vue&type=style&index=0&scoped=47ae50b2&lang.css\");import { updateStyle as __vite__updateStyle, removeStyle as __vite__removeStyle } from \"/@vite/client\"\nconst __vite__id = \"/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/components/ui/ShimmerLoading.vue?vue&type=style&index=0&scoped=47ae50b2&lang.css\"\nconst __vite__css = \"\\n.shimmer[data-v-47ae50b2] {\\n  transform: translateX(-100%);\\n  animation: shimmer-47ae50b2 1s infinite;\\n}\\n@keyframes shimmer-47ae50b2 {\\n100% {\\n    transform: translateX(100%);\\n}\\n}\\n\"\n__vite__updateStyle(__vite__id, __vite__css)\nimport.meta.hot.accept()\nexport default __vite__css\nimport.meta.hot.prune(() => __vite__removeStyle(__vite__id))",
+      "start": 1709022557249,
+      "end": 1709022557249,
+      "order": "normal"
+    }
+  ]
+}

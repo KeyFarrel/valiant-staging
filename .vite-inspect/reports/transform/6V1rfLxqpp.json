@@ -1,0 +1,39 @@
+{
+  "resolvedId": "/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/views/Master/DetailUnit.vue?vue&type=style&index=0&scoped=050992ef&lang.scss",
+  "transforms": [
+    {
+      "name": "vite:vue",
+      "result": "\nbutton:hover>svg *,\nbutton:hover {\n  fill: #ffffff;\n  transition-duration: 300ms;\n}\n\nh6 {\n  --tw-text-opacity: 1;\n  color: rgb(107 114 128 / var(--tw-text-opacity));\n}\n\nul li.selected {\n  border-bottom-width: 4px;\n  border-color: #0099ad;\n  color: #0099ad;\n}\n",
+      "start": 1709022556904,
+      "end": 1709022556904
+    },
+    {
+      "name": "vite:css",
+      "result": "button:hover > svg *,\nbutton:hover {\n  fill: #ffffff;\n  transition-duration: 300ms;\n}\n\nh6 {\n  --tw-text-opacity: 1;\n  color: rgb(107 114 128/var(--tw-text-opacity));\n}\n\nul li.selected {\n  border-bottom-width: 4px;\n  border-color: #0099ad;\n  color: #0099ad;\n}",
+      "start": 1709022556904,
+      "end": 1709022556912,
+      "order": "normal"
+    },
+    {
+      "name": "vite:vue",
+      "result": "button:hover > svg *[data-v-050992ef],\nbutton[data-v-050992ef]:hover {\n  fill: #ffffff;\n  transition-duration: 300ms;\n}\nh6[data-v-050992ef] {\n  --tw-text-opacity: 1;\n  color: rgb(107 114 128/var(--tw-text-opacity));\n}\nul li.selected[data-v-050992ef] {\n  border-bottom-width: 4px;\n  border-color: #0099ad;\n  color: #0099ad;\n}",
+      "start": 1709022556912,
+      "end": 1709022556913,
+      "order": "normal"
+    },
+    {
+      "name": "vite:css-post",
+      "result": "import { updateStyle as __vite__updateStyle, removeStyle as __vite__removeStyle } from \"/@vite/client\"\nconst __vite__id = \"/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/views/Master/DetailUnit.vue?vue&type=style&index=0&scoped=050992ef&lang.scss\"\nconst __vite__css = \"button:hover > svg *[data-v-050992ef],\\nbutton[data-v-050992ef]:hover {\\n  fill: #ffffff;\\n  transition-duration: 300ms;\\n}\\nh6[data-v-050992ef] {\\n  --tw-text-opacity: 1;\\n  color: rgb(107 114 128/var(--tw-text-opacity));\\n}\\nul li.selected[data-v-050992ef] {\\n  border-bottom-width: 4px;\\n  border-color: #0099ad;\\n  color: #0099ad;\\n}\"\n__vite__updateStyle(__vite__id, __vite__css)\nimport.meta.hot.accept()\nexport default __vite__css\nimport.meta.hot.prune(() => __vite__removeStyle(__vite__id))",
+      "start": 1709022556913,
+      "end": 1709022556913,
+      "order": "normal"
+    },
+    {
+      "name": "vite:import-analysis",
+      "result": "import { createHotContext as __vite__createHotContext } from \"/@vite/client\";import.meta.hot = __vite__createHotContext(\"/src/views/Master/DetailUnit.vue?vue&type=style&index=0&scoped=050992ef&lang.scss\");import { updateStyle as __vite__updateStyle, removeStyle as __vite__removeStyle } from \"/@vite/client\"\nconst __vite__id = \"/Users/rickysitorus/Downloads/Kerja/Pln Icon Plus/valiant-fe/src/views/Master/DetailUnit.vue?vue&type=style&index=0&scoped=050992ef&lang.scss\"\nconst __vite__css = \"button:hover > svg *[data-v-050992ef],\\nbutton[data-v-050992ef]:hover {\\n  fill: #ffffff;\\n  transition-duration: 300ms;\\n}\\nh6[data-v-050992ef] {\\n  --tw-text-opacity: 1;\\n  color: rgb(107 114 128/var(--tw-text-opacity));\\n}\\nul li.selected[data-v-050992ef] {\\n  border-bottom-width: 4px;\\n  border-color: #0099ad;\\n  color: #0099ad;\\n}\"\n__vite__updateStyle(__vite__id, __vite__css)\nimport.meta.hot.accept()\nexport default __vite__css\nimport.meta.hot.prune(() => __vite__removeStyle(__vite__id))",
+      "start": 1709022556913,
+      "end": 1709022556913,
+      "order": "normal"
+    }
+  ]
+}
