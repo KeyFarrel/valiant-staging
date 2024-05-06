@@ -19,7 +19,7 @@ variables:
     paths:
       - .npm/
   before_script:
-    - npm ci --cache .npm --prefer-offline
+    - npm install --cache .npm --prefer-offline
 
 build-app:
   extends: .npm-cache
