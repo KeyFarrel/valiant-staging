@@ -1,0 +1,26 @@
+# Stage 1: Build the Next.js app
+FROM node:18.14.2-alpine AS build
+
+# Set Workdir
+WORKDIR /app
+
+# Copy dependencies reference file
+COPY package.json package-lock.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the application
+COPY . .
+
+# Build the Vue.js application
+RUN npm run build
+
+# Stage 2 - Serve the production build with Nginx
+FROM nginx:stable
+
+# Copy the built files from the previous stage
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Expose port 80
+EXPOSE 80
