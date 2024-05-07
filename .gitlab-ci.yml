@@ -103,10 +103,7 @@ deploy-dev:
     - cd .manifest/environments
     - |
       tag=$(cat values-dev.yaml | grep -m 1 frontendTag: | awk '{print $2}')
-    - |
-      version=$(cat values-dev.yaml | grep -m 1 version: | awk '{print $2}')
     - sed -i "s/$tag/$STAGING_VERSION/g" values-dev.yaml
-    - sed -i "s/$version/$STAGING_VERSION/g" values-dev.yaml
     - git commit -am "Update Deployment Image Version to version $STAGING_VERSION" && git push origin dev
   only:
     - dev
@@ -189,10 +186,7 @@ deploy-prod:
     - cd .manifest/environments
     - |
       tag=$(cat values-prod.yaml | grep -m 1 tag: | awk '{print $2}')
-    - |
-      version=$(cat values-prod.yaml | grep -m 1 version: | awk '{print $2}')
     - sed -i "s/$tag/$CI_COMMIT_TAG/g" values-prod.yaml
-    - sed -i "s/$version/$CI_COMMIT_TAG/g" values-prod.yaml
     - git commit -am "Update Production Image Version to version $CI_COMMIT_TAG" && git push origin dev
   only:
     - /^*-release$/
