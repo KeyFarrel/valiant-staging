@@ -28,7 +28,7 @@ build-app:
     - npm run build
   only:
     - merge_requests
-    - dev
+    - release/*
     - /^*-release$/
 
 unit-test:
@@ -47,7 +47,7 @@ unit-test:
         - junit.xml
   only:
     - merge_requests
-    - dev
+    - release/*
 
 sonarqube-check:
   stage: sast
@@ -65,7 +65,7 @@ sonarqube-check:
     - sonar-scanner
   allow_failure: true
   only:
-    - dev 
+    - release/*
 
 build-image:
   image: 

@@ -17,7 +17,7 @@ COPY . .
 ARG BUILD_MODE=staging
 
 # Build the Vue.js application
-RUN npm run build -- --mode $BUILD_MODE
+RUN RUN npx vue-cli-service build --mode $BUILD_MODE
 
 # Stage 2: Serve the production build with Nginx
 FROM nginx:stable
