@@ -13,8 +13,11 @@ RUN npm install
 # Copy the rest of the application
 COPY . .
 
+# Build the Vue.js application (production or staging build)
+ARG BUILD_MODE=staging
+
 # Build the Vue.js application
-RUN npm run build
+RUN npm run build --mode $BUILD_MODE
 
 # Stage 2: Serve the production build with Nginx
 FROM nginx:stable
