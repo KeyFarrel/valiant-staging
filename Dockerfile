@@ -17,7 +17,7 @@ COPY . .
 ARG BUILD_MODE=staging
 
 # Build the Vue.js application
-RUN npx vite build --mode $BUILD_MODE -p type-check 
+RUN npx vite build --mode $BUILD_MODE
 
 # Stage 2: Serve the production build with Nginx
 FROM nginx:stable
