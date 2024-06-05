@@ -28,7 +28,7 @@ build-app:
     - npm run build
   only:
     - merge_requests
-    - release/*
+    - dev
     - /^*-release$/
 
 unit-test:
@@ -47,7 +47,7 @@ unit-test:
         - junit.xml
   only:
     - merge_requests
-    - release/*
+    - dev
 
 sonarqube-check:
   stage: sast
@@ -62,10 +62,18 @@ sonarqube-check:
     paths:
       - .sonar/cache
   script: 
-    - sonar-scanner
+    - |
+      if [ "$CI_COMMIT_BRANCH" == "dev" ]; then
+        SONAR_BRANCH="dev"
+      elif [ "$CI_COMMIT_BRANCH" == "staging" ]; then
+        SONAR_BRANCH="staging"
+      else
+        SONAR_BRANCH="$CI_COMMIT_BRANCH"
+      fi
+      sonar-scanner
   allow_failure: true
   only:
-    - release/*
+    - dev
 
 build-image:
   image: 
