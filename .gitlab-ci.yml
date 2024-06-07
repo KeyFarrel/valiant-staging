@@ -3,7 +3,7 @@ stages:
   - unit-test
   - sast
   - build-image
-  - update-tag-dev
+  - update-tag-stg
   - approval
   - update-tag-prod
 
@@ -100,7 +100,7 @@ deploy-dev:
   image:
     name : alpine/git
     entrypoint : [""]
-  stage: update-tag-dev
+  stage: update-tag-stg
   before_script:
     - git config --global user.name "Gitlab PLN CI/CD"
     - git config --global user.email "gitlab@pln.co.id"
