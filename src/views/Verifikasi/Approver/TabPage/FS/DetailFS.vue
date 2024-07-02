@@ -1,20 +1,20 @@
 <template>
   <Loading v-if="isLoading" />
-    <InfoHeader v-if="approveSentralFS" 
-    :nama-mesin="approveSentralFS.sentral ? approveSentralFS.sentral : '-'" 
-    :nama-pengelola="approveSentralFS.pengelola ? approveSentralFS.pengelola : '-'" :nama-pembina="approveSentralFS.pembina ? approveSentralFS.pembina : '-'" :kode-jenis-pembangkit="approveSentralFS.jenis_kit ? approveSentralFS.jenis_kit : '-'" 
-    :daya-terpasang="approveSentralFS.daya_terpasang.toString()"
-    :daya-mampu="approveSentralFS.daya_mampu.toString()" 
-    :tahun-operasi="approveSentralFS.tahun_operasi ? approveSentralFS.tahun_operasi : '-'" 
+  <InfoHeader v-if="approveSentralFS" :nama-mesin="approveSentralFS.sentral ? approveSentralFS.sentral : '-'"
+    :nama-pengelola="approveSentralFS.pengelola ? approveSentralFS.pengelola : '-'"
+    :nama-pembina="approveSentralFS.pembina ? approveSentralFS.pembina : '-'"
+    :kode-jenis-pembangkit="approveSentralFS.jenis_kit ? approveSentralFS.jenis_kit : '-'"
+    :daya-terpasang="approveSentralFS.daya_terpasang.toString()" :daya-mampu="approveSentralFS.daya_mampu.toString()"
+    :tahun-operasi="approveSentralFS.tahun_operasi ? approveSentralFS.tahun_operasi : '-'"
     :umur-teknis="approveSentralFS.umur_teknis ? approveSentralFS.umur_teknis : '-'">
   </InfoHeader>
 
   <!-- Download Evidence -->
-  <div class="flex justify-between bg-white mt-4 p-4 rounded-lg">
+  <div class="flex justify-between p-4 mt-4 bg-white rounded-lg">
     <div class="flex items-center">
       <div class="flex">
         <div class="w-1 h-7 mr-2 bg-[#0099AD]"></div>
-        <p class="font-semibold text-lg">Evidence</p>
+        <p class="text-lg font-semibold">Evidence</p>
       </div>
     </div>
     <button class="flex items-center bg-white border border-[#0099AD] px-3 py-2 rounded-lg duration-300">
@@ -32,7 +32,7 @@
 import { ref, onMounted } from "vue";
 import PersetujuanService from '@/services/persetujuan-service';
 import Loading from "@/components/ui/LoadingSpinner.vue";
-import InfoHeader from '@/components/ui/InfoHeaderPersetujuan.vue';
+import InfoHeader from '@/components/ui/InfoHeader.vue';
 import { useRoute } from 'vue-router'
 
 const route = useRoute();
@@ -54,7 +54,7 @@ interface ListApprove {
 
 const fetchPersetujuanFS = async () => {
   try {
-    const response: ListApprove = await persetujuanService.getPersetujuanFSSentral({ 
+    const response: ListApprove = await persetujuanService.getPersetujuanFSSentral({
       id_sentral: route.query.id_sentral
     });
     approveSentralFS.value = response.data;

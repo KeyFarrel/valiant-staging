@@ -5,7 +5,7 @@
       :kondisi-unit="mesinDataById.kondisi_unit" :kode-jenis-pembangkit="mesinDataById.kode_jenis_pembangkit"
       :daya-terpasang="mesinDataById.daya_terpasang.toString()" :daya-mampu="mesinDataById.daya_mampu.toString()"
       :tahun-operasi="mesinDataById.tahun_operasi.toString()"
-      :umur-teknis="umurTeknis === 0 || umurTeknis > 0 ? umurTeknis.toString() : '-'">
+      :umur-teknis="umurTeknis === 0 || umurTeknis > 0 ? umurTeknis.toString() : '-'" :nama-pembina="namaPembina">
       <button
         class="flex items-center px-3 py-2 text-white duration-300 border rounded-lg bg-primaryColor border-primaryColor hover:border-hoverColor hover:bg-hoverColor active:duration-0 active:outline active:outline-primaryColor">
         <span class="mr-2 font-semibold">Export</span>
@@ -27,8 +27,9 @@
       </div>
       <div class="flex flex-col space-y-1">
         <p class="text-sm font-semibold text-labelColor">Total Replacement Cost</p>
-        <p class="text-textDisabledColor" v-if="totalReplacement">Rp <span class="text-lg font-semibold text-black">{{
-          globalFormat.formatRupiah(totalReplacement.total_replacement) }}</span></p>
+        <p class="text-textDisabledColor" v-if="totalReplacement">Rp <span
+            class="text-lg font-semibold text-primaryTextColor">{{
+              globalFormat.formatRupiah(totalReplacement.total_replacement) }}</span></p>
       </div>
       <div class="w-full overflow-auto border rounded-lg whitespace-nowrap">
         <table class="w-full">
@@ -83,17 +84,17 @@ import InfoHeader from '@/components/ui/InfoHeader.vue';
 import SortingIcon from '@/components/icons/SortingIcon.vue';
 import Loading from '@/components/ui/LoadingSpinner.vue';
 import '@vuepic/vue-datepicker/dist/main.css';
-import path from 'path';
 
 const detailCAPEX = ref<any>();
 const totalReplacement = ref<any>();
 const idMesin = route.params.id;
 const mesinDataById = ref<any>();
-const namaPengelola = ref<any>();
+const namaPengelola = ref<string>('');
+const namaPembina = ref<string>('');
 const umurTeknis = ref<any>();
 const yearPicked = ref<any>();
 const yearRange = ref<number[]>([]);
-const isLoading = ref<Boolean>();
+const isLoading = ref<boolean>(false);
 
 const fetchMesinById = async () => {
   try {
@@ -118,6 +119,7 @@ const fetchUnitPengelola = async () => {
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola
       );
       namaPengelola.value = pengelola[0].pengelola;
+      namaPembina.value = pembangkitResponse.data.pembina;
     }
   } catch (error) {
     console.error("Fetch Unit Pengelola Error : " + error);

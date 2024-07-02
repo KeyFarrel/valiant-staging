@@ -5,7 +5,7 @@
       class="bg-white rounded-lg absolute z-[35] p-3 flex flex-col space-y-3 w-[400px] shadow-md right-[200px] top-12"
       v-show="isNotificationShow">
       <div class="flex flex-row items-center justify-between">
-        <p class="text-base font-semibold text-black">Notifikasi</p>
+        <p class="text-base font-semibold text-primaryTextColor">Notifikasi</p>
         <button class="text-xs text-primaryColor">Tandai semua telah dibaca</button>
       </div>
       <div class="space-y-5">
@@ -33,12 +33,12 @@
           </div>
           <div class="text-white -ml-[72px]" :class="isSidebarOpen ? 'ml-10' : ''">
             <div class="text-lg font-bold">{{ store.label }}</div>
-            <p class="text-xs font-semibold cursor-pointer">
-              {{ store.label }}
+            <p class="text-xs font-semibold">
+              {{ authService.checkRole() }}
             </p>
           </div>
         </div>
-        <div class="flex items-center space-x-4">
+        <div class="flex flex-row items-center space-x-3">
           <button @click="isNotificationShow = !isNotificationShow">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd" clip-rule="evenodd"
@@ -46,21 +46,16 @@
                 fill="white" />
             </svg>
           </button>
-          <div>
-            <svg width="20" height="20" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="30" cy="30" r="30" fill="#C7E5D7" />
-              <path
-                d="M32.2564 21.0494H35.3928V33.3221C35.3871 34.4471 35.1484 35.4158 34.6768 36.2283C34.2053 37.0352 33.5462 37.6573 32.6996 38.0948C31.8587 38.5266 30.8786 38.7425 29.7592 38.7425C28.7365 38.7425 27.8161 38.5607 26.9979 38.1971C26.1854 37.8278 25.5405 37.2823 25.0632 36.5607C24.5859 35.8391 24.3473 34.9414 24.3473 33.8675H27.4922C27.4979 34.3391 27.6001 34.7454 27.799 35.0863C28.0036 35.4272 28.2848 35.6886 28.6428 35.8704C29.0007 36.0522 29.4126 36.1431 29.8786 36.1431C30.3842 36.1431 30.8132 36.038 31.1655 35.8278C31.5178 35.6119 31.7848 35.2937 31.9666 34.8732C32.1541 34.4528 32.2507 33.9357 32.2564 33.3221V21.0494Z"
-                fill="#333333" />
-            </svg>
+          <div class="flex items-center justify-center w-6 h-6 rounded-full bg-warningColor">
+            <span class="text-sm font-semibold text-white uppercase">{{ namaPegawai?.split('')[0] }}</span>
           </div>
           <p class="text-white">
             {{ namaPegawai }}
           </p>
           <div class="flex items-center mr-4">
             <button type="button"
-              class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-[#0099AD] dark:focus:ring-[#0099AD]"
-              aria-expanded="false" data-dropdown-toggle="dropdown-user" data-dropdown-offset-distance="20"
+              class="flex text-sm bg-gray-800 rounded-full active:ring active:ring-[#0099AD] dark:active:ring-[#0099AD]"
+              aria-expanded="false" data-dropdown-toggle="dropdown-user" data-dropdown-offset-distance="12"
               data-dropdown-offset-skidding="2">
               <span class="sr-only">Open user menu</span>
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -71,20 +66,17 @@
               </svg>
             </button>
             <div
-              class="max-w-64 whitespace-nowrap z-[45] hidden text-base list-none bg-white divide-y divide-gray-100 rounded-md shadow dark:bg-gray-700 dark:divide-gray-600"
+              class="max-w-64 border whitespace-nowrap z-[45] hidden text-base list-none bg-white divide-y divide-gray-100 rounded-md shadow dark:bg-gray-700 dark:divide-gray-600"
               id="dropdown-user">
-              <div class="flex p-5">
-                <div class="mr-4">
-                  <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="30" cy="30" r="30" fill="#C7E5D7" />
-                    <path
-                      d="M32.2564 21.0494H35.3928V33.3221C35.3871 34.4471 35.1484 35.4158 34.6768 36.2283C34.2053 37.0352 33.5462 37.6573 32.6996 38.0948C31.8587 38.5266 30.8786 38.7425 29.7592 38.7425C28.7365 38.7425 27.8161 38.5607 26.9979 38.1971C26.1854 37.8278 25.5405 37.2823 25.0632 36.5607C24.5859 35.8391 24.3473 34.9414 24.3473 33.8675H27.4922C27.4979 34.3391 27.6001 34.7454 27.799 35.0863C28.0036 35.4272 28.2848 35.6886 28.6428 35.8704C29.0007 36.0522 29.4126 36.1431 29.8786 36.1431C30.3842 36.1431 30.8132 36.038 31.1655 35.8278C31.5178 35.6119 31.7848 35.2937 31.9666 34.8732C32.1541 34.4528 32.2507 33.9357 32.2564 33.3221V21.0494Z"
-                      fill="#333333" />
-                  </svg>
+              <div class="flex flex-row items-center p-5">
+                <div class="mr-3">
+                  <div class="flex flex-row items-center justify-center rounded-full w-14 h-14 bg-warningColor">
+                    <span class="text-xl font-semibold text-white uppercase">{{ namaPegawai?.split('')[0] }}</span>
+                  </div>
                 </div>
-                <div class="flex flex-col justify-center">
-                  <p class="text-sm font-bold">{{ namaPegawai }}</p>
-                  <RouterLink to="/profile-user" class="text-[#2671D9] underline text-xs">Lihat Profile</RouterLink>
+                <div class="flex flex-col justify-center space-y-0.5">
+                  <p class="text-sm font-semibold text-primaryTextColor">{{ namaPegawai }}</p>
+                  <RouterLink to="/profile-user" class="text-[#2671D9] underline text-xs">Lihat Profil</RouterLink>
                 </div>
               </div>
               <hr />
@@ -94,7 +86,7 @@
                     d="M8.76639 11.1772L9.19542 10.75H8.59H1C0.801088 10.75 0.610323 10.671 0.46967 10.5303C0.329018 10.3897 0.25 10.1989 0.25 10C0.25 9.80109 0.329018 9.61032 0.46967 9.46967C0.610323 9.32902 0.801088 9.25 1 9.25H8.59H9.19542L8.76639 8.82284L6.46678 6.53322C6.46676 6.5332 6.46674 6.53319 6.46672 6.53317C6.39672 6.46316 6.3412 6.38004 6.30331 6.28858C6.26541 6.19709 6.24591 6.09903 6.24591 6C6.24591 5.90097 6.26541 5.80291 6.30331 5.71142C6.34121 5.61993 6.39675 5.5368 6.46678 5.46678C6.5368 5.39675 6.61993 5.34121 6.71142 5.30331C6.80291 5.26541 6.90097 5.24591 7 5.24591C7.09903 5.24591 7.19709 5.26541 7.28858 5.30331C7.38007 5.34121 7.4632 5.39675 7.53322 5.46678L11.5312 9.46472C11.5986 9.53565 11.6515 9.61911 11.6869 9.71038L11.6869 9.71039L11.6888 9.715C11.7638 9.8976 11.7638 10.1024 11.6888 10.285L11.6887 10.285L11.6869 10.2896C11.6515 10.3809 11.5986 10.4643 11.5312 10.5353L7.53322 14.5332L7.5325 14.5339C7.46278 14.6042 7.37982 14.66 7.28843 14.6981C7.19704 14.7362 7.09901 14.7558 7 14.7558C6.90099 14.7558 6.80296 14.7362 6.71157 14.6981C6.62018 14.66 6.53722 14.6042 6.4675 14.5339L6.46605 14.5325C6.39575 14.4628 6.33996 14.3798 6.30188 14.2884C6.26381 14.197 6.2442 14.099 6.2442 14C6.2442 13.901 6.26381 13.803 6.30188 13.7116C6.33996 13.6202 6.39575 13.5372 6.46605 13.4675L6.46639 13.4672L8.76639 11.1772ZM3 0.25H13C13.7293 0.25 14.4288 0.539731 14.9445 1.05546C15.4603 1.57118 15.75 2.27065 15.75 3V17C15.75 17.7293 15.4603 18.4288 14.9445 18.9445C14.4288 19.4603 13.7293 19.75 13 19.75H3C2.27065 19.75 1.57118 19.4603 1.05546 18.9445C0.539732 18.4288 0.25 17.7293 0.25 17V14C0.25 13.8011 0.329018 13.6103 0.46967 13.4697C0.610323 13.329 0.801088 13.25 1 13.25C1.19891 13.25 1.38968 13.329 1.53033 13.4697C1.67098 13.6103 1.75 13.8011 1.75 14V17C1.75 17.3315 1.8817 17.6495 2.11612 17.8839C2.35054 18.1183 2.66848 18.25 3 18.25H13C13.3315 18.25 13.6495 18.1183 13.8839 17.8839C14.1183 17.6495 14.25 17.3315 14.25 17V3C14.25 2.66848 14.1183 2.35054 13.8839 2.11612C13.6495 1.8817 13.3315 1.75 13 1.75H3C2.66848 1.75 2.35054 1.8817 2.11612 2.11612C1.8817 2.35054 1.75 2.66848 1.75 3V6C1.75 6.19891 1.67098 6.38968 1.53033 6.53033C1.38968 6.67098 1.19891 6.75 1 6.75C0.801088 6.75 0.610323 6.67098 0.46967 6.53033C0.329018 6.38968 0.25 6.19891 0.25 6V3C0.25 2.27065 0.539731 1.57118 1.05546 1.05546C1.57118 0.539731 2.27065 0.25 3 0.25Z"
                     fill="#333333" stroke="white" stroke-width="0.5" />
                 </svg>
-                <p class="ml-3 -mt-1 text-[14px]">Logout</p>
+                <p class="ml-3 -mt-1 text-[14px] text-primaryTextColor">Logout</p>
               </button>
             </div>
           </div>
@@ -104,7 +96,7 @@
   </nav>
 
   <aside id="logo-sidebar"
-    class="fixed top-0 left-0 z-40 w-20 h-screen pt-14 transition-transform border-r border-[#E5E7E9] -translate-x-full bg-[#0099AD] sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
+    class="fixed top-0 left-0 z-40 w-20 h-screen pt-14 border-r border-[#E5E7E9]  bg-[#0099AD] sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
     :class="isSidebarOpen ? 'w-64' : ''" @mouseleave="toggleSidebar" aria-label="Sidebar">
     <div v-show="isSidebarOpen" class="h-full pb-4 overflow-y-auto bg-white dark:bg-gray-800">
       <ul class="space-y-2 font-medium">
@@ -128,13 +120,13 @@
           </RouterLink>
         </li>
         <li class="px-3"
-          v-if="authService.checkRole() === 'Admin' || authService.checkRole() === 'Pengelola' || authService.checkRole() === 'Pembina'">
+          v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina'">
           <div class="flex items-center px-2 pt-1 text-[#7F7F80] dark:text-white">
             <span class="ml-8 text-xs font-semibold">Laman</span>
           </div>
         </li>
         <li
-          v-if="authService.checkRole() === 'Admin' || authService.checkRole() === 'Pengelola' || authService.checkRole() === 'Pembina'">
+          v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina'">
           <RouterLink to="/laman" id="sidebar-button" @click="store.label = 'Laman Utama'"
             class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
             :class="{ selected: store.label === 'Laman Utama' }">
@@ -148,7 +140,7 @@
           </RouterLink>
         </li>
         <li
-          v-if="authService.checkRole() === 'Admin' || authService.checkRole() === 'Pengelola' || authService.checkRole() === 'Pembina'">
+          v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina'">
           <RouterLink id="sidebar-button" @click="store.label = 'Laman Data'" to="/laman-data"
             class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
             :class="{ selected: store.label === 'Laman Data' }">
@@ -162,7 +154,7 @@
           </RouterLink>
         </li>
         <li
-          v-if="authService.checkRole() === 'Admin' || authService.checkRole() === 'Pengelola' || authService.checkRole() === 'Pembina'">
+          v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina'">
           <RouterLink id="sidebar-button" @click="store.label = 'Laman Analitik'" to="/laman-analitik"
             class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
             :class="{ selected: store.label === 'Laman Analitik' }">
@@ -214,23 +206,25 @@
             <span class="mt-1 ml-3 text-sm font-semibold">Verifikasi</span>
           </div>
         </li>
-        <li v-if="level_id == '1' || level_id == '2' || level_id == '4'">
+        <li v-if="levelID == '1' || levelID == '2' || levelID == '4'">
           <RouterLink id="sidebar-button" @click="store.label = 'Persetujuan'" to="/persetujuan-by-approve"
             class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
             :class="{ selected: store.label === 'Persetujuan' }">
             <span class="flex ml-8 text-xs">
               <p class="mr-2 mt-0.5">Persetujuan</p>
-              <div class="bg-[#FF6363] text-white px-1 py-0.5 rounded-sm">1</div>
+              <div class="bg-[#FF6363] text-white px-1 py-0.5 rounded-sm">{{ totalPersetujuanKK + totalPersetujuanFS }}
+              </div>
             </span>
           </RouterLink>
         </li>
-        <li v-else-if="level_id == '3'">
+        <li v-else-if="levelID == '3'">
           <RouterLink id="sidebar-button" @click="store.label = 'Persetujuan'" to="/persetujuan"
             class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
             :class="{ selected: store.label === 'Persetujuan' }">
             <span class="flex ml-8 text-xs">
               <p class="mr-2 mt-0.5">Persetujuan</p>
-              <div class="bg-[#FF6363] text-white px-1 py-0.5 rounded-sm">3</div>
+              <div class="bg-[#FF6363] text-white px-1 py-0.5 rounded-sm">{{ totalPersetujuanKK + totalPersetujuanFS }}
+              </div>
             </span>
           </RouterLink>
         </li>
@@ -253,14 +247,14 @@
             <span class="ml-8 text-xs">Unit Sentral</span>
           </RouterLink>
         </li>
-        <li v-if="authService.checkRole() === 'Admin'">
+        <li v-if="authService.checkLevel() === 'Admin'">
           <RouterLink id="sidebar-button" @click="store.label = 'Parameter'" to="/master-parameter"
             class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
             :class="{ selected: store.label === 'Parameter' }">
             <span class="ml-8 text-xs">Parameter</span>
           </RouterLink>
         </li>
-        <li class="px-3" v-if="authService.checkRole() === 'Admin'">
+        <li class="px-3" v-if="authService.checkLevel() === 'Admin'">
           <div class="flex items-center px-2 text-[#7F7F80] dark:text-white">
             <svg
               class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -272,20 +266,20 @@
             <span class="mt-1 ml-3 text-sm font-semibold">Manajemen Pengguna</span>
           </div>
         </li>
-        <li v-if="authService.checkRole() === 'Admin'">
+        <li v-if="authService.checkLevel() === 'Admin'">
           <RouterLink id="sidebar-button" @click="store.label = 'Pengguna'" to="/pengguna"
             class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
             :class="{ selected: store.label === 'Pengguna' }">
             <span class="ml-8 text-xs">Pengguna</span>
           </RouterLink>
         </li>
-        <li v-if="authService.checkRole() === 'Admin'">
+        <!-- <li v-if="authService.checkLevel() === 'Admin'">
           <RouterLink id="sidebar-button" @click="store.label = 'Role'" to="/role"
             class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
             :class="{ selected: store.label === 'Role' }">
             <span class="ml-8 text-xs">Role</span>
           </RouterLink>
-        </li>
+        </li> -->
         <!-- <li class="px-3">
           <div class="flex items-center px-2 text-gray-900 dark:text-white">
             <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -306,7 +300,7 @@
       </ul>
     </div>
     <div v-show="!isSidebarOpen" class="h-full p-4 overflow-y-auto bg-white dark:bg-gray-800"
-      @mouseover="toggleSidebar">
+      @mouseenter="toggleSidebar">
       <ul class="space-y-5 font-medium">
         <li class="flex items-center justify-center h-12 rounded-lg"
           :class="{ selected: store.label === 'Peta Sebaran' || store.label === 'Laman Utama' || store.label === 'Laman Data' || store.label === 'Laman Analitik' }">
@@ -328,12 +322,17 @@
         </li>
         <li class="flex items-center justify-center h-12 rounded-lg"
           :class="{ selected: store.label === 'Persetujuan' }">
-          <svg width="24" height="24" class="cursor-pointer" viewBox="0 0 24 24" fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M11.5 20H5.5C5.23478 20 4.98043 19.8946 4.79289 19.7071C4.60536 19.5196 4.5 19.2652 4.5 19V5C4.5 4.73478 4.60536 4.48043 4.79289 4.29289C4.98043 4.10536 5.23478 4 5.5 4H10.5V7C10.5 7.79565 10.8161 8.55871 11.3787 9.12132C11.9413 9.68393 12.7044 10 13.5 10H16.5V15C16.5 15.2652 16.6054 15.5196 16.7929 15.7071C16.9804 15.8946 17.2348 16 17.5 16C17.7652 16 18.0196 15.8946 18.2071 15.7071C18.3946 15.5196 18.5 15.2652 18.5 15V8.94C18.4896 8.84813 18.4695 8.75763 18.44 8.67V8.58C18.3919 8.47718 18.3278 8.38267 18.25 8.3L12.25 2.3C12.1673 2.22222 12.0728 2.15808 11.97 2.11C11.9369 2.10421 11.9031 2.10421 11.87 2.11C11.7728 2.058 11.6683 2.02092 11.56 2H5.5C4.70435 2 3.94129 2.31607 3.37868 2.87868C2.81607 3.44129 2.5 4.20435 2.5 5V19C2.5 19.7956 2.81607 20.5587 3.37868 21.1213C3.94129 21.6839 4.70435 22 5.5 22H11.5C11.7652 22 12.0196 21.8946 12.2071 21.7071C12.3946 21.5196 12.5 21.2652 12.5 21C12.5 20.7348 12.3946 20.4804 12.2071 20.2929C12.0196 20.1054 11.7652 20 11.5 20ZM12.5 5.41L15.09 8H13.5C13.2348 8 12.9804 7.89464 12.7929 7.70711C12.6054 7.51957 12.5 7.26522 12.5 7V5.41ZM7.5 14H13.5C13.7652 14 14.0196 13.8946 14.2071 13.7071C14.3946 13.5196 14.5 13.2652 14.5 13C14.5 12.7348 14.3946 12.4804 14.2071 12.2929C14.0196 12.1054 13.7652 12 13.5 12H7.5C7.23478 12 6.98043 12.1054 6.79289 12.2929C6.60536 12.4804 6.5 12.7348 6.5 13C6.5 13.2652 6.60536 13.5196 6.79289 13.7071C6.98043 13.8946 7.23478 14 7.5 14ZM11.5 16H7.5C7.23478 16 6.98043 16.1054 6.79289 16.2929C6.60536 16.4804 6.5 16.7348 6.5 17C6.5 17.2652 6.60536 17.5196 6.79289 17.7071C6.98043 17.8946 7.23478 18 7.5 18H11.5C11.7652 18 12.0196 17.8946 12.2071 17.7071C12.3946 17.5196 12.5 17.2652 12.5 17C12.5 16.7348 12.3946 16.4804 12.2071 16.2929C12.0196 16.1054 11.7652 16 11.5 16ZM7.5 10H8.5C8.76522 10 9.01957 9.89464 9.20711 9.70711C9.39464 9.51957 9.5 9.26522 9.5 9C9.5 8.73478 9.39464 8.48043 9.20711 8.29289C9.01957 8.10536 8.76522 8 8.5 8H7.5C7.23478 8 6.98043 8.10536 6.79289 8.29289C6.60536 8.48043 6.5 8.73478 6.5 9C6.5 9.26522 6.60536 9.51957 6.79289 9.70711C6.98043 9.89464 7.23478 10 7.5 10ZM21.21 16.29C21.117 16.1963 21.0064 16.1219 20.8846 16.0711C20.7627 16.0203 20.632 15.9942 20.5 15.9942C20.368 15.9942 20.2373 16.0203 20.1154 16.0711C19.9936 16.1219 19.883 16.1963 19.79 16.29L16.5 19.59L15.21 18.29C15.1168 18.1968 15.0061 18.1228 14.8842 18.0723C14.7624 18.0219 14.6319 17.9959 14.5 17.9959C14.3681 17.9959 14.2376 18.0219 14.1158 18.0723C13.9939 18.1228 13.8832 18.1968 13.79 18.29C13.6968 18.3832 13.6228 18.4939 13.5723 18.6158C13.5219 18.7376 13.4959 18.8681 13.4959 19C13.4959 19.1319 13.5219 19.2624 13.5723 19.3842C13.6228 19.5061 13.6968 19.6168 13.79 19.71L15.79 21.71C15.883 21.8037 15.9936 21.8781 16.1154 21.9289C16.2373 21.9797 16.368 22.0058 16.5 22.0058C16.632 22.0058 16.7627 21.9797 16.8846 21.9289C17.0064 21.8781 17.117 21.8037 17.21 21.71L21.21 17.71C21.3037 17.617 21.3781 17.5064 21.4289 17.3846C21.4797 17.2627 21.5058 17.132 21.5058 17C21.5058 16.868 21.4797 16.7373 21.4289 16.6154C21.3781 16.4936 21.3037 16.383 21.21 16.29Z"
-              fill="#7F7F80" />
-          </svg>
+          <div>
+            <div v-if="totalPersetujuanKK + totalPersetujuanFS > 0"
+              class="absolute z-10 border-2 border-[#FFE5E6] w-2.5 h-2.5 rounded-full bottom-4 right-4 bg-warningColor">
+            </div>
+            <svg width="24" height="24" class="cursor-pointer" viewBox="0 0 24 24" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M11.5 20H5.5C5.23478 20 4.98043 19.8946 4.79289 19.7071C4.60536 19.5196 4.5 19.2652 4.5 19V5C4.5 4.73478 4.60536 4.48043 4.79289 4.29289C4.98043 4.10536 5.23478 4 5.5 4H10.5V7C10.5 7.79565 10.8161 8.55871 11.3787 9.12132C11.9413 9.68393 12.7044 10 13.5 10H16.5V15C16.5 15.2652 16.6054 15.5196 16.7929 15.7071C16.9804 15.8946 17.2348 16 17.5 16C17.7652 16 18.0196 15.8946 18.2071 15.7071C18.3946 15.5196 18.5 15.2652 18.5 15V8.94C18.4896 8.84813 18.4695 8.75763 18.44 8.67V8.58C18.3919 8.47718 18.3278 8.38267 18.25 8.3L12.25 2.3C12.1673 2.22222 12.0728 2.15808 11.97 2.11C11.9369 2.10421 11.9031 2.10421 11.87 2.11C11.7728 2.058 11.6683 2.02092 11.56 2H5.5C4.70435 2 3.94129 2.31607 3.37868 2.87868C2.81607 3.44129 2.5 4.20435 2.5 5V19C2.5 19.7956 2.81607 20.5587 3.37868 21.1213C3.94129 21.6839 4.70435 22 5.5 22H11.5C11.7652 22 12.0196 21.8946 12.2071 21.7071C12.3946 21.5196 12.5 21.2652 12.5 21C12.5 20.7348 12.3946 20.4804 12.2071 20.2929C12.0196 20.1054 11.7652 20 11.5 20ZM12.5 5.41L15.09 8H13.5C13.2348 8 12.9804 7.89464 12.7929 7.70711C12.6054 7.51957 12.5 7.26522 12.5 7V5.41ZM7.5 14H13.5C13.7652 14 14.0196 13.8946 14.2071 13.7071C14.3946 13.5196 14.5 13.2652 14.5 13C14.5 12.7348 14.3946 12.4804 14.2071 12.2929C14.0196 12.1054 13.7652 12 13.5 12H7.5C7.23478 12 6.98043 12.1054 6.79289 12.2929C6.60536 12.4804 6.5 12.7348 6.5 13C6.5 13.2652 6.60536 13.5196 6.79289 13.7071C6.98043 13.8946 7.23478 14 7.5 14ZM11.5 16H7.5C7.23478 16 6.98043 16.1054 6.79289 16.2929C6.60536 16.4804 6.5 16.7348 6.5 17C6.5 17.2652 6.60536 17.5196 6.79289 17.7071C6.98043 17.8946 7.23478 18 7.5 18H11.5C11.7652 18 12.0196 17.8946 12.2071 17.7071C12.3946 17.5196 12.5 17.2652 12.5 17C12.5 16.7348 12.3946 16.4804 12.2071 16.2929C12.0196 16.1054 11.7652 16 11.5 16ZM7.5 10H8.5C8.76522 10 9.01957 9.89464 9.20711 9.70711C9.39464 9.51957 9.5 9.26522 9.5 9C9.5 8.73478 9.39464 8.48043 9.20711 8.29289C9.01957 8.10536 8.76522 8 8.5 8H7.5C7.23478 8 6.98043 8.10536 6.79289 8.29289C6.60536 8.48043 6.5 8.73478 6.5 9C6.5 9.26522 6.60536 9.51957 6.79289 9.70711C6.98043 9.89464 7.23478 10 7.5 10ZM21.21 16.29C21.117 16.1963 21.0064 16.1219 20.8846 16.0711C20.7627 16.0203 20.632 15.9942 20.5 15.9942C20.368 15.9942 20.2373 16.0203 20.1154 16.0711C19.9936 16.1219 19.883 16.1963 19.79 16.29L16.5 19.59L15.21 18.29C15.1168 18.1968 15.0061 18.1228 14.8842 18.0723C14.7624 18.0219 14.6319 17.9959 14.5 17.9959C14.3681 17.9959 14.2376 18.0219 14.1158 18.0723C13.9939 18.1228 13.8832 18.1968 13.79 18.29C13.6968 18.3832 13.6228 18.4939 13.5723 18.6158C13.5219 18.7376 13.4959 18.8681 13.4959 19C13.4959 19.1319 13.5219 19.2624 13.5723 19.3842C13.6228 19.5061 13.6968 19.6168 13.79 19.71L15.79 21.71C15.883 21.8037 15.9936 21.8781 16.1154 21.9289C16.2373 21.9797 16.368 22.0058 16.5 22.0058C16.632 22.0058 16.7627 21.9797 16.8846 21.9289C17.0064 21.8781 17.117 21.8037 17.21 21.71L21.21 17.71C21.3037 17.617 21.3781 17.5064 21.4289 17.3846C21.4797 17.2627 21.5058 17.132 21.5058 17C21.5058 16.868 21.4797 16.7373 21.4289 16.6154C21.3781 16.4936 21.3037 16.383 21.21 16.29Z"
+                fill="#7F7F80" />
+            </svg>
+          </div>
         </li>
         <li class="flex items-center justify-center h-12 rounded-lg"
           :class="{ selected: store.label === 'Sentral' || store.label === 'Parameter' }">
@@ -346,7 +345,7 @@
         </li>
         <li class="flex items-center justify-center h-12 rounded-lg"
           :class="{ selected: store.label === 'Pengguna' || store.label === 'Role' }"
-          v-if="authService.checkRole() === 'Admin'">
+          v-if="authService.checkLevel() === 'Admin'">
           <svg width="24" height="24" class="cursor-pointer" viewBox="0 0 24 24" fill="none"
             xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -365,7 +364,7 @@
       </ul>
     </div>
   </aside>
-  <div class="bg-[#F6F7FD] min-h-screen pt-12 text-black">
+  <div class="bg-[#F6F7FD] min-h-screen pt-12 text-primaryTextColor">
     <div class="px-2 py-6 sm:ml-20 ml-18">
       <RouterView></RouterView>
     </div>
@@ -377,44 +376,77 @@ import { initFlowbite } from "flowbite";
 import { RouterView } from "vue-router";
 import { useNavbarLabelStore } from "@/store/storeNavbar";
 import { useRekapSearchStore } from "@/store/storeRekapKertasKerja";
+import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
 const rekapStore = useRekapSearchStore();
 const store = useNavbarLabelStore();
 import AuthService from "../../services/auth-service";
 const authService = new AuthService();
+import PersetujuanService from "../../services/persetujuan-service";
+const persetujuanService = new PersetujuanService();
 import ValiantLogo from '@/components/icons/ValiantLogo.vue'
 import CardNotification from "../ui/CardNotification.vue";
 
-const isSidebarOpen = ref(false);
-const namaPegawai = ref(localStorage.getItem("nama_pegawai"));
-const levelID = ref(localStorage.getItem("level_id"));
-const level_id = ref(levelID);
+const nodeMode: any = import.meta.env.MODE;
+const levelSentral = ref(nodeMode === 'production' ? encryptStorage.getItem('level_sentral') : localStorage.getItem('level_sentral'));
+const tahunBerjalan = new Date().getFullYear();
+const isSidebarOpen = ref<boolean>(false);
+const namaPegawai = ref(nodeMode === 'production' ? encryptStorage.getItem('nama_pegawai') : localStorage.getItem('nama_pegawai'));
+const levelID = nodeMode === 'production' ? encryptStorage.getItem('level_id') : localStorage.getItem('level_id');
+const roleId = nodeMode === 'production' ? encryptStorage.getItem('role_id') : localStorage.getItem('role_id');
 const isNotificationShow = ref<boolean>(false);
-
-// async function loadMenu() {
-//   const resp: any = await loginService.findAllMenu();
-//   store.setMenus(
-//     resp.data.filter(
-//       (x: any) => x.read === true || x.create === true || x.update === true
-//     )
-//   );
-//   listMenu.value = store.menus.map((x: any) => x.permission_id);
-// lanjutkan bro
-// let temp = [];
-// for(i=0;i < listMenu.length; i++){
-//   temp = listMenu[i];
-//   if(temp[i] === i ){
-//     router.urls
-//   }
-// }
-// }
-// loadMenu();
+const totalPersetujuanKK = ref<number>(0);
+const totalPersetujuanFS = ref<number>(0);
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
 }
 
+const fetchPersetujuanKK = async () => {
+  try {
+    if (levelID == '3') {
+      const response: any = await persetujuanService.getPersetujuanKKSentral({ id_sentral: levelSentral.value, tahun: tahunBerjalan });
+      totalPersetujuanKK.value = response.data.mesins !== null ? response.data.mesins.filter((val: any) => val.status_approval !== 'Disetujui').length : 0;
+    } else {
+      const response: any = await persetujuanService.getPersetujuanKertasKerja({
+        kode_pengelola: [],
+        id_pembina: [],
+        status: [],
+        page: 1,
+        limit: 10,
+        tahun: tahunBerjalan.toString(),
+        search: ''
+      });
+      totalPersetujuanKK.value = response.data !== null ? response.data.filter((val: any) => val.status_approval !== 'Disetujui').length : 0;
+    }
+  } catch (error) {
+    console.error('Fetch Persetujuan KK Sentral Error : ' + error);
+  }
+}
+const fetchPersetujuanFS = async () => {
+  try {
+    if (levelID == '3') {
+      const response: any = await persetujuanService.getPersetujuanFSSentral({ id_sentral: levelSentral.value });
+      totalPersetujuanFS.value = response.data.mesins !== null ? response.data.mesins.filter((val: any) => val.status_approval !== 'Disetujui').length : 0;
+    } else {
+      const response: any = await persetujuanService.getPersetujuanFS({
+        kode_pengelola: [],
+        id_pembina: [],
+        status: [],
+        page: 1,
+        limit: 10,
+        search: ''
+      });
+      totalPersetujuanFS.value = response.data !== null ? response.data.filter((val: any) => val.status_approval !== 'Disetujui').length : 0;
+    }
+  } catch (error) {
+    console.error('Fetch Persetujuan FS Sentral Error : ' + error);
+  }
+}
+
 onMounted(() => {
   initFlowbite();
+  fetchPersetujuanKK();
+  fetchPersetujuanFS();
 });
 </script>
 

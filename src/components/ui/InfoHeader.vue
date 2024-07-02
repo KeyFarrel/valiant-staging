@@ -1,13 +1,16 @@
 <template>
-  <div class="flex flex-row justify-between items-start bg-white p-4 rounded-lg">
+  <div class="flex flex-row items-start justify-between p-4 bg-white rounded-lg">
     <div class="flex flex-col space-y-2">
-      <p class="font-semibold text-primaryTextColor text-lg">{{ props.namaMesin }}</p>
+      <p class="text-lg font-semibold text-primaryTextColor">{{ props.namaMesin }}</p>
       <section class="text-xs">
-        <span class="text-gray-400 font-medium">Unit Pengelola : </span>
+        <span class="font-medium text-gray-400">Unit Pengelola : </span>
         <span>{{ props.namaPengelola }}</span>
-        <span class="text-gray-200" v-if="props.isMesin"> / </span>
-        <span class="text-gray-400 font-medium" v-if="props.isMesin">Status Mesin : </span>
-        <span v-if="props.isMesin">{{ props.kondisiUnit }}</span>
+        <span class="text-gray-200"> / </span>
+        <span class="font-medium text-gray-400">Unit Pembina : </span>
+        <span>{{ props.namaPembina }}</span>
+        <span class="text-gray-200"> / </span>
+        <span class="font-medium text-gray-400">Status Mesin : </span>
+        <span>{{ props.kondisiUnit }}</span>
       </section>
       <div class="flex">
         <Chips :title="'Kategori Unit Pembangkit'" :content="props.kodeJenisPembangkit" />
@@ -32,15 +35,15 @@ const globalFormat = new GlobalFormat();
 import Chips from './Chips.vue';
 
 interface Props {
-  namaMesin: string,
-  namaPengelola: string,
-  kondisiUnit: string,
-  kodeJenisPembangkit: string,
-  dayaTerpasang: string,
-  dayaMampu: string,
-  tahunOperasi: string,
-  umurTeknis: string | number,
-  isMesin?: boolean
+  namaMesin: string
+  namaPengelola: string
+  kondisiUnit: string
+  kodeJenisPembangkit: string
+  dayaTerpasang: string
+  dayaMampu: string
+  tahunOperasi: string
+  namaPembina: string
+  umurTeknis: string | number
 }
 const props = defineProps<Props>()
 </script>

@@ -1,0 +1,13 @@
+<template>
+    <div
+      class="flex flex-row space-x-1.5 bg-[#FFE5E6] px-1.5 py-0.5 items-center border border-[#FD8A8A] rounded-full w-fit">
+      <IconWarningPersetujuan />
+      <span class="text-xs font-semibold text-warningColor">Data Belum Terisi</span>
+    </div>
+  </template>
+  
+  <script setup lang="ts">
+  import IconWarningPersetujuan from '../icons/IconWarningPersetujuan.vue';
+  </script>
+  
+  <style scoped></style>

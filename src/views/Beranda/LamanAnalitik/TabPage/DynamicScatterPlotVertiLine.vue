@@ -56,7 +56,7 @@ const option = computed({
       tooltip: {
         formatter: function (params: any) {
           return (params.value[3] + '<br/> <br/>' + 'Tahun : ' + params.value[0] + '<br/>' +
-            props.yData.name + ' : ' + globalFormat.formatEnergy(params.value[1]) + ' ' + props.yData.satuan)
+            props.yData.name + ' : ' + globalFormat.formatRupiah(params.value[1]) + ' ' + props.yData.satuan)
         },
       },
       xAxis: {
@@ -64,23 +64,26 @@ const option = computed({
         name: props.xData.name,
         nameLocation: "middle",
         nameGap: 36,
+        // boundaryGap: false,
         nameTextStyle: {
           align: "center",
           fontSize: 15,
           color: "#4D5E80",
-          padding: [2, 0, 0, -80],
+          padding: [20, 0, 0, -80],
           fontWeight: "bold",
         },
         axisLabel: {
           formatter: function (value: any) {
             return value.toFixed(0);
           },
-          rotate: 60,
+          // rotate: 60,
           fontSize: 10,
+          showMinLabel: false,
+          showMaxLabel: false
         },
         splitNumber: Math.max.apply(Math, props.years) - Math.min.apply(Math, props.years),
-        min: Math.min.apply(Math, props.years),
-        max: Math.max.apply(Math, props.years)
+        min: Math.min.apply(Math, props.years) - 0.05,
+        max: Math.max.apply(Math, props.years) + 0.05,
       },
       yAxis: {
         type: "value",
@@ -102,7 +105,7 @@ const option = computed({
           },
           fontSize: 10,
         },
-        min: Math.min.apply(Math, props.yValues) - Math.round((Math.max.apply(Math, props.yValues) - Math.min.apply(Math, props.yValues)) / 10),
+        // min: Math.min.apply(Math, props.yValues) - Math.round((Math.max.apply(Math, props.yValues) - Math.min.apply(Math, props.yValues)) / 10),
         // max: Math.max.apply(Math, props.yValues) + 1000
         max: Math.max.apply(Math, props.yValues) + Math.round((Math.max.apply(Math, props.yValues) - Math.min.apply(Math, props.yValues)) / 10),
       },

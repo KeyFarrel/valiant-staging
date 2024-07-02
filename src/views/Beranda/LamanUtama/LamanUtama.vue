@@ -110,14 +110,14 @@
           </svg>
           <div>
             <div class="flex">
-              <p class="text-base font-bold">{{ sebaranUnit.total_mesin }}</p>
+              <p class="text-base font-bold">{{ globalFormat.formatDecimal(sebaranUnit.total_mesin) }}</p>
               <p class="text-[#989899] pl-1.5">Unit</p>
               <svg width="14" height="12" class="mt-1.5 ml-3" viewBox="0 0 12 9" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
                 <path d="M6 0.200195L12 8.73353H0L6 0.200195Z" fill="#0EA976" v-if="sebaranUnit.total_mesin_baru" />
               </svg>
               <p class="pl-1 text-[#0EA976]" v-if="sebaranUnit.total_mesin_baru">
-                {{ sebaranUnit.total_mesin_baru }} Unit
+                {{ globalFormat.formatDecimal(sebaranUnit.total_mesin_baru) }} Unit
               </p>
             </div>
             <p class="text-[#7F7F80] text-xs">Total Unit Mesin</p>
@@ -134,7 +134,7 @@
           <div>
             <div class="flex">
               <p class="text-base font-bold">
-                {{ sebaranUnit.total_mesin_terinput }}
+                {{ globalFormat.formatDecimal(sebaranUnit.total_mesin_terinput) }}
               </p>
               <p class="text-[#989899] pl-1.5">Unit</p>
             </div>
@@ -152,7 +152,7 @@
           <div>
             <div class="flex">
               <p class="text-base font-bold">
-                {{ sebaranUnit.total_mesin_belum_input }}
+                {{ globalFormat.formatDecimal(sebaranUnit.total_mesin_belum_input) }}
               </p>
               <p class="text-[#989899] pl-1.5">Unit</p>
             </div>
@@ -168,7 +168,7 @@
       </div>
       <hr class="w-full" />
       <h2 class="text-sm font-bold">Kategori Pembangkit</h2>
-      <div class="flex flex-row h-[63%] space-x-5">
+      <div class="flex flex-row p-5 space-x-5 h-[62%]  border rounded-lg">
         <div class="w-3/12 overflow-y-auto border-r-2">
           <ul class="flex-col -mb-px text-sm font-medium text-[#7F7F80] overflow-y-auto space-y-3">
             <li class="cursor-pointer hover:bg-primaryColor hover:bg-opacity-5"
@@ -178,35 +178,37 @@
                 tabs2 === item.kode_jenis_pembangkit
                   ? 'font-semibold text-[#0099AD]'
                   : 'font-normal',
+                tabs2 === item.kode_jenis_pembangkit ? 'bg-primaryColor bg-opacity-5 w-full' : ''
               ]">
                 {{ item.kode_jenis_pembangkit }}
               </p>
               <div v-if="tabs2 === item.kode_jenis_pembangkit"
-                class="border-l-4 rounded-t-lg border-[#0099AD] h-full absolute top-0 rounded-lg"></div>
+                class="border-l-4 rounded-t-lg border-[#0099AD] h-full absolute top-0 rounded-lg">
+              </div>
             </li>
           </ul>
         </div>
         <div class="w-9/12 h-full">
           <template v-for="item in kategoriPembangkit" :key="item.kode_jenis_pembangkit">
-            <div class="space-y-5" v-if="tabs2 === item.kode_jenis_pembangkit">
-              <div class="flex flex-row items-center">
-                <div class="w-full space-y-5">
-                  <h2 class="text-sm font-bold text-center">Jumlah Unit Mesin</h2>
-                  <v-chart class="h-56" :option="ChartPembangkit" autoresize />
+            <div class="h-full space-y-5" v-if="tabs2 === item.kode_jenis_pembangkit">
+              <div class="flex flex-col justify-between h-full">
+                <div class="flex flex-col">
+                  <h2 class="text-sm font-semibold">Jumlah Unit Mesin</h2>
+                  <p class="text-sm text-[#989899]">Jumlah Unit Mesin didapatkan berdasarkan kategori pembangkit</p>
                 </div>
-                <div class="w-full space-y-2">
-                  <p class="font-semibold">Keterangan : </p>
-                  <div class="flex items-center space-x-1.5">
-                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <p class="text-sm">Unit Terinput</p>
+                <div class="flex flex-row items-center">
+                  <v-chart class="h-48" :option="ChartPembangkit" autoresize />
+                  <div class="w-full space-y-2">
+                    <p class="font-semibold">Keterangan : </p>
+                    <div class="flex items-center space-x-1.5">
+                      <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <p class="text-sm">Unit Terinput</p>
+                    </div>
+                    <div class="flex items-center space-x-1.5">
+                      <div class="w-3 h-3 rounded-full bg-warningColor"></div>
+                      <p class="text-sm">Unit Belum Terinput</p>
+                    </div>
                   </div>
-                  <div class="flex items-center space-x-1.5">
-                    <div class="w-3 h-3 rounded-full bg-warningColor"></div>
-                    <p class="text-sm">Unit Belum Terinput</p>
-                  </div>
-                  <!-- <progress class="progress progress-primary h-2.5" :value="item.status_bar"
-                    :max="item.total_mesin"></progress>
-                  <p class="text-right">{{ item.status_bar }} / {{ item.total_mesin }}</p> -->
                 </div>
               </div>
             </div>
@@ -216,7 +218,7 @@
     </div>
     <div class="flex flex-col bg-white h-[32rem] w-1/3 rounded-lg mt-2 p-5 space-y-3">
       <h2 class="text-lg font-bold">Mesin Baru COD</h2>
-      <div class="flex">
+      <div class="flex pb-[22px]">
         <svg width="55" height="55" viewBox="0 0 46 46" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="46" height="46" rx="23" fill="#F7FBFC" />
           <rect x="8" y="8" width="30" height="30" rx="15" fill="#0099AD" />
@@ -260,7 +262,7 @@
   </div>
 
   <ModalWrapper :show-modal="isModalUnit" :width="'max-w-3xl'" :height="'h-full'">
-    <div class="flex flex-col space-y-2.5 text-black">
+    <div class="flex flex-col space-y-2.5 text-primaryTextColor">
       <h2 class="text-base font-bold">
         Total Unit Mesin Belum Terinput
         <button @click="closeModalUnit" class="float-right text-gray-500 focus:outline-none">
@@ -279,7 +281,7 @@
         </svg>
         <div>
           <div class="flex">
-            <p class="pt-1 pl-2 font-bold">{{ sebaranUnit.total_mesin_belum_input }} <span
+            <p class="pt-1 pl-2 font-bold">{{ globalFormat.formatDecimal(sebaranUnit.total_mesin_belum_input) }} <span
                 class="text-[#7F7F80]">Unit</span></p>
           </div>
           <p class="pl-2 text-xs text-[#7F7F80]">
@@ -290,10 +292,7 @@
       <hr class="w-full mx-auto" />
       <div class="flex items-center justify-between">
         <h3 class="text-sm font-bold">5 Mesin Terakhir Belum Terinput</h3>
-        <RouterLink :to="{ name: 'mesin-belum-terinput' }" class="text-xs font-semibold underline text-primaryColor">
-          Lihat
-          Semua
-        </RouterLink>
+        <button @click="handlePushPage" class="text-xs font-semibold underline text-primaryColor">Lihat Semua</button>
       </div>
       <div class="flex items-center justify-center border rounded-lg">
         <table class="w-full text-sm text-gray-500 rounded-xl">
@@ -312,7 +311,7 @@
               <td class="px-3 py-3 text-left">
                 {{ item.mesin }}
               </td>
-              <td class="px-3 py-3 text-left">
+              <td class="px-3 py-3 text-center">
                 {{ globalFormat.formatRupiah(item.daya_terpasang) }} MW
               </td>
             </tr>
@@ -337,23 +336,23 @@
           <tr>
             <th scope="col" class="text-left">Unit Sentral</th>
             <th scope="col" class="text-left">Unit Mesin</th>
-            <th scope="col" class="text-left">Tanggal Update</th>
-            <th scope="col" class="text-left">Daya Terpasang (MW)</th>
+            <th scope="col" class="text-center">Tahun <br>Update</th>
+            <th scope="col" class="text-center">Daya Terpasang <br>(MW)</th>
           </tr>
         </template>
         <template v-slot:table-body class="overflow-auto">
           <template v-if="filteredMesin.length">
-            <tr class="border" v-for="(item, index) in filteredMesin" :key="item.id_mesin">
+            <tr class="text-gray-900 border" v-for="(item, index) in filteredMesin" :key="item.id_mesin">
               <td class="text-left">
                 {{ item.sentral }}
               </td>
               <td class="text-left">
                 {{ item.mesin }}
               </td>
-              <td class="text-left">
+              <td class="text-center">
                 {{ item.tahun_operasi }}
               </td>
-              <td class="text-left">
+              <td class="text-center">
                 {{ globalFormat.formatRupiah(item.daya_terpasang) }}
               </td>
             </tr>
@@ -423,6 +422,8 @@
 import { ref, onMounted, computed, watch } from "vue";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import { use } from "echarts/core";
+import { useRouter } from "vue-router";
+const router = useRouter();
 import { CanvasRenderer } from "echarts/renderers";
 import { PieChart, BarChart, LineChart } from "echarts/charts";
 import LamanService from "@/services/laman-service";
@@ -623,7 +624,7 @@ const getMesinBaru = async (page?: any, limit?: any, search?: any) => {
 
 const getMesinBelumInput = async () => {
   try {
-    const response: any = await lamanService.getMesinBelumInput(navigation.value.currentPage, navigation.value.limit, kodePengelola.value);
+    const response: any = await lamanService.getMesinBelumInput(navigation.value.currentPage, navigation.value.limit, kodePengelola.value, '');
     mesinBelumInput.value = response.data;
     totalMesinBelumTerinput.value = response.meta.totalRecords;
   } catch (error) {
@@ -676,16 +677,17 @@ async function changePage(kodeJenisPembangkit: any, idDaya: number) {
     isLoading.value = false;
   }
 }
-
+let tooltipDayaTerpasang: any;
+let tooltipDayaTerinput: any;
 const ChartDaya = ref({
   tooltip: {
     trigger: 'item',
     formatter: () => {
-      return `<span style="font-weight: bold;color:black">Total Daya </span><br/>Daya Terinput<span style="font-weight: bold;color:black">&nbsp;&nbsp;&nbsp;&nbsp; ${globalFormat.formatRupiah(chartDaya.value.daya_terinput)} </span> MW <br/> Daya Terpasang <span style="font-weight: bold;color:black"> &nbsp;${globalFormat.formatRupiah(chartDaya.value.daya_terpasang)} </span> MW`;
+      return `<span style="font-weight: bold;color:black">Total Daya </span><br/>${tooltipDayaTerinput}${tooltipDayaTerpasang}`;
     },
     textStyle: {
       color: '#0009',
-      fontSize: 13,
+      fontSize: 12,
       position: 'center',
     },
   },
@@ -704,7 +706,7 @@ const ChartDaya = ref({
         fontSize: 25,
         fontWeight: 'bold',
         formatter: () => {
-          return `${chartDaya.value.persentase}%`;
+          return `${globalFormat.formatRupiah(chartDaya.value.persentase)}%`;
         },
       },
       emphasis: {
@@ -740,7 +742,7 @@ const ChartPembangkit = ref({
         fontSize: 25,
         fontWeight: "bold",
         formatter: () => {
-          return `{x|${chartKategori.value.total_mesin}}\n\n{y|Unit Mesin}`;
+          return `{x|${chartKategori.value.total_mesin}}\n{y|Unit Mesin}`;
         },
         rich: {
           x: {
@@ -761,6 +763,10 @@ const ChartPembangkit = ref({
   ],
   color: ["#0C9F6E", "#FF5656"],
 });
+const handlePushPage = () => {
+  isModalUnit.value = false;
+  router.push({ name: 'mesin-belum-terinput' });
+}
 
 watch(isModalUnit, (value) => {
   value === true ? document.body.style.overflow = 'hidden' : document.body.style.overflow = 'auto';
@@ -776,43 +782,58 @@ watch(isModalCOD, (value) => {
 
 onMounted(async () => {
   isLoading.value = true;
-  try {
-    const dataTotalDaya = await getTotalDaya();
-    const dataSebaranUnit = await getSebaranUnit();
-    const dataMesinBaru = await getMesinBaru(pageMesinBaru.value, limitMesinBaru.value, searchQuery.value);
-    const dataMesinBelumInput = await getMesinBelumInput();
-    const dataKategoriPembangkit = await getKategoriPembangkit();
-    const dataChartDaya = await getChartDaya();
-    const dataChartKategori = await getChartKategori(tabs2.value, 0);
-    chartDaya.value = dataChartDaya;
-    chartKategori.value = dataChartKategori;
-    dataChart.value = [
-      { value: chartDaya.value.daya_terpasang, name: "Total Daya Terpasang" },
-      { value: chartDaya.value.daya_terinput, name: "Total Daya Terinput" }
-    ];
-    dataChartsKategori.value = [
-      { value: chartKategori.value.total_mesin_terinput, name: 'Unit Terinput' },
-      { value: chartKategori.value.total_mesin_belum_terinput, name: 'Unit Belum Terinput' },
-    ];
-    totalDaya.value = dataTotalDaya;
-    sebaranUnit.value = dataSebaranUnit;
-    mesinBaru.value = dataMesinBaru;
-    filteredMesin.value = mesinBaru.value;
-    for (const value of dataKategoriPembangkit) {
-      kategoriPembangkit.value.push({
-        ...value,
-        id_daya: value.kode_jenis_pembangkit === 'PLTU < 100' ? 1 : value.kode_jenis_pembangkit === 'PLTU 100 - 400' ? 2 : value.kode_jenis_pembangkit === 'PLTU > 400' ? 3 : 0
-      })
-    }
-    console.log(kategoriPembangkit.value);
-    if (kategoriPembangkit.value.length > 0) {
-      tabs2.value = kategoriPembangkit.value[0].kode_jenis_pembangkit;
-    }
-  } catch (error) {
-    console.error("Failed to fetch data:", error);
-  } finally {
-    isLoading.value = false;
+  const dataTotalDaya = await getTotalDaya();
+  const dataSebaranUnit = await getSebaranUnit();
+  const dataMesinBaru = await getMesinBaru(pageMesinBaru.value, limitMesinBaru.value, searchQuery.value);
+  const dataMesinBelumInput = await getMesinBelumInput();
+  const dataKategoriPembangkit = await getKategoriPembangkit();
+  const dataChartDaya = await getChartDaya();
+  const dataChartKategori = await getChartKategori(tabs2.value, 0);
+  chartDaya.value = dataChartDaya;
+  chartKategori.value = dataChartKategori;
+  dataChart.value = [
+    { value: chartDaya.value.daya_terpasang, name: "Total Daya Terpasang" },
+    { value: chartDaya.value.daya_terinput, name: "Total Daya Terinput" }
+  ];
+  dataChartsKategori.value = [
+    { value: chartKategori.value.total_mesin_terinput, name: 'Unit Terinput' },
+    { value: chartKategori.value.total_mesin_belum_terinput, name: 'Unit Belum Terinput' },
+  ];
+  totalDaya.value = dataTotalDaya;
+  sebaranUnit.value = dataSebaranUnit;
+  mesinBaru.value = dataMesinBaru;
+  filteredMesin.value = mesinBaru.value;
+  for (const value of dataKategoriPembangkit) {
+    kategoriPembangkit.value.push({
+      ...value,
+      id_daya: value.kode_jenis_pembangkit === 'PLTU < 100' ? 1 : value.kode_jenis_pembangkit === 'PLTU 100 - 400' ? 2 : value.kode_jenis_pembangkit === 'PLTU > 400' ? 3 : 0
+    })
   }
+  console.log(kategoriPembangkit.value);
+  if (kategoriPembangkit.value.length > 0) {
+    tabs2.value = kategoriPembangkit.value[0].kode_jenis_pembangkit;
+  }
+  tooltipDayaTerinput = `<div style="align-items: center; flex-direction: row; display: flex; justify-content: space-between;">
+      <div style="flex-direction: row; display: flex; align-items: center;">
+        <div style="width: 8px; height: 8px; border-radius: 999px; background-color: #80C1CD; margin-right: 5px;"></div>
+        <span>Daya Terinput</span>
+      </div>
+      <span style="font-weight: bold;color:black">&nbsp;&nbsp;&nbsp;&nbsp;
+          ${globalFormat.formatRupiah(chartDaya.value.daya_terinput ? chartDaya.value.daya_terinput : '0')} 
+        MW
+      </span>
+    </div>`;
+  tooltipDayaTerpasang = `<div style="align-items: center; flex-direction: row; display: flex; justify-content: space-between;">
+      <div style="flex-direction: row; display: flex; align-items: center;">
+        <div style="width: 8px; height: 8px; border-radius: 999px; background-color: #0099AD; margin-right: 5px;"></div>
+        <span>Daya Terpasang</span>
+      </div>
+      <span style="font-weight: bold;color:black">&nbsp;&nbsp;&nbsp;&nbsp;
+          ${globalFormat.formatRupiah(chartDaya.value.daya_terpasang ? chartDaya.value.daya_terpasang : '0')} 
+        MW
+      </span>
+    </div>`;
+  isLoading.value = false;
 });
 </script>
 

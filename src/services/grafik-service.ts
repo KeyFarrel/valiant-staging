@@ -118,6 +118,14 @@ export default class GrafikService extends BaseService {
     return this.get(url + "dashboard/grafik/planning-fs/detail", param);
   }
 
+  async getGrafikPlanKomMesin<T>(param: any): Promise<T> {
+    return this.get(url + "dashboard/grafik/wlc-komponen-fs", param);
+  }
+
+  async getGrafikPlanKomDetailMesin<T>(param: any): Promise<T> {
+    return this.get(url + "dashboard/grafik/wlc-komponen-fs/detail", param);
+  }
+
   async getGrafikPRPMesin<T>(param: any): Promise<T> {
     return this.get(url + "dashboard/grafik/planning-realisasi-proyeksi", param);
   }

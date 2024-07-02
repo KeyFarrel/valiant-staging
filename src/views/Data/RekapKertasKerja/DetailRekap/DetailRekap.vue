@@ -1,12 +1,13 @@
 <template>
   <Loading v-if="isLoading" />
   <div class="flex flex-col space-y-4" v-if="mesin">
-    <InfoHeader v-if="mesin" :nama-mesin="mesin.mesin" :is-mesin="true"
-      :nama-pengelola="namaPengelola ? namaPengelola : '-'" :kondisi-unit="mesin.kondisi_unit"
-      :kode-jenis-pembangkit="mesin.kode_jenis_pembangkit" :daya-terpasang="mesin.daya_terpasang.toString()"
-      :daya-mampu="mesin.daya_mampu.toString()" :tahun-operasi="mesin.tahun_operasi.toString()"
-      :umur-teknis="mesin.masa_manfaat">
-      <div class="flex">
+    <InfoHeader v-if="mesin" :nama-mesin="mesin.mesin" :nama-pengelola="namaPengelola ? namaPengelola : '-'"
+      :kondisi-unit="mesin.kondisi_unit" :kode-jenis-pembangkit="mesin.kode_jenis_pembangkit"
+      :daya-terpasang="mesin.daya_terpasang.toString()" :daya-mampu="mesin.daya_mampu.toString()"
+      :tahun-operasi="mesin.tahun_operasi.toString()" :umur-teknis="mesin.masa_manfaat" :nama-pembina="namaPembina">
+      <div class="flex flex-row items-center space-x-3">
+        <VueDatePicker class="date-picker" v-model="selectedYear" @update:model-value="handleYearChange" year-picker
+          teleport :clearable="false" :yearRange="listYear" />
         <button
           class="flex items-center border border-[#0099AD] hover:border-hoverColor mr-3 px-3 py-2 rounded-lg text-[#0099AD] hover:text-white hover:bg-hoverColor duration-300">
           <span class="mr-2 font-semibold"
@@ -19,11 +20,29 @@
         </button>
       </div>
     </InfoHeader>
+    <div class="flex justify-between p-4 my-4 bg-white rounded-lg">
+      <div class="flex items-center">
+        <div class="flex">
+          <div class="w-1 h-7 mr-2 bg-[#0099AD]"></div>
+          <p class="text-lg font-semibold">Evidence</p>
+        </div>
+      </div>
+      <button
+        class="flex items-center text-[#0099AD] bg-white border border-[#0099AD] px-3 py-2 rounded-lg duration-300 hover:text-white"
+        @click="downloadEvidence">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M6.12508 3.20964C4.75588 3.20964 3.64591 4.3196 3.64591 5.6888C3.64591 5.84688 3.66063 6.00098 3.68862 6.14997C3.74259 6.43729 3.57555 6.72018 3.2979 6.81169C2.48294 7.08026 1.89591 7.84799 1.89591 8.7513C1.89591 9.87888 2.81 10.793 3.93758 10.793H10.5001C11.386 10.793 12.1042 10.0748 12.1042 9.1888C12.1042 8.50438 11.6754 7.91867 11.0697 7.68854C10.774 7.57619 10.6217 7.24864 10.7264 6.95015C10.7686 6.83 10.7917 6.70023 10.7917 6.5638C10.7917 5.91947 10.2694 5.39714 9.62508 5.39714C9.49836 5.39714 9.37744 5.41713 9.26468 5.4537C9.11237 5.5031 8.94646 5.48772 8.80583 5.41116C8.6652 5.33461 8.56222 5.20362 8.52102 5.0489C8.23896 3.98944 7.27235 3.20964 6.12508 3.20964ZM2.47925 5.6888C2.47925 3.67526 4.11154 2.04297 6.12508 2.04297C7.62264 2.04297 8.90824 2.94548 9.46959 4.23559C9.52103 4.23219 9.57288 4.23047 9.62508 4.23047C10.9137 4.23047 11.9584 5.27514 11.9584 6.5638C11.9584 6.65152 11.9535 6.73824 11.9441 6.82366C12.7393 7.3102 13.2709 8.1869 13.2709 9.1888C13.2709 10.7191 12.0304 11.9596 10.5001 11.9596H3.93758C2.16567 11.9596 0.729248 10.5232 0.729248 8.7513C0.729248 7.50166 1.44338 6.42 2.48473 5.89018C2.48109 5.82348 2.47925 5.75633 2.47925 5.6888ZM7.00008 5.10547C7.32225 5.10547 7.58341 5.36664 7.58341 5.6888V8.21801L8.3376 7.46382C8.56541 7.23602 8.93475 7.23602 9.16256 7.46382C9.39037 7.69163 9.39037 8.06098 9.16256 8.28878L7.41256 10.0388C7.18475 10.2666 6.81541 10.2666 6.5876 10.0388L4.8376 8.28878C4.6098 8.06098 4.6098 7.69163 4.8376 7.46382C5.06541 7.23602 5.43475 7.23602 5.66256 7.46382L6.41675 8.21801V5.6888C6.41675 5.36664 6.67791 5.10547 7.00008 5.10547Z"
+            fill="#0099AD" />
+        </svg>
+        <span class="ml-2 text-sm font-semibold">Download Evidence</span>
+      </button>
+    </div>
     <div class="items-start p-6 bg-white rounded-lg">
       <TabsWrapper :kode-sentral="mesin.kode_sentral" :isLihatGrafik="true" :laman-data="false">
         <TabItem title="Asumsi Makro">
-          <AsumsiMakro v-if="asumsiParameter" @on-change="fetchAsumsiParameterData"
-            v-model:selected-tahun="tahunTerakhirRealisasi" :list-tahun-asumsi="listTahunAsumsi" :corporate-tax-rate="asumsiParameter
+          <AsumsiMakro v-if="asumsiParameter" @on-change="fetchAsumsiParameterData" :list-tahun-asumsi="listTahunAsumsi"
+            :corporate-tax-rate="asumsiParameter
               ? asumsiParameter.corporate_tax_rate
               : '-'
               " :discount-rate="asumsiParameter ? asumsiParameter.discount_rate : '-'
@@ -31,15 +50,15 @@
                   " :loan-tenor="asumsiParameter ? asumsiParameter.loan_tenor : '-'
                     " :loan-portion="asumsiParameter ? asumsiParameter.loan_portion : '-'
                       " :equity-portion="asumsiParameter ? asumsiParameter.equity_portion : '-'
-                        " />
-          <AsumsiMakro v-else v-model:selected-tahun="tahunTerakhirAsumsi" :list-tahun-asumsi="listTahunAsumsi"
+                        " :selected-year="selectedYear" />
+          <AsumsiMakro v-else :selected-year="selectedYear" :list-tahun-asumsi="listTahunAsumsi"
             :corporate-tax-rate="'-'" :discount-rate="'-'" :interest-rate="'-'" :loan-tenor="'-'" :loan-portion="'-'"
             :equity-portion="'-'" />
         </TabItem>
         <TabItem title="Parameter Teknis & Finansial">
           <ParameterTeknis v-if="comboBahanBakar.length !== 0" @on-change="fetchAsumsiParameterData"
-            v-model:selected-tahun="tahunTerakhirRealisasi" :list-tahun-asumsi="listTahunAsumsi"
-            :daya-terpasang="parameterTeknisFinansial?.daya_terpasang ?? '-'"
+            v-model:selected-tahun="tahunTerakhirRealisasi" :selected-year="selectedYear"
+            :list-tahun-asumsi="listTahunAsumsi" :daya-terpasang="parameterTeknisFinansial?.daya_terpasang ?? '-'"
             :daya-mampu-netto="parameterTeknisFinansial?.daya_mampu_netto_mw ?? '-'"
             :auxiliary="parameterTeknisFinansial?.auxiliary ?? '-'"
             :susut-trafo="parameterTeknisFinansial?.susut_trafo ?? '-'"
@@ -54,178 +73,12 @@
             :combo-bahan-bakar="comboBahanBakar" />
         </TabItem>
         <TabItem title="Data Teknis">
-          <div class="w-full overflow-auto border rounded-lg whitespace-nowrap">
-            <table v-if="dataTeknis" class="w-full text-sm">
-              <thead>
-                <tr class="text-[#0099AD] text-sm text-left border-b-2">
-                  <th class="sticky left-0 z-10 bg-white">No</th>
-                  <th class="sticky z-10 bg-white left-10">Nama</th>
-                  <th class="text-center" v-for="( item, index ) in
-                    dataTeknis.tahun.length === 0
-                    ? 1
-                    : dataTeknis.tahun
-" :key="index" :class="{
-  'text-warningColor': item < tahunTerakhirRealisasi,
-  'text-black': item === tahunTerakhirRealisasi,
-  'text-[#0099AD]': item > tahunTerakhirRealisasi,
-}
-  ">
-                    {{ dataTeknis.tahun.length === 0 ? "-" : item }} <br> <span class="text-xs font-normal">{{ index
-                      }}</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="( item, index ) in dataTeknis.detail " :key="index">
-                  <td class="sticky left-0 z-10 bg-white">{{ index + 1 }}</td>
-                  <td class="sticky z-10 bg-white left-10">{{ item.uraian }}</td>
-                  <td v-for="( items, indexs ) in
-                    dataTeknis.tahun.length === 0
-                    ? 1
-                    : dataTeknis.tahun
-" :key="indexs" :class="{ 'text-right': item.uraian !== 'Type of Periodic Maintenance', 'text-center': item.uraian == 'Type of Periodic Maintenance', 'bg-blue-50': items === tahunTerakhirRealisasi }">
-                    {{
-                      dataTeknis.tahun
-                        ? item["t" + items] != null
-                          ? item.uraian === 'Type of Periodic Maintenance' ? item["t" + items] === 0 ? '-' :
-                            getTypePeriodic(item["t" + items]) : item.uraian === 'Tahun Ke' ? item["t" + items] :
-                            globalFormat.formatRupiah(item["t" + items])
-                          : "-"
-                        : "-"
-                    }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <TableDataTeknis :data-teknis="dataTeknis" :tahun-terakhir-realisasi="parseInt(selectedYear)"
+            :type-periodic="typePeriodic" />
         </TabItem>
         <TabItem title="Data Finansial">
-          <div class="w-full overflow-auto border rounded-lg whitespace-nowrap" v-if="dataFinansial">
-            <table class="w-full">
-              <thead>
-                <tr class="text-[#0099AD] text-sm text-left border-b-2">
-                  <th class="pr-96" id="tableHeader">Nama</th>
-                  <th class="text-center"
-                    v-for="( tahunItem, tahunIndex ) in dataFinansial.tahun.length === 0 ? 1 : dataFinansial.tahun "
-                    :key="tahunIndex" :class="{
-                      'text-warningColor': tahunItem < tahunTerakhirRealisasi,
-                      'text-black': tahunItem === tahunTerakhirRealisasi,
-                      'text-primaryColor': tahunItem > tahunTerakhirRealisasi,
-                    }
-                      ">
-                    {{ dataFinansial.tahun.length === 0 ? '-' : tahunItem }} <br> <span class="text-xs font-normal">{{
-                      tahunIndex
-                      }}</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody v-for="( level1, level1Index ) in finansialMappingResult" :key="level1Index">
-                <tr class="text-sm cursor-pointer bg-strokeColor bg-opacity-40 active:bg-opacity-90"
-                  @click="toggleRow(level1.id_uraian)">
-                  <td class="border-b" :colspan="dataFinansial.tahun.length === 0 ? 2 : dataFinansial.tahun.length + 1">
-                    <div class="flex flex-row items-center">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                        class="mr-2" v-if="!isRowOpen(level1.id_uraian)">
-                        <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                          d="M12.4419 14.0044C12.1979 14.2485 11.8021 14.2485 11.5581 14.0044L8.43306 10.8794C8.18898 10.6354 8.18898 10.2396 8.43306 9.99556C8.67714 9.75148 9.07286 9.75148 9.31694 9.99556L12 12.6786L14.6831 9.99556C14.9271 9.75148 15.3229 9.75148 15.5669 9.99556C15.811 10.2396 15.811 10.6354 15.5669 10.8794L12.4419 14.0044Z"
-                          fill="white" />
-                      </svg>
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                        class="mr-2" v-else>
-                        <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                          d="M11.5581 9.99556C11.8021 9.75148 12.1979 9.75148 12.4419 9.99556L15.5669 13.1206C15.811 13.3646 15.811 13.7604 15.5669 14.0044C15.3229 14.2485 14.9271 14.2485 14.6831 14.0044L12 11.3214L9.31694 14.0044C9.07286 14.2485 8.67714 14.2485 8.43306 14.0044C8.18898 13.7604 8.18898 13.3646 8.43306 13.1206L11.5581 9.99556Z"
-                          fill="white" />
-                      </svg>
-                      <span> {{ level1.uraian }}</span>
-                    </div>
-                  </td>
-                </tr>
-                <template v-for="( level2, level2Index ) in level1.level2 " :key="level2Index"
-                  v-if="isRowOpen(level1.id_uraian)">
-                  <tr class="text-sm cursor-pointer active:bg-strokeColor active:bg-opacity-30"
-                    @click="toggleRow(level2.id_uraian)">
-                    <td id="level2" :class="{ selected: level2.level3.length === 0 }">
-                      <div class="flex flex-row items-center">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                          class="mr-2" v-if="!isRowOpen(level2.id_uraian) && level2.level3.length !== 0">
-                          <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                          <path fill-rule="evenodd" clip-rule="evenodd"
-                            d="M12.4419 14.0044C12.1979 14.2485 11.8021 14.2485 11.5581 14.0044L8.43306 10.8794C8.18898 10.6354 8.18898 10.2396 8.43306 9.99556C8.67714 9.75148 9.07286 9.75148 9.31694 9.99556L12 12.6786L14.6831 9.99556C14.9271 9.75148 15.3229 9.75148 15.5669 9.99556C15.811 10.2396 15.811 10.6354 15.5669 10.8794L12.4419 14.0044Z"
-                            fill="white" />
-                        </svg>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                          class="mr-2" v-else-if="isRowOpen(level2.id_uraian) && level2.level3.length !== 0">
-                          <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                          <path fill-rule="evenodd" clip-rule="evenodd"
-                            d="M11.5581 9.99556C11.8021 9.75148 12.1979 9.75148 12.4419 9.99556L15.5669 13.1206C15.811 13.3646 15.811 13.7604 15.5669 14.0044C15.3229 14.2485 14.9271 14.2485 14.6831 14.0044L12 11.3214L9.31694 14.0044C9.07286 14.2485 8.67714 14.2485 8.43306 14.0044C8.18898 13.7604 8.18898 13.3646 8.43306 13.1206L11.5581 9.99556Z"
-                            fill="white" />
-                        </svg>
-                        <span>{{ level2.uraian }}</span>
-                      </div>
-                    </td>
-                    <td class="text-right"
-                      v-for="( tahun, tahunIndex ) in dataFinansial.tahun.length === 0 ? 1 : dataFinansial.tahun "
-                      :class="{ 'bg-blue-50': tahun === tahunTerakhirRealisasi }">
-                      {{ dataFinansial.tahun ? level2.uraian.includes('Kalkulasi' || 'kalkulasi') ? '' : level2['t' +
-                        tahun]
-                        == null ? '-' : globalFormat.formatRupiah(level2['t' +
-                          tahun])
-                        : '-' }}
-                    </td>
-                  </tr>
-                  <template v-for="( level3, level3Index ) in level2.level3 " :key="level3Index"
-                    v-if="isRowOpen(level2.id_uraian)">
-                    <tr class="text-sm cursor-pointer" @click="toggleRow(level3.id_uraian)">
-                      <td id="level3" :class="{ selected: level3.level4.length === 0 }">
-                        <div class="flex flex-row items-center">
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                            class="mr-2" v-if="!isRowOpen(level3.id_uraian) && level3.level4.length !== 0">
-                            <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                            <path fill-rule="evenodd" clip-rule="evenodd"
-                              d="M12.4419 14.0044C12.1979 14.2485 11.8021 14.2485 11.5581 14.0044L8.43306 10.8794C8.18898 10.6354 8.18898 10.2396 8.43306 9.99556C8.67714 9.75148 9.07286 9.75148 9.31694 9.99556L12 12.6786L14.6831 9.99556C14.9271 9.75148 15.3229 9.75148 15.5669 9.99556C15.811 10.2396 15.811 10.6354 15.5669 10.8794L12.4419 14.0044Z"
-                              fill="white" />
-                          </svg>
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                            class="mr-2" v-else-if="isRowOpen(level3.id_uraian) && level3.level4.length !== 0">
-                            <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                            <path fill-rule="evenodd" clip-rule="evenodd"
-                              d="M11.5581 9.99556C11.8021 9.75148 12.1979 9.75148 12.4419 9.99556L15.5669 13.1206C15.811 13.3646 15.811 13.7604 15.5669 14.0044C15.3229 14.2485 14.9271 14.2485 14.6831 14.0044L12 11.3214L9.31694 14.0044C9.07286 14.2485 8.67714 14.2485 8.43306 14.0044C8.18898 13.7604 8.18898 13.3646 8.43306 13.1206L11.5581 9.99556Z"
-                              fill="white" />
-                          </svg>
-                          <span>{{ level3.uraian }}</span>
-                        </div>
-                      </td>
-                      <td class="text-right"
-                        v-for="( tahun, tahunIndex ) in dataFinansial.tahun.length === 0 ? 1 : dataFinansial.tahun "
-                        :class="{ 'bg-blue-50': tahun === tahunTerakhirRealisasi }" :key="tahunIndex">
-                        {{ dataFinansial.tahun ? level3.uraian.includes('Kalkulasi' || 'kalkulasi') ? '' : level3['t' +
-                          tahun]
-                          == null ? '-'
-                          : globalFormat.formatRupiah(level3['t' + tahun])
-                          : '-' }}
-                      </td>
-                    </tr>
-                    <template v-for="( level4, level4Index ) in level3.level4 " :key="level4Index"
-                      v-if="isRowOpen(level3.id_uraian)">
-                      <tr class="text-sm">
-                        <td id="level4">{{ level4.uraian }}</td>
-                        <td class="text-right"
-                          v-for="( tahun, tahunIndex ) in dataFinansial.tahun.length === 0 ? 1 : dataFinansial.tahun "
-                          :class="{ 'bg-blue-50': tahun === tahunTerakhirRealisasi }">
-                          {{ dataFinansial.tahun ? level4.uraian.includes('Kalkulasi' || 'kalkulasi') ? '' : level4['t'
-                            +
-                            tahun] == null ? '-' :
-                            globalFormat.formatRupiah(level4['t' + tahun]) : '-' }}
-                        </td>
-                      </tr>
-                    </template>
-                  </template>
-                </template>
-              </tbody>
-            </table>
-          </div>
+          <TableDataFinansial v-if="dataFinansial" :source="finansialMappingResult" :data-finansial="dataFinansial"
+            :tahun-terakhir-realisasi="parseInt(selectedYear)" />
         </TabItem>
         <TabItem title="Hasil Simulasi">
           <div class="flex flex-col w-full px-2">
@@ -261,14 +114,21 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
+import { notifyError } from "@/services/helper/toast-notification";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import TabsWrapper from "@/components/ui/TabsWrapper.vue";
 import TabItem from "@/components/ui/TabItem.vue";
+import RekapService from "@/services/rekap-service";
+const rekapService = new RekapService();
 import DetailRekapService from "@/services/detail-rekap-service";
 const detailRekapService = new DetailRekapService();
 import { useRoute } from "vue-router";
 const route = useRoute();
+import router from "@/router";
 import AkhirMasaManfaat from "@/views/Data/RekapKertasKerja/DetailRekap/HasilSimulasi/AkhirMasaManfaat.vue";
+import UserService from "@/services/user-service";
+const userService = new UserService();
 import TahunBerjalan from "@/views/Data/RekapKertasKerja/DetailRekap/HasilSimulasi/TahunBerjalan.vue";
 import Periode from "@/views/Data/RekapKertasKerja/DetailRekap/HasilSimulasi/Periode.vue";
 import Proyeksi from "@/views/Data/RekapKertasKerja/DetailRekap/HasilSimulasi/Proyeksi.vue";
@@ -278,16 +138,30 @@ const globalFormat = new GlobalFormat();
 import ParameterTeknis from "@/components/ui/ParameterTeknis.vue";
 import InfoHeader from '@/components/ui/InfoHeader.vue'
 import axios from "axios";
+import TableDataTeknis from "@/components/RekapKertasKerja/TableDataTeknis.vue";
+import TableDataFinansial from "@/components/RekapKertasKerja/TableDataFinansial.vue";
 
+const nodeMode: any = import.meta.env.MODE;
 const kodeMesin = ref<MesinItem>();
 const idMesin = ref();
 const mesin = ref<MesinItem>();
 const kodeJenisPembangkit = ref<string>("");
-const namaPengelola = ref();
+const namaPengelola = ref<string>('');
+const namaPembina = ref<string>('');
 const asumsiParameter = ref<AsumsiParameterItem>();
 const parameterTeknisFinansial = ref<ParameterTeknisFinancialItem>();
 const bahanBakars = ref<any[]>([]);
-const dataTeknis = ref<DataTeknisItem>();
+const selectedYear = ref<any>(route.query.tahun);
+const listYear = ref<any[]>([]);
+const dataTeknis = ref<{
+  header: any[],
+  tahun: number[],
+  detail: any[]
+}>({
+  header: [],
+  tahun: [],
+  detail: []
+});
 const dataFinansial = ref<any>();
 const tahunBerjalan = new Date().getFullYear();
 const comboBahanBakar = ref<any>([]);
@@ -299,13 +173,12 @@ const listTahunAsumsi = ref<{
   start: "1990",
   end: "2050"
 });
-const tahunTerakhirAsumsi = ref<number>();
+const tahunTerakhirAsumsi = ref<number>(-1);
 const tahunTerakhirRealisasi = ref<number>(-1);
 const typePeriodic = ref<Object[]>([]);
 const isLoading = ref();
 const selectedTab = ref("Akhir Masa");
 const finansialMappingResult = ref<any[]>([]);
-const isRowTabOpen = ref<number[]>([]);
 const hasilSimulasi = ref();
 const currentNamaMesin = ref<string>('');
 
@@ -352,15 +225,12 @@ interface ParameterTeknisFinancialItem {
   electricity_price_c_rp_per_kwh: number
   electricity_price_d_rp_per_kwh: number
 }
-interface DataTeknisItem {
-  data: any
-  tahun: any
-  detail: any
-}
+
 const fetchMesinById = async () => {
   try {
+    isLoading.value = true;
     const response: MesinItem = await detailRekapService.getMesinById(
-      route.params.id
+      nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id
     );
     mesin.value = response.data;
     kodeMesin.value = response.data.kode_mesin;
@@ -373,13 +243,49 @@ const fetchMesinById = async () => {
     console.error(error);
   }
 };
+const downloadEvidence = async () => {
+  try {
+    isLoading.value = true;
+    const filePath: any = await rekapService.getEvidencePath(idMesin.value, route.query.tahun?.toString() ?? '0', 0);
+    const splittedFileName = filePath.data[0].dokumen_evidence.split(' ');
+    splittedFileName.shift();
+    const finalFileName = splittedFileName.join(' ');
+    const headers = {
+      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+    };
+    const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/mutasiasset/view-dokumen', {
+      responseType: 'arraybuffer',
+      headers,
+      params: {
+        id_dokumen: filePath.data[0].dokumen_evidence
+      }
+    });
+    const contentDisposition = response.headers['content-disposition'];
+    const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
+    const fileName = fileNameMatch ? fileNameMatch[1] : `${finalFileName}`;
+    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    isLoading.value = false;
+  } catch (error) {
+    console.error('Evidence Error : ' + error)
+    isLoading.value = false;
+    notifyError('Evidence Tidak Ada', 5000)
+  }
+}
 const fetchAsumsiParameterData = async () => {
   try {
     isLoading.value = true;
     const response: AsumsiParameterItem =
       await detailRekapService.getAsumsiParameter(
-        tahunTerakhirRealisasi.value,
-        idMesin.value
+        parseInt(selectedYear.value) - 1,
+        idMesin.value,
+        parseInt(selectedYear.value)
       );
     asumsiParameter.value = response.data.asumsi_makro;
     parameterTeknisFinansial.value = response.data.parameter_teknis_financial;
@@ -387,17 +293,15 @@ const fetchAsumsiParameterData = async () => {
   } catch (error) {
     console.error("Fetch Asumsi Parameter Error : " + error);
   }
-  finally {
-    isLoading.value = false;
-  }
 };
 const fetchDataTeknisData = async () => {
   try {
-    const response: DataTeknisItem = await detailRekapService.getDataTeknis(
-      tahunTerakhirRealisasi.value,
+    const response: any = await detailRekapService.getDataTeknis(
+      parseInt(selectedYear.value),
       idMesin.value
     );
     dataTeknis.value = response.data;
+    console.log(dataTeknis.value)
   } catch (error) {
     console.error("Fetch Data Teknis Error : " + error);
   }
@@ -413,8 +317,9 @@ const fetchComboBahanBakar = async () => {
 }
 const fetchDataFinansialData = async () => {
   try {
+    finansialMappingResult.value = []
     const response: any = await detailRekapService.getDataFinansial(
-      tahunTerakhirRealisasi.value,
+      parseInt(selectedYear.value),
       idMesin.value
     );
     let currentLevel1: any | null = null;
@@ -452,7 +357,7 @@ const fetchHasilSimulasi = async () => {
   try {
     const response: any = await detailRekapService.getHasilSimulasi(
       idMesin.value,
-      tahunBerjalan,
+      parseInt(selectedYear.value),
       4
     );
     console.log(response.data)
@@ -465,14 +370,15 @@ const handleDownloadExcelMesin = async () => {
   try {
     isLoading.value = true;
     const headers = {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
     };
     const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/export-template-awal', {
       responseType: 'arraybuffer',
       headers,
       params: {
         id_mesin: idMesin.value,
-        tahun: tahunTerakhirRealisasi.value,
+        tahun: parseInt(selectedYear.value),
+        tahun_realisasi: selectedYear.value - 1
       }
     });
     const contentDisposition = response.headers['content-disposition'];
@@ -494,8 +400,11 @@ const handleDownloadExcelMesin = async () => {
 const fetchTahunRealisasiData = async () => {
   try {
     const response: any = await detailRekapService.getTahunRealisasi(
-      parseInt(route.params.id.toString())
+      nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id
     );
+    listYear.value[0] = response.data[0].tahun;
+    listYear.value[1] = response.data[response.data.length - 1].tahun;
+    console.log(listYear.value);
   } catch (error) {
     console.error("Fetch Tahun Realisasi Error : " + error);
   }
@@ -509,6 +418,14 @@ const fetchListTahunAsumsi = async () => {
     console.error("Fetch Tahun Realisasi Error : " + error);
   }
 };
+const fetchListPembina = async () => {
+  try {
+    const response: any = await userService.getPembina('');
+    return response.data;
+  } catch (error) {
+    console.error('Fetch Pembina Error : ' + error)
+  }
+}
 const fetchUnitPengelola = async () => {
   try {
     if (mesin.value) {
@@ -522,6 +439,9 @@ const fetchUnitPengelola = async () => {
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola
       );
       namaPengelola.value = pengelola[0].pengelola;
+      const idPembina = pembangkitResponse.data.id_pembina;
+      const pembinaList: any = await fetchListPembina();
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina;
     }
   } catch (error) {
     console.error("Fetch Unit Pengelola Error : " + error);
@@ -531,31 +451,27 @@ const fetchTypePeriodic = async () => {
   try {
     const response: any = await detailRekapService.getTypePeriodic(kodeJenisPembangkit.value.replace(/ /g, ''));
     typePeriodic.value = response.data;
+    console.log(typePeriodic.value)
   } catch (error) {
     console.error("Fetch Type Periodic Error : " + error);
   }
 };
-const getTypePeriodic = (num: number) => {
-  let filteredTypePeriodic: any;
-  if (typePeriodic.value.length !== 0) {
-    filteredTypePeriodic = typePeriodic.value.filter((periodic: any) => periodic.id_type_periodic === num);
-    return filteredTypePeriodic.length === 0 ? '-' : filteredTypePeriodic[0].kode_type_periodic;
-  }
-  return "-";
-}
-const toggleRow = (itemId: number) => {
-  if (isRowOpen(itemId)) {
-    isRowTabOpen.value = isRowTabOpen.value.filter(
-      (id) => id !== itemId
-    );
-  } else {
-    isRowTabOpen.value.push(itemId);
-  }
-};
 
-const isRowOpen = (itemId: number) => {
-  return isRowTabOpen.value.includes(itemId);
-};
+const handleYearChange = async () => {
+  isLoading.value = true
+  router.replace({ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(idMesin.value) : idMesin.value }, query: { tahun: selectedYear.value } });
+  await fetchMesinById();
+  await fetchTahunRealisasiData();
+  await fetchUnitPengelola();
+  await fetchTypePeriodic();
+  await fetchHasilSimulasi();
+  await fetchAsumsiParameterData();
+  await fetchListTahunAsumsi();
+  await fetchDataTeknisData();
+  await fetchDataFinansialData();
+  await fetchComboBahanBakar();
+  isLoading.value = false
+}
 
 onMounted(async () => {
   isLoading.value = true;
@@ -581,51 +497,14 @@ button:hover {
   fill: #ffffff;
 }
 
-th {
-  font-weight: 700;
-  padding: 1rem;
-}
-
-td {
-  padding: 1rem;
-}
-
 ul li.selected {
   outline: 1px solid #0099ad;
   border-radius: 6px;
 }
 
-#level2 {
-  padding-left: 3.1rem;
-}
-
-#level2.selected {
-  padding-left: 5.1rem;
-}
-
-#level3 {
-  padding-left: 5.3rem;
-}
-
-#level3.selected {
-  padding-left: 7.3rem;
-}
-
-#level4 {
-  padding-left: 9.3rem;
-}
-
-#tableHeader {
-  padding-right: 30rem;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity .5s
-}
-
-.fade-enter,
-.fade-leave-to {
-  opacity: 0
+.date-picker {
+  width: 10rem;
+  --dp-border-radius: 10px;
+  --dp-icon-color: #0099AD;
 }
 </style>

@@ -6,11 +6,13 @@
     :subtitle="'Data telah berhasil dikirim, silahkan lanjutkan perbarui dengan memilih opsi simulasi'" />
   <ModalNotification :show-modal="isSuccessPermanent" :animation-data="successJsonData"
     :title="'Data berhasil disimpan'" :subtitle="'Data telah berhasil disimpan'" />
-  <ModalWrapper :show-modal="isShowModalConfirmation" :width="'w-auto'" :height="'h-auto'">
+  <ModalWrapper :show-modal="isShowFinalConfirmation" :width="'w-auto'" :height="'h-auto'">
     <ConfirmationDialog :title="'Konfirmasi'"
       :subtitle="'Apakah anda yakin menyimpan? <br>Inputan tidak dapat diubah jika sudah disimpan'"
-      :button-title="'Kirim'" @on-batal-click="isShowModalConfirmation = false" @on-accept-click="handleSubmit" />
+      :button-title="'Simpan'" @on-batal-click="isShowFinalConfirmation = false" @on-accept-click="handleFinalSubmit" />
   </ModalWrapper>
+  <ModalNotification :show-modal="isFinalSubmitSuccess" :animation-data="successJsonData"
+    :title="'Opsi Berhasil Disimpan'" :subtitle="'Pilihan opsi simulasi telah berhasil disimpan'" />
   <ModalWrapper :showModal="isSuccess" :width="'w-80'" :height="'h-auto'">
     <div class="flex flex-col items-center">
       <Vue3Lottie :animationData="successJsonData" :width="200" :height="200" :loop="false" :speed="0.8" />
@@ -22,11 +24,129 @@
       </p>
     </div>
   </ModalWrapper>
+  <ModalWrapper
+    :show-modal="(storePerbaruiTab.currentTab === 'Opsi Simulasi' && statusDataFinansial === 'Simulasi') && (hasilSimulasi1.idMesin === 0)"
+    :width="'w-[750px]'" :height="'h-auto'">
+    <div class="flex flex-col space-y-5">
+      <div class="flex flex-row items-center justify-between">
+        <p class="text-xl font-bold text-primaryTextColor">Unggah Simulasi 1</p>
+      </div>
+      <div class="flex flex-col space-y-3">
+        <div class="flex flex-row items-center justify-between">
+          <div class="flex flex-col space-y-3">
+            <div class="flex flex-col space-y-1">
+              <p class="text-sm font-semibold text-labelColor">Unduh Simulasi 1 <span
+                  class="font-semibold text-warningColor">*</span></p>
+              <p class="text-xs text-textDisabledColor">Silahkan unduh simulasi 1</p>
+            </div>
+          </div>
+          <button
+            class="px-3 py-2 font-semibold duration-300 border rounded-lg border-primaryColor hover:border-hoverColor hover:text-white hover:bg-hoverColor text-primaryColor"
+            @click="handleDownloadExcelSimulasi1">Unduh</button>
+        </div>
+        <div class="flex flex-col space-y-1">
+          <div v-if="selectedFileSimulasi1">
+            <p>{{ selectedFileSimulasi1.name }} ({{ formatBytes(selectedFileSimulasi1.size) }})</p>
+          </div>
+          <div
+            class="w-full flex flex-col p-2 items-center bg-primaryColor bg-opacity-10 border border-primaryColor border-dashed rounded-lg space-y-1.5"
+            v-else>
+            <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M55.3067 24.6712C53.4719 20.4552 50.3054 16.9571 46.2923 14.7129C42.2793 12.4687 37.6411 11.6023 33.0885 12.2463C28.5359 12.8904 24.3201 15.0094 21.087 18.2786C17.8539 21.5479 15.782 25.7871 15.1886 30.3465C12.3257 31.0322 9.81422 32.7453 8.13117 35.1607C6.44812 37.576 5.71072 40.5254 6.05899 43.4486C6.40725 46.3718 7.81694 49.0654 10.0203 51.0177C12.2238 52.97 15.0674 54.0452 18.0113 54.039C18.8077 54.039 19.5715 53.7226 20.1347 53.1595C20.6978 52.5963 21.0142 51.8326 21.0142 51.0361C21.0142 50.2397 20.6978 49.476 20.1347 48.9128C19.5715 48.3497 18.8077 48.0333 18.0113 48.0333C16.4185 48.0333 14.8909 47.4006 13.7647 46.2743C12.6384 45.148 12.0056 43.6204 12.0056 42.0276C12.0056 40.4348 12.6384 38.9072 13.7647 37.7809C14.8909 36.6547 16.4185 36.0219 18.0113 36.0219C18.8077 36.0219 19.5715 35.7056 20.1347 35.1424C20.6978 34.5793 21.0142 33.8155 21.0142 33.0191C21.0218 29.4675 22.2882 26.0337 24.5884 23.3276C26.8885 20.6216 30.0734 18.8185 33.5773 18.2387C37.0812 17.6589 40.6772 18.34 43.7264 20.1609C46.7756 21.9818 49.0806 24.8247 50.2318 28.1845C50.4035 28.7005 50.712 29.1602 51.1246 29.5146C51.5371 29.8689 52.0381 30.1046 52.5741 30.1964C54.5742 30.5744 56.3873 31.6186 57.718 33.1588C59.0488 34.6991 59.8186 36.6446 59.9022 38.6784C59.9858 40.7121 59.3781 42.7143 58.1783 44.3585C56.9784 46.0028 55.2571 47.1922 53.2948 47.733C52.5222 47.9321 51.8605 48.4299 51.455 49.117C51.0495 49.804 50.9336 50.624 51.1327 51.3965C51.3318 52.169 51.8296 52.8308 52.5167 53.2362C53.2037 53.6417 54.0237 53.7576 54.7962 53.5585C57.9563 52.7235 60.7577 50.88 62.7747 48.308C64.7918 45.736 65.9145 42.576 65.9723 39.3078C66.03 36.0397 65.0197 32.842 63.0947 30.2004C61.1698 27.5587 58.4353 25.6174 55.3067 24.6712ZM38.1604 30.8871C37.8748 30.6137 37.5381 30.3994 37.1695 30.2565C36.4384 29.9561 35.6184 29.9561 34.8873 30.2565C34.5187 30.3994 34.182 30.6137 33.8964 30.8871L24.8878 39.8956C24.3224 40.461 24.0047 41.2279 24.0047 42.0276C24.0047 42.8273 24.3224 43.5942 24.8878 44.1596C25.4533 44.7251 26.2202 45.0427 27.0199 45.0427C27.8195 45.0427 28.5864 44.7251 29.1519 44.1596L33.0255 40.2559V57.0418C33.0255 57.8382 33.3419 58.602 33.9051 59.1652C34.4682 59.7283 35.232 60.0447 36.0284 60.0447C36.8248 60.0447 37.5886 59.7283 38.1517 59.1652C38.7149 58.602 39.0312 57.8382 39.0312 57.0418V40.2559L42.9049 44.1596C43.1841 44.4411 43.5162 44.6645 43.8821 44.8169C44.248 44.9694 44.6405 45.0479 45.0369 45.0479C45.4333 45.0479 45.8258 44.9694 46.1917 44.8169C46.5577 44.6645 46.8898 44.4411 47.1689 44.1596C47.4504 43.8805 47.6738 43.5484 47.8262 43.1824C47.9787 42.8165 48.0572 42.424 48.0572 42.0276C48.0572 41.6312 47.9787 41.2387 47.8262 40.8728C47.6738 40.5069 47.4504 40.1747 47.1689 39.8956L38.1604 30.8871Z"
+                fill="#0099AD" />
+            </svg>
+            <p>Silahkan pilih berkas excel anda</p>
+            <!-- <p>ATAU</p> -->
+            <label for="fileInput"
+              class="flex flex-row items-center px-3 py-2 space-x-2 text-white duration-300 rounded-lg cursor-pointer bg-primaryColor hover:bg-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0">
+              <IconFolder />
+              <span class="font-semibold">Cari berkas</span>
+            </label>
+            <input ref="fileInput" id="fileInput" type="file" class="hidden" @change="handleFileChangeSimulasi1"
+              accept=".xlsx" />
+          </div>
+          <div class="flex flex-row items-center justify-between">
+            <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx</p>
+            <p class="text-xs text-textDisabledColor">Maximum upload file size : 200 MB</p>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-row justify-end space-x-3">
+        <button
+          class="px-3 py-2 font-semibold duration-300 border rounded-lg text-primaryColor border-primaryColor hover:text-white hover:bg-hoverColor hover:border-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0"
+          @click="selectedFileSimulasi1 = null">Reset</button>
+        <button
+          class="px-3 py-2 font-semibold text-white duration-300 border rounded-lg border-primaryColor bg-primaryColor hover:text-white hover:bg-hoverColor hover:border-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0"
+          @click="uploadFileSimulasi1">Kirim</button>
+      </div>
+    </div>
+  </ModalWrapper>
+  <ModalWrapper :show-modal="isUnggahModalOpenSimulasi1" :width="'w-[750px]'" :height="'h-auto'"
+    @on-escape="isUnggahModalOpenSimulasi1 = false">
+    <div class="flex flex-col space-y-5">
+      <div class="flex flex-row items-center justify-between">
+        <p class="text-xl font-bold text-primaryTextColor">Unggah Simulasi 1</p>
+        <button @click="isUnggahModalOpenSimulasi1 = false">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4.5 19.5L19.5 4.5M4.5 4.5L19.5 19.5" stroke="#333333" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </button>
+      </div>
+      <div class="flex flex-col space-y-3">
+        <div class="flex flex-row items-center justify-between">
+          <div class="flex flex-col space-y-3">
+            <div class="flex flex-col space-y-1">
+              <p class="text-sm font-semibold text-labelColor">Unggah <span
+                  class="font-semibold text-warningColor">*</span></p>
+              <p class="text-xs text-textDisabledColor">Silahkan unggah Kertas Kerja anda</p>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col space-y-1">
+          <div v-if="selectedFileSimulasi1">
+            <p>{{ selectedFileSimulasi1.name }} ({{ formatBytes(selectedFileSimulasi1.size) }})</p>
+          </div>
+          <div
+            class="w-full flex flex-col p-2 items-center bg-primaryColor bg-opacity-10 border border-primaryColor border-dashed rounded-lg space-y-1.5"
+            v-else>
+            <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M55.3067 24.6712C53.4719 20.4552 50.3054 16.9571 46.2923 14.7129C42.2793 12.4687 37.6411 11.6023 33.0885 12.2463C28.5359 12.8904 24.3201 15.0094 21.087 18.2786C17.8539 21.5479 15.782 25.7871 15.1886 30.3465C12.3257 31.0322 9.81422 32.7453 8.13117 35.1607C6.44812 37.576 5.71072 40.5254 6.05899 43.4486C6.40725 46.3718 7.81694 49.0654 10.0203 51.0177C12.2238 52.97 15.0674 54.0452 18.0113 54.039C18.8077 54.039 19.5715 53.7226 20.1347 53.1595C20.6978 52.5963 21.0142 51.8326 21.0142 51.0361C21.0142 50.2397 20.6978 49.476 20.1347 48.9128C19.5715 48.3497 18.8077 48.0333 18.0113 48.0333C16.4185 48.0333 14.8909 47.4006 13.7647 46.2743C12.6384 45.148 12.0056 43.6204 12.0056 42.0276C12.0056 40.4348 12.6384 38.9072 13.7647 37.7809C14.8909 36.6547 16.4185 36.0219 18.0113 36.0219C18.8077 36.0219 19.5715 35.7056 20.1347 35.1424C20.6978 34.5793 21.0142 33.8155 21.0142 33.0191C21.0218 29.4675 22.2882 26.0337 24.5884 23.3276C26.8885 20.6216 30.0734 18.8185 33.5773 18.2387C37.0812 17.6589 40.6772 18.34 43.7264 20.1609C46.7756 21.9818 49.0806 24.8247 50.2318 28.1845C50.4035 28.7005 50.712 29.1602 51.1246 29.5146C51.5371 29.8689 52.0381 30.1046 52.5741 30.1964C54.5742 30.5744 56.3873 31.6186 57.718 33.1588C59.0488 34.6991 59.8186 36.6446 59.9022 38.6784C59.9858 40.7121 59.3781 42.7143 58.1783 44.3585C56.9784 46.0028 55.2571 47.1922 53.2948 47.733C52.5222 47.9321 51.8605 48.4299 51.455 49.117C51.0495 49.804 50.9336 50.624 51.1327 51.3965C51.3318 52.169 51.8296 52.8308 52.5167 53.2362C53.2037 53.6417 54.0237 53.7576 54.7962 53.5585C57.9563 52.7235 60.7577 50.88 62.7747 48.308C64.7918 45.736 65.9145 42.576 65.9723 39.3078C66.03 36.0397 65.0197 32.842 63.0947 30.2004C61.1698 27.5587 58.4353 25.6174 55.3067 24.6712ZM38.1604 30.8871C37.8748 30.6137 37.5381 30.3994 37.1695 30.2565C36.4384 29.9561 35.6184 29.9561 34.8873 30.2565C34.5187 30.3994 34.182 30.6137 33.8964 30.8871L24.8878 39.8956C24.3224 40.461 24.0047 41.2279 24.0047 42.0276C24.0047 42.8273 24.3224 43.5942 24.8878 44.1596C25.4533 44.7251 26.2202 45.0427 27.0199 45.0427C27.8195 45.0427 28.5864 44.7251 29.1519 44.1596L33.0255 40.2559V57.0418C33.0255 57.8382 33.3419 58.602 33.9051 59.1652C34.4682 59.7283 35.232 60.0447 36.0284 60.0447C36.8248 60.0447 37.5886 59.7283 38.1517 59.1652C38.7149 58.602 39.0312 57.8382 39.0312 57.0418V40.2559L42.9049 44.1596C43.1841 44.4411 43.5162 44.6645 43.8821 44.8169C44.248 44.9694 44.6405 45.0479 45.0369 45.0479C45.4333 45.0479 45.8258 44.9694 46.1917 44.8169C46.5577 44.6645 46.8898 44.4411 47.1689 44.1596C47.4504 43.8805 47.6738 43.5484 47.8262 43.1824C47.9787 42.8165 48.0572 42.424 48.0572 42.0276C48.0572 41.6312 47.9787 41.2387 47.8262 40.8728C47.6738 40.5069 47.4504 40.1747 47.1689 39.8956L38.1604 30.8871Z"
+                fill="#0099AD" />
+            </svg>
+            <p>Silahkan pilih berkas excel anda</p>
+            <!-- <p>ATAU</p> -->
+            <label for="fileInput"
+              class="flex flex-row items-center px-3 py-2 space-x-2 text-white duration-300 rounded-lg cursor-pointer bg-primaryColor hover:bg-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0">
+              <IconFolder />
+              <span class="font-semibold">Cari berkas</span>
+            </label>
+            <input ref="fileInput" id="fileInput" type="file" class="hidden" @change="handleFileChangeSimulasi1"
+              accept=".xlsx" />
+          </div>
+          <div class="flex flex-row items-center justify-between">
+            <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx</p>
+            <p class="text-xs text-textDisabledColor">Maximum upload file size : 2 MB</p>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-row justify-end space-x-3">
+        <button
+          class="px-3 py-2 font-semibold duration-300 border rounded-lg text-primaryColor border-primaryColor hover:text-white hover:bg-hoverColor hover:border-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0"
+          @click="selectedFileSimulasi1 = null">Reset</button>
+        <button
+          class="px-3 py-2 font-semibold text-white duration-300 border rounded-lg border-primaryColor bg-primaryColor hover:text-white hover:bg-hoverColor hover:border-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0"
+          @click="uploadFileSimulasi1">Kirim</button>
+      </div>
+    </div>
+  </ModalWrapper>
   <ModalWrapper :show-modal="isUnggahModalOpen" :width="'w-[750px]'" :height="'h-auto'"
     @on-escape="isUnggahModalOpen = false">
     <div class="flex flex-col space-y-5">
       <div class="flex flex-row items-center justify-between">
-        <p class="text-xl font-bold text-primaryTextColor">Unggah Kertas Kerja</p>
+        <p class="text-xl font-bold text-primaryTextColor">Unggah Simulasi 2</p>
         <button @click="isUnggahModalOpen = false">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M4.5 19.5L19.5 4.5M4.5 4.5L19.5 19.5" stroke="#333333" stroke-width="1.5" stroke-linecap="round"
@@ -82,30 +202,35 @@
       </div>
     </div>
   </ModalWrapper>
-  <div class="space-y-4" v-if="mesinDataById && simulasiAsumsiParameter">
+  <div class="flex flex-col space-y-4" v-if="mesinDataById && simulasiAsumsiParameter">
     <InfoHeader :nama-mesin="mesinDataById.mesin" :nama-pengelola="namaPengelola"
       :kondisi-unit="mesinDataById.kondisi_unit" :kode-jenis-pembangkit="mesinDataById.kode_jenis_pembangkit"
       :daya-terpasang="mesinDataById.daya_terpasang.toString()" :daya-mampu="mesinDataById.daya_mampu.toString()"
-      :tahun-operasi="mesinDataById.tahun_operasi.toString()" :umur-teknis="asumsiParameter.asumsiMakro.umurTeknis">
+      :tahun-operasi="mesinDataById.tahun_operasi.toString()" :umur-teknis="asumsiParameter.asumsiMakro.umurTeknis"
+      :nama-pembina="namaPembina">
     </InfoHeader>
-    <div class="items-start min-h-screen p-6 bg-white rounded-lg">
-      <TabsWrapper :laman-data="false">
+    <div class="items-start w-full max-w-full min-h-screen p-6 bg-white rounded-lg">
+      <TabsWrapper :laman-data="false" class="w-full">
         <TabItem title="Asumsi Makro">
-          <TabAsumsiMakro :error="error.asumsi" :isAsumsiUpdated="statusAsumsi === 'update'"
-            :tahun-realisasi="tahunUpdate" :mesin="mesinDataById.mesin"
-            v-model:interest-rate="asumsiParameter.asumsiMakro.interestRate"
+          <TabAsumsiMakro :error="error.asumsi" :is-permanent="isPermanent" :tahun-realisasi="tahunBerjalan"
+            :mesin="mesinDataById.mesin" v-model:interest-rate="asumsiParameter.asumsiMakro.interestRate"
             v-model:umur-teknis="asumsiParameter.asumsiMakro.umurTeknis"
             v-model:loan-tenor="asumsiParameter.asumsiMakro.loanTenor"
-            v-model:loan-portion="asumsiParameter.asumsiMakro.loanPortion" :umur-teknis-init="masaManfaat.toString()" />
+            v-model:loan-portion="asumsiParameter.asumsiMakro.loanPortion" :init-value="{
+              interestRate: asumsiParameterInit.asumsiMakro.interestRate,
+              umurTeknis: masaManfaat.toString(),
+              loanTenor: asumsiParameterInit.asumsiMakro.loanTenor,
+              loanPortion: asumsiParameterInit.asumsiMakro.loanPortion
+            }" :kode-pengelola="kodePengelola" :is-integrasi="isIntegrasi" />
         </TabItem>
         <TabItem title="Parameter Teknis & Finansial">
-          <TabParameterTeknis :isParameterUpdated="statusAsumsi === 'update'" :combo-bahan-bakar="comboBahanBakar"
-            :init-auxiliary="asumsiParameter.parameterTeknis.auxiliary"
+          <TabParameterTeknis :is-integrasi="isIntegrasi" :is-permanent="isPermanent"
+            :combo-bahan-bakar="comboBahanBakar" :init-auxiliary="asumsiParameter.parameterTeknis.auxiliary"
             :init-susut-trafo="asumsiParameter.parameterTeknis.susutTrafo"
             :init-pemakaian-sendiri="asumsiParameter.parameterTeknis.pemakaianSendiri" :error="error.parameter"
             @on-hapus-bahan-bakar="handleHapusBahanBakar" @on-tambah-bahan-bakar="handleTambahBahanBakar"
-            :tahun-realisasi="tahunUpdate" :is-input-asumsi-parameter="false" :mesin="mesinDataById.mesin"
-            v-model:nphr="asumsiParameter.parameterTeknis.nphr"
+            :tahun-realisasi="tahunBerjalan" :is-input-asumsi-parameter="false" :mesin="mesinDataById.mesin"
+            :kode-pengelola="kodePengelola" v-model:nphr="asumsiParameter.parameterTeknis.nphr"
             v-model:auxiliary="asumsiParameter.parameterTeknis.auxiliary"
             v-model:susut-trafo="asumsiParameter.parameterTeknis.susutTrafo"
             v-model:pemakaian-sendiri="asumsiParameter.parameterTeknis.pemakaianSendiri"
@@ -114,295 +239,52 @@
             v-model:electricity-price-c="asumsiParameter.parameterTeknis.electricityPriceC"
             v-model:electricity-price-d="asumsiParameter.parameterTeknis.electricityPriceD"
             v-model:checkedBahanBakar="checkedBahanBakar" v-model:picked-value="pickedParameterValue"
-            v-model:bahan-bakars="bahanBakars" />
+            v-model:bahan-bakars="bahanBakarGroup.bahanBakars" :init-value="{
+              nphr: asumsiParameterInit.parameterTeknis.nphr,
+              auxiliary: asumsiParameterInit.parameterTeknis.auxiliary,
+              susutTrafo: asumsiParameterInit.parameterTeknis.susutTrafo,
+              pemakaianSendiri: asumsiParameterInit.parameterTeknis.pemakaianSendiri,
+              electricityPriceA: asumsiParameterInit.parameterTeknis.electricityPriceA,
+              electricityPriceB: asumsiParameterInit.parameterTeknis.electricityPriceB,
+              electricityPriceC: asumsiParameterInit.parameterTeknis.electricityPriceC,
+              electricityPriceD: asumsiParameterInit.parameterTeknis.electricityPriceD
+            }" />
         </TabItem>
         <TabItem title="Data Teknis">
-          <TabDataTeknis :error="error.teknis" :is-data-simulasi="statusDataTeknis === 'Simulasi'"
-            :tahun-realisasi="tahunUpdate" :mesin="mesinDataById.mesin" :combo-type-periodic="comboTypePeriodic"
-            v-model:type-periodic="typePeriodic" v-model:ncf="ncf" v-model:eaf="eaf"
-            v-model:production-brutto="productionBrutto" v-model:production-netto="productionNetto"
-            v-model:energy-sales="energySales" v-model:fuel-consumption="fuelConsumption" />
+          <TabDataTeknis :is-integrasi="isIntegrasi" :combo-bahan-bakar="comboBahanBakar" :error="error.teknis"
+            :is-permanent="isPermanent" :tahun-realisasi="tahunBerjalan" :mesin="mesinDataById.mesin"
+            :combo-type-periodic="comboTypePeriodic" v-model:type-periodic="typePeriodic" v-model:ncf="ncf"
+            v-model:eaf="eaf" v-model:production-brutto="productionBrutto" v-model:production-netto="productionNetto"
+            v-model:energy-sales="energySales" v-model:fuel-consumption="bahanBakarGroup.fuelConsumption"
+            :kode-pengelola="kodePengelola" :init-value="{
+              typePeriodic: dataTeknisInit.typePeriodic,
+              ncf: dataTeknisInit.ncf,
+              eaf: dataTeknisInit.eaf,
+              productionBrutto: dataTeknisInit.productionBrutto,
+              productionNetto: dataTeknisInit.productionNetto,
+              energySales: dataTeknisInit.energySales,
+              // fuelConsumption: dataTeknisInit.fuelConsumption
+            }" />
         </TabItem>
         <TabItem title="Data Finansial">
-          <div class="flex flex-col space-y-3">
-            <section class="flex flex-row items-center space-x-1 text-xs">
-              <span class="font-medium text-gray-400">Periode : </span>
-              <span class="font-semibold">{{ tahunUpdate }}</span>
-              <span class="text-gray-200"> / </span>
-              <span class="font-medium text-gray-400">Unit : </span>
-              <span class="font-semibold">{{ mesinDataById.mesin }}</span>
-              <span class="text-gray-200"> / </span>
-              <span class="mr-1.5 font-medium text-gray-400">Catatan : </span>
-              <div class="flex flex-row items-center space-x-1">
-                <WarningIcon />
-                <span class="text-warningColor" v-if="statusDataFinansial === 'Simulasi'">Data yang ditampilkan
-                  merupakan data simulasi,
-                  mohon pilih opsi simulasi untuk mengubah ke data tetap</span>
-                <span class="text-warningColor" v-else>Data yang ditampilkan merupakan data tahun sebelumnya, silahkan
-                  lakukan
-                  update
-                  terhadap data tersebut!</span>
-              </div>
-            </section>
-            <div class="flex flex-col space-y-8">
-              <div class="flex flex-col space-y-3.5">
-                <div
-                  class="w-full p-3 flex flex-col bg-infoComponentBorderColor bg-opacity-10 border border-infoComponentBorderColor rounded-lg space-y-1.5">
-                  <div class="flex items-center space-x-2">
-                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M11 3.66732C6.94995 3.66732 3.66671 6.95056 3.66671 11.0007C3.66671 15.0507 6.94995 18.334 11 18.334C15.0501 18.334 18.3334 15.0507 18.3334 11.0007C18.3334 6.95056 15.0501 3.66732 11 3.66732ZM1.83337 11.0007C1.83337 5.93804 5.93743 1.83398 11 1.83398C16.0626 1.83398 20.1667 5.93804 20.1667 11.0007C20.1667 16.0633 16.0626 20.1673 11 20.1673C5.93743 20.1673 1.83337 16.0633 1.83337 11.0007ZM11 7.33398C11.5063 7.33398 11.9167 7.74439 11.9167 8.25065V11.6882C11.9167 12.1944 11.5063 12.6048 11 12.6048C10.4938 12.6048 10.0834 12.1944 10.0834 11.6882V8.25065C10.0834 7.74439 10.4938 7.33398 11 7.33398ZM10.0834 14.4382C10.0834 13.9319 10.4938 13.5215 11 13.5215H11.0069C11.5132 13.5215 11.9236 13.9319 11.9236 14.4382V14.445C11.9236 14.9513 11.5132 15.3617 11.0069 15.3617H11C10.4938 15.3617 10.0834 14.9513 10.0834 14.445V14.4382Z"
-                        fill="#4791F2" />
-                    </svg>
-                    <p class="text-base font-semibold">Informasi Cost Component B dan D</p>
-                  </div>
-                  <p class="text-sm text-gray-500 whitespace-normal">Apabila Cost Component B dan D digabung,
-                    maka data yang diinputkan pada
-                    kolom total Cost Component B dan D
-                    merupakan hasil penggabungan dari Cost Component B dan Cost Component D
-                  </p>
-                </div>
-                <div class="flex space-x-3">
-                  <div class="flex space-x-1.5">
-                    <input type="radio" id="gabung" name="radio-1" class="radio radio-sm radio-info" value="gabung"
-                      v-model="picked" />
-                    <label class="text-sm" for="gabung">Gabung</label>
-                  </div>
-                  <div class="flex space-x-3">
-                    <div class="flex space-x-1.5">
-                      <input type="radio" id="pisah" name="radio-1" class="radio radio-sm radio-info" value="pisah"
-                        v-model="picked" checked />
-                      <label class="text-sm" for="pisah">Pisah</label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="flex flex-col space-y-8">
-                <div class="flex flex-col space-y-3">
-                  <div class="flex flex-row space-x-2">
-                    <div class="w-1 rounded-md bg-primaryColor"></div>
-                    <h3 class="text-base font-semibold">
-                      Cost Component A
-                      <span class="text-xs text-textDisabledColor">Pengisian dalam Rp (Juta)</span>
-                    </h3>
-                  </div>
-                  <div class="flex flex-col space-y-1.5">
-                    <label for="" class="text-sm font-semibold text-labelColor">Replacement Cost / Investment Cost (Cost
-                      Component A) <span class="text-warningColor">*</span> </label>
-                    <div class="flex items-center justify-start">
-                      <TextField @on-input="handleInputDecimalRupiah('costComponentA')" v-model="costComponentA"
-                        class="pl-9" />
-                      <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
-                    </div>
-                    <div class="text-xs text-warningColor" v-if="error.finansial.costComponentA === true">
-                      Cost Component A wajib diisi
-                    </div>
-                  </div>
-                </div>
-                <div class="flex flex-col space-y-3" v-if="picked === 'pisah'">
-                  <div class="flex flex-row space-x-2">
-                    <div class="w-1 rounded-md bg-primaryColor"></div>
-                    <h3 class="text-base font-semibold">
-                      Cost Component B
-                      <span class="text-xs text-textDisabledColor">Pengisian dalam Rp (Juta)</span>
-                    </h3>
-                  </div>
-                  <div class="flex flex-col space-y-1.5">
-                    <label for="" class="text-sm font-semibold text-labelColor">Total Cost Component B <span
-                        class="text-warningColor">*</span></label>
-                    <div class="flex items-center justify-start">
-                      <TextField @on-input="handleInputDecimalRupiah('costComponentB')" v-model="costComponentB"
-                        class="pl-9" />
-                      <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
-                    </div>
-                    <div class="text-xs text-warningColor" v-if="error.finansial.costComponentB === true">Total Cost
-                      Component
-                      B wajib diisi</div>
-                  </div>
-                  <div class="grid grid-cols-4 gap-3">
-                    <div class="flex flex-col space-y-1.5">
-                      <label for="" class="text-sm font-semibold text-labelColor">Biaya Kepegawaian <span
-                          class="text-warningColor">*</span></label>
-                      <div class="flex items-center justify-start">
-                        <TextField @on-input="handleInputDecimalRupiah('biayaKepegawaian')" v-model="biayaKepegawaian"
-                          class="pl-9" />
-                        <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
-                      </div>
-                      <div class="text-xs text-warningColor" v-if="error.finansial.biayaKepegawaian === true">
-                        Biaya Kepegawaian wajib diisi</div>
-                    </div>
-                    <div class="flex flex-col space-y-1.5">
-                      <label for="" class="text-sm font-semibold text-labelColor">Biaya Pemeliharaan Rutin <span
-                          class="text-warningColor">*</span></label>
-                      <div class="flex items-center justify-start">
-                        <TextField @on-input="handleInputDecimalRupiah('biayaPemeliharaanRutin')"
-                          v-model="biayaPemeliharaanRutin" class="pl-9" />
-                        <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
-                      </div>
-                      <div class="text-xs text-warningColor" v-if="error.finansial.biayaPemeliharaanRutin === true">
-                        Biaya Pemeliharaan Rutin wajib diisi</div>
-                    </div>
-                    <div class="flex flex-col space-y-1.5">
-                      <label for="" class="text-sm font-semibold text-labelColor">Biaya Administrasi dan Umum <span
-                          class="text-warningColor">*</span></label>
-                      <div class="flex items-center justify-start">
-                        <TextField @on-input="handleInputDecimalRupiah('biayaAdministrasiUmum')"
-                          v-model="biayaAdministrasiUmum" class="pl-9" />
-                        <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
-                      </div>
-                      <div class="text-xs text-warningColor" v-if="error.finansial.biayaAdministrasiUmum === true">
-                        Biaya Administrasi Umum wajib diisi</div>
-                    </div>
-                    <div class="flex flex-col space-y-1.5">
-                      <label for="" class="text-sm font-semibold text-labelColor">Biaya Pembelian Tenaga Listrik <span
-                          class="text-warningColor">*</span></label>
-                      <div class="flex items-center justify-start">
-                        <TextField @on-input="handleInputDecimalRupiah('biayaPembelianTenagaListrik')"
-                          v-model="biayaPembelianTenagaListrik" class="pl-9" />
-                        <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
-                      </div>
-                      <div class="text-xs text-warningColor"
-                        v-if="error.finansial.biayaPembelianTenagaListrik === true">
-                        Biaya Pembelian Tenaga Listrik wajib diisi</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="flex flex-col space-y-3" v-else>
-                  <div class="flex flex-row space-x-2">
-                    <div class="w-1 rounded-md bg-primaryColor"></div>
-                    <h3 class="text-base font-semibold">
-                      Cost Component B dan D
-                      <span class="text-xs text-textDisabledColor">Pengisian dalam Rp (Juta)</span>
-                    </h3>
-                  </div>
-                  <div class="flex flex-col space-y-1.5">
-                    <label for="" class="text-sm font-semibold text-labelColor">Total Cost Component B dan D <span
-                        class="text-warningColor">*</span></label>
-                    <div class="flex items-center justify-start">
-                      <TextField @on-input="handleInputDecimalRupiah('costComponentB')" v-model="costComponentB"
-                        class="pl-9" />
-                      <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
-                    </div>
-                    <div class="text-xs text-warningColor" v-if="error.finansial.costComponentB === true">Total Cost
-                      Component B dan D wajib diisi</div>
-                  </div>
-                  <div class="grid grid-cols-2 gap-6">
-                    <div class="flex flex-col space-y-1.5">
-                      <label for="" class="text-sm font-semibold text-labelColor">O&M Cost <span
-                          class="text-warningColor">*</span></label>
-                      <div class="flex items-center justify-start">
-                        <TextField @on-input="handleInputDecimalRupiah('oMCost')" v-model="oMCost" class="pl-9" />
-                        <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
-                      </div>
-                      <div class="text-xs text-warningColor" v-if="error.finansial.oMCost === true">O&M Cost wajib diisi
-                      </div>
-                    </div>
-                    <div class="flex flex-col space-y-1.5">
-                      <label for="" class="text-sm font-semibold text-labelColor">Periodic Maintenance Cost (Non MI)
-                        <span class="text-warningColor">*</span></label>
-                      <div class="flex items-center justify-start">
-                        <TextField @on-input="handleInputDecimalRupiah('periodicMaintenanceCost')"
-                          v-model="periodicMaintenanceCost" class="pl-9" />
-                        <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
-                      </div>
-                      <div class="text-xs text-warningColor" v-if="error.finansial.periodicMaintenanceCost === true">
-                        Periodic Maintenance Cost (Non MI) Cost wajib diisi</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="flex flex-col space-y-3">
-                  <div class="flex flex-row space-x-2">
-                    <div class="w-1 rounded-md bg-primaryColor"></div>
-                    <h3 class="text-base font-semibold">
-                      Cost Component C
-                      <span class="text-xs text-textDisabledColor">Pengisian dalam Rp (Juta)</span>
-                    </h3>
-                  </div>
-                  <div class="flex flex-col space-y-1.5">
-                    <label for="" class="text-sm font-semibold text-labelColor">Total Cost Component C <span
-                        class="text-warningColor">*</span></label>
-                    <div class="flex items-center justify-start">
-                      <TextField @on-input="handleInputDecimalRupiah('costComponentC')" v-model="costComponentC"
-                        class="pl-9" />
-                      <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
-                    </div>
-                    <div class="text-xs text-warningColor" v-if="error.finansial.costComponentC === true">Total Cost
-                      Component
-                      C wajib diisi</div>
-                  </div>
-                  <div class="grid grid-cols-4 gap-3" v-if="costComponentCDetail.length !== 0">
-                    <div class="flex flex-col space-y-1.5"
-                      v-for="(componentCItem, componentCIndex) in costComponentCDetail">
-                      <label for="" class="text-sm font-semibold text-labelColor">{{ componentCItem.kode_bahan_bakar
-                        }}<span class="text-warningColor"> *</span></label>
-                      <div class="flex items-center justify-start">
-                        <TextField @on-input="handleInputDecimalRupiah('componentCDetail', componentCIndex)"
-                          class="pl-9" v-model="componentCItem.fuel_cost" />
-                        <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
-                      </div>
-                      <div class="text-xs text-warningColor" v-if="error.finansial.costComponentCDetail === true">Cost
-                        Component C Detail wajib diisi</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="flex flex-col space-y-3" v-if="picked === 'pisah'">
-                  <div class="flex flex-row space-x-2">
-                    <div class="w-1 rounded-md bg-primaryColor"></div>
-                    <h3 class="text-base font-semibold">
-                      Cost Component D
-                      <span class="text-xs text-textDisabledColor">Pengisian dalam Rp (Juta)</span>
-                    </h3>
-                  </div>
-                  <div class="flex flex-col space-y-1.5">
-                    <label for="" class="text-sm font-semibold text-labelColor">Total Cost Component D <span
-                        class="text-warningColor">*</span></label>
-                    <div class="flex items-center justify-start">
-                      <TextField @on-input="handleInputDecimalRupiah('costComponentD')" v-model="costComponentD"
-                        class="pl-9" />
-                      <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
-                    </div>
-                    <div class="text-xs text-warningColor" v-if="error.finansial.costComponentD === true">Total Cost
-                      Component
-                      D wajib diisi</div>
-                  </div>
-                  <div class="grid grid-cols-4 gap-x-5">
-                    <div class="flex flex-col space-y-1.5">
-                      <label for="" class="text-sm font-semibold text-labelColor">Biaya Minyak Pelumas <span
-                          class="text-warningColor">*</span></label>
-                      <div class="flex items-center justify-start">
-                        <TextField @on-input="handleInputDecimalRupiah('biayaMinyakPelumas')"
-                          v-model="biayaMinyakPelumas" class="pl-9" />
-                        <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
-                      </div>
-                      <div class="text-xs text-warningColor" v-if="error.finansial.biayaMinyakPelumas === true">
-                        Biaya Minyak Pelumas wajib diisi</div>
-                    </div>
-                    <div class="flex flex-col space-y-1.5">
-                      <label for="" class="text-sm font-semibold text-labelColor">Biaya Bahan Kimia <span
-                          class="text-warningColor">*</span></label>
-                      <div class="flex items-center justify-start">
-                        <TextField @on-input="handleInputDecimalRupiah('bahanKimia')" v-model="bahanKimia"
-                          class="pl-9" />
-                        <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
-                      </div>
-                      <div class="text-xs text-warningColor" v-if="error.finansial.biayaBahanKimia === true">
-                        Biaya Bahan Kimia wajib diisi</div>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  class="px-3 py-2 ml-auto font-semibold text-white rounded-lg bg-primaryColor hover:bg-hoverColor active:outline active:outline-primaryColor hover:duration-300 active:duration-0"
-                  @click="isShowModalConfirmation = true">
-                  Kirim
-                </button>
-              </div>
-            </div>
-          </div>
+          <TabDataFinansial :is-integrasi="isIntegrasi" :tahun="(tahunBerjalan).toString()"
+            :combo-bahan-bakar="comboBahanBakar" :mesin="mesinDataById.mesin" :is-permanent="isPermanent"
+            :kode-pengelola="kodePengelola" :data-finansial-init="dataFinansialInit" :error="error.finansial"
+            v-model:picked="picked" v-model:cost-component-a="costComponentA" v-model:cost-component-b="costComponentB"
+            v-model:biaya-kepegawaian="biayaKepegawaian" v-model:biaya-pemeliharaan-rutin="biayaPemeliharaanRutin"
+            v-model:biaya-administrasi-umum="biayaAdministrasiUmum"
+            v-model:biaya-pembelian-tenaga-listrik="biayaPembelianTenagaListrik" v-model:biaya-lain-lain="biayaLainLain"
+            v-model:o-m-cost="oMCost" v-model:periodic-maintenance-cost="periodicMaintenanceCost"
+            v-model:cost-component-c="costComponentC" v-model:cost-component-c-detail="bahanBakarGroup.costCDetail"
+            v-model:cost-component-d="costComponentD" v-model:biaya-minyak-pelumas="biayaMinyakPelumas"
+            v-model:bahan-kimia="bahanKimia" v-model:total-revenue="totalRevenue" v-model:revenue-komp-a="revenueKompA"
+            v-model:revenue-komp-b="revenueKompB" v-model:revenue-komp-c="revenueKompC"
+            v-model:revenue-komp-d="revenueKompD" @on-save="handleSubmit" />
         </TabItem>
-        <TabItem title="Opsi Simulasi" v-if="statusAsumsi === 'update'">
-          <div class="flex flex-col w-full space-y-5">
-            <div class="flex flex-row w-full">
-              <aside class="w-auto mt-6 mr-10">
+        <TabItem :title="'Opsi Simulasi'" class="w-full">
+          <div class="flex flex-col w-full space-y-5" v-if="statusDataFinansial === 'Simulasi'">
+            <div class="flex flex-row w-full space-x-5">
+              <aside class="mt-6 w-fit">
                 <ul class="w-40 space-y-10 text-sm text-textDisabledColor">
                   <li id="aside"
                     class="flex flex-row items-center justify-between duration-300 cursor-pointer hover:text-primaryColor"
@@ -437,10 +319,19 @@
                     </h2>
                     <div id="triangle"></div>
                   </li>
+                  <li id="aside"
+                    class="flex flex-row items-center justify-between duration-300 cursor-pointer hover:text-primaryColor"
+                    :class="{ selected: selectedAside === 'Hasil Simulasi' }" @click="selectedAside = 'Hasil Simulasi'"
+                    v-if="(hasilSimulasi1.idMesin !== 0 ? true : false) || (hasilSimulasi2.idMesin !== 0 ? true : false)">
+                    <h2>
+                      Hasil Simulasi
+                    </h2>
+                    <div id="triangle"></div>
+                  </li>
                 </ul>
               </aside>
-              <section class="w-full mt-2 space-y-3.5" v-if="selectedAside === 'Asumsi Makro'">
-                <nav class=" bg-primaryColor bg-opacity-5 p-1.5 rounded-lg">
+              <div class="flex flex-col w-full space-y-3.5">
+                <nav class="w-full bg-primaryColor bg-opacity-5 p-1.5 rounded-lg">
                   <ul class="table w-full text-sm text-center text-primaryColor border-spacing-x-3">
                     <li id="tab"
                       class="table-cell py-2 font-semibold rounded-lg cursor-pointer active:bg-primaryColor active:bg-opacity-10"
@@ -454,492 +345,178 @@
                     </li>
                   </ul>
                 </nav>
-                <div v-if="selectedSimulasiTab === 'Simulasi 1'" class="flex flex-col space-y-3.5">
-                  <InfoComponent simulasi="Simulasi 1" proyeksi="Proyeksi Sebelumnya" />
-                  <div class="flex flex-row items-center justify-between">
-                    <h1 class="text-lg font-semibold">Simulasi - Asumsi Makro</h1>
-                    <button class="px-3 py-2 font-semibold border rounded-lg border-primaryColor text-primaryColor"
-                      @click="handleDownloadExcelSimulasi1">Unduh</button>
-                  </div>
-                  <AsumsiInfoBox :simulasi-asumsi-makro="simulasiAsumsiParameter.asumsi_makro" :periode="tahunUpdate" />
-                </div>
-                <div v-if="selectedSimulasiTab === 'Simulasi 2'" class="flex flex-col space-y-3.5">
-                  <div class="flex flex-row items-center justify-between">
-                    <h1 class="text-lg font-semibold">Simulasi - Asumsi Makro</h1>
-                    <div class="flex flex-row space-x-3">
-                      <button class="px-3 py-2 font-semibold rounded-lg text-primaryColor"
-                        @click="isUnggahModalOpen = true">Unggah</button>
-                      <button class="px-3 py-2 font-semibold border rounded-lg border-primaryColor text-primaryColor"
-                        @click="handleDownloadExcelSimulasi2">Unduh</button>
+                <section class="w-full mt-2 space-y-3.5" v-if="selectedAside === 'Asumsi Makro'">
+                  <div v-if="selectedSimulasiTab === 'Simulasi 1'" class="flex flex-col space-y-3.5">
+                    <InfoComponent simulasi="Simulasi 1" proyeksi="Proyeksi Sebelumnya" />
+                    <div class="flex flex-row items-center justify-between">
+                      <h1 class="text-lg font-semibold">Simulasi - Asumsi Makro</h1>
+                      <div class="flex flex-row space-x-3">
+                        <button class="px-3 py-2 font-semibold rounded-lg text-primaryColor"
+                          @click="isUnggahModalOpenSimulasi1 = true">Unggah</button>
+                        <button class="px-3 py-2 font-semibold border rounded-lg border-primaryColor text-primaryColor"
+                          @click="handleDownloadExcelSimulasi1">Unduh</button>
+                      </div>
                     </div>
+                    <AsumsiInfoBox :simulasi-asumsi-makro="simulasiAsumsiParameter.asumsi_makro"
+                      :periode="tahunUpdate" />
                   </div>
-                  <AsumsiInfoBox :simulasi-asumsi-makro="simulasiAsumsiParameter.asumsi_makro" :periode="tahunUpdate" />
-                </div>
-              </section>
-              <section class="w-full mt-2 space-y-3.5" v-if="selectedAside === 'Parameter Teknis'">
-                <nav class=" bg-primaryColor bg-opacity-5 p-1.5 rounded-lg">
-                  <ul class="table w-full text-sm text-center text-primaryColor border-spacing-x-3">
-                    <li id="tab"
-                      class="table-cell py-2 font-semibold rounded-lg cursor-pointer active:bg-primaryColor active:bg-opacity-10"
-                      :class="{ selected: selectedSimulasiTab === 'Simulasi 1' }"
-                      @click="selectedSimulasiTab = 'Simulasi 1'">
-                      Simulasi 1</li>
-                    <li id="tab"
-                      class="table-cell py-2 font-semibold rounded-lg cursor-pointer active:bg-primaryColor active:bg-opacity-10"
-                      :class="{ selected: selectedSimulasiTab === 'Simulasi 2' }"
-                      @click="selectedSimulasiTab = 'Simulasi 2'">Simulasi 2
-                    </li>
-                  </ul>
-                </nav>
-                <div v-if="selectedSimulasiTab === 'Simulasi 1'" class="flex flex-col space-y-3.5">
-                  <InfoComponent simulasi="Simulasi 1" proyeksi="Proyeksi Sebelumnya" />
-                  <div class="flex flex-row items-center justify-between">
-                    <h1 class="text-lg font-semibold">Simulasi - Parameter Teknis & Finansial</h1>
-                    <button class="px-3 py-2 font-semibold border rounded-lg border-primaryColor text-primaryColor"
-                      @click="handleDownloadExcelSimulasi1">Unduh</button>
-                  </div>
-                  <ParameterTeknisInfoBox :combo-bahan-bakar="comboBahanBakar"
-                    :parameter-teknis="simulasiAsumsiParameter.parameter_teknis_financial"
-                    :bahan-bakars="simulasiAsumsiParameter.harga_bahan_bakars" :periode="tahunUpdate" />
-                </div>
-                <div v-if="selectedSimulasiTab === 'Simulasi 2'" class="flex flex-col space-y-3.5">
-                  <div class="flex flex-row items-center justify-between">
-                    <h1 class="text-lg font-semibold">Simulasi - Parameter Teknis & Finansial</h1>
-                    <div class="flex flex-row space-x-3">
-                      <button class="px-3 py-2 font-semibold rounded-lg text-primaryColor"
-                        @click="isUnggahModalOpen = true">Unggah</button>
-                      <button class="px-3 py-2 font-semibold border rounded-lg border-primaryColor text-primaryColor"
-                        @click="handleDownloadExcelSimulasi2">Unduh</button>
+                  <div v-if="selectedSimulasiTab === 'Simulasi 2'" class="flex flex-col space-y-3.5">
+                    <div class="flex flex-row items-center justify-between">
+                      <h1 class="text-lg font-semibold">Simulasi - Asumsi Makro</h1>
+                      <div class="flex flex-row space-x-3">
+                        <button class="px-3 py-2 font-semibold rounded-lg text-primaryColor"
+                          @click="isUnggahModalOpen = true">Unggah</button>
+                        <button class="px-3 py-2 font-semibold border rounded-lg border-primaryColor text-primaryColor"
+                          @click="handleDownloadExcelSimulasi2">Unduh</button>
+                      </div>
                     </div>
+                    <AsumsiInfoBox :simulasi-asumsi-makro="simulasiAsumsiParameter.asumsi_makro"
+                      :periode="tahunUpdate" />
                   </div>
-                  <ParameterTeknisInfoBox :combo-bahan-bakar="comboBahanBakar"
-                    :parameter-teknis="simulasiAsumsiParameter.parameter_teknis_financial"
-                    :bahan-bakars="simulasiAsumsiParameter.harga_bahan_bakars" :periode="tahunUpdate" />
-                </div>
-              </section>
-              <section class="w-full overflow-clip mt-2 space-y-3.5" v-if="selectedAside === 'Data Teknis'">
-                <nav class="bg-primaryColor bg-opacity-5 p-1.5 rounded-lg">
-                  <ul class="table w-full text-sm text-center text-primaryColor border-spacing-x-3">
-                    <li id="tab"
-                      class="table-cell py-2 font-semibold rounded-lg cursor-pointer active:bg-primaryColor active:bg-opacity-10"
-                      :class="{ selected: selectedSimulasiTab === 'Simulasi 1' }"
-                      @click="selectedSimulasiTab = 'Simulasi 1'">
-                      Simulasi 1</li>
-                    <li id="tab"
-                      class="table-cell py-2 font-semibold rounded-lg cursor-pointer active:bg-primaryColor active:bg-opacity-10"
-                      :class="{ selected: selectedSimulasiTab === 'Simulasi 2' }"
-                      @click="selectedSimulasiTab = 'Simulasi 2'">Simulasi 2
-                    </li>
-                  </ul>
-                </nav>
-                <div v-if="selectedSimulasiTab === 'Simulasi 1'" class="flex flex-col space-y-3.5">
-                  <InfoComponent simulasi="Simulasi 1" proyeksi="Proyeksi Sebelumnya" />
-                  <div class="flex items-center justify-between w-full">
-                    <h1 class="text-lg font-semibold">Simulasi - Data Teknis</h1>
-                    <button class="px-3 py-2 font-semibold border rounded-lg border-primaryColor text-primaryColor"
-                      @click="handleDownloadExcelSimulasi1">Unduh</button>
-                  </div>
-                  <div class="w-full overflow-auto border rounded-lg whitespace-nowrap">
-                    <table v-if="simulasi1DataTeknis">
-                      <thead>
-                        <tr class="text-[#0099AD] text-sm text-left border-b-2">
-                          <th class="sticky left-0 z-10 bg-white">No</th>
-                          <th class="sticky z-10 bg-white left-10">Nama</th>
-                          <th class="text-center" v-for="(item, index) in simulasi1DataTeknis.tahun.length === 0
-                            ? 1
-                            : simulasi1DataTeknis.tahun" :key="index" :class="{
-                              'text-warningColor': item < tahunBerjalan,
-                              'text-black': item === tahunBerjalan,
-                              'text-[#0099AD]': item > tahunBerjalan,
-                            }">
-                            {{ simulasi1DataTeknis.tahun.length === 0 ? "-" : item }} <br> <span
-                              class="text-xs font-normal">{{ index
-                              }}</span>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="(item, index) in simulasi1DataTeknis.detail" :key="index">
-                          <td class="sticky left-0 z-10 bg-white">{{ index + 1 }}</td>
-                          <td class="sticky z-10 bg-white left-10">{{ item.uraian }}</td>
-                          <td v-for="(items, indexs) in simulasi1DataTeknis.tahun.length === 0
-                            ? 1
-                            : simulasi1DataTeknis.tahun" :key="indexs"
-                            :class="{ 'text-right': item.uraian !== 'Type of Periodic Maintenance', 'text-center': item.uraian == 'Type of Periodic Maintenance', 'bg-blue-50': items === tahunBerjalan }">
-                            {{
-                            simulasi1DataTeknis.tahun
-                            ? item["t" + items] != null
-                            ? item.uraian === 'Type of Periodic Maintenance' ? item["t" + items] === 0 ? '-' :
-                            getTypePeriodic(item["t" + items]) : item.uraian === 'Tahun Ke' ? item["t" + items] :
-                            globalFormat.formatRupiah(item["t" + items])
-                            : "-"
-                            : "-"
-                            }}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                <div v-if="selectedSimulasiTab === 'Simulasi 2'" class="flex flex-col space-y-3.5">
-                  <div class="flex items-center justify-between w-full">
-                    <h1 class="text-lg font-semibold">Simulasi - Data Teknis</h1>
-                    <div class="flex flex-row space-x-3">
-                      <button class="px-3 py-2 font-semibold rounded-lg text-primaryColor"
-                        @click="isUnggahModalOpen = true">Unggah</button>
-                      <button class="px-3 py-2 font-semibold border rounded-lg border-primaryColor text-primaryColor"
-                        @click="handleDownloadExcelSimulasi2">Unduh</button>
+                </section>
+                <section class="w-full mt-2 space-y-3.5" v-if="selectedAside === 'Parameter Teknis'">
+                  <div v-if="selectedSimulasiTab === 'Simulasi 1'" class="flex flex-col space-y-3.5">
+                    <InfoComponent simulasi="Simulasi 1" proyeksi="Proyeksi Sebelumnya" />
+                    <div class="flex flex-row items-center justify-between">
+                      <h1 class="text-lg font-semibold">Simulasi - Parameter Teknis & Finansial</h1>
+                      <div class="flex flex-row space-x-3">
+                        <button class="px-3 py-2 font-semibold rounded-lg text-primaryColor"
+                          @click="isUnggahModalOpenSimulasi1 = true">Unggah</button>
+                        <button class="px-3 py-2 font-semibold border rounded-lg border-primaryColor text-primaryColor"
+                          @click="handleDownloadExcelSimulasi1">Unduh</button>
+                      </div>
                     </div>
+                    <ParameterTeknisInfoBox :combo-bahan-bakar="comboBahanBakar"
+                      :parameter-teknis="simulasiAsumsiParameter.parameter_teknis_financial"
+                      :bahan-bakars="simulasiAsumsiParameter.harga_bahan_bakars" :periode="tahunUpdate" />
                   </div>
-                  <div class="w-full overflow-auto border rounded-lg whitespace-nowrap">
-                    <table>
-                      <thead>
-                        <tr class="text-[#0099AD] text-sm text-left border-b-2">
-                          <th class="sticky left-0 z-10 bg-white">No</th>
-                          <th class="sticky z-10 bg-white left-10">Nama</th>
-                          <th class="text-center" v-for="(item, index) in simulasi2DataTeknis.tahun.length === 0
-                            ? 1
-                            : simulasi2DataTeknis.tahun" :key="index" :class="{
-                              'text-warningColor': item < tahunBerjalan,
-                              'text-black': item === tahunBerjalan,
-                              'text-[#0099AD]': item > tahunBerjalan,
-                            }">
-                            {{ simulasi2DataTeknis.tahun.length === 0 ? "-" : item }} <br> <span
-                              class="text-xs font-normal">{{ index
-                              }}</span>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr v-for="(item, index) in simulasi2DataTeknis.detail" :key="index">
-                          <td class="sticky left-0 z-10 bg-white">{{ index + 1 }}</td>
-                          <td class="sticky z-10 bg-white left-10">{{ item.uraian }}</td>
-                          <td v-for="(items, indexs) in simulasi2DataTeknis.tahun.length === 0
-                            ? 1
-                            : simulasi2DataTeknis.tahun" :key="indexs"
-                            :class="{ 'text-right': item.uraian !== 'Type of Periodic Maintenance', 'text-center': item.uraian == 'Type of Periodic Maintenance', 'bg-blue-50': items === tahunBerjalan }">
-                            {{
-                            simulasi2DataTeknis.tahun
-                            ? item["t" + items] != null
-                            ? item.uraian === 'Type of Periodic Maintenance' ? item["t" + items] === 0 ? '-' :
-                            getTypePeriodic(item["t" + items]) : item.uraian === 'Tahun Ke' ? item["t" + items] :
-                            globalFormat.formatRupiah(item["t" + items])
-                            : "-"
-                            : "-"
-                            }}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </section>
-              <section class="w-full overflow-clip mt-2 space-y-3.5" v-if="selectedAside === 'Data Finansial'">
-                <nav class=" bg-primaryColor bg-opacity-5 p-1.5 rounded-lg">
-                  <ul class="table w-full text-sm text-center text-primaryColor border-spacing-x-3">
-                    <li id="tab"
-                      class="table-cell py-2 font-semibold rounded-lg cursor-pointer active:bg-primaryColor active:bg-opacity-10"
-                      :class="{ selected: selectedSimulasiTab === 'Simulasi 1' }"
-                      @click="selectedSimulasiTab = 'Simulasi 1'">
-                      Simulasi 1</li>
-                    <li id="tab"
-                      class="table-cell py-2 font-semibold rounded-lg cursor-pointer active:bg-primaryColor active:bg-opacity-10"
-                      :class="{ selected: selectedSimulasiTab === 'Simulasi 2' }"
-                      @click="selectedSimulasiTab = 'Simulasi 2'">Simulasi 2
-                    </li>
-                  </ul>
-                </nav>
-                <div v-if="selectedSimulasiTab === 'Simulasi 1'" class="flex flex-col space-y-3.5">
-                  <InfoComponent simulasi="Simulasi 1" proyeksi="Proyeksi Sebelumnya" />
-                  <div class="flex items-center justify-between w-full">
-                    <h1 class="text-lg font-semibold">Simulasi - Data Finansial</h1>
-                    <button class="px-3 py-2 font-semibold border rounded-lg border-primaryColor text-primaryColor"
-                      @click="handleDownloadExcelSimulasi1">Unduh</button>
-                  </div>
-                  <div class="w-full overflow-auto border rounded-lg whitespace-nowrap" v-if="dataFinansialSimulasi1">
-                    <table class="w-full">
-                      <thead>
-                        <tr class="text-[#0099AD] text-sm text-left border-b-2">
-                          <th class="pr-96" id="tableHeader">Nama</th>
-                          <th class="text-center"
-                            v-for="(tahunItem, tahunIndex) in dataFinansialSimulasi1.tahun.length === 0 ? 1 : dataFinansialSimulasi1.tahun"
-                            :key="tahunIndex" :class="{
-                              'text-warningColor': tahunItem < tahunBerjalan,
-                              'text-black': tahunItem === tahunBerjalan,
-                              'text-primaryColor': tahunItem > tahunBerjalan,
-                            }">
-                            {{ dataFinansialSimulasi1.tahun.length === 0 ? '-' : tahunItem }} <br> <span
-                              class="text-xs font-normal">{{ tahunIndex
-                              }}</span>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody v-for="(level1, level1Index) in simulasi1DataFinansial" :key="level1Index"
-                        v-auto-animate="{ duration: 300 }">
-                        <tr class="text-sm cursor-pointer bg-strokeColor bg-opacity-40 active:bg-opacity-90"
-                          @click="toggleRowSimulasi1(level1.id_uraian)">
-                          <td class="border-b"
-                            :colspan="dataFinansialSimulasi1.tahun.length === 0 ? 2 : dataFinansialSimulasi1.tahun.length + 1">
-                            <div class="flex flex-row items-center">
-                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                xmlns="http://www.w3.org/2000/svg" class="mr-2"
-                                v-if="!isRowOpenSimulasi1(level1.id_uraian)">
-                                <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                  d="M12.4419 14.0044C12.1979 14.2485 11.8021 14.2485 11.5581 14.0044L8.43306 10.8794C8.18898 10.6354 8.18898 10.2396 8.43306 9.99556C8.67714 9.75148 9.07286 9.75148 9.31694 9.99556L12 12.6786L14.6831 9.99556C14.9271 9.75148 15.3229 9.75148 15.5669 9.99556C15.811 10.2396 15.811 10.6354 15.5669 10.8794L12.4419 14.0044Z"
-                                  fill="white" />
-                              </svg>
-                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                xmlns="http://www.w3.org/2000/svg" class="mr-2" v-else>
-                                <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                  d="M11.5581 9.99556C11.8021 9.75148 12.1979 9.75148 12.4419 9.99556L15.5669 13.1206C15.811 13.3646 15.811 13.7604 15.5669 14.0044C15.3229 14.2485 14.9271 14.2485 14.6831 14.0044L12 11.3214L9.31694 14.0044C9.07286 14.2485 8.67714 14.2485 8.43306 14.0044C8.18898 13.7604 8.18898 13.3646 8.43306 13.1206L11.5581 9.99556Z"
-                                  fill="white" />
-                              </svg>
-                              <span>{{ level1.uraian }}</span>
-                            </div>
-                          </td>
-                        </tr>
-                        <template v-for="(level2, level2Index) in level1.level2" :key="level2Index"
-                          v-if="isRowOpenSimulasi1(level1.id_uraian)">
-                          <tr class="text-sm cursor-pointer active:bg-strokeColor active:bg-opacity-30"
-                            @click="toggleRowSimulasi1(level2.id_uraian)">
-                            <td id="level2" :class="{ selected: level2.level3.length === 0 }">
-                              <div class="flex flex-row items-center">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                  xmlns="http://www.w3.org/2000/svg" class="mr-2"
-                                  v-if="!isRowOpenSimulasi1(level2.id_uraian) && level2.level3.length !== 0">
-                                  <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                                  <path fill-rule="evenodd" clip-rule="evenodd"
-                                    d="M12.4419 14.0044C12.1979 14.2485 11.8021 14.2485 11.5581 14.0044L8.43306 10.8794C8.18898 10.6354 8.18898 10.2396 8.43306 9.99556C8.67714 9.75148 9.07286 9.75148 9.31694 9.99556L12 12.6786L14.6831 9.99556C14.9271 9.75148 15.3229 9.75148 15.5669 9.99556C15.811 10.2396 15.811 10.6354 15.5669 10.8794L12.4419 14.0044Z"
-                                    fill="white" />
-                                </svg>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                  xmlns="http://www.w3.org/2000/svg" class="mr-2"
-                                  v-else-if="isRowOpenSimulasi1(level2.id_uraian) && level2.level3.length !== 0">
-                                  <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                                  <path fill-rule="evenodd" clip-rule="evenodd"
-                                    d="M11.5581 9.99556C11.8021 9.75148 12.1979 9.75148 12.4419 9.99556L15.5669 13.1206C15.811 13.3646 15.811 13.7604 15.5669 14.0044C15.3229 14.2485 14.9271 14.2485 14.6831 14.0044L12 11.3214L9.31694 14.0044C9.07286 14.2485 8.67714 14.2485 8.43306 14.0044C8.18898 13.7604 8.18898 13.3646 8.43306 13.1206L11.5581 9.99556Z"
-                                    fill="white" />
-                                </svg>
-                                <span>{{ level2.uraian }}</span>
-                              </div>
-                            </td>
-                            <td class="text-right"
-                              v-for="(tahun, tahunIndex) in dataFinansialSimulasi1.tahun.length === 0 ? 1 : dataFinansialSimulasi1.tahun"
-                              :class="{ 'bg-blue-50': tahun === tahunBerjalan }">
-                              {{ dataFinansialSimulasi1.tahun ? level2.uraian.includes('Kalkulasi' || 'kalkulasi') ? ''
-                              : level2['t' +
-                              tahun]
-                              == null ? '-' : globalFormat.formatRupiah(level2['t' +
-                              tahun])
-                              : '-' }}
-                            </td>
-                          </tr>
-                          <template v-for="(level3, level3Index) in level2.level3" :key="level3Index"
-                            v-if="isRowOpenSimulasi1(level2.id_uraian)">
-                            <tr class="text-sm cursor-pointer" @click="toggleRowSimulasi1(level3.id_uraian)">
-                              <td id="level3" :class="{ selected: level3.level4.length === 0 }">
-                                <div class="flex flex-row items-center">
-                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg" class="mr-2"
-                                    v-if="!isRowOpenSimulasi1(level3.id_uraian) && level3.level4.length !== 0">
-                                    <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                      d="M12.4419 14.0044C12.1979 14.2485 11.8021 14.2485 11.5581 14.0044L8.43306 10.8794C8.18898 10.6354 8.18898 10.2396 8.43306 9.99556C8.67714 9.75148 9.07286 9.75148 9.31694 9.99556L12 12.6786L14.6831 9.99556C14.9271 9.75148 15.3229 9.75148 15.5669 9.99556C15.811 10.2396 15.811 10.6354 15.5669 10.8794L12.4419 14.0044Z"
-                                      fill="white" />
-                                  </svg>
-                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg" class="mr-2"
-                                    v-else-if="isRowOpenSimulasi1(level3.id_uraian) && level3.level4.length !== 0">
-                                    <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                      d="M11.5581 9.99556C11.8021 9.75148 12.1979 9.75148 12.4419 9.99556L15.5669 13.1206C15.811 13.3646 15.811 13.7604 15.5669 14.0044C15.3229 14.2485 14.9271 14.2485 14.6831 14.0044L12 11.3214L9.31694 14.0044C9.07286 14.2485 8.67714 14.2485 8.43306 14.0044C8.18898 13.7604 8.18898 13.3646 8.43306 13.1206L11.5581 9.99556Z"
-                                      fill="white" />
-                                  </svg>
-                                  <span>{{ level3.uraian }}</span>
-                                </div>
-                              </td>
-                              <td class="text-right"
-                                v-for="(tahun, tahunIndex) in dataFinansialSimulasi1.tahun.length === 0 ? 1 : dataFinansialSimulasi1.tahun"
-                                :class="{ 'bg-blue-50': tahun === tahunBerjalan }">
-                                {{ dataFinansialSimulasi1.tahun ? level3.uraian.includes('Kalkulasi' || 'kalkulasi') ?
-                                '' : level3['t' +
-                                tahun]
-                                == null ? '-'
-                                : globalFormat.formatRupiah(level3['t' + tahun])
-                                : '-' }}
-                              </td>
-                            </tr>
-                            <template v-for="(level4, level4Index) in level3.level4" :key="level4Index"
-                              v-if="isRowOpenSimulasi1(level3.id_uraian)">
-                              <tr class="text-sm">
-                                <td id="level4">{{ level4.uraian }}</td>
-                                <td class="text-right"
-                                  v-for="(tahun, tahunIndex) in dataFinansialSimulasi1.tahun.length === 0 ? 1 : dataFinansialSimulasi1.tahun"
-                                  :class="{ 'bg-blue-50': tahun === tahunBerjalan }">
-                                  {{ dataFinansialSimulasi1.tahun ? level4.uraian.includes('Kalkulasi' || 'kalkulasi') ?
-                                  '' : level4['t'
-                                  +
-                                  tahun] == null ? '-' :
-                                  globalFormat.formatRupiah(level4['t' + tahun]) : '-' }}
-                                </td>
-                              </tr>
-                            </template>
-                          </template>
-                        </template>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                <div v-if="selectedSimulasiTab === 'Simulasi 2'" class="flex flex-col space-y-3.5">
-                  <div class="flex items-center justify-between w-full">
-                    <h1 class="text-lg font-semibold">Simulasi - Data Finansial</h1>
-                    <div class="flex flex-row space-x-3">
-                      <button class="px-3 py-2 font-semibold rounded-lg text-primaryColor"
-                        @click="isUnggahModalOpen = true">Unggah</button>
-                      <button class="px-3 py-2 font-semibold border rounded-lg border-primaryColor text-primaryColor"
-                        @click="handleDownloadExcelSimulasi2">Unduh</button>
+                  <div v-if="selectedSimulasiTab === 'Simulasi 2'" class="flex flex-col space-y-3.5">
+                    <div class="flex flex-row items-center justify-between">
+                      <h1 class="text-lg font-semibold">Simulasi - Parameter Teknis & Finansial</h1>
+                      <div class="flex flex-row space-x-3">
+                        <button class="px-3 py-2 font-semibold rounded-lg text-primaryColor"
+                          @click="isUnggahModalOpen = true">Unggah</button>
+                        <button class="px-3 py-2 font-semibold border rounded-lg border-primaryColor text-primaryColor"
+                          @click="handleDownloadExcelSimulasi2">Unduh</button>
+                      </div>
                     </div>
+                    <ParameterTeknisInfoBox :combo-bahan-bakar="comboBahanBakar"
+                      :parameter-teknis="simulasiAsumsiParameter.parameter_teknis_financial"
+                      :bahan-bakars="simulasiAsumsiParameter.harga_bahan_bakars" :periode="tahunUpdate" />
                   </div>
-                  <div class="w-full overflow-auto border rounded-lg whitespace-nowrap" v-if="dataFinansialSimulasi2">
-                    <table class="w-full">
-                      <thead>
-                        <tr class="text-[#0099AD] text-sm text-left border-b-2">
-                          <th class="pr-96" id="tableHeader">Nama</th>
-                          <th class="text-center"
-                            v-for="(tahunItem, tahunIndex) in dataFinansialSimulasi2.tahun.length === 0 ? 1 : dataFinansialSimulasi2.tahun"
-                            :key="tahunIndex" :class="{
-                              'text-warningColor': tahunItem < tahunBerjalan,
-                              'text-black': tahunItem === tahunBerjalan,
-                              'text-primaryColor': tahunItem > tahunBerjalan,
-                            }">
-                            {{ dataFinansialSimulasi2.tahun.length === 0 ? '-' : tahunItem }} <br> <span
-                              class="text-xs font-normal">{{
-                              tahunIndex
-                              }}</span>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody v-for="(level1, level1Index) in simulasi2DataFinansial" :key="level1Index"
-                        v-auto-animate="{ duration: 300 }">
-                        <tr class="text-sm cursor-pointer bg-strokeColor bg-opacity-40 active:bg-opacity-90"
-                          @click="toggleRowSimulasi2(level1.id_uraian)">
-                          <td class="border-b"
-                            :colspan="dataFinansialSimulasi2.tahun.length === 0 ? 2 : dataFinansialSimulasi2.tahun.length + 1">
-                            <div class="flex flex-row items-center">
-                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                xmlns="http://www.w3.org/2000/svg" class="mr-2"
-                                v-if="!isRowOpenSimulasi2(level1.id_uraian)">
-                                <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                  d="M12.4419 14.0044C12.1979 14.2485 11.8021 14.2485 11.5581 14.0044L8.43306 10.8794C8.18898 10.6354 8.18898 10.2396 8.43306 9.99556C8.67714 9.75148 9.07286 9.75148 9.31694 9.99556L12 12.6786L14.6831 9.99556C14.9271 9.75148 15.3229 9.75148 15.5669 9.99556C15.811 10.2396 15.811 10.6354 15.5669 10.8794L12.4419 14.0044Z"
-                                  fill="white" />
-                              </svg>
-                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                xmlns="http://www.w3.org/2000/svg" class="mr-2" v-else>
-                                <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                  d="M11.5581 9.99556C11.8021 9.75148 12.1979 9.75148 12.4419 9.99556L15.5669 13.1206C15.811 13.3646 15.811 13.7604 15.5669 14.0044C15.3229 14.2485 14.9271 14.2485 14.6831 14.0044L12 11.3214L9.31694 14.0044C9.07286 14.2485 8.67714 14.2485 8.43306 14.0044C8.18898 13.7604 8.18898 13.3646 8.43306 13.1206L11.5581 9.99556Z"
-                                  fill="white" />
-                              </svg>
-                              <span>{{ level1.uraian }}</span>
-                            </div>
-                          </td>
-                        </tr>
-                        <template v-for="(level2, level2Index) in level1.level2" :key="level2Index"
-                          v-if="isRowOpenSimulasi2(level1.id_uraian)">
-                          <tr class="text-sm cursor-pointer active:bg-strokeColor active:bg-opacity-30"
-                            @click="toggleRowSimulasi2(level2.id_uraian)">
-                            <td id="level2" :class="{ selected: level2.level3.length === 0 }">
-                              <div class="flex flex-row items-center">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                  xmlns="http://www.w3.org/2000/svg" class="mr-2"
-                                  v-if="!isRowOpenSimulasi2(level2.id_uraian) && level2.level3.length !== 0">
-                                  <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                                  <path fill-rule="evenodd" clip-rule="evenodd"
-                                    d="M12.4419 14.0044C12.1979 14.2485 11.8021 14.2485 11.5581 14.0044L8.43306 10.8794C8.18898 10.6354 8.18898 10.2396 8.43306 9.99556C8.67714 9.75148 9.07286 9.75148 9.31694 9.99556L12 12.6786L14.6831 9.99556C14.9271 9.75148 15.3229 9.75148 15.5669 9.99556C15.811 10.2396 15.811 10.6354 15.5669 10.8794L12.4419 14.0044Z"
-                                    fill="white" />
-                                </svg>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                  xmlns="http://www.w3.org/2000/svg" class="mr-2"
-                                  v-else-if="isRowOpenSimulasi2(level2.id_uraian) && level2.level3.length !== 0">
-                                  <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                                  <path fill-rule="evenodd" clip-rule="evenodd"
-                                    d="M11.5581 9.99556C11.8021 9.75148 12.1979 9.75148 12.4419 9.99556L15.5669 13.1206C15.811 13.3646 15.811 13.7604 15.5669 14.0044C15.3229 14.2485 14.9271 14.2485 14.6831 14.0044L12 11.3214L9.31694 14.0044C9.07286 14.2485 8.67714 14.2485 8.43306 14.0044C8.18898 13.7604 8.18898 13.3646 8.43306 13.1206L11.5581 9.99556Z"
-                                    fill="white" />
-                                </svg>
-                                <span>{{ level2.uraian }}</span>
-                              </div>
-                            </td>
-                            <td class="text-right"
-                              v-for="(tahun, tahunIndex) in dataFinansialSimulasi2.tahun.length === 0 ? 1 : dataFinansialSimulasi2.tahun"
-                              :class="{ 'bg-blue-50': tahun === tahunBerjalan }">
-                              {{ dataFinansialSimulasi2.tahun ? level2.uraian.includes('Kalkulasi' || 'kalkulasi') ? ''
-                              : level2['t' +
-                              tahun]
-                              == null ? '-' : globalFormat.formatRupiah(level2['t' +
-                              tahun])
-                              : '-' }}
-                            </td>
-                          </tr>
-                          <template v-for="(level3, level3Index) in level2.level3" :key="level3Index"
-                            v-if="isRowOpenSimulasi2(level2.id_uraian)">
-                            <tr class="text-sm cursor-pointer" @click="toggleRowSimulasi2(level3.id_uraian)">
-                              <td id="level3" :class="{ selected: level3.level4.length === 0 }">
-                                <div class="flex flex-row items-center">
-                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg" class="mr-2"
-                                    v-if="!isRowOpenSimulasi2(level3.id_uraian) && level3.level4.length !== 0">
-                                    <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                      d="M12.4419 14.0044C12.1979 14.2485 11.8021 14.2485 11.5581 14.0044L8.43306 10.8794C8.18898 10.6354 8.18898 10.2396 8.43306 9.99556C8.67714 9.75148 9.07286 9.75148 9.31694 9.99556L12 12.6786L14.6831 9.99556C14.9271 9.75148 15.3229 9.75148 15.5669 9.99556C15.811 10.2396 15.811 10.6354 15.5669 10.8794L12.4419 14.0044Z"
-                                      fill="white" />
-                                  </svg>
-                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg" class="mr-2"
-                                    v-else-if="isRowOpenSimulasi2(level3.id_uraian) && level3.level4.length !== 0">
-                                    <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                                    <path fill-rule="evenodd" clip-rule="evenodd"
-                                      d="M11.5581 9.99556C11.8021 9.75148 12.1979 9.75148 12.4419 9.99556L15.5669 13.1206C15.811 13.3646 15.811 13.7604 15.5669 14.0044C15.3229 14.2485 14.9271 14.2485 14.6831 14.0044L12 11.3214L9.31694 14.0044C9.07286 14.2485 8.67714 14.2485 8.43306 14.0044C8.18898 13.7604 8.18898 13.3646 8.43306 13.1206L11.5581 9.99556Z"
-                                      fill="white" />
-                                  </svg>
-                                  <span>{{ level3.uraian }}</span>
-                                </div>
-                              </td>
-                              <td class="text-right"
-                                v-for="(tahun, tahunIndex) in dataFinansialSimulasi2.tahun.length === 0 ? 1 : dataFinansialSimulasi2.tahun"
-                                :class="{ 'bg-blue-50': tahun === tahunBerjalan }">
-                                {{ dataFinansialSimulasi2.tahun ? level3.uraian.includes('Kalkulasi' || 'kalkulasi') ?
-                                '' : level3['t' +
-                                tahun]
-                                == null ? '-'
-                                : globalFormat.formatRupiah(level3['t' + tahun])
-                                : '-' }}
-                              </td>
-                            </tr>
-                            <template v-for="(level4, level4Index) in level3.level4" :key="level4Index"
-                              v-if="isRowOpenSimulasi2(level3.id_uraian)">
-                              <tr class="text-sm">
-                                <td id="level4">{{ level4.uraian }}</td>
-                                <td class="text-right"
-                                  v-for="(tahun, tahunIndex) in dataFinansialSimulasi2.tahun.length === 0 ? 1 : dataFinansialSimulasi2.tahun"
-                                  :class="{ 'bg-blue-50': tahun === tahunBerjalan }">
-                                  {{ dataFinansialSimulasi2.tahun ? level4.uraian.includes('Kalkulasi' || 'kalkulasi') ?
-                                  '' : level4['t'
-                                  +
-                                  tahun] == null ? '-' :
-                                  globalFormat.formatRupiah(level4['t' + tahun]) : '-' }}
-                                </td>
-                              </tr>
-                            </template>
-                          </template>
-                        </template>
-                      </tbody>
-                    </table>
+                </section>
+                <section class="w-full overflow-clip mt-2 space-y-3.5" v-if="selectedAside === 'Data Teknis'">
+                  <div v-if="selectedSimulasiTab === 'Simulasi 1'" class="flex flex-col space-y-3.5">
+                    <InfoComponent simulasi="Simulasi 1" proyeksi="Proyeksi Sebelumnya" />
+                    <div class="flex items-center justify-between w-full">
+                      <h1 class="text-lg font-semibold">Simulasi - Data Teknis</h1>
+                      <div class="flex flex-row space-x-3">
+                        <button class="px-3 py-2 font-semibold rounded-lg text-primaryColor"
+                          @click="isUnggahModalOpenSimulasi1 = true">Unggah</button>
+                        <button class="px-3 py-2 font-semibold border rounded-lg border-primaryColor text-primaryColor"
+                          @click="handleDownloadExcelSimulasi1">Unduh</button>
+                      </div>
+                    </div>
+                    <TableDataTeknis v-if="simulasi1DataTeknis" :data-teknis="simulasi1DataTeknis"
+                      :tahun-terakhir-realisasi="tahunBerjalan" :type-periodic="listTypePeriodic" />
                   </div>
-                </div>
-              </section>
+                  <div v-if="selectedSimulasiTab === 'Simulasi 2'" class="flex flex-col space-y-3.5">
+                    <div class="flex items-center justify-between w-full">
+                      <h1 class="text-lg font-semibold">Simulasi - Data Teknis</h1>
+                      <div class="flex flex-row space-x-3">
+                        <button class="px-3 py-2 font-semibold rounded-lg text-primaryColor"
+                          @click="isUnggahModalOpen = true">Unggah</button>
+                        <button class="px-3 py-2 font-semibold border rounded-lg border-primaryColor text-primaryColor"
+                          @click="handleDownloadExcelSimulasi2">Unduh</button>
+                      </div>
+                    </div>
+                    <TableDataTeknis v-if="simulasi2DataTeknis" :data-teknis="simulasi2DataTeknis"
+                      :tahun-terakhir-realisasi="tahunBerjalan" :type-periodic="listTypePeriodic" />
+                  </div>
+                </section>
+                <section class="w-full overflow-clip mt-2 space-y-3.5" v-if="selectedAside === 'Data Finansial'">
+                  <div v-if="selectedSimulasiTab === 'Simulasi 1'" class="flex flex-col space-y-3.5">
+                    <InfoComponent simulasi="Simulasi 1" proyeksi="Proyeksi Sebelumnya" />
+                    <div class="flex items-center justify-between w-full">
+                      <h1 class="text-lg font-semibold">Simulasi - Data Finansial</h1>
+                      <div class="flex flex-row space-x-3">
+                        <button class="px-3 py-2 font-semibold rounded-lg text-primaryColor"
+                          @click="isUnggahModalOpenSimulasi1 = true">Unggah</button>
+                        <button class="px-3 py-2 font-semibold border rounded-lg border-primaryColor text-primaryColor"
+                          @click="handleDownloadExcelSimulasi1">Unduh</button>
+                      </div>
+                    </div>
+                    <TableDataFinansial v-if="dataFinansialSimulasi1" :source="simulasi1DataFinansial"
+                      :data-finansial="dataFinansialSimulasi1" :tahun-terakhir-realisasi="tahunBerjalan" />
+                  </div>
+                  <div v-if="selectedSimulasiTab === 'Simulasi 2'" class="flex flex-col space-y-3.5">
+                    <div class="flex items-center justify-between w-full">
+                      <h1 class="text-lg font-semibold">Simulasi - Data Finansial</h1>
+                      <div class="flex flex-row space-x-3">
+                        <button class="px-3 py-2 font-semibold rounded-lg text-primaryColor"
+                          @click="isUnggahModalOpen = true">Unggah</button>
+                        <button class="px-3 py-2 font-semibold border rounded-lg border-primaryColor text-primaryColor"
+                          @click="handleDownloadExcelSimulasi2">Unduh</button>
+                      </div>
+                    </div>
+                    <TableDataFinansial v-if="dataFinansialSimulasi2" :source="simulasi2DataFinansial"
+                      :data-finansial="dataFinansialSimulasi2" :tahun-terakhir-realisasi="tahunBerjalan" />
+                  </div>
+                </section>
+                <section class="w-full overflow-clip mt-2 space-y-3.5" v-if="selectedAside === 'Hasil Simulasi'">
+                  <div v-if="selectedSimulasiTab === 'Simulasi 1'" class="flex flex-col space-y-3.5">
+                    <InfoComponent simulasi="Simulasi 1" proyeksi="Proyeksi Sebelumnya" />
+                    <div class="flex items-center justify-between w-full">
+                      <h1 class="text-lg font-semibold">Simulasi - Hasil Simulasi</h1>
+                      <div class="flex flex-row space-x-3">
+                        <button class="px-3 py-2 font-semibold rounded-lg text-primaryColor"
+                          @click="isUnggahModalOpenSimulasi1 = true">Unggah</button>
+                        <button class="px-3 py-2 font-semibold border rounded-lg border-primaryColor text-primaryColor"
+                          @click="handleDownloadExcelSimulasi1">Unduh</button>
+                      </div>
+                    </div>
+                    <nav class="rounded-md bg-primaryColor bg-opacity-5">
+                      <ul class="table w-full text-sm text-center text-primaryColor border-spacing-x-5">
+                        <li id="tab"
+                          class="table-cell w-1/2 py-2 font-semibold rounded-md cursor-pointer outline-1 outline outline-primaryColor active:bg-primaryColor active:bg-opacity-10">
+                          COD - Akhir Masa Manfaat
+                        </li>
+                      </ul>
+                    </nav>
+                    <AkhirMasaManfaat :irr-on-project="hasilSimulasi1.trackIrrProject ?? 0"
+                      :irr-on-equity="hasilSimulasi1.trackIrrEquity ?? 0"
+                      :npv-on-equity="hasilSimulasi1.trackNpvEquity ?? 0"
+                      :npv-on-project="hasilSimulasi1.trackNpvProject ?? 0"
+                      :average-ncf="hasilSimulasi1.trackAverageNcf ?? 0"
+                      :average-eaf="hasilSimulasi1.trackAverageEaf ?? 0" />
+                  </div>
+                  <div v-if="selectedSimulasiTab === 'Simulasi 2'" class="flex flex-col space-y-3.5">
+                    <div class="flex items-center justify-between w-full">
+                      <h1 class="text-lg font-semibold">Simulasi - Hasil Simulasi</h1>
+                      <div class="flex flex-row space-x-3">
+                        <button class="px-3 py-2 font-semibold rounded-lg text-primaryColor"
+                          @click="isUnggahModalOpen = true">Unggah</button>
+                        <button class="px-3 py-2 font-semibold border rounded-lg border-primaryColor text-primaryColor"
+                          @click="handleDownloadExcelSimulasi2">Unduh</button>
+                      </div>
+                    </div>
+                    <nav class="rounded-md bg-primaryColor bg-opacity-5">
+                      <ul class="table w-full text-sm text-center text-primaryColor border-spacing-x-5">
+                        <li id="tab"
+                          class="table-cell w-1/2 py-2 font-semibold rounded-md cursor-pointer outline-1 outline outline-primaryColor active:bg-primaryColor active:bg-opacity-10">
+                          COD - Akhir Masa Manfaat
+                        </li>
+                      </ul>
+                    </nav>
+                    <AkhirMasaManfaat :irr-on-project="hasilSimulasi2.trackIrrProject ?? 0"
+                      :irr-on-equity="hasilSimulasi2.trackIrrEquity ?? 0"
+                      :npv-on-equity="hasilSimulasi2.trackNpvEquity ?? 0"
+                      :npv-on-project="hasilSimulasi2.trackNpvProject ?? 0"
+                      :average-ncf="hasilSimulasi2.trackAverageNcf ?? 0"
+                      :average-eaf="hasilSimulasi2.trackAverageEaf ?? 0" />
+                  </div>
+                </section>
+              </div>
             </div>
             <nav class="flex flex-row items-center justify-end space-x-3">
               <!-- <button type="submit"
@@ -948,10 +525,20 @@
               </button> -->
               <button
                 class="px-3 py-2 font-semibold text-white duration-300 rounded-lg bg-primaryColor border-primaryColor hover:bg-hoverColor hover:border-hoverColor"
-                @click="handleFinalSubmit">
+                @click="isShowFinalConfirmation = true"
+                v-if="(hasilSimulasi1.trackAverageEaf !== 0 && hasilSimulasi1.trackAverageNcf !== 0 && hasilSimulasi1.trackIrrEquity !== 0 && hasilSimulasi1.trackIrrProject !== 0 && hasilSimulasi1.trackNpvEquity !== 0 && hasilSimulasi1.trackNpvProject !== 0) && (hasilSimulasi2.trackAverageEaf !== 0 && hasilSimulasi2.trackAverageNcf !== 0 && hasilSimulasi2.trackIrrEquity !== 0 && hasilSimulasi2.trackIrrProject !== 0 && hasilSimulasi2.trackNpvEquity !== 0 && hasilSimulasi2.trackNpvProject !== 0)">
                 Pilih & Simpan
               </button>
             </nav>
+          </div>
+          <div class="flex flex-col items-center justify-center mt-48" v-else>
+            <div class="flex flex-col space-y-2">
+              <Vue3Lottie :animationData="errorJsonData" style="width: 180px; height: 180px;" :loop="0" />
+              <div class="flex flex-col items-center space-y-0.5">
+                <p class="text-lg font-semibold">Menu Terkunci</p>
+                <p class="text-md">Mohon kirim data yang ingin diperbarui terlebih dahulu</p>
+              </div>
+            </div>
           </div>
         </TabItem>
       </TabsWrapper>
@@ -961,25 +548,33 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
-import { useRoute } from "vue-router";
+import { ref, onMounted, watch, onUnmounted } from "vue";
+import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
+import { notifyError } from "@/services/helper/toast-notification";
+import { usePerbaruiTabStore } from "@/store/storeRekapKertasKerja";
+const storePerbaruiTab = usePerbaruiTabStore();
+import { useRoute, useRouter } from "vue-router";
 const route = useRoute();
-const idMesin = parseInt(route.params.id.toString());
+const router = useRouter();
 import PerbaruiDataService from "@/services/perbarui-data";
 const perbaruiDataService = new PerbaruiDataService();
 import GlobalFormat from '@/services/format/global-format'
 const globalFormat = new GlobalFormat();
-import TabAsumsiMakro from "./TabPage/TabAsumsiMakro.vue";
-import TabParameterTeknis from "./TabPage/TabParameterTeknis.vue";
-import TabDataTeknis from "./TabPage/TabDataTeknis.vue";
+import UserService from "@/services/user-service";
+const userService = new UserService();
+import AuthService from "@/services/auth-service";
+const authService = new AuthService();
+import TabAsumsiMakro from "@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabAsumsiMakro.vue";
+import TabParameterTeknis from "@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabParameterTeknis.vue";
+import TabDataTeknis from "@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabDataTeknis.vue";
+import TabDataFinansial from "@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabDataFinansial.vue";
 import TabsWrapper from "@/components/ui/TabsWrapper.vue";
 import TabItem from "@/components/ui/TabItem.vue";
-import TextField from "@/components/ui/TextField.vue";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import InfoHeader from '@/components/ui/InfoHeader.vue';
-import InfoComponent from './InfoComponent.vue';
-import AsumsiInfoBox from './AsumsiInfoBox.vue';
-import ParameterTeknisInfoBox from './ParameterTeknisInfoBox.vue';
+import InfoComponent from "@/views/Data/RekapKertasKerja/PerbaruiData/InfoComponent.vue";
+import AsumsiInfoBox from "@/views/Data/RekapKertasKerja/PerbaruiData/AsumsiInfoBox.vue";
+import ParameterTeknisInfoBox from "@/views/Data/RekapKertasKerja/PerbaruiData/ParameterTeknisInfoBox.vue";
 import errorJsonData from '@/assets/lottie/error.json';
 import ModalWrapper from '@/components/ui/ModalWrapper.vue';
 import ModalNotification from '@/components/ui/ModalNotification.vue';
@@ -987,33 +582,81 @@ import ConfirmationDialog from '@/components/ui/ConfirmationDialog.vue';
 import axios from "axios";
 import IconFolder from "@/components/icons/IconFolder.vue";
 import successJsonData from "@/assets/lottie/success.json";
-import WarningIcon from '@/components/icons/WarningIcon.vue';
-import { notifyError } from "@/services/helper/toast-notification";
+import TableDataTeknis from "@/components/RekapKertasKerja/TableDataTeknis.vue";
+import TableDataFinansial from "@/components/RekapKertasKerja/TableDataFinansial.vue";
+import AkhirMasaManfaat from "@/views/Data/RekapKertasKerja/DetailRekap/HasilSimulasi/AkhirMasaManfaat.vue";
 
+const nodeMode = import.meta.env.MODE;
+const idMesin = parseInt(nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString());
 const mesinDataById = ref<MesinItem>();
 const tahunTerakhirRealisasi = ref<number>(0);
+const tahunTerakhirAsumsi = ref<number>(0);
 const tahunUpdate = ref<number>(0);
 const tahunBerjalan = new Date().getFullYear();
 const kodeMesin = ref();
+const isPermanent = ref<boolean>(false);
 const jenisPembangkit = ref();
 const namaPengelola = ref<string>('');
+const namaPembina = ref<string>('');
 const comboTypePeriodic = ref<ComboTypePeriodicItem[]>([]);
 const isLoading = ref(true);
-const isShowModalConfirmation = ref(false);
 const selectedAside = ref<String>('Asumsi Makro');
 const selectedSimulasiTab = ref<String>('Simulasi 1');
 const isShowModalNotification = ref(false);
 const isSuccess = ref(false);
 const picked = ref('pisah');
+const kodePengelola = ref<string>('');
 const pickedParameterValue = ref<string>('auxiliarySusut');
 const masaManfaat = ref<any>();
+const isFinalSubmitSuccess = ref<boolean>(false);
 const isSuccessSimulasi = ref<boolean>(false);
 const isSuccessPermanent = ref<boolean>(false);
+const idSentral = ref<string>('');
+const isShowFinalConfirmation = ref<boolean>(false);
+const isIntegrasi = ref<boolean>(false);
 // Tab Asumsi Makro & Parameter Teknis Model
-const asumsiParameterRealisasi = ref<any>();
 const statusAsumsi = ref<string>('');
 const idAsumsi = ref<number>(0);
 const asumsiParameter = ref<{
+  asumsiMakro: {
+    interestRate: string,
+    umurTeknis: string,
+    loanTenor: string,
+    loanPortion: string,
+    totalProjectCost: string,
+    dayaMampuNettoMW: string
+  },
+  parameterTeknis: {
+    nphr: string,
+    auxiliary: string,
+    susutTrafo: string,
+    pemakaianSendiri: string,
+    electricityPriceA: string,
+    electricityPriceB: string,
+    electricityPriceC: string,
+    electricityPriceD: string,
+  }
+}>({
+  asumsiMakro: {
+    interestRate: '',
+    umurTeknis: '',
+    loanTenor: '',
+    loanPortion: '',
+    totalProjectCost: '',
+    dayaMampuNettoMW: ''
+  },
+  parameterTeknis: {
+    nphr: '',
+    auxiliary: '',
+    susutTrafo: '',
+    pemakaianSendiri: '',
+    electricityPriceA: '',
+    electricityPriceB: '',
+    electricityPriceC: '',
+    electricityPriceD: '',
+  }
+});
+const asumsiParameterInit = ref<{
   asumsiMakro: {
     interestRate: string,
     umurTeknis: string,
@@ -1048,10 +691,19 @@ const asumsiParameter = ref<{
     electricityPriceD: '',
   }
 });
+const i = ref(1);
+const bahanBakarGroup = ref<{
+  bahanBakars: any[],
+  fuelConsumption: any[],
+  costCDetail: any[]
+}>({
+  bahanBakars: [],
+  fuelConsumption: [],
+  costCDetail: []
+});
 // Tab Parameter Teknis & Finansial Model
 const comboBahanBakar = ref<any[]>([]);
 const checkedBahanBakar = ref<number[]>([]);
-const i = ref(1);
 // Tab Data Teknis
 const typePeriodic = ref('');
 const listTypePeriodic = ref<any[]>([]);
@@ -1066,6 +718,23 @@ const bahanBakars = ref<any[]>([]);
 const statusDataTeknis = ref<string>('');
 const dataTeknisSimulasi1 = ref();
 const dataTeknisSimulasi2 = ref();
+const dataTeknisInit = ref<{
+  typePeriodic: string,
+  ncf: string,
+  eaf: string,
+  productionBrutto: string,
+  productionNetto: string,
+  energySales: string,
+  // fuelConsumption: string
+}>({
+  typePeriodic: '',
+  ncf: '',
+  eaf: '',
+  productionBrutto: '',
+  productionNetto: '',
+  energySales: '',
+  // fuelConsumption: ''
+});
 // Tab Data Finansial
 const dataFinansialDetail = ref();
 const biayaKepegawaian = ref('');
@@ -1076,18 +745,59 @@ const costComponentB = ref(picked.value === 'pisah' ? '' : '');
 const biayaPemeliharaanRutin = ref();
 const biayaAdministrasiUmum = ref();
 const biayaPembelianTenagaListrik = ref();
+const biayaLainLain = ref();
 const oMCost = ref();
 const periodicMaintenanceCost = ref();
-const costComponentCDetail = ref<any[]>([]);
 const costComponentC = ref('');
 const biayaMinyakPelumas = ref('');
 const bahanKimia = ref('');
 const statusDataFinansial = ref<string>('');
 const costComponentD = ref('');
-const checkedProgram = ref<number[]>([]);
+const totalRevenue = ref<string>('');
+const revenueKompA = ref<string>('');
+const revenueKompB = ref<string>('');
+const revenueKompC = ref<string>('');
+const revenueKompD = ref<string>('');
+// const totalRevenue = computed(() => {
+//   const valueToFormat = parseFloat(revenueKompA.value.replace(/[.]/g, '')) + parseFloat(revenueKompB.value.replace(/[.]/g, '')) + parseFloat(revenueKompC.value.replace(/[.]/g, '')) + parseFloat(revenueKompD.value.replace(/[.]/g, ''));
+//   return globalFormat.formatCurrencyNotFixed(valueToFormat);
+// }
+// );
 const formFinansialSimulasi1 = ref();
 const formFinansialSimulasi2 = ref();
-const iProgram = ref(1);
+const dataFinansialInit = ref<{
+  costComponentA: string,
+  biayaPeriodicMaintenance: string,
+  costComponentB: string,
+  oMCost: string,
+  periodicMaintenanceCost: string,
+  biayaKepegawaian: string,
+  biayaPemeliharaanRutin: string,
+  biayaAdministrasiUmum: string,
+  biayaPembelianTenagaListrik: string,
+  biayaLainLain: string,
+  costComponentC: string,
+  costComponentCDetail: string,
+  costComponentD: string,
+  biayaMinyakPelumas: string,
+  biayaBahanKimia: string
+}>({
+  costComponentA: '',
+  biayaPeriodicMaintenance: '',
+  costComponentB: '',
+  oMCost: '',
+  periodicMaintenanceCost: '',
+  biayaKepegawaian: '',
+  biayaPemeliharaanRutin: '',
+  biayaAdministrasiUmum: '',
+  biayaPembelianTenagaListrik: '',
+  biayaLainLain: '',
+  costComponentC: '',
+  costComponentCDetail: '',
+  costComponentD: '',
+  biayaMinyakPelumas: '',
+  biayaBahanKimia: ''
+});
 // Tab Opsi Simulasi
 const simulasiAsumsiParameter = ref();
 const simulasi1DataTeknis = ref();
@@ -1098,6 +808,42 @@ const dataFinansialSimulasi2 = ref();
 const simulasi2DataFinansial = ref<any[]>([]);
 const isRowTabOpenSimulasi1 = ref<number[]>([]);
 const isRowTabOpenSimulasi2 = ref<number[]>([]);
+const hasilSimulasi1 = ref<{
+  idMesin: number | null
+  trackIrrProject: number | null
+  trackIrrEquity: number | null
+  trackNpvProject: number | null
+  trackNpvEquity: number | null
+  trackAverageEaf: number | null
+  trackAverageNcf: number | null
+}>({
+  idMesin: 0,
+  trackIrrProject: null,
+  trackIrrEquity: null,
+  trackNpvProject: null,
+  trackNpvEquity: null,
+  trackAverageEaf: null,
+  trackAverageNcf: null
+});
+const hasilSimulasi2 = ref<{
+  idMesin: number | null
+  trackIrrProject: number | null
+  trackIrrEquity: number | null
+  trackNpvProject: number | null
+  trackNpvEquity: number | null
+  trackAverageEaf: number | null
+  trackAverageNcf: number | null
+}>({
+  idMesin: 0,
+  trackIrrProject: null,
+  trackIrrEquity: null,
+  trackNpvProject: null,
+  trackNpvEquity: null,
+  trackAverageEaf: null,
+  trackAverageNcf: null
+});
+const selectedFileSimulasi1: any = ref(null);
+const isUnggahModalOpenSimulasi1 = ref<boolean>(false);
 const isUnggahModalOpen = ref(false);
 const selectedFile: any = ref(null);
 const error = ref<{
@@ -1139,11 +885,17 @@ const error = ref<{
     biayaPemeliharaanRutin: boolean,
     biayaAdministrasiUmum: boolean,
     biayaPembelianTenagaListrik: boolean,
+    biayaLainLain: boolean,
     costComponentC: boolean,
     costComponentCDetail: boolean,
     costComponentD: boolean,
     biayaMinyakPelumas: boolean,
-    biayaBahanKimia: boolean
+    biayaBahanKimia: boolean,
+    totalRevenue: boolean,
+    revenueKompA: boolean,
+    revenueKompB: boolean,
+    revenueKompC: boolean,
+    revenueKompD: boolean
   }
 }>({
   asumsi: {
@@ -1184,11 +936,17 @@ const error = ref<{
     biayaPemeliharaanRutin: false,
     biayaAdministrasiUmum: false,
     biayaPembelianTenagaListrik: false,
+    biayaLainLain: false,
     costComponentC: false,
     costComponentCDetail: false,
     costComponentD: false,
     biayaMinyakPelumas: false,
-    biayaBahanKimia: false
+    biayaBahanKimia: false,
+    totalRevenue: false,
+    revenueKompA: false,
+    revenueKompB: false,
+    revenueKompC: false,
+    revenueKompD: false
   }
 });
 
@@ -1249,77 +1007,74 @@ interface ComboTypePeriodicItem {
 const fetchMesinById = async () => {
   try {
     const response: MesinItem = await perbaruiDataService.getMesinById(
-      route.params.id
+      idMesin
     );
     mesinDataById.value = response.data;
     kodeMesin.value = response.data.kode_mesin;
     masaManfaat.value = response.data.masa_manfaat;
     jenisPembangkit.value = response.data.kode_jenis_pembangkit;
     tahunTerakhirRealisasi.value = parseInt(response.data.tahun_realisasi);
+    tahunTerakhirAsumsi.value = parseInt(response.data.tahun_asumsi);
     tahunUpdate.value = parseInt(response.data.tahun_realisasi) + 1;
   } catch (error) {
     console.error("Fetch Mesin By Id Error : " + error);
   }
 };
+const fetchListPembina = async () => {
+  try {
+    const response: any = await userService.getPembina('');
+    return response.data;
+  } catch (error) {
+    console.error('Fetch Pembina Error : ' + error)
+  }
+}
+const fetchCheckIntegrasi = async () => {
+  try {
+    const response: any = await perbaruiDataService.getCheckIntegrasi(tahunTerakhirRealisasi.value, idMesin);
+    isIntegrasi.value = response.data[0].status_data_integrasi === "0" ? false : true;
+    console.log(isIntegrasi.value, 'dds');
+  } catch (error) {
+    console.error('Fetch Check Integrasi Error : ' + error)
+  }
+}
 const fetchUnitPengelola = async () => {
   try {
     if (mesinDataById.value) {
       const kodeSentral = mesinDataById.value.kode_sentral;
       const pembangkitResponse: any =
         await perbaruiDataService.getPembangkitByKode(kodeSentral);
-      const kodePengelola = pembangkitResponse.data.kode_pengelola;
+      kodePengelola.value = pembangkitResponse.data.kode_pengelola;
+      idSentral.value = pembangkitResponse.data.id_sentral;
       const pengelolaResponse: any =
         await perbaruiDataService.getPengelolaData();
       const pengelola = pengelolaResponse.data.filter(
-        (pengelola: any) => pengelola.kode_pengelola === kodePengelola
+        (pengelola: any) => pengelola.kode_pengelola === kodePengelola.value
       );
       namaPengelola.value = pengelola[0].pengelola;
+      const idPembina = pembangkitResponse.data.id_pembina;
+      const pembinaList: any = await fetchListPembina();
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina;
     }
   } catch (error) {
     console.error("Fetch Unit Pengelola Error : " + error);
   }
 };
-const fetchAsumsiParameterRealisasi = async () => {
-  try {
-    const response: any = await perbaruiDataService.getAsumsiParameterData(
-      tahunTerakhirRealisasi.value,
-      idMesin
-    )
-    asumsiParameterRealisasi.value = response.data;
-  } catch (error) {
-    console.error('Fetch Asumsi Parameter Realisasi Error : ', error);
-  }
-}
 const fetchAsumsiParameter = async () => {
   try {
     const response: AsumsiParameterItem =
       await perbaruiDataService.getAsumsiParameterData(
-        tahunUpdate.value,
-        idMesin
+        tahunBerjalan - 1,
+        idMesin,
+        tahunBerjalan
       );
-    const responseMin1: any = await perbaruiDataService.getAsumsiParameterData(
-      tahunTerakhirRealisasi.value,
-      idMesin
-    );
-    if (response.data.status === 'create') {
-      const tempBahanBakars = responseMin1.data.harga_bahan_bakars.map((value: any) => {
-        const newValue = { ...value };
-        newValue.id = i.value++;
-        newValue.harga_bahan_bakar = globalFormat.formatCurrencyNotFixed(newValue.harga_bahan_bakar.toString());
-        newValue.sfc = globalFormat.formatCurrencyNotFixed(newValue.sfc.toString());
-        return newValue;
-      });
-      bahanBakars.value = tempBahanBakars;
-    } else {
-      const tempBahanBakars = response.data.harga_bahan_bakars.map((value: any) => {
-        const newValue = { ...value };
-        newValue.id = i.value++;
-        newValue.harga_bahan_bakar = globalFormat.formatCurrencyNotFixed(newValue.harga_bahan_bakar.toString());
-        newValue.sfc = globalFormat.formatCurrencyNotFixed(newValue.sfc.toString());
-        return newValue;
-      });
-      bahanBakars.value = tempBahanBakars;
-    }
+    const tempBahanBakars = response.data.harga_bahan_bakars.map((value: any) => {
+      const newValue = { ...value };
+      newValue.id = i.value++;
+      newValue.harga_bahan_bakar = globalFormat.formatCurrencyNotFixed(newValue.harga_bahan_bakar.toString());
+      newValue.sfc = globalFormat.formatCurrencyNotFixed(newValue.sfc.toString());
+      return newValue;
+    });
+    bahanBakarGroup.value.bahanBakars = tempBahanBakars;
     statusAsumsi.value = response.data.status;
     simulasiAsumsiParameter.value = response.data;
     idAsumsi.value = response.data.id_asumsi;
@@ -1328,6 +1083,12 @@ const fetchAsumsiParameter = async () => {
     asumsiParameter.value.asumsiMakro.umurTeknis = masaManfaat.value.toString();
     asumsiParameter.value.asumsiMakro.loanTenor = response.data.asumsi_makro.loan_tenor.toString();
     asumsiParameter.value.asumsiMakro.loanPortion = globalFormat.formatCurrencyNotFixed(response.data.asumsi_makro.loan_portion.toString());
+    asumsiParameter.value.asumsiMakro.totalProjectCost = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.total_project_cost.toString());
+    asumsiParameter.value.asumsiMakro.dayaMampuNettoMW = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.daya_mampu_netto_mw.toString());
+    asumsiParameterInit.value.asumsiMakro.interestRate = globalFormat.formatCurrencyNotFixed(response.data.asumsi_makro.interest_rate.toString());
+    asumsiParameterInit.value.asumsiMakro.umurTeknis = masaManfaat.value.toString();
+    asumsiParameterInit.value.asumsiMakro.loanTenor = response.data.asumsi_makro.loan_tenor.toString();
+    asumsiParameterInit.value.asumsiMakro.loanPortion = globalFormat.formatCurrencyNotFixed(response.data.asumsi_makro.loan_portion.toString());
     // Mengisi Parameter Teknis & Finansial Data Variable
     asumsiParameter.value.parameterTeknis.nphr = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.nphr.toString());
     asumsiParameter.value.parameterTeknis.auxiliary = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.auxiliary.toString());
@@ -1337,7 +1098,17 @@ const fetchAsumsiParameter = async () => {
     asumsiParameter.value.parameterTeknis.electricityPriceB = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_b_rp_per_kwbln.toString());
     asumsiParameter.value.parameterTeknis.electricityPriceC = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_c_rp_per_kwh.toString());
     asumsiParameter.value.parameterTeknis.electricityPriceD = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_d_rp_per_kwh.toString());
+    asumsiParameterInit.value.parameterTeknis.nphr = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.nphr.toString());
+    asumsiParameterInit.value.parameterTeknis.auxiliary = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.auxiliary.toString());
+    asumsiParameterInit.value.parameterTeknis.susutTrafo = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.susut_trafo.toString());
+    asumsiParameterInit.value.parameterTeknis.pemakaianSendiri = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.ps.toString());
+    asumsiParameterInit.value.parameterTeknis.electricityPriceA = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_a_rp_per_kwbln.toString());
+    asumsiParameterInit.value.parameterTeknis.electricityPriceB = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_b_rp_per_kwbln.toString());
+    asumsiParameterInit.value.parameterTeknis.electricityPriceC = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_c_rp_per_kwh.toString());
+    asumsiParameterInit.value.parameterTeknis.electricityPriceD = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_d_rp_per_kwh.toString());
     pickedParameterValue.value = asumsiParameter.value.parameterTeknis.pemakaianSendiri === '0,00' ? 'auxiliarySusut' : 'pemakaianSendiri';
+    isPermanent.value = asumsiParameterInit.value.parameterTeknis.electricityPriceA === '0,00' && asumsiParameterInit.value.parameterTeknis.electricityPriceB === '0,00' && asumsiParameterInit.value.parameterTeknis.electricityPriceC === '0,00' && asumsiParameterInit.value.parameterTeknis.electricityPriceD === '0,00';
+    console.log(isPermanent.value)
   } catch (error) {
     console.error("Fetch Asumsi Parameter Error : " + error);
   }
@@ -1363,15 +1134,15 @@ const fetchDataTeknisByPeriode = async () => {
   try {
     const responseSimulasi1: any =
       await perbaruiDataService.getDataTeknisByPeriodeSimulasi1(
-        tahunUpdate.value,
+        tahunBerjalan - 1,
         idMesin
       );
     const responseSimulasi2: any =
       await perbaruiDataService.getDataTeknisByPeriodeSimulasi2(
-        tahunUpdate.value,
+        tahunBerjalan - 1,
         idMesin
       );
-    if (responseSimulasi1.data === null) {
+    if (responseSimulasi1.data === null || responseSimulasi2.data === null) {
       const response: any = await perbaruiDataService.getDataTeknisByPeriode(
         tahunTerakhirRealisasi.value,
         idMesin
@@ -1389,17 +1160,23 @@ const fetchDataTeknisByPeriode = async () => {
       if (tempTypePeriodic !== '' && tempTypePeriodic !== 0) {
         const fetchTypePeriodicResult = await fetchTypePeriodic(tempTypePeriodic);
         typePeriodic.value = fetchTypePeriodicResult[0].id_type_periodic;
+        dataTeknisInit.value.typePeriodic = fetchTypePeriodicResult[0].id_type_periodic;
       }
       ncf.value = globalFormat.formatCurrencyNotFixed(ncfItem[0].value.toString());
       eaf.value = globalFormat.formatCurrencyNotFixed(eafItem[0].value.toString());
       productionBrutto.value = globalFormat.formatCurrencyNotFixed(prodBruttoItem[0].value.toString());
       productionNetto.value = globalFormat.formatCurrencyNotFixed(prodNettoItem[0].value.toString());
       energySales.value = globalFormat.formatCurrencyNotFixed(energySalesItem[0].value.toString());
+      dataTeknisInit.value.ncf = globalFormat.formatCurrencyNotFixed(ncfItem[0].value.toString());
+      dataTeknisInit.value.eaf = globalFormat.formatCurrencyNotFixed(eafItem[0].value.toString());
+      dataTeknisInit.value.productionBrutto = globalFormat.formatCurrencyNotFixed(prodBruttoItem[0].value.toString());
+      dataTeknisInit.value.productionNetto = globalFormat.formatCurrencyNotFixed(prodNettoItem[0].value.toString());
+      dataTeknisInit.value.energySales = globalFormat.formatCurrencyNotFixed(energySalesItem[0].value.toString());
       for (const item of fuelConsItem) {
         const words = item.uraian.split(" ");
         const fuelIndex = words.indexOf("Fuel");
         const textAfterFuel = words.slice(fuelIndex + 2).join(" ");
-        fuelConsumption.value.push({
+        bahanBakarGroup.value.fuelConsumption.push({
           id_uraian: item.IdUraian,
           bahan_bakar: textAfterFuel,
           value: globalFormat.formatCurrencyNotFixed(item.value.toString())
@@ -1417,7 +1194,7 @@ const fetchDataTeknisByPeriode = async () => {
       const energySalesItem1 = responseSimulasi1.data.filter((value: any) => value.uraian.includes('Energy'));
       const fuelConsItem1 = responseSimulasi1.data.filter((value: any) => value.uraian.includes('Consumption'));
       const tempTypePeriodic1 = periodicItem1.length !== 0 ? periodicItem1[0].value : '';
-      if (tempTypePeriodic1 !== '') {
+      if (tempTypePeriodic1 !== '' && tempTypePeriodic1 !== 0) {
         const fetchTypePeriodicResult = await fetchTypePeriodic(tempTypePeriodic1);
         typePeriodic.value = fetchTypePeriodicResult[0].id_type_periodic;
       }
@@ -1426,11 +1203,16 @@ const fetchDataTeknisByPeriode = async () => {
       productionBrutto.value = globalFormat.formatCurrencyNotFixed(prodBruttoItem1[0].value.toString());
       productionNetto.value = globalFormat.formatCurrencyNotFixed(prodNettoItem1[0].value.toString());
       energySales.value = globalFormat.formatCurrencyNotFixed(energySalesItem1[0].value.toString());
+      dataTeknisInit.value.ncf = globalFormat.formatCurrencyNotFixed(ncfItem1[0].value.toString());
+      dataTeknisInit.value.eaf = globalFormat.formatCurrencyNotFixed(eafItem1[0].value.toString());
+      dataTeknisInit.value.productionBrutto = globalFormat.formatCurrencyNotFixed(prodBruttoItem1[0].value.toString());
+      dataTeknisInit.value.productionNetto = globalFormat.formatCurrencyNotFixed(prodNettoItem1[0].value.toString());
+      dataTeknisInit.value.energySales = globalFormat.formatCurrencyNotFixed(energySalesItem1[0].value.toString());
       for (const item of fuelConsItem1) {
         const words = item.uraian.split(" ");
         const fuelIndex = words.indexOf("Fuel");
         const textAfterFuel = words.slice(fuelIndex + 2).join(" ");
-        fuelConsumption.value.push({
+        bahanBakarGroup.value.fuelConsumption.push({
           id_uraian: item.IdUraian,
           bahan_bakar: textAfterFuel,
           value: globalFormat.formatCurrencyNotFixed(item.value.toString())
@@ -1442,7 +1224,8 @@ const fetchDataTeknisByPeriode = async () => {
       }
       dataTeknisSimulasi1.value = {
         id_mesin: idMesin,
-        tahun_realisasi: tahunUpdate.value,
+        tahun: tahunBerjalan,
+        tahun_realisasi: tahunBerjalan - 1,
         id_type_periodic: typePeriodic.value,
         nfc: ncfItem1[0].value,
         eaf: eafItem1[0].value,
@@ -1461,7 +1244,7 @@ const fetchDataTeknisByPeriode = async () => {
       const energySalesItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('Energy'));
       const fuelConsItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('Consumption'));
       const tempTypePeriodic2 = periodicItem2.length !== 0 ? periodicItem2[0].value : '';
-      if (tempTypePeriodic2 !== '') {
+      if (tempTypePeriodic2 !== '' && tempTypePeriodic2 !== 0) {
         const fetchTypePeriodicResult = await fetchTypePeriodic(tempTypePeriodic2);
         typePeriodic2 = fetchTypePeriodicResult[0].id_type_periodic;
       }
@@ -1473,7 +1256,8 @@ const fetchDataTeknisByPeriode = async () => {
       }
       dataTeknisSimulasi2.value = {
         id_mesin: idMesin,
-        tahun_realisasi: tahunUpdate.value,
+        tahun: tahunBerjalan,
+        tahun_realisasi: tahunBerjalan - 1,
         id_type_periodic: typePeriodic2,
         nfc: ncfItem2[0].value,
         eaf: eafItem2[0].value,
@@ -1493,8 +1277,12 @@ const fetchComboTypePeriodic = async () => {
       await perbaruiDataService.getTypePeriodic(
         jenisPembangkit.value
       );
+    const newValue: any = {
+      id_type_periodic: null,
+      kode_type_periodic: '-',
+    }
     comboTypePeriodic.value = response.data;
-    console.log(response.data);
+    comboTypePeriodic.value.unshift(newValue);
   } catch (error) {
     console.error("Fetch Combo Type Periodic Error : " + error);
   }
@@ -1502,79 +1290,65 @@ const fetchComboTypePeriodic = async () => {
 const fetchDataFinansialDetail = async () => {
   try {
     const responseSimulasi1: any = await perbaruiDataService.getDataFinansialDetailSimulasi1(
-      tahunUpdate.value,
+      tahunBerjalan - 1,
       idMesin
     );
     const responseSimulasi2: any = await perbaruiDataService.getDataFinansialDetailSimulasi2(
-      tahunUpdate.value,
+      tahunBerjalan - 1,
       idMesin
     );
-    if (responseSimulasi1.data.id_mesin === 0) {
+    if (responseSimulasi1.data.id_mesin === 0 || responseSimulasi2.data.id_mesin === 0) {
       const response: ComboTypePeriodicItem =
         await perbaruiDataService.getDataFinansialDetail(
           tahunTerakhirRealisasi.value,
           idMesin
         );
-      console.log('Response ', response.data)
       statusDataFinansial.value = 'Permanent';
       dataFinansialDetail.value = response.data;
       costComponentA.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_a);
-      // biayaInvestasiTambahan.value = globalFormat.formatRupiah(response.data.cost_component_a_detail_ai.biaya_investasi_tambahan);
       costComponentB.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b);
       biayaKepegawaian.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_kepegawaian);
       biayaPemeliharaanRutin.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_pemeliharaan_rutin);
       biayaAdministrasiUmum.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_administrasi_umum);
       biayaPembelianTenagaListrik.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_pembelian_tenaga_listrik);
+      biayaLainLain.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_lain_lain);
       oMCost.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_lain_lain);
       periodicMaintenanceCost.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_periodic_maintenance_non_mi);
       costComponentC.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_c);
       costComponentD.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_d);
+      totalRevenue.value = globalFormat.formatCurrencyNotFixed(response.data.revenue);
+      revenueKompA.value = globalFormat.formatCurrencyNotFixed(response.data.revenue_a);
+      revenueKompB.value = globalFormat.formatCurrencyNotFixed(response.data.revenue_b);
+      revenueKompC.value = globalFormat.formatCurrencyNotFixed(response.data.revenue_c);
+      revenueKompD.value = globalFormat.formatCurrencyNotFixed(response.data.revenue_d);
       for (const value of response.data.cost_component_c_detail) {
         value.fuel_cost = globalFormat.formatCurrencyNotFixed(value.fuel_cost);
       }
-      costComponentCDetail.value = response.data.cost_component_c_detail;
+      bahanBakarGroup.value.costCDetail = response.data.cost_component_c_detail;
       biayaMinyakPelumas.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_d_detail.biaya_pelumas);
       bahanKimia.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_d_detail.biaya_bahan_kimia);
-      formFinansialSimulasi1.value = {
-        id_mesin: idMesin,
-        tahun: tahunUpdate.value,
-        status_b_d: response.data.status_b_d,
-        cost_component_a: response.data.cost_component_a,
-        cost_component_b: response.data.cost_component_b,
-        cost_component_b_detail: {
-          id_ao: 0,
-          id_mesin: idMesin,
-          tahun: tahunUpdate.value,
-          biaya_kepegawaian: response.data.cost_component_b_detail.biaya_kepegawaian,
-          biaya_pemeliharaan_rutin: response.data.cost_component_b_detail.biaya_pemeliharaan_rutin,
-          biaya_administrasi_umum: response.data.cost_component_b_detail.biaya_administrasi_umum,
-          biaya_pembelian_tenaga_listrik: response.data.cost_component_b_detail.biaya_pembelian_tenaga_listrik,
-          biaya_penyusutan_aset_tetap: response.data.cost_component_b_detail.biaya_penyusutan_aset_tetap,
-          biaya_lain_lain: response.data.cost_component_b_detail.biaya_lain_lain,
-          biaya_periodic_maintenance_non_mi: response.data.cost_component_b_detail.biaya_periodic_maintenance_non_mi
-        },
-        cost_component_c: response.data.cost_component_c,
-        cost_component_c_detail: response.data.cost_component_c_detail,
-        cost_component_d: response.data.cost_component_d,
-        cost_component_d_detail: {
-          id_pelumas_bahan_kimia: 0,
-          id_mesin: idMesin,
-          tahun: tahunUpdate.value,
-          biaya_pelumas: response.data.cost_component_d_detail.biaya_pelumas,
-          biaya_bahan_kimia: response.data.cost_component_d_detail.biaya_bahan_kimia,
-          biaya_lain_lain: 0
-        }
-      };
+      dataFinansialInit.value.costComponentA = globalFormat.formatCurrencyNotFixed(response.data.cost_component_a);
+      dataFinansialInit.value.costComponentA = globalFormat.formatCurrencyNotFixed(response.data.cost_component_a);
+      dataFinansialInit.value.costComponentB = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b);
+      dataFinansialInit.value.biayaKepegawaian = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_kepegawaian);
+      dataFinansialInit.value.biayaPemeliharaanRutin = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_pemeliharaan_rutin);
+      dataFinansialInit.value.biayaAdministrasiUmum = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_administrasi_umum);
+      dataFinansialInit.value.biayaPembelianTenagaListrik = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_pembelian_tenaga_listrik);
+      dataFinansialInit.value.biayaLainLain = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_lain_lain);
+      dataFinansialInit.value.oMCost = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_lain_lain);
+      dataFinansialInit.value.periodicMaintenanceCost = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_periodic_maintenance_non_mi);
+      dataFinansialInit.value.costComponentC = globalFormat.formatCurrencyNotFixed(response.data.cost_component_c);
+      dataFinansialInit.value.costComponentD = globalFormat.formatCurrencyNotFixed(response.data.cost_component_d)
     } else {
       statusDataFinansial.value = 'Simulasi';
       dataFinansialDetail.value = responseSimulasi1.data;
       costComponentA.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_a);
-      // biayaInvestasiTambahan.value = globalFormat.formatRupiah(responseSimulasi1.data.cost_component_a_detail_ai.biaya_investasi_tambahan);
       costComponentB.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b);
       biayaKepegawaian.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_kepegawaian);
       biayaPemeliharaanRutin.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_pemeliharaan_rutin);
       biayaAdministrasiUmum.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_administrasi_umum);
       biayaPembelianTenagaListrik.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_pembelian_tenaga_listrik);
+      biayaLainLain.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_lain_lain);
       oMCost.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_lain_lain);
       periodicMaintenanceCost.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_periodic_maintenance_non_mi);
       costComponentC.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_c);
@@ -1582,19 +1356,36 @@ const fetchDataFinansialDetail = async () => {
       for (const value of responseSimulasi1.data.cost_component_c_detail) {
         value.fuel_cost = globalFormat.formatCurrencyNotFixed(value.fuel_cost);
       }
-      costComponentCDetail.value = responseSimulasi1.data.cost_component_c_detail;
+      bahanBakarGroup.value.costCDetail = responseSimulasi1.data.cost_component_c_detail;
       biayaMinyakPelumas.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_d_detail.biaya_pelumas);
       bahanKimia.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_d_detail.biaya_bahan_kimia);
+      totalRevenue.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.revenue);
+      revenueKompA.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.revenue_a);
+      revenueKompB.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.revenue_b);
+      revenueKompC.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.revenue_c);
+      revenueKompD.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.revenue_d);
+      dataFinansialInit.value.costComponentA = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_a);
+      dataFinansialInit.value.costComponentA = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_a);
+      dataFinansialInit.value.costComponentB = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b);
+      dataFinansialInit.value.biayaKepegawaian = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_kepegawaian);
+      dataFinansialInit.value.biayaPemeliharaanRutin = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_pemeliharaan_rutin);
+      dataFinansialInit.value.biayaAdministrasiUmum = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_administrasi_umum);
+      dataFinansialInit.value.biayaPembelianTenagaListrik = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_pembelian_tenaga_listrik);
+      dataFinansialInit.value.biayaLainLain = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_lain_lain);
+      dataFinansialInit.value.oMCost = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_lain_lain);
+      dataFinansialInit.value.periodicMaintenanceCost = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_periodic_maintenance_non_mi);
+      dataFinansialInit.value.costComponentC = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_c);
+      dataFinansialInit.value.costComponentD = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_d);
       formFinansialSimulasi1.value = {
         id_mesin: idMesin,
-        tahun: tahunUpdate.value,
+        tahun: tahunBerjalan - 1,
         status_b_d: responseSimulasi1.data.status_b_d,
         cost_component_a: responseSimulasi1.data.cost_component_a,
         cost_component_b: responseSimulasi1.data.cost_component_b,
         cost_component_b_detail: {
           id_ao: 0,
           id_mesin: idMesin,
-          tahun: tahunUpdate.value,
+          tahun: tahunBerjalan - 1,
           biaya_kepegawaian: responseSimulasi1.data.cost_component_b_detail.biaya_kepegawaian,
           biaya_pemeliharaan_rutin: responseSimulasi1.data.cost_component_b_detail.biaya_pemeliharaan_rutin,
           biaya_administrasi_umum: responseSimulasi1.data.cost_component_b_detail.biaya_administrasi_umum,
@@ -1609,22 +1400,28 @@ const fetchDataFinansialDetail = async () => {
         cost_component_d_detail: {
           id_pelumas_bahan_kimia: 0,
           id_mesin: idMesin,
-          tahun: tahunUpdate.value,
+          tahun: tahunBerjalan - 1,
           biaya_pelumas: responseSimulasi1.data.cost_component_d_detail.biaya_pelumas,
           biaya_bahan_kimia: responseSimulasi1.data.cost_component_d_detail.biaya_bahan_kimia,
-          biaya_lain_lain: 0
-        }
+          biaya_lain_lain: responseSimulasi1.data.cost_component_d_detail.biaya_lain_lain
+        },
+        revenue: responseSimulasi1.data.revenue,
+        revenue_a: responseSimulasi1.data.revenue_a,
+        revenue_b: responseSimulasi1.data.revenue_b,
+        revenue_c: responseSimulasi1.data.revenue_c,
+        revenue_d: responseSimulasi1.data.revenue_d,
+        opsi_simulasi: 1
       };
       formFinansialSimulasi2.value = {
         id_mesin: idMesin,
-        tahun: tahunUpdate.value,
+        tahun: tahunBerjalan - 1,
         status_b_d: responseSimulasi2.data.status_b_d,
         cost_component_a: responseSimulasi2.data.cost_component_a,
         cost_component_b: responseSimulasi2.data.cost_component_b,
         cost_component_b_detail: {
           id_ao: 0,
           id_mesin: idMesin,
-          tahun: tahunUpdate.value,
+          tahun: tahunBerjalan - 1,
           biaya_kepegawaian: responseSimulasi2.data.cost_component_b_detail.biaya_kepegawaian,
           biaya_pemeliharaan_rutin: responseSimulasi2.data.cost_component_b_detail.biaya_pemeliharaan_rutin,
           biaya_administrasi_umum: responseSimulasi2.data.cost_component_b_detail.biaya_administrasi_umum,
@@ -1639,17 +1436,51 @@ const fetchDataFinansialDetail = async () => {
         cost_component_d_detail: {
           id_pelumas_bahan_kimia: 0,
           id_mesin: idMesin,
-          tahun: tahunUpdate.value,
+          tahun: tahunBerjalan - 1,
           biaya_pelumas: responseSimulasi2.data.cost_component_d_detail.biaya_pelumas,
           biaya_bahan_kimia: responseSimulasi2.data.cost_component_d_detail.biaya_bahan_kimia,
-          biaya_lain_lain: 0
-        }
+          biaya_lain_lain: responseSimulasi2.data.cost_component_d_detail.biaya_lain_lain
+        },
+        revenue: responseSimulasi2.data.revenue,
+        revenue_a: responseSimulasi2.data.revenue_a,
+        revenue_b: responseSimulasi2.data.revenue_b,
+        revenue_c: responseSimulasi2.data.revenue_c,
+        revenue_d: responseSimulasi2.data.revenue_d,
+        opsi_simulasi: 2
       };
     }
   } catch (error) {
     console.error("Fetch Data Finansial Simulasi Error : " + error);
   }
 };
+const fetchHasilSimulasi1 = async () => {
+  try {
+    const response: any = await perbaruiDataService.getHasilSimulasi(idMesin, tahunBerjalan, 6);
+    hasilSimulasi1.value.idMesin = response.data.id_mesin;
+    hasilSimulasi1.value.trackAverageEaf = response.data.track_average_eaf;
+    hasilSimulasi1.value.trackAverageNcf = response.data.track_average_cf;
+    hasilSimulasi1.value.trackIrrEquity = response.data.track_irr_equity;
+    hasilSimulasi1.value.trackIrrProject = response.data.track_irr_project;
+    hasilSimulasi1.value.trackNpvEquity = response.data.track_npv_equity;
+    hasilSimulasi1.value.trackNpvProject = response.data.track_npv_project;
+  } catch (error) {
+    console.error(error);
+  }
+}
+const fetchHasilSimulasi2 = async () => {
+  try {
+    const response: any = await perbaruiDataService.getHasilSimulasi(idMesin, tahunBerjalan, 7);
+    hasilSimulasi2.value.idMesin = response.data.id_mesin;
+    hasilSimulasi2.value.trackAverageEaf = response.data.track_average_eaf;
+    hasilSimulasi2.value.trackAverageNcf = response.data.track_average_cf;
+    hasilSimulasi2.value.trackIrrEquity = response.data.track_irr_equity;
+    hasilSimulasi2.value.trackIrrProject = response.data.track_irr_project;
+    hasilSimulasi2.value.trackNpvEquity = response.data.track_npv_equity;
+    hasilSimulasi2.value.trackNpvProject = response.data.track_npv_project;
+  } catch (error) {
+    console.error(error);
+  }
+}
 const fetchComboBahanBakar = async () => {
   try {
     const response: any = await perbaruiDataService.getComboBahanBakar(jenisPembangkit.value);
@@ -1666,6 +1497,54 @@ const getTypePeriodic = (num: number) => {
   }
   return "-";
 }
+const handleFileChangeSimulasi1 = (event: any) => {
+  if (event.target.files.length === 1) {
+    selectedFileSimulasi1.value = event.target.files[0];
+  } else {
+    selectedFileSimulasi1.value = null;
+  }
+};
+const uploadFileSimulasi1 = async () => {
+  try {
+    isLoading.value = true
+    if (selectedFileSimulasi1.value == null) {
+      notifyError('Mohon pilih file excel terlebih dahulu', 3000)
+      isLoading.value = false
+      return;
+    }
+    const formData = new FormData();
+    formData.append('file', selectedFileSimulasi1.value);
+    const headers = {
+      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+      'Content-Type': 'multipart/form-data',
+    };
+    const response = await axios.post('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/import-template-simulasi1', formData, {
+      headers,
+    });
+    await fetchHasilSimulasi1();
+    console.log('Sukses mengirim file : ', response.data);
+    isUnggahModalOpenSimulasi1.value = false;
+    isLoading.value = false;
+    // Fetching Data Simulasi Disini
+    isSuccess.value = true;
+    await wait(3000)
+    isSuccess.value = false;
+    isLoading.value = true;
+    simulasi1DataFinansial.value = [];
+    dataFinansialSimulasi1.value = [];
+    await fetchAsumsiParameter();
+    await fetchDataFinansialDetail();
+    await fetchDataTeknisByPeriode();
+    await fetchDataTeknisSimulasi1();
+    await fetchDataTeknisSimulasi2();
+    await fetchDataFinansialSimulasi1();
+    await fetchDataFinansialSimulasi2();
+    isLoading.value = false;
+  } catch (error) {
+    isLoading.value = false;
+    console.error('Error upload file : ', error);
+  }
+};
 const handleFileChange = (event: any) => {
   if (event.target.files.length === 1) {
     selectedFile.value = event.target.files[0];
@@ -1673,6 +1552,7 @@ const handleFileChange = (event: any) => {
     selectedFile.value = null;
   }
 };
+
 const uploadFile = async () => {
   try {
     isLoading.value = true
@@ -1683,25 +1563,30 @@ const uploadFile = async () => {
     const formData = new FormData();
     formData.append('file', selectedFile.value);
     const headers = {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
       'Content-Type': 'multipart/form-data',
     };
     const response = await axios.post('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/import-template-simulasi', formData, {
       headers,
     });
+    await fetchHasilSimulasi2();
     console.log('Sukses mengirim file : ', response.data);
     isUnggahModalOpen.value = false;
     isLoading.value = false;
     // Fetching Data Simulasi Disini
     isSuccess.value = true;
-    await wait(1500)
+    await wait(3000)
     isSuccess.value = false;
     isLoading.value = true;
     simulasi2DataFinansial.value = [];
-    await fetchDataTeknisSimulasi2();
-    await fetchDataFinansialSimulasi2();
-    await fetchDataTeknisByPeriode();
+    dataFinansialSimulasi2.value = [];
+    await fetchAsumsiParameter();
     await fetchDataFinansialDetail();
+    await fetchDataTeknisByPeriode();
+    await fetchDataTeknisSimulasi1();
+    await fetchDataTeknisSimulasi2();
+    await fetchDataFinansialSimulasi1();
+    await fetchDataFinansialSimulasi2();
     isLoading.value = false;
   } catch (error) {
     isLoading.value = false;
@@ -1716,82 +1601,53 @@ const formatBytes = (bytes: any) => {
   return Math.round(100 * (bytes / Math.pow(k, i))) / 100 + ' ' + sizes[i];
 };
 function handleTambahBahanBakar() {
-  bahanBakars.value.push({
+  bahanBakarGroup.value.bahanBakars.push({
     flag_bahan_bakar: 0,
-    harga_bahan_bakar: 0,
+    harga_bahan_bakar: "0",
     id_mesin: idMesin,
     kode_bahan_bakar: "",
-    sfc: 0,
-    tahun: tahunBerjalan,
+    sfc: "0",
+    tahun: (tahunBerjalan - 1).toString(),
     id: i.value++
+  });
+  bahanBakarGroup.value.fuelConsumption.push({
+    id_uraian: 0,
+    bahan_bakar: "",
+    value: "0"
+  });
+  bahanBakarGroup.value.costCDetail.push({
+    id_mesin: idMesin,
+    tahun: tahunBerjalan - 1,
+    kode_bahan_bakar: "",
+    fuel_cost: "0"
+  })
+  watch(() => bahanBakarGroup.value.bahanBakars.map(b => b.kode_bahan_bakar), (newValues, oldValues) => {
+    newValues.forEach((newValue, index) => {
+      const selectedBahanBakar = comboBahanBakar.value.find(data => data.kode_bahan_bakar === newValue);
+      if (selectedBahanBakar) {
+        bahanBakarGroup.value.fuelConsumption[index].id_uraian = parseInt(selectedBahanBakar.id_uraian_fuel_consumption);
+        bahanBakarGroup.value.fuelConsumption[index].bahan_bakar = selectedBahanBakar.bahan_bakar;
+      }
+      bahanBakarGroup.value.costCDetail[index].kode_bahan_bakar = newValue;
+    });
   });
 }
 function handleHapusBahanBakar() {
   if (checkedBahanBakar.value.length) {
     checkedBahanBakar.value.forEach((checkedItemId) => {
-      const result = bahanBakars.value.findIndex((checkbox) => checkbox.id === checkedItemId);
+      const result = bahanBakarGroup.value.bahanBakars.findIndex((checkbox) => checkbox.id === checkedItemId);
       if (result !== -1) {
-        bahanBakars.value.splice(result, 1);
+        bahanBakarGroup.value.bahanBakars.splice(result, 1);
+        bahanBakarGroup.value.fuelConsumption.splice(result, 1);
+        bahanBakarGroup.value.costCDetail.splice(result, 1);
       }
     });
     checkedBahanBakar.value = [];
   }
 }
-const handleInputDecimalRupiah = (targetModel: string, index?: number) => {
-  switch (targetModel) {
-    case 'costComponentA':
-      costComponentA.value = globalFormat.formatInputDecimalRupiah(costComponentA.value);
-      break;
-    case 'costComponentB':
-      costComponentB.value = globalFormat.formatInputDecimalRupiah(costComponentB.value);
-      break;
-    case 'ai':
-      costComponentADetail.value[index ?? -1].ai = globalFormat.formatInputDecimalRupiah(costComponentADetail.value[index ?? -1].ai);
-      break;
-    case 'aki':
-      costComponentADetail.value[index ?? -1].realisasi_aki = globalFormat.formatInputDecimalRupiah(costComponentADetail.value[index ?? -1].realisasi_aki);
-      break;
-    case 'biayaPeriodicMaintenance':
-      biayaPeriodicMaintenance.value = globalFormat.formatInputDecimalRupiah(biayaPeriodicMaintenance.value);
-      break;
-    case 'biayaKepegawaian':
-      biayaKepegawaian.value = globalFormat.formatInputDecimalRupiah(biayaKepegawaian.value);
-      break;
-    case 'biayaPemeliharaanRutin':
-      biayaPemeliharaanRutin.value = globalFormat.formatInputDecimalRupiah(biayaPemeliharaanRutin.value);
-      break;
-    case 'biayaAdministrasiUmum':
-      biayaAdministrasiUmum.value = globalFormat.formatInputDecimalRupiah(biayaAdministrasiUmum.value);
-      break;
-    case 'biayaPembelianTenagaListrik':
-      biayaPembelianTenagaListrik.value = globalFormat.formatInputDecimalRupiah(biayaPembelianTenagaListrik.value);
-      break;
-    case 'costComponentC':
-      costComponentC.value = globalFormat.formatInputDecimalRupiah(costComponentC.value);
-      break;
-    case 'oMCost':
-      oMCost.value = globalFormat.formatInputDecimalRupiah(oMCost.value);
-      break;
-    case 'periodicMaintenanceCost':
-      periodicMaintenanceCost.value = globalFormat.formatInputDecimalRupiah(periodicMaintenanceCost.value);
-      break;
-    case 'componentCDetail':
-      dataFinansialDetail.value.cost_component_c_detail[index ?? -1].fuel_cost = globalFormat.formatInputDecimalRupiah(dataFinansialDetail.value.cost_component_c_detail[index ?? -1].fuel_cost);
-      break;
-    case 'costComponentD':
-      costComponentD.value = globalFormat.formatInputDecimalRupiah(costComponentD.value);
-      break;
-    case 'biayaMinyakPelumas':
-      biayaMinyakPelumas.value = globalFormat.formatInputDecimalRupiah(biayaMinyakPelumas.value);
-      break;
-    case 'bahanKimia':
-      bahanKimia.value = globalFormat.formatInputDecimalRupiah(bahanKimia.value);
-      break;
-  }
-}
 const fetchDataTeknisSimulasi1 = async () => {
   try {
-    const response: any = await perbaruiDataService.getDataTeknisSimulasi1(tahunUpdate.value, idMesin);
+    const response: any = await perbaruiDataService.getDataTeknisSimulasi1(tahunBerjalan, idMesin);
     simulasi1DataTeknis.value = response.data;
     console.log('Simulasi Teknis 1 : ', response.data);
   } catch (error) {
@@ -1800,7 +1656,7 @@ const fetchDataTeknisSimulasi1 = async () => {
 }
 const fetchDataTeknisSimulasi2 = async () => {
   try {
-    const response: any = await perbaruiDataService.getDataTeknisSimulasi2(tahunUpdate.value, idMesin);
+    const response: any = await perbaruiDataService.getDataTeknisSimulasi2(tahunBerjalan, idMesin);
     simulasi2DataTeknis.value = response.data;
     console.log('Simulasi Teknis 2: ', response.data);
   } catch (error) {
@@ -1809,7 +1665,8 @@ const fetchDataTeknisSimulasi2 = async () => {
 }
 const fetchDataFinansialSimulasi1 = async () => {
   try {
-    const response: any = await perbaruiDataService.getDataFinansialSimulasi1(tahunUpdate.value, idMesin);
+    simulasi1DataFinansial.value = [];
+    const response: any = await perbaruiDataService.getDataFinansialSimulasi1(tahunBerjalan, idMesin);
     let currentLevel1: any | null = null;
     let currentLevel2: any | null = null;
     let currentLevel3: any | null = null;
@@ -1837,14 +1694,15 @@ const fetchDataFinansialSimulasi1 = async () => {
       }
     }
     dataFinansialSimulasi1.value = response.data;
-    console.log('Simulasi Finansial 1 : ', simulasi1DataFinansial.value);
+    console.log('Simulasi Finansial 1 : ', response.data);
   } catch (error) {
     console.error('Fetch Opsi Simulasi Error : ', error);
   }
 }
 const fetchDataFinansialSimulasi2 = async () => {
   try {
-    const response: any = await perbaruiDataService.getDataFinansialSimulasi2(tahunUpdate.value, idMesin);
+    simulasi2DataFinansial.value = [];
+    const response: any = await perbaruiDataService.getDataFinansialSimulasi2(tahunBerjalan, idMesin);
     let currentLevel1: any | null = null;
     let currentLevel2: any | null = null;
     let currentLevel3: any | null = null;
@@ -1879,7 +1737,7 @@ const fetchDataFinansialSimulasi2 = async () => {
 }
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const handleSubmit = async () => {
-  isShowModalConfirmation.value = false;
+  console.log(bahanBakarGroup.value);
   const errorAsumsiInput = error.value.asumsi;
   const errorParameterTeknis = error.value.parameter;
   const errorDataTeknis = error.value.teknis;
@@ -1944,7 +1802,7 @@ const handleSubmit = async () => {
   } else {
     errorParameterTeknis.electricityPriceD = false;
   }
-  if (bahanBakars.value.some(obj => Object.values(obj).some(value => value === ""))) {
+  if (bahanBakarGroup.value.bahanBakars.some(obj => Object.values(obj).some(value => value === ""))) {
     errorParameterTeknis.bahanBakar = true;
   } else {
     errorParameterTeknis.bahanBakar = false;
@@ -1979,7 +1837,7 @@ const handleSubmit = async () => {
   } else {
     errorDataTeknis.energySales = false;
   }
-  if (fuelConsumption.value.filter((value: any) => value.value === '').length !== 0) {
+  if (bahanBakarGroup.value.fuelConsumption.filter((value: any) => value.value === '').length !== 0) {
     errorDataTeknis.fuelConsumption = true;
   } else {
     errorDataTeknis.fuelConsumption = false;
@@ -2025,6 +1883,11 @@ const handleSubmit = async () => {
     } else {
       errorDataFinansial.biayaPembelianTenagaListrik = false;
     }
+    if (biayaLainLain.value === 'NaN' || biayaLainLain.value === '') {
+      errorDataFinansial.biayaLainLain = true;
+    } else {
+      errorDataFinansial.biayaLainLain = false;
+    }
   } else if (picked.value === 'gabung') {
     if (oMCost.value === 'NaN' || oMCost.value === '') {
       errorDataFinansial.oMCost = true;
@@ -2042,7 +1905,7 @@ const handleSubmit = async () => {
   } else {
     errorDataFinansial.costComponentC = false;
   }
-  if (costComponentCDetail.value.some(obj => Object.values(obj).some(value => value === ""))) {
+  if (bahanBakarGroup.value.costCDetail.some(obj => Object.values(obj).some(value => value === ""))) {
     errorDataFinansial.costComponentCDetail = true;
   } else {
     errorDataFinansial.costComponentCDetail = false;
@@ -2062,6 +1925,31 @@ const handleSubmit = async () => {
   } else {
     errorDataFinansial.biayaBahanKimia = false;
   }
+  if (totalRevenue.value === 'NaN' || totalRevenue.value === '') {
+    errorDataFinansial.totalRevenue = true;
+  } else {
+    errorDataFinansial.totalRevenue = false;
+  }
+  if (revenueKompA.value === 'NaN' || revenueKompA.value === '') {
+    errorDataFinansial.revenueKompA = true;
+  } else {
+    errorDataFinansial.revenueKompA = false;
+  }
+  if (revenueKompB.value === 'NaN' || revenueKompB.value === '') {
+    errorDataFinansial.revenueKompB = true;
+  } else {
+    errorDataFinansial.revenueKompB = false;
+  }
+  if (revenueKompC.value === 'NaN' || revenueKompC.value === '') {
+    errorDataFinansial.revenueKompC = true;
+  } else {
+    errorDataFinansial.revenueKompC = false;
+  }
+  if (revenueKompD.value === 'NaN' || revenueKompD.value === '') {
+    errorDataFinansial.revenueKompD = true;
+  } else {
+    errorDataFinansial.revenueKompD = false;
+  }
   if (Object.values(errorAsumsiInput).some(value => value === true) || Object.values(errorParameterTeknis).some(value => value === true) || Object.values(errorDataTeknis).some(value => value === true) || Object.values(errorDataFinansial).some(value => value === true)) {
     isShowModalNotification.value = true;
     await wait(5000);
@@ -2072,53 +1960,71 @@ const handleSubmit = async () => {
       // Update Asumsi Makro 
       const finalInterestRate = asumsiParameter.value.asumsiMakro.interestRate.includes('.') ? asumsiParameter.value.asumsiMakro.interestRate.replace(/[.]/g, '') : asumsiParameter.value.asumsiMakro.interestRate;
       const finalLoanPortion = asumsiParameter.value.asumsiMakro.loanPortion.includes('.') ? asumsiParameter.value.asumsiMakro.loanPortion.replace(/[.]/g, '') : asumsiParameter.value.asumsiMakro.loanPortion;
+      const finalTotalProjectCost = asumsiParameter.value.asumsiMakro.totalProjectCost.includes('.') ? asumsiParameter.value.asumsiMakro.totalProjectCost.replace(/[.]/g, '') : asumsiParameter.value.asumsiMakro.totalProjectCost;
+      const finalDayaMampuNettoMW = asumsiParameter.value.asumsiMakro.dayaMampuNettoMW.includes('.') ? asumsiParameter.value.asumsiMakro.dayaMampuNettoMW.replace(/[.]/g, '') : asumsiParameter.value.asumsiMakro.dayaMampuNettoMW;
+      console.log(finalTotalProjectCost, 'Total Project Cost');
+      console.log(finalDayaMampuNettoMW, 'Daya Mampu Netto MW');
       if (idAsumsi.value === 0 && statusAsumsi.value === 'create') {
         const formAsumsiCreate = {
-          tahun: tahunUpdate.value,
+          // Tahun Berjalan
+          tahun: tahunBerjalan,
+          // Tahun Realisasi
+          tahun_realisasi: tahunBerjalan - 1,
           id_mesin: idMesin,
           interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
           umur_teknis: parseInt(masaManfaat.value),
           loan_tenor: parseInt(asumsiParameter.value.asumsiMakro.loanTenor),
           loan_portion: parseFloat(finalLoanPortion.replace(/,/g, '.')),
-          status_fs: 0
+          status_fs: 0,
+          total_project_cost: parseFloat(finalTotalProjectCost.replace(/,/g, '.')),
+          daya_mampu_netto_mw: parseFloat(finalDayaMampuNettoMW.replace(/,/g, '.'))
         }
+        console.log(formAsumsiCreate)
         await perbaruiDataService.createAsumsiMakroPermanent(formAsumsiCreate);
+        await fetchMesinById();
         const response: AsumsiParameterItem =
           await perbaruiDataService.getAsumsiParameterData(
-            tahunUpdate.value,
-            idMesin
+            tahunBerjalan - 1,
+            idMesin,
+            tahunBerjalan
           );
         statusAsumsi.value = response.data.status;
         idAsumsi.value = response.data.id_asumsi;
       } else {
         const formAsumsiUpdate = {
           id_asumsi: idAsumsi.value,
-          tahun: tahunUpdate.value,
+          // Tahun Berjalan
+          tahun: tahunBerjalan,
+          // Tahun Realisasi
+          tahun_realisasi: tahunBerjalan - 1,
           id_mesin: idMesin,
           interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
           umur_teknis: parseInt(masaManfaat.value),
           loan_tenor: parseInt(asumsiParameter.value.asumsiMakro.loanTenor),
-          loan_portion: parseFloat(finalLoanPortion.replace(/,/g, '.'))
+          loan_portion: parseFloat(finalLoanPortion.replace(/,/g, '.')),
+          total_project_cost: parseFloat(finalTotalProjectCost.replace(/,/g, '.')),
+          daya_mampu_netto_mw: parseFloat(finalDayaMampuNettoMW.replace(/,/g, '.'))
         }
         await perbaruiDataService.updateAsumsiMakroPermanent(formAsumsiUpdate);
+        await fetchMesinById();
         const response: AsumsiParameterItem =
           await perbaruiDataService.getAsumsiParameterData(
-            tahunUpdate.value,
-            idMesin
+            tahunBerjalan - 1,
+            idMesin,
+            tahunBerjalan
           );
         statusAsumsi.value = response.data.status;
         idAsumsi.value = response.data.id_asumsi;
       }
-
       // Update Parameter Teknis & Finansial
-      const finalBahanBakars = bahanBakars.value.map(value => {
+      const finalBahanBakars = bahanBakarGroup.value.bahanBakars.map(value => {
         delete value.id;
         let newValue = { ...value };
         let finalHargaBahanBakar = newValue.harga_bahan_bakar.includes('.') ? newValue.harga_bahan_bakar.replace(/[.]/g, '') : newValue.harga_bahan_bakar;
         newValue.harga_bahan_bakar = parseFloat(finalHargaBahanBakar.replace(/,/g, '.'));
         let finalSFC = newValue.sfc.includes('.') ? newValue.sfc.replace(/[.]/g, '') : newValue.sfc;
         newValue.sfc = parseFloat(finalSFC.replace(/,/g, '.'));
-        newValue.tahun = tahunUpdate.value.toString();
+        newValue.tahun = (tahunBerjalan - 1).toString();
         return newValue;
       });
       console.log(finalBahanBakars, 'Final');
@@ -2130,40 +2036,68 @@ const handleSubmit = async () => {
       const finalElecB = asumsiParameter.value.parameterTeknis.electricityPriceB.includes('.') ? asumsiParameter.value.parameterTeknis.electricityPriceB.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.electricityPriceB;
       const finalElecC = asumsiParameter.value.parameterTeknis.electricityPriceC.includes('.') ? asumsiParameter.value.parameterTeknis.electricityPriceC.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.electricityPriceC;
       const finalElecD = asumsiParameter.value.parameterTeknis.electricityPriceD.includes('.') ? asumsiParameter.value.parameterTeknis.electricityPriceD.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.electricityPriceD;
-      const formParameterUpdate = {
-        id_asumsi: idAsumsi.value,
-        id_mesin: idMesin,
-        tahun: tahunUpdate.value,
-        nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
-        auxiliary: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalAuxiliary.replace(/,/g, '.')) : 0,
-        susut_trafo: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalSusutTrafo.replace(/,/g, '.')) : 0,
-        ps: pickedParameterValue.value === 'pemakaianSendiri' ? parseFloat(finalPemakaianSendiri.replace(/,/g, '.')) : 0,
-        electricity_price_a_rp_per_kwbln: parseFloat(finalElecA.replace(/,/g, '.')),
-        electricity_price_b_rp_per_kwbln: parseFloat(finalElecB.replace(/,/g, '.')),
-        electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),
-        electricity_price_d_rp_per_kwh: parseFloat(finalElecD.replace(/,/g, '.')),
-        harga_bahan_bakars: finalBahanBakars
+      var formParameterUpdate = {};
+      if (kodePengelola.value === 'PIP') {
+        formParameterUpdate = {
+          id_asumsi: idAsumsi.value,
+          id_mesin: idMesin,
+          tahun: tahunBerjalan,
+          tahun_realisasi: tahunBerjalan - 1,
+          nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
+          auxiliary: parseFloat(finalAuxiliary.replace(/,/g, '.')),
+          susut_trafo: parseFloat(finalSusutTrafo.replace(/,/g, '.')),
+          ps: parseFloat(finalPemakaianSendiri.replace(/,/g, '.')),
+          electricity_price_a_rp_per_kwbln: parseFloat(finalElecA.replace(/,/g, '.')),
+          electricity_price_b_rp_per_kwbln: parseFloat(finalElecB.replace(/,/g, '.')),
+          electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),
+          electricity_price_d_rp_per_kwh: parseFloat(finalElecD.replace(/,/g, '.')),
+          harga_bahan_bakars: finalBahanBakars
+        }
+      } else {
+        formParameterUpdate = {
+          id_asumsi: idAsumsi.value,
+          id_mesin: idMesin,
+          tahun: tahunBerjalan,
+          tahun_realisasi: tahunBerjalan - 1,
+          nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
+          auxiliary: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalAuxiliary.replace(/,/g, '.')) : 0,
+          susut_trafo: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalSusutTrafo.replace(/,/g, '.')) : 0,
+          ps: pickedParameterValue.value === 'pemakaianSendiri' ? parseFloat(finalPemakaianSendiri.replace(/,/g, '.')) : 0,
+          electricity_price_a_rp_per_kwbln: parseFloat(finalElecA.replace(/,/g, '.')),
+          electricity_price_b_rp_per_kwbln: parseFloat(finalElecB.replace(/,/g, '.')),
+          electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),
+          electricity_price_d_rp_per_kwh: parseFloat(finalElecD.replace(/,/g, '.')),
+          harga_bahan_bakars: finalBahanBakars
+        }
       }
       await perbaruiDataService.updateParameterTeknisPermanent(formParameterUpdate);
 
       // Update Data Teknis
       const finalFuelConsumption: any = [];
-      for (const itemTeknis of fuelConsumption.value) {
+      for (const itemTeknis of bahanBakarGroup.value.fuelConsumption) {
+        let finalItem = itemTeknis.value.includes('.') ? itemTeknis.value.replace(/[.]/g, '') : itemTeknis.value;
         finalFuelConsumption.push({
           id_uraian: itemTeknis.id_uraian,
-          value: itemTeknis.value.includes('.') ? parseFloat(itemTeknis.value.replace(/[.]/g, '')) : itemTeknis.value.includes(',') ? parseFloat(itemTeknis.value.replace(',', '.')) : parseFloat(itemTeknis.value)
+          value: parseFloat(finalItem.replace(/,/g, '.'))
         })
       }
+      const finalNFC = ncf.value.includes('.') ? ncf.value.replace(/[.]/g, '') : ncf.value;
+      const finalEAF = eaf.value.includes('.') ? eaf.value.replace(/[.]/g, '') : eaf.value;
+      const finalProductionBrutto = productionBrutto.value.includes('.') ? productionBrutto.value.replace(/[.]/g, '') : productionBrutto.value;
+      const finalProductionNetto = productionNetto.value.includes('.') ? productionNetto.value.replace(/[.]/g, '') : productionNetto.value;
+      const finalEnergySales = energySales.value.includes('.') ? energySales.value.replace(/[.]/g, '') : energySales.value;
+
       const formDataTeknisUpdate = {
         id_mesin: idMesin,
-        tahun_realisasi: tahunUpdate.value,
+        tahun: tahunBerjalan,
+        tahun_realisasi: tahunBerjalan - 1,
         id_type_periodic: typePeriodic.value,
         // const finalBiayaPeriodicMaintenance = parseFloat(biayaPeriodicMaintenance.value.replace(/,/g, '.'));
-        nfc: ncf.value.includes('.') ? parseFloat(ncf.value.replace(/[.]/g, '')) : ncf.value.includes(',') ? parseFloat(ncf.value.replace(',', '.')) : parseFloat(ncf.value),
-        eaf: eaf.value.includes('.') ? parseFloat(eaf.value.replace(/[.]/g, '')) : eaf.value.includes(',') ? parseFloat(eaf.value.replace(',', '.')) : parseFloat(eaf.value),
-        production_bruto: productionBrutto.value.includes('.') ? parseFloat(productionBrutto.value.replace(/[.]/g, '')) : productionBrutto.value.includes(',') ? parseFloat(productionBrutto.value.replace(',', '.')) : parseFloat(productionBrutto.value),
-        production_netto: productionNetto.value.includes('.') ? parseFloat(productionNetto.value.replace(/[.]/g, '')) : productionNetto.value.includes(',') ? parseFloat(productionNetto.value.replace(',', '.')) : parseFloat(productionNetto.value),
-        energy_sales: energySales.value.includes('.') ? parseFloat(energySales.value.replace(/[.]/g, '')) : energySales.value.includes(',') ? parseFloat(energySales.value.replace(',', '.')) : parseFloat(energySales.value),
+        nfc: parseFloat(finalNFC.replace(/,/g, '.')),
+        eaf: parseFloat(finalEAF.replace(/,/g, '.')),
+        production_bruto: parseFloat(finalProductionBrutto.replace(/,/g, '.')),
+        production_netto: parseFloat(finalProductionNetto.replace(/,/g, '.')),
+        energy_sales: parseFloat(finalEnergySales.replace(/,/g, '.')),
         fuel_consumption: finalFuelConsumption
       }
       console.log(formDataTeknisUpdate);
@@ -2182,100 +2116,114 @@ const handleSubmit = async () => {
           value.realisasi_aki = parseFloat(value.realisasi_aki.toString().replace(/,/g, ''));
         }
       }
-      const finalCostComponentA = costComponentA.value.includes('.') ? parseFloat(costComponentA.value.replace(/[.]/g, '')) : costComponentA.value.includes(',') ? parseFloat(costComponentA.value.replace(',', '.')) : parseFloat(costComponentA.value);
+      const finalCostComponentA = costComponentA.value.includes('.') ? costComponentA.value.replace(/[.]/g, '') : costComponentA.value;
       // const finalBiayaPeriodicMaintenance = parseFloat(biayaPeriodicMaintenance.value.replace(/,/g, '.'));
       // const finalCostComponentADetail = costComponentADetail.value;
-      const finalCostComponentB = costComponentB.value.includes('.') ? parseFloat(costComponentB.value.replace(/[.]/g, '')) : costComponentB.value.includes(',') ? parseFloat(costComponentB.value.replace(',', '.')) : parseFloat(costComponentB.value);
-      const finalBiayaKepegawaian = biayaKepegawaian.value.includes('.') ? parseFloat(biayaKepegawaian.value.replace(/[.]/g, '')) : biayaKepegawaian.value.includes(',') ? parseFloat(biayaKepegawaian.value.replace(',', '.')) : parseFloat(biayaKepegawaian.value);
-      const finalBiayaPeriodic = periodicMaintenanceCost.value.includes('.') ? parseFloat(periodicMaintenanceCost.value.replace(/[.]/g, '')) : periodicMaintenanceCost.value.includes(',') ? parseFloat(periodicMaintenanceCost.value.replace(',', '.')) : parseFloat(periodicMaintenanceCost.value);
-      const finalBiayaPemeliharaanRutin = biayaPemeliharaanRutin.value.includes('.') ? parseFloat(biayaPemeliharaanRutin.value.replace(/[.]/g, '')) : biayaPemeliharaanRutin.value.includes(',') ? parseFloat(biayaPemeliharaanRutin.value.replace(',', '.')) : parseFloat(biayaPemeliharaanRutin.value)
-      const finalBiayaAdministrasiUmum = biayaAdministrasiUmum.value.includes('.') ? parseFloat(biayaAdministrasiUmum.value.replace(/[.]/g, '')) : biayaAdministrasiUmum.value.includes(',') ? parseFloat(biayaAdministrasiUmum.value.replace(',', '.')) : parseFloat(biayaAdministrasiUmum.value);
-      const finalBiayaPembelianTenagaListrik = biayaPembelianTenagaListrik.value.includes('.') ? parseFloat(biayaPembelianTenagaListrik.value.replace(/[.]/g, '')) : biayaPembelianTenagaListrik.value.includes(',') ? parseFloat(biayaPembelianTenagaListrik.value.replace(',', '.')) : parseFloat(biayaPembelianTenagaListrik.value);
-      const finalOMCost = oMCost.value.includes('.') ? parseFloat(oMCost.value.replace(/[.]/g, '')) : oMCost.value.includes(',') ? parseFloat(oMCost.value.replace(',', '.')) : parseFloat(oMCost.value);
-      const finalCostComponentC = costComponentC.value.includes('.') ? parseFloat(costComponentC.value.replace(/[.]/g, '')) : costComponentC.value.includes(',') ? parseFloat(costComponentC.value.replace(',', '.')) : parseFloat(costComponentC.value);
+      const finalCostComponentB = costComponentB.value.includes('.') ? costComponentB.value.replace(/[.]/g, '') : costComponentB.value;
+      const finalBiayaKepegawaian = biayaKepegawaian.value.includes('.') ? biayaKepegawaian.value.replace(/[.]/g, '') : biayaKepegawaian.value;
+      const finalBiayaPeriodic = periodicMaintenanceCost.value.includes('.') ? periodicMaintenanceCost.value.replace(/[.]/g, '') : periodicMaintenanceCost.value;
+      const finalBiayaPemeliharaanRutin = biayaPemeliharaanRutin.value.includes('.') ? biayaPemeliharaanRutin.value.replace(/[.]/g, '') : biayaPemeliharaanRutin.value;
+      const finalBiayaAdministrasiUmum = biayaAdministrasiUmum.value.includes('.') ? biayaAdministrasiUmum.value.replace(/[.]/g, '') : biayaAdministrasiUmum.value;
+      const finalBiayaPembelianTenagaListrik = biayaPembelianTenagaListrik.value.includes('.') ? biayaPembelianTenagaListrik.value.replace(/[.]/g, '') : biayaPembelianTenagaListrik.value;
+      const finalBiayaLainLain = biayaLainLain.value.includes('.') ? biayaLainLain.value.replace(/[.]/g, '') : biayaLainLain.value;
+      const finalOMCost = oMCost.value.includes('.') ? oMCost.value.replace(/[.]/g, '') : oMCost.value;
+      const finalCostComponentC = costComponentC.value.includes('.') ? costComponentC.value.replace(/[.]/g, '') : costComponentC.value;
       const finalCostComponentCDetail = [];
-      for (const item of costComponentCDetail.value) {
+      for (const item of bahanBakarGroup.value.costCDetail) {
         const formattedFuelCost = item.fuel_cost.includes('.') ? item.fuel_cost.replace(/[.]/g, '') : item.fuel_cost;
         finalCostComponentCDetail.push({
           id_mesin: idMesin,
-          tahun: tahunUpdate.value,
+          tahun: tahunBerjalan - 1,
           kode_bahan_bakar: item.kode_bahan_bakar,
           fuel_cost: parseFloat(formattedFuelCost.replace(/,/g, '.'))
         });
       }
-      const finalCostComponentD = costComponentD.value.includes('.') ? parseFloat(costComponentD.value.replace(/[.]/g, '')) : costComponentD.value.includes(',') ? parseFloat(costComponentD.value.replace(',', '.')) : parseFloat(costComponentD.value);
-      const finalBiayaPelumas = biayaMinyakPelumas.value.includes('.') ? parseFloat(biayaMinyakPelumas.value.replace(/[.]/g, '')) : biayaMinyakPelumas.value.includes(',') ? parseFloat(biayaMinyakPelumas.value.replace(',', '.')) : parseFloat(biayaMinyakPelumas.value);
-      const finalBahanKimia = bahanKimia.value.includes('.') ? parseFloat(bahanKimia.value.replace(/[.]/g, '')) : bahanKimia.value.includes(',') ? parseFloat(bahanKimia.value.replace(',', '.')) : parseFloat(bahanKimia.value);
+      const finalCostComponentD = costComponentD.value.includes('.') ? costComponentD.value.replace(/[.]/g, '') : costComponentD.value;
+      const finalBiayaPelumas = biayaMinyakPelumas.value.includes('.') ? biayaMinyakPelumas.value.replace(/[.]/g, '') : biayaMinyakPelumas.value;
+      const finalBahanKimia = bahanKimia.value.includes('.') ? bahanKimia.value.replace(/[.]/g, '') : bahanKimia.value;
+      const finalRevenue = totalRevenue.value.includes('.') ? totalRevenue.value.replace(/[.]/g, '') : totalRevenue.value;
+      const finalRevenueKompA = revenueKompA.value.includes('.') ? revenueKompA.value.replace(/[.]/g, '') : revenueKompA.value;
+      const finalRevenueKompB = revenueKompB.value.includes('.') ? revenueKompB.value.replace(/[.]/g, '') : revenueKompB.value;
+      const finalRevenueKompC = revenueKompC.value.includes('.') ? revenueKompC.value.replace(/[.]/g, '') : revenueKompC.value;
+      const finalRevenueKompD = revenueKompD.value.includes('.') ? revenueKompD.value.replace(/[.]/g, '') : revenueKompD.value;
 
       let formDataFinansialUpdate;
       if (picked.value === 'pisah') {
         formDataFinansialUpdate = {
           id_mesin: idMesin,
-          tahun: tahunUpdate.value,
+          tahun: tahunBerjalan - 1,
           status_b_d: 2,
-          cost_component_a: finalCostComponentA,
-          cost_component_b: finalCostComponentB,
+          cost_component_a: parseFloat(finalCostComponentA.replace(/,/g, '.')),
+          cost_component_b: parseFloat(finalCostComponentB.replace(/,/g, '.')),
           cost_component_b_detail: {
             id_ao: 0,
             id_mesin: idMesin,
-            tahun: tahunUpdate.value,
-            biaya_kepegawaian: finalBiayaKepegawaian,
-            biaya_pemeliharaan_rutin: finalBiayaPemeliharaanRutin,
-            biaya_administrasi_umum: finalBiayaAdministrasiUmum,
-            biaya_pembelian_tenaga_listrik: finalBiayaPembelianTenagaListrik,
+            tahun: tahunBerjalan - 1,
+            biaya_kepegawaian: parseFloat(finalBiayaKepegawaian.replace(/,/g, '.')),
+            biaya_pemeliharaan_rutin: parseFloat(finalBiayaPemeliharaanRutin.replace(/,/g, '.')),
+            biaya_administrasi_umum: parseFloat(finalBiayaAdministrasiUmum.replace(/,/g, '.')),
+            biaya_pembelian_tenaga_listrik: parseFloat(finalBiayaPembelianTenagaListrik.replace(/,/g, '.')),
             biaya_penyusutan_aset_tetap: 0,
-            biaya_lain_lain: 0,
+            biaya_lain_lain: parseFloat(finalBiayaLainLain.replace(/,/g, '.')),
             biaya_periodic_maintenance_non_mi: 0
           },
-          cost_component_c: finalCostComponentC,
+          cost_component_c: parseFloat(finalCostComponentC.replace(/,/g, '.')),
           cost_component_c_detail: finalCostComponentCDetail,
-          cost_component_d: finalCostComponentD,
+          cost_component_d: parseFloat(finalCostComponentD.replace(/,/g, '.')),
           cost_component_d_detail: {
             id_pelumas_bahan_kimia: 0,
             id_mesin: idMesin,
-            tahun: tahunUpdate.value,
-            biaya_pelumas: finalBiayaPelumas,
-            biaya_bahan_kimia: finalBahanKimia,
+            tahun: tahunBerjalan - 1,
+            biaya_pelumas: parseFloat(finalBiayaPelumas.replace(/,/g, '.')),
+            biaya_bahan_kimia: parseFloat(finalBahanKimia.replace(/,/g, '.')),
             biaya_lain_lain: 0
-          }
+          },
+          revenue: parseFloat(finalRevenue.replace(/,/g, '.')),
+          revenue_a: parseFloat(finalRevenueKompA.replace(/,/g, '.')),
+          revenue_b: parseFloat(finalRevenueKompB.replace(/,/g, '.')),
+          revenue_c: parseFloat(finalRevenueKompC.replace(/,/g, '.')),
+          revenue_d: parseFloat(finalRevenueKompD.replace(/,/g, '.'))
         }
       } else {
         formDataFinansialUpdate = {
           id_mesin: idMesin,
-          tahun: tahunUpdate.value,
+          tahun: tahunBerjalan - 1,
           status_b_d: 1,
-          cost_component_a: finalCostComponentA,
-          cost_component_b: finalCostComponentB,
+          cost_component_a: parseFloat(finalCostComponentA.replace(/,/g, '.')),
+          cost_component_b: parseFloat(finalCostComponentB.replace(/,/g, '.')),
           cost_component_b_detail: {
             id_ao: 0,
             id_mesin: idMesin,
-            tahun: tahunUpdate.value,
+            tahun: tahunBerjalan - 1,
             biaya_kepegawaian: 0,
             biaya_pemeliharaan_rutin: 0,
             biaya_administrasi_umum: 0,
             biaya_pembelian_tenaga_listrik: 0,
             biaya_penyusutan_aset_tetap: 0,
-            biaya_lain_lain: finalOMCost,
-            biaya_periodic_maintenance_non_mi: finalBiayaPeriodic
+            biaya_lain_lain: parseFloat(finalOMCost.replace(/,/g, '.')),
+            biaya_periodic_maintenance_non_mi: parseFloat(finalBiayaPeriodic.replace(/,/g, '.'))
           },
-          cost_component_c: finalCostComponentC,
+          cost_component_c: parseFloat(finalCostComponentC.replace(/,/g, '.')),
           cost_component_c_detail: finalCostComponentCDetail,
           cost_component_d: 0,
           cost_component_d_detail: {
             id_pelumas_bahan_kimia: 0,
             id_mesin: idMesin,
-            tahun: tahunUpdate.value,
+            tahun: tahunBerjalan - 1,
             biaya_pelumas: 0,
             biaya_bahan_kimia: 0,
             biaya_lain_lain: 0
-          }
+          },
+          revenue: parseFloat(finalRevenue.replace(/,/g, '.')),
+          revenue_a: parseFloat(finalRevenueKompA.replace(/,/g, '.')),
+          revenue_b: parseFloat(finalRevenueKompB.replace(/,/g, '.')),
+          revenue_c: parseFloat(finalRevenueKompC.replace(/,/g, '.')),
+          revenue_d: parseFloat(finalRevenueKompD.replace(/,/g, '.'))
         }
       }
-      // Matikan Comment dibawah ini jika sudah di FIX API Update Data Finansial
       await perbaruiDataService.updateDataFinansialSimulasi(formDataFinansialUpdate);
-
       // Handle Sesudah Submit
-      fuelConsumption.value = [];
+      bahanBakarGroup.value.fuelConsumption = [];
       isLoading.value = false;
       isSuccessSimulasi.value = true;
       await wait(3000);
@@ -2289,8 +2237,12 @@ const handleSubmit = async () => {
       await fetchDataTeknisSimulasi2();
       await fetchDataFinansialSimulasi1();
       await fetchDataFinansialSimulasi2();
+      await fetchHasilSimulasi1();
+      await fetchHasilSimulasi2();
+      storePerbaruiTab.currentTab = 'Opsi Simulasi';
     } catch (error) {
       console.error('Update Error : ' + error);
+      notifyError('Update Error: ' + error, 1000);
     } finally {
       isLoading.value = false;
     }
@@ -2298,19 +2250,41 @@ const handleSubmit = async () => {
 }
 const handleFinalSubmit = async () => {
   try {
-    console.log('Form Data Teknis Simulasi 1 : ', dataTeknisSimulasi1.value);
-    console.log('Form Data Finansial Simulasi 1 : ', formFinansialSimulasi1.value);
-    console.log('Form Data Teknis Simulasi 2 : ', dataTeknisSimulasi2.value);
-    console.log('Form Data Finansial Simulasi 2 : ', formFinansialSimulasi2.value);
-    // if (selectedSimulasiTab.value === 'Simulasi 1') {
-    //   await perbaruiDataService.updateDataTeknisPermanent(dataTeknisSimulasi1.value);
-    //   await perbaruiDataService.updateDataFinansialPermanent(formFinansialSimulasi1.value);
-    // } else {
-    //   await perbaruiDataService.updateDataTeknisPermanent(dataTeknisSimulasi2.value);
-    //   await perbaruiDataService.updateDataFinansialPermanent(formFinansialSimulasi2.value);
-    // }
+    isLoading.value = true;
+    console.log(dataTeknisSimulasi1.value)
+    console.log(dataTeknisSimulasi2.value)
+    if (selectedSimulasiTab.value === 'Simulasi 1') {
+      const finalCostComponentCDetail = [];
+      for (const item of formFinansialSimulasi1.value.cost_component_c_detail) {
+        const formattedFuelCost = item.fuel_cost.includes('.') ? item.fuel_cost.replace(/[.]/g, '') : item.fuel_cost;
+        finalCostComponentCDetail.push({
+          id_mesin: idMesin,
+          tahun: tahunBerjalan - 1,
+          kode_bahan_bakar: item.kode_bahan_bakar,
+          fuel_cost: parseFloat(formattedFuelCost.replace(/,/g, '.'))
+        });
+      }
+      formFinansialSimulasi1.value.cost_component_c_detail = finalCostComponentCDetail;
+      await perbaruiDataService.updateDataTeknisPermanent(dataTeknisSimulasi1.value);
+      await perbaruiDataService.updateDataFinansialPermanent(formFinansialSimulasi1.value);
+    } else {
+      await perbaruiDataService.updateDataTeknisPermanent(dataTeknisSimulasi2.value);
+      await perbaruiDataService.updateDataFinansialPermanent(formFinansialSimulasi2.value);
+    }
+    isShowFinalConfirmation.value = false;
+    isLoading.value = false;
+    isFinalSubmitSuccess.value = true;
+    await wait(3000);
+    isFinalSubmitSuccess.value = false;
+    if (authService.checkLevel() === 'Sentral') {
+      router.replace({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(idMesin) : idMesin }, query: { id_sentral: idSentral.value, tahun: tahunBerjalan } });
+    } else {
+      router.replace({ name: 'persetujuan-by-approve' });
+    }
   } catch (error) {
     console.error('Final Submit Error : ' + error);
+  } finally {
+    isLoading.value = false;
   }
 }
 const toggleRowSimulasi1 = (itemId: number) => {
@@ -2343,14 +2317,17 @@ const isRowOpenSimulasi2 = (itemId: number) => {
 const handleDownloadExcelSimulasi1 = async () => {
   try {
     isLoading.value = true;
+    console.log('Form 1', formFinansialSimulasi1.value);
+    console.log('Form 2', formFinansialSimulasi2.value);
     const headers = {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
     };
     const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/export-template-simulasi1', {
       responseType: 'arraybuffer',
       headers,
       params: {
-        tahun: tahunUpdate.value,
+        tahun: tahunBerjalan,
+        tahun_realisasi: tahunBerjalan - 1,
         id_mesin: idMesin
       }
     });
@@ -2377,13 +2354,14 @@ const handleDownloadExcelSimulasi2 = async () => {
   try {
     isLoading.value = true;
     const headers = {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
     };
     const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail//export-template-simulasi2', {
       responseType: 'arraybuffer',
       headers,
       params: {
-        tahun: tahunUpdate.value,
+        tahun: tahunBerjalan,
+        tahun_realisasi: tahunBerjalan - 1,
         id_mesin: idMesin
       }
     });
@@ -2407,11 +2385,15 @@ const handleDownloadExcelSimulasi2 = async () => {
   }
 }
 
+onUnmounted(() => {
+  storePerbaruiTab.currentTab = 'Asumsi Makro';
+});
+
 onMounted(async () => {
   await fetchMesinById();
   await fetchUnitPengelola();
+  await fetchCheckIntegrasi();
   await fetchComboBahanBakar();
-  await fetchAsumsiParameterRealisasi();
   await fetchAsumsiParameter();
   await fetchComboTypePeriodic();
   await fetchDataFinansialDetail();
@@ -2420,6 +2402,8 @@ onMounted(async () => {
   await fetchDataTeknisSimulasi2();
   await fetchDataFinansialSimulasi1();
   await fetchDataFinansialSimulasi2();
+  await fetchHasilSimulasi1();
+  await fetchHasilSimulasi2();
   await fetchListTypePeriodic();
   isLoading.value = false;
 });

@@ -25,24 +25,12 @@
       </div>
       <div class="flex items-center text-xs">
         <p class="mr-2">Status Laporan</p>
-        <div
-          class="w-fit p-1 flex items-center justify-center bg-[#FAEBEA] border border-[#EFC0BD] rounded-md text-[#C53830]"
-          v-if="props.status === 'Ditolak T1'">Ditolak oleh Pembina</div>
-        <div
-          class="w-fit p-1 flex items-center justify-center bg-[#FAEBEA] border border-[#EFC0BD] rounded-md text-[#C53830]"
-          v-else-if="props.status === 'Ditolak T2'">Ditolak oleh Pengelola</div>
-        <div
-          class="w-fit p-1 flex items-center justify-center bg-[#EDF7F2] border border-[#C7E5D7] rounded-md text-[#397E5D]"
-          v-else-if="props.status === 'Disetujui'">Disetujui</div>
-        <div
-          class="w-fit p-1 flex items-center justify-center font-bold bg-[#FFF3E6] border border-[#FFD6AD] rounded-md text-[#FF8000]"
-          v-else-if="props.status === 'Menunggu Persetujuan T1'">Menunggu Persetujuan Pembina</div>
-        <div
-          class="w-fit p-1 flex items-center justify-center font-bold bg-[#FFF3E6] border border-[#FFD6AD] rounded-md text-[#FF8000]"
-          v-else-if="props.status === 'Menunggu Persetujuan T2'">Menunggu Persetujuan Pengelola</div>
-        <div
-          class="w-fit p-1 flex items-center justify-center bg-[#B7CAF5] border border-[#B7CAF5] rounded-md text-[#1D55D7]"
-          v-else-if="props.status === 'Draft'">Draft</div>
+        <ComponentDitolakT1 v-if="props.status === 'Ditolak T1'" />
+        <ComponentDitolakT2 v-else-if="props.status === 'Ditolak T2'" />
+        <ComponentDisetujui v-else-if="props.status === 'Disetujui'" />
+        <ComponentWaitingT1 v-else-if="props.status === 'Menunggu Persetujuan T1'" />
+        <ComponentWaitingT2 v-else-if="props.status === 'Menunggu Persetujuan T2'" />
+        <ComponentDraft v-else-if="props.status === 'Draft'" />
       </div>
     </div>
     <div class="grid grid-cols-3 mt-4 gap-y-5">
@@ -91,6 +79,12 @@
 <script setup lang="ts">
 import GlobalFormat from '@/services/format/global-format';
 const globalFormat = new GlobalFormat();
+import ComponentDisetujui from '../Status/ComponentDisetujui.vue';
+import ComponentDitolakT1 from '../Status/ComponentDitolakT1.vue';
+import ComponentDitolakT2 from '../Status/ComponentDitolakT2.vue';
+import ComponentWaitingT1 from '../Status/ComponentWaitingT1.vue';
+import ComponentWaitingT2 from '../Status/ComponentWaitingT2.vue';
+import ComponentDraft from '../Status/ComponentDraft.vue';
 
 interface Props {
   data: string,

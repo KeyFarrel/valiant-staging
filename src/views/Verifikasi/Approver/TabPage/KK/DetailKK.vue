@@ -1,20 +1,20 @@
 <template>
   <Loading v-if="isLoading" />
-    <InfoHeader v-if="approveSentralKK" 
-    :nama-mesin="approveSentralKK.sentral ? approveSentralKK.sentral : '-'" 
-    :nama-pengelola="approveSentralKK.pengelola ? approveSentralKK.pengelola : '-'" :nama-pembina="approveSentralKK.pembina ? approveSentralKK.pembina : '-'" :kode-jenis-pembangkit="approveSentralKK.jenis_kit ? approveSentralKK.jenis_kit : '-'" 
-    :daya-terpasang="approveSentralKK.daya_terpasang.toString()"
-    :daya-mampu="approveSentralKK.daya_mampu.toString()" 
-    :tahun-operasi="approveSentralKK.tahun_operasi ? approveSentralKK.tahun_operasi : '-'" 
+  <InfoHeader v-if="approveSentralKK" :nama-mesin="approveSentralKK.sentral ? approveSentralKK.sentral : '-'"
+    :nama-pengelola="approveSentralKK.pengelola ? approveSentralKK.pengelola : '-'"
+    :nama-pembina="approveSentralKK.pembina ? approveSentralKK.pembina : '-'"
+    :kode-jenis-pembangkit="approveSentralKK.jenis_kit ? approveSentralKK.jenis_kit : '-'"
+    :daya-terpasang="approveSentralKK.daya_terpasang.toString()" :daya-mampu="approveSentralKK.daya_mampu.toString()"
+    :tahun-operasi="approveSentralKK.tahun_operasi ? approveSentralKK.tahun_operasi : '-'"
     :umur-teknis="approveSentralKK.umur_teknis ? approveSentralKK.umur_teknis : '-'">
   </InfoHeader>
 
   <!-- Download Evidence -->
-  <div class="flex justify-between bg-white mt-4 p-4 rounded-lg">
+  <div class="flex justify-between p-4 mt-4 bg-white rounded-lg">
     <div class="flex items-center">
       <div class="flex">
         <div class="w-1 h-7 mr-2 bg-[#0099AD]"></div>
-        <p class="font-semibold text-lg">Evidence</p>
+        <p class="text-lg font-semibold">Evidence</p>
       </div>
     </div>
     <button class="flex items-center bg-white border border-[#0099AD] px-3 py-2 rounded-lg duration-300">
@@ -32,7 +32,7 @@
 import { ref, onMounted } from "vue";
 import PersetujuanService from '@/services/persetujuan-service';
 import Loading from "@/components/ui/LoadingSpinner.vue";
-import InfoHeader from '@/components/ui/InfoHeaderPersetujuan.vue';
+import InfoHeader from '@/components/ui/InfoHeader.vue';
 import { useRoute } from 'vue-router'
 
 const route = useRoute();
@@ -54,9 +54,9 @@ interface ListApprove {
 
 const fetchPersetujuanKK = async () => {
   try {
-    const response: ListApprove = await persetujuanService.getPersetujuanKKSentral({ 
-      id_sentral: route.query.id_sentral, 
-      tahun: route.query.tahun 
+    const response: ListApprove = await persetujuanService.getPersetujuanKKSentral({
+      id_sentral: route.query.id_sentral,
+      tahun: route.query.tahun
     });
     approveSentralKK.value = response.data;
   } catch (error) {

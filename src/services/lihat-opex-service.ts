@@ -12,8 +12,8 @@ export default class LihatOPEXService extends BaseService {
   async getPengelolaData<T>(): Promise<T> {
     return this.get(`${url}filter/combo-pengelola`);
   }
-  async getAsumsiParameterData<T>(tahun_realisasi: any, id_mesin: any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/asumsi-parameter`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
+  async getAsumsiParameterData<T>(tahun_realisasi: any, id_mesin: any, tahun: any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/asumsi-parameter`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin, tahun: tahun});
   }
   async getAnggaranDetailCAPEX<T>(tahun_realisasi: any, id_mesin: any): Promise<T> {
     return this.get(`${url}laman/data/anggaran/capex`, {tahun: tahun_realisasi, id_mesin: id_mesin});

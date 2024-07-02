@@ -12,11 +12,9 @@
     </div>
     <div class="flex items-center justify-between pb-4 border-b border-b-gray-250">
       <p class="text-base font-bold">Parameter Teknis & Finansial</p>
-      <div class="flex items-center" v-if="props.listTahunAsumsi">
-        <p class="mr-3 font-bold text-gray-500">Periode</p>
-        <VueDatePicker v-if="props.listTahunAsumsi" class="date-picker" v-model="selectedTahun"
-          :year-range="[props.listTahunAsumsi.start, props.listTahunAsumsi.end]" :clearable="false" year-picker
-          @update:model-value="emit('onChange')" />
+      <div class="flex items-center space-x-2" v-if="props.listTahunAsumsi && props.selectedYear">
+        <p class="font-bold text-gray-500">Periode</p>
+        <span class="font-semibold text-primaryColor">{{ props.selectedYear }}</span>
       </div>
     </div>
     <div class="grid grid-cols-4 mt-4 text-sm gap-y-5">
@@ -111,14 +109,14 @@
       <p class="font-semibold">Bahan Bakar</p>
     </div>
     <template v-if="props.bahanBakars.length !== 0">
-      <div class="grid grid-cols-4 mt-3 text-sm gap-y-5" v-for="(bahanBakarItem, bahanBakarIndex) in props.bahanBakars"
+      <div class="grid grid-cols-4 mt-3 text-sm gap-y-5" v-for="(bahanBakarItem, bahanBakarIndex) in bahanBakarsFinal()"
         :key="bahanBakarIndex">
         <div>
           <p class="text-gray-500">Bahan Bakar {{ bahanBakarItem.flag_bahan_bakar === 0 || bahanBakars.flag_bahan_bakar
             !== 0
             ?
             bahanBakarItem.flag_bahan_bakar === 1
-            ? 'Utama' : bahanBakarIndex + 1 : '' }}</p>
+              ? 'Utama' : bahanBakarIndex + 1 : '' }}</p>
           <p class="font-bold">{{ namaBahanBakar(bahanBakarItem.kode_bahan_bakar) }}</p>
         </div>
         <div>
@@ -128,7 +126,7 @@
             'Utama'
             : bahanBakarIndex + 1 : 'Utama' }}
           </p>
-          <p class="font-bold">{{ bahanBakarItem.harga_bahan_bakar ?
+          <p class="font-bold">{{ bahanBakarItem.harga_bahan_bakar !== '' ?
             globalFormat.formatRupiah(bahanBakarItem.harga_bahan_bakar) :
             '-'
             }}
@@ -170,25 +168,26 @@ import GlobalFormat from '@/services/format/global-format';
 const globalFormat = new GlobalFormat();
 
 interface Props {
-  dayaTerpasang: any,
-  dayaMampuNetto: any,
-  auxiliary: any,
-  susutTrafo: any,
-  pemakaianSendiri: any,
-  netPlantHeatRate: any,
-  totalProjectCost: any,
-  loan: any,
-  equity: any,
-  electricityPriceA: any,
-  electricityPriceB: any,
-  electricityPriceC: any,
-  electricityPriceD: any,
-  comboBahanBakar: any,
-  bahanBakars?: any,
+  dayaTerpasang: any
+  dayaMampuNetto: any
+  auxiliary: any
+  susutTrafo: any
+  pemakaianSendiri: any
+  netPlantHeatRate: any
+  totalProjectCost: any
+  loan: any
+  equity: any
+  electricityPriceA: any
+  electricityPriceB: any
+  electricityPriceC: any
+  electricityPriceD: any
+  comboBahanBakar: any
+  bahanBakars?: any
   listTahunAsumsi?: {
-    start: string | number,
+    start: string | number
     end: string | number
   }
+  selectedYear?: string | number
 }
 
 const emit = defineEmits(['onChange'])
@@ -214,6 +213,15 @@ const labelSFC = (kodeBahanBakar: any) => {
     return result[0].satuan_sfc.replace(/ /g, '');
   }
   return '';
+}
+const bahanBakarsFinal = () => {
+  const utamaIndex = props.bahanBakars.findIndex((e: any) => e.flag_bahan_bakar === 1);
+  if (utamaIndex !== 0) {
+    const utama = props.bahanBakars[utamaIndex];
+    props.bahanBakars.splice(utamaIndex, 1);
+    props.bahanBakars.unshift(utama);
+  }
+  return props.bahanBakars;
 }
 </script>
 

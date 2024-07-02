@@ -4,12 +4,12 @@
     <div class="flex flex-col h-full p-6 space-y-4 font-medium bg-white rounded-lg text-md">
       <div class="flex flex-col space-y-4">
         <div class="flex flex-row"
-          v-if="authService.checkRole() === 'Admin' || authService.checkRole() === 'Pengelola' || authService.checkRole() === 'Pembina'">
+          v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina'">
           <SearchBoxSuggestion v-if="listSuggestionSentral.length !== 0" v-model="searchQuery"
             :source="listSuggestionSentral" @on-key-enter="handleSearch" @on-click="handleSearch" />
           <ShimmerLoading class="h-8 w-80" v-else-if="listSuggestionSentral.length === 0" />
         </div>
-        <div class="whitespace-nowrap" v-if="authService.checkRole() === 'Admin'">
+        <div class="whitespace-nowrap" v-if="authService.checkLevel() === 'Admin'">
           <ul class="flex w-full overflow-x-auto" v-if="pengelolaData.length !== 0">
             <li
               class="p-2 ml-3 text-xs font-bold text-gray-400 border border-gray-300 rounded-lg cursor-pointer w-fit hover:text-primaryColor first:ml-0 hover:border-primaryColor hover:border-"
@@ -56,17 +56,20 @@
         <div class="mt-3" v-if="isPembangkitOpen(sentralItem.kode_sentral)">
           <!--Divider-->
           <div class="border-b"></div>
-          <TabWrapperSentral v-if="sentralData" :tabsTitles="sentralItem.mesins" :class="'mt-3'">
+          <TabWrapperSentral v-if="sentralData" :is-lihat-grafik="false" :is-rekap="false"
+            :tabsTitles="sentralItem.mesins" :class="'mt-3'">
             <TabItem :title="'Sentral'">
               <!--Statis Udah Pasti Sentral-->
               <template v-if="sentralData">
                 <div class="flex items-start justify-start mt-3">
-                  <div class="w-40 mr-6 bg-red-500 rounded-lg h-44"></div>
+                  <img v-if="sentralItem.photo !== ''" :src="sentralItem.photo2" alt="Preview"
+                    class="object-cover w-40 mr-6 rounded-lg h-44"></img>
+                  <div v-else class="w-40 mr-6 bg-red-500 rounded-lg h-44"></div>
                   <div class="grid grid-cols-4 gap-y-5 gap-x-10">
                     <div>
                       <h3 class="text-gray-400">Nilai Aset Awal</h3>
                       <p class="text-gray-400">
-                        <span class="text-sm font-semibold text-black">{{
+                        <span class="text-sm font-semibold text-primaryTextColor">{{
                           calculateNilaiAsetAwalSentral(sentralItem.mesins) !== '-' ?
                             globalFormat.formatRupiah(calculateNilaiAsetAwalSentral(sentralItem.mesins)) : '-' }}</span>
                         Rp
@@ -75,27 +78,27 @@
                     </div>
                     <div>
                       <h3 class="text-gray-400">Daya Terpasang</h3>
-                      <p class="text-sm font-semibold text-black">
+                      <p class="text-sm font-semibold text-primaryTextColor">
                         {{ globalFormat.formatRupiah((sentralItem.daya_terpasang / 1000)) }}
                         <span class="text-gray-400">MW</span>
                       </p>
                     </div>
                     <div>
                       <h3 class="text-gray-400">Daya Mampu Netto (DMN)</h3>
-                      <p class="text-sm font-semibold text-black">
+                      <p class="text-sm font-semibold text-primaryTextColor">
                         {{ globalFormat.formatRupiah((sentralItem.daya_mampu / 1000)) }}
                         <span class="text-gray-400">MW</span>
                       </p>
                     </div>
                     <div>
                       <h3 class="text-gray-400">Jenis Bahan Bakar Utama</h3>
-                      <p class="text-sm font-semibold text-black">
+                      <p class="text-sm font-semibold text-primaryTextColor">
                         {{ sentralItem.jenis_bahan_bakar }}
                       </p>
                     </div>
                     <div>
                       <h3 class="text-gray-400">Longitude (Garis Bujur)</h3>
-                      <p class="text-sm font-semibold text-black">
+                      <p class="text-sm font-semibold text-primaryTextColor">
                         {{ sentralItem.longitude }}
                       </p>
                     </div>
@@ -103,7 +106,7 @@
                       <h3 class="text-gray-400">
                         Latitude (Garis Lintang)
                       </h3>
-                      <p class="text-sm font-semibold text-black">
+                      <p class="text-sm font-semibold text-primaryTextColor">
                         {{ sentralItem.latitude }}
                       </p>
                     </div>
@@ -112,7 +115,7 @@
                 <div class="mt-4 border-b"></div>
                 <RouterLink :to="{
                   name: 'detail-unit',
-                  params: { id: sentralItem.id_sentral },
+                  params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(sentralItem.id_sentral) : sentralItem.id_sentral },
                   query: { kode_pengelola: sentralItem.kode_pengelola, tab: 'Sentral' },
                 }">
                   <button
@@ -129,14 +132,16 @@
             </TabItem>
             <TabItem v-for="(mesinItem, mesinIndex) in sentralItem.mesins" :key="mesinIndex" :title="mesinItem.mesin">
               <template v-if="sentralData">
-                <div class="mt-6">
+                <div class="mt-3">
                   <div class="flex items-start justify-start mt-3">
-                    <div class="w-40 mr-6 bg-red-500 rounded-lg h-44"></div>
+                    <img v-if="mesinItem.photo1 !== ''" :src="mesinItem.photo2" alt="Preview"
+                      class="object-cover w-40 mr-6 rounded-lg h-44"></img>
+                    <div v-else class="w-40 mr-6 bg-red-500 rounded-lg h-44"></div>
                     <div class="grid grid-cols-4 gap-y-5 gap-x-10">
                       <div>
                         <h3 class="text-gray-400">Nilai Aset Awal</h3>
                         <p class="text-gray-400">
-                          <span class="text-sm font-semibold text-black">{{
+                          <span class="text-sm font-semibold text-primaryTextColor">{{
                             mesinItem.nilai_asset_awal !== 0 ? globalFormat.formatRupiah(mesinItem.nilai_asset_awal /
                               1000000) :
                               '-' }}</span> Rp (Juta)
@@ -144,20 +149,20 @@
                       </div>
                       <div>
                         <h3 class="text-gray-400">Tahun COD</h3>
-                        <p class="text-sm font-semibold text-black">
+                        <p class="text-sm font-semibold text-primaryTextColor">
                           {{ mesinItem.tahun_operasi }}
                         </p>
                       </div>
                       <div>
                         <h3 class="text-gray-400">Masa Manfaat</h3>
-                        <p class="text-sm font-semibold text-black">
+                        <p class="text-sm font-semibold text-primaryTextColor">
                           {{ mesinItem.masa_manfaat }}
                           <span class="text-gray-400"> Tahun</span>
                         </p>
                       </div>
                       <div>
                         <h3 class="text-gray-400">Sisa Masa Manfaat</h3>
-                        <p class="text-sm font-semibold text-black">{{ mesinItem.tahun_operasi == 0 ||
+                        <p class="text-sm font-semibold text-primaryTextColor">{{ mesinItem.tahun_operasi == 0 ||
                           mesinItem.masa_manfaat == 0 ? 0 : (parseInt(mesinItem.tahun_operasi) +
                             parseInt(mesinItem.masa_manfaat))
                           - tahunBerjalan }}<span class="text-gray-400"> Tahun</span>
@@ -165,7 +170,7 @@
                       </div>
                       <div>
                         <h3 class="text-gray-400">Daya Terpasang</h3>
-                        <p class="text-sm font-semibold text-black">
+                        <p class="text-sm font-semibold text-primaryTextColor">
                           {{ globalFormat.formatRupiah((mesinItem.daya_terpasang / 1000))
                           }}<span class="text-gray-400"> MW</span>
                         </p>
@@ -174,14 +179,14 @@
                         <h3 class="text-gray-400">
                           Daya Mampu Netto (DMN)
                         </h3>
-                        <p class="text-sm font-semibold text-black">
+                        <p class="text-sm font-semibold text-primaryTextColor">
                           {{ globalFormat.formatRupiah((mesinItem.daya_mampu / 1000))
                           }}<span class="text-gray-400"> MW</span>
                         </p>
                       </div>
                       <div>
                         <h3 class="text-gray-400">Kondisi Mesin</h3>
-                        <p class="text-sm font-semibold text-black">
+                        <p class="text-sm font-semibold text-primaryTextColor">
                           {{ mesinItem.kondisi_unit }}
                         </p>
                       </div>
@@ -191,7 +196,7 @@
                 <div class="mt-4 border-b"></div>
                 <RouterLink :to="{
                   name: 'detail-unit',
-                  params: { id: sentralItem.id_sentral },
+                  params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(sentralItem.id_sentral) : sentralItem.id_sentral },
                   query: { kode_pengelola: sentralItem.kode_pengelola, tab: mesinItem.mesin },
                 }">
                   <button
@@ -261,8 +266,11 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
+import { encryptStorage } from "@/utils/app-encrypt-storage";
 import TabWrapperSentral from "@/components/MasterUnitSentral/TabWrapperSentral.vue";
 import TabItem from "@/components/ui/TabItem.vue";
+import DetailSentralService from "@/services/detail-sentral-service";
+const detailSentralService = new DetailSentralService();
 import GlobalFormat from "@/services/format/global-format";
 const globalFormat = new GlobalFormat();
 import SentralService from "@/services/sentral-service";
@@ -273,6 +281,7 @@ import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import SearchBoxSuggestion from "@/components/ui/SearchBoxSuggestion.vue";
 
+const nodeMode = import.meta.env.MODE;
 const isPembangkitTabOpen = ref<string[]>([]);
 const sentralData = ref<SentralItem[]>([]);
 const listSentralData = ref<any[]>([]);
@@ -291,33 +300,39 @@ const selectedAll = ref<string[]>(['ALL']);
 const tahunBerjalan = new Date().getFullYear();
 
 interface PengelolaItem {
-  data: any;
-  id_pengelola: number;
-  kode_pengelola: string;
-  pengelola: string;
+  data: any
+  id_pengelola: number
+  kode_pengelola: string
+  pengelola: string
 }
 interface SentralItem {
-  meta: any;
-  data: any;
-  id_sentral: number;
-  kode_sentral: string;
-  nama_sentral: string;
-  daya_terpasang: number;
-  daya_mampu: number;
-  jenis_bahan_bakar: string;
-  kode_pengelola: string;
-  longitude: string;
-  latitude: string;
-  mesins: any;
+  meta: any
+  data: any
+  id_sentral: number
+  kode_sentral: string
+  nama_sentral: string
+  daya_terpasang: number
+  daya_mampu: number
+  jenis_bahan_bakar: string
+  kode_pengelola: string
+  longitude: string
+  latitude: string
+  photo: string
+  photo2: string
+  mesins: any
 }
 interface ComboJenisKitItem {
-  data: any;
+  data: any
 }
 
 const fetchSuggestionSentral = async () => {
   try {
     const response: any = await sentralService.getSuggestionSentral();
-    listSuggestionSentral.value = response.data;
+    listSuggestionSentral.value = response.data.filter((value: any, index: any, self: any) =>
+      index === self.findIndex((t: any) => (
+        t.sentral === value.sentral
+      ))
+    );
   } catch (error) {
     console.error('Fetch Suggestion Sentral Error : ', error);
   }
@@ -329,13 +344,36 @@ const fetchSentralData = async () => {
     const { data, meta } = response;
     if (listSentralData.value.length === 0) {
       listSentralData.value = data;
-      sentralData.value = data;
+      sentralData.value = data.map((val: any) => ({ ...val, photo2: '' }));
     } else {
       sentralData.value = data;
     }
     totalPages.value = meta.totalPages;
     totalRecords.value = meta.totalRecords;
     pageLimit.value = meta.limit;
+    for (const val of sentralData.value) {
+      try {
+        const response: any = await detailSentralService.getPhoto(val.photo);
+        const blob = new Blob([response]);
+        val.photo2 = URL.createObjectURL(blob);
+      } catch (error) {
+        console.error('Error Fetch Photo: ', error);
+      }
+    }
+    console.log(sentralData.value, 'sentralData')
+    for (const val of sentralData.value) {
+      for (const key in val.mesins) {
+        if (val.mesins[key].photo1 !== '') {
+          try {
+            const response: any = await detailSentralService.getPhoto(val.mesins[key].photo1);
+            const blob = new Blob([response]);
+            val.mesins[key].photo2 = URL.createObjectURL(blob);
+          } catch (error) {
+            console.error('Error Fetch Photo: ', error);
+          }
+        }
+      }
+    }
     isPembangkitTabOpen.value.push(data[0].kode_sentral);
   } catch (error) {
     console.error(error);
@@ -366,6 +404,7 @@ const fetchComboJenisKit = async () => {
     console.error(error);
   }
 };
+
 const fetchNilaiMesin = async () => {
   try {
     const response: any = await sentralService.getNilaiMesin();
@@ -438,7 +477,7 @@ const generatePageList = computed(() => {
   }
   return pageList;
 });
-const togglePembangkit = (kodeSentral: string) => {
+const togglePembangkit = async (kodeSentral: string) => {
   if (isPembangkitOpen(kodeSentral)) {
     isPembangkitTabOpen.value = isPembangkitTabOpen.value.filter(
       (id) => id !== kodeSentral

@@ -2,7 +2,7 @@ import BaseService from "./base-service";
 
 const url = import.meta.env.VITE_API_URL;
 
-export default class PerbaruiDatService extends BaseService {
+export default class PerbaruiDataService extends BaseService {
   async getMesinById<T>(id:any): Promise<T> {
     return this.get(`${url}mesin-realisasi/${id}`);
   }
@@ -12,11 +12,14 @@ export default class PerbaruiDatService extends BaseService {
   async getPengelolaData<T>(): Promise<T> {
     return this.get(`${url}filter/combo-pengelola`);
   }
-  async getAsumsiParameterData<T>(tahun_realisasi:any, id_mesin:any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/asumsi-parameter`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
+  async getCheckIntegrasi<T>(tahun: any, id_mesin: any): Promise<T> {
+    return this.get(`${url}filter/data-integrasi`, {tahun: tahun, id_mesin: id_mesin});
   }
-  async getDataTeknisData<T>(tahun_realisasi:any, id_mesin:any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/data-teknis`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
+  async getAsumsiParameterData<T>(tahun_realisasi:any, id_mesin:any, tahun: any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/asumsi-parameter`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin, tahun: tahun});
+  }
+  async getDataTeknisData<T>(tahun: any, id_mesin: any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/data-teknis`, {tahun: tahun, id_mesin: id_mesin});
   }
   async getDataTeknisByPeriode<T>(tahun_realisasi:number, id_mesin:number): Promise<T> {
     return this.post(`${url}kertas-kerja-detail/data-teknis-periode`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
@@ -41,20 +44,24 @@ export default class PerbaruiDatService extends BaseService {
     return this.post(`${url}kertas-kerja-detail/asumsi-parameter-simulasi`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
   }
   // Data Teknis Simulasi 1
-  async getDataTeknisSimulasi1<T>(tahun_realisasi: any, id_mesin: any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/data-teknis`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
+  async getDataTeknisSimulasi1<T>(tahun: any, id_mesin: any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/data-teknis`, {tahun: tahun, id_mesin: id_mesin});
   }
   // Data Teknis Simulasi 2
-  async getDataTeknisSimulasi2<T>(tahun_realisasi: any, id_mesin: any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/data-teknis-simulasi`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
+  async getDataTeknisSimulasi2<T>(tahun: any, id_mesin: any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/data-teknis-simulasi`, {tahun: tahun, id_mesin: id_mesin});
   }
   // Data Finansial Simulasi 1
-  async getDataFinansialSimulasi1<T>(tahun_realisasi: any, id_mesin: any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/data-finansial`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
+  async getDataFinansialSimulasi1<T>(tahun: any, id_mesin: any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/data-finansial`, {tahun: tahun, id_mesin: id_mesin});
   }
   // Data Finansial Simulasi 2
-  async getDataFinansialSimulasi2<T>(tahun_realisasi: any, id_mesin: any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/data-finansial-simulasi`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
+  async getDataFinansialSimulasi2<T>(tahun: any, id_mesin: any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/data-finansial-simulasi`, {tahun: tahun, id_mesin: id_mesin});
+  }
+  // Hasil Simulasi
+  async getHasilSimulasi<T>(id_mesin: number, tahun: number, status: number): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/simulasi-cod`, {id_mesin: id_mesin, tahun: tahun, status: status});
   }
   async downloadSimulasi1Excel<T>(tahun_realisasi: any, id_mesin: any): Promise<T> {
     return this.post(`${url}kertas-kerja-detail/export-template-simulasi1`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});

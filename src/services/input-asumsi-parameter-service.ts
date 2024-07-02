@@ -12,8 +12,8 @@ export default class InputAsumsiParameterService extends BaseService {
   async getPengelolaData<T>(): Promise<T> {
     return this.get(`${url}filter/combo-pengelola`);
   }
-  async getAsumsiMakroData<T>(tahun_realisasi:any, id_mesin:any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/asumsi-parameter`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
+  async getAsumsiMakroData<T>(tahun_realisasi:any, id_mesin:any, tahun: any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/asumsi-parameter`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin, tahun: tahun});
   }
   async getComboBahanBakar<T>(jenis_pembangkit:any): Promise<T> {
     return this.get(`${url}filter/combo-bahan-bakar`, {jenis_pembangkit: jenis_pembangkit});

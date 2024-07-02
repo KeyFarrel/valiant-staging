@@ -82,6 +82,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, provide } from "vue";
+import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
 import PersetujuanService from '@/services/persetujuan-service';
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import KertasKerja from "@/views/Verifikasi/Sentral/TabPage/KK/KertasKerja.vue";
@@ -89,8 +90,9 @@ import FeasibilityStudy from "@/views/Verifikasi/Sentral/TabPage/FS/FeasibilityS
 import KertasKerjaMesin from "@/views/Verifikasi/Sentral/TabPage/KK/KertasKerjaMesin.vue";
 import FeasibilityStudyMesin from "@/views/Verifikasi/Sentral/TabPage/FS/FeasibilityStudyMesin.vue";
 
+const nodeMode = import.meta.env.MODE;
 const persetujuanService = new PersetujuanService();
-const levelSentral = ref(localStorage.getItem("level_sentral"));
+const levelSentral = ref(nodeMode === 'production' ? encryptStorage.getItem('level_sentral') : localStorage.getItem("level_sentral"));
 // const level_sentral = ref(levelSentral);
 const year = new Date().getFullYear();
 const approveSentralKK = ref<any[]>([]);
@@ -99,8 +101,8 @@ const detailMesin = ref<any>();
 const approveSentralFS = ref<any[]>([]);
 const approveMesinFS = ref<any>();
 const menuMesin = ref<any[]>([]);
-const mesinKk = ref<any>();
-const mesinFs = ref<any>();
+const mesinKk = ref<any[]>([]);
+const mesinFs = ref<any[]>([]);
 const namaMesin = ref<any>();
 const namaSentral = ref<any>();
 

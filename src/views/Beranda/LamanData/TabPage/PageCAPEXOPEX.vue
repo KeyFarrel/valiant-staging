@@ -2,10 +2,11 @@
   <Loading v-if="isLoading" />
   <div class="space-y-5">
     <div class="flex flex-row items-center justify-between">
-      <SearchBox class="w-60" @on-key-enter="fetchDataAnggaran" @on-click="fetchDataAnggaran" v-model="searchQ" />
+      <SearchBox class="w-60" placeholder="Cari sentral..." @on-key-enter="fetchDataAnggaran"
+        @on-click="fetchDataAnggaran" v-model="searchQ" @on-input="fetchDataAnggaran" />
       <div class="flex flex-row items-center space-x-3">
         <div class="flex flex-row items-center space-x-3">
-          <label class="text-sm font-semibold text-labelColor" for="">Periode</label>
+          <label class="text-sm font-semibold text-labelColor" for="">Tahun</label>
           <VueDatePicker v-if="periodeTahun" class="date-picker" :model-value="yearRangePicked"
             @update:model-value="handleYearRangePicked" :year-range="yearRange" :clearable="false" year-picker range />
           <ShimmerLoading class="w-36 h-11" v-else />
@@ -25,55 +26,55 @@
       <template v-slot:table-header>
         <tr>
           <th class="border-r" rowspan="2">
-            <div class="flex flex-row items-center justify-between space-x-10">
+            <div class="flex flex-row items-center justify-center space-x-10">
               <h1 class="font-semibold">Unit Induk / Sentral / Mesin</h1>
-              <SortingIcon />
             </div>
           </th>
           <th class="border-r" rowspan="2">
-            <div class="flex flex-row items-center space-x-5">
+            <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Jenis Pembangkit</h1>
-              <SortingIcon />
             </div>
           </th>
           <th class="border-r" rowspan="2">
-            <div class="flex flex-row items-center space-x-5">
-              <h1 class="font-semibold">Periode</h1>
-              <SortingIcon />
+            <div class="flex flex-row items-center justify-center space-x-5">
+              <h1 class="font-semibold">Tahun</h1>
             </div>
           </th>
           <th class="font-semibold border-b border-r">Capital Expenditure (CAPEX)</th>
           <th class="font-semibold border-b" colspan="3">Operational Expenditure (OPEX)</th>
-          <th class="sticky right-0 z-10 border-l bg-gray-50" rowspan="2">Aksi</th>
+          <!-- <th class="sticky right-0 z-10 border-l bg-gray-50" rowspan="2">Aksi</th> -->
         </tr>
         <tr>
           <th class="border-r">
-            <div class="flex flex-row items-center justify-between space-x-5">
+            <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Total Capex Rp (Juta)</h1>
-              <SortingIcon />
             </div>
           </th>
           <th class="border-r">
-            <div class="flex flex-row items-center justify-between space-x-5">
+            <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Komponen B Rp (Juta)</h1>
-              <SortingIcon />
             </div>
           </th>
           <th class="border-r">
-            <div class="flex flex-row items-center justify-between space-x-5">
+            <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Komponen C Rp (Juta)</h1>
-              <SortingIcon />
             </div>
           </th>
           <th>
-            <div class="flex flex-row items-center justify-between space-x-5">
+            <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Komponen D Rp (Juta)</h1>
-              <SortingIcon />
             </div>
           </th>
         </tr>
       </template>
-      <template v-slot:table-body>
+      <template v-slot:table-body v-if="dataAnggaran.length === 0">
+        <tr class="text-xs text-gray-900 border-b">
+          <td colspan="9">
+            <Empty />
+          </td>
+        </tr>
+      </template>
+      <template v-slot:table-body v-else>
         <template v-for="(pengelola, pengelolaIndex) in dataAnggaran" :key="pengelolaIndex" v-if="dataAnggaran">
           <tr class="text-xs bg-strokeColor bg-opacity-30 hover:bg-strokeColor hover:bg-opacity-60"
             :class="{ 'hover:bg-opacity-30': pengelola.pembangkits.length === 0, 'cursor-pointer': pengelola.pembangkits.length !== 0 }"
@@ -103,7 +104,7 @@
             <td class="text-end">{{ globalFormat.formatRupiah(pengelola.cost_component_b) }}</td>
             <td class="text-end">{{ globalFormat.formatRupiah(pengelola.cost_component_c) }}</td>
             <td class="text-end">{{ globalFormat.formatRupiah(pengelola.cost_component_d) }}</td>
-            <td></td>
+            <!-- <td></td> -->
           </tr>
           <template v-if="isRowOpen(pengelola.id_pengelola)"
             v-for="(pembangkit, pembangkitIndex) in pengelola.pembangkits" :key="pembangkitIndex">
@@ -128,39 +129,39 @@
                   <span>{{ pembangkit.sentral }}</span>
                 </div>
               </td>
-              <td class="text-end">{{ pembangkit.kode_jenis_pembangkit }}</td>
+              <td class="text-center">{{ pembangkit.kode_jenis_pembangkit }}</td>
               <td></td>
               <td class="text-end">{{ globalFormat.formatRupiah(pembangkit.cost_component_a) }}</td>
               <td class="text-end">{{ globalFormat.formatRupiah(pembangkit.cost_component_b) }}</td>
               <td class="text-end">{{ globalFormat.formatRupiah(pembangkit.cost_component_c) }}</td>
               <td class="text-end">{{ globalFormat.formatRupiah(pembangkit.cost_component_d) }}</td>
-              <td></td>
+              <!-- <td></td> -->
             </tr>
             <template v-if="isRowOpen(pembangkit.id_sentral)" v-for="(mesin, mesinIndex) in pembangkit.mesins"
               :key="mesinIndex">
               <tr class="text-xs bg-strokeColor bg-opacity-10">
                 <td id="mesin">{{ mesin.mesin }}</td>
-                <td class="text-end">{{ pembangkit.kode_jenis_pembangkit }}</td>
+                <td class="text-center">{{ pembangkit.kode_jenis_pembangkit }}</td>
                 <td></td>
                 <td class="text-end">{{ globalFormat.formatRupiah(mesin.cost_component_a) }}</td>
                 <td class="text-end">{{ globalFormat.formatRupiah(mesin.cost_component_b) }}</td>
                 <td class="text-end">{{ globalFormat.formatRupiah(mesin.cost_component_c) }}</td>
                 <td class="text-end">{{ globalFormat.formatRupiah(mesin.cost_component_d) }}</td>
-                <td></td>
+                <!-- <td></td> -->
               </tr>
               <template v-for="(transCostItem, transCostIndex) in mesin.detail_mesin_cost_component"
                 :key="transCostIndex">
                 <tr class="text-xs">
                   <td></td>
                   <td></td>
-                  <td class="text-end">{{ transCostItem.tahun }}</td>
+                  <td class="text-center">{{ transCostItem.tahun }}</td>
                   <td class="text-end">{{ globalFormat.formatRupiah(transCostItem.cost_component_a) }}</td>
                   <td class="text-end">{{ globalFormat.formatRupiah(transCostItem.cost_component_b) }}</td>
                   <td class="text-end">{{ globalFormat.formatRupiah(transCostItem.cost_component_c) }}</td>
                   <td class="text-end">{{ globalFormat.formatRupiah(transCostItem.cost_component_d) }}</td>
-                  <td class="sticky right-0 bg-white">
-                    <TooltipLamanData :id-mesin="mesin.id_mesin" :tahun="parseInt(transCostItem.tahun)" />
-                  </td>
+                  <!-- <td class="sticky right-0 bg-white">
+                    <TooltipLamanData :id-mesin="mesin.id_mesin" :tahun="parseInt(transCostItem.tahun)" /> -->
+                  <!-- </td> -->
                 </tr>
               </template>
             </template>
@@ -173,6 +174,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
 import { useLamanDataPeriodeStore } from "@/store/storeLamanDataTab";
 const store = useLamanDataPeriodeStore();
 import LamanService from '@/services/laman-service';
@@ -180,10 +182,10 @@ const lamanService = new LamanService();
 import GlobalFormat from "@/services/format/global-format";
 const globalFormat = new GlobalFormat();
 import AOS from 'aos'
+import Empty from "@/components/ui/EmptyData.vue";
 import ButtonComponent from "@/components/ui/Button.vue";
 import TableComponent from '@/components/ui/Table.vue'
 import Loading from '@/components/ui/LoadingSpinner.vue'
-import SortingIcon from '@/components/icons/SortingIcon.vue'
 import SearchBox from '@/components/ui/SearchBox.vue'
 import TooltipLamanData from "@/components/ui/TooltipLamanData.vue";
 import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
@@ -192,7 +194,7 @@ import '@vuepic/vue-datepicker/dist/main.css';
 
 const tahunDari = ref<any>();
 const tahunSampai = ref<any>();
-const dataAnggaran = ref<any>();
+const dataAnggaran = ref<any[]>([]);
 const isRowTabOpen = ref<number[]>([]);
 const isLoading = ref();
 const yearRangePicked = ref<number[]>([]);
@@ -200,6 +202,7 @@ const yearRange = ref<number[]>([]);
 const periodeTahun = ref<any[]>([]);
 const tahunBerjalan = new Date().getFullYear();
 const searchQ = ref<string>("");
+const nodeMode = import.meta.env.MODE;
 
 const handleYearRangePicked = async (modelData: Array<number>) => {
   yearRangePicked.value = modelData;
@@ -240,7 +243,8 @@ const fetchDataAnggaran = async () => {
   try {
     isLoading.value = true;
     const response: any = await lamanService.getDataAnggaran(searchQ.value, tahunSampai.value, tahunDari.value);
-    dataAnggaran.value = response.data;
+    const filteredResponse = response.data.filter((val: any) => val.pembangkits.length > 0);
+    dataAnggaran.value = filteredResponse;
     isLoading.value = false;
   } catch (error) {
     console.error('Fetch Data Anggaran Error : ' + error);
@@ -250,7 +254,7 @@ const handleExport = async () => {
   try {
     isLoading.value = true;
     const headers = {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
     };
     const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/capex-opex/export-excel', {
       responseType: 'arraybuffer',
@@ -258,12 +262,13 @@ const handleExport = async () => {
       params: {
         tahun_dari: yearRangePicked.value[0],
         tahun_sampai: yearRangePicked.value[1],
-        type: 'all',
+        search: searchQ.value.toUpperCase(),
+        type: 'all'
       }
     });
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
-    const fileName = fileNameMatch ? fileNameMatch[1] : `response.xlsx`;
+    const fileName = fileNameMatch ? fileNameMatch[1] : `Laman Data - CAPEX OPEX - ${yearRangePicked.value[0]}_${yearRangePicked.value[1]}.xlsx`;
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center" @mouseover="toggleButton" @mouseout="toggleButton">
+  <div class="flex flex-col items-center" @mouseenter="toggleButtonActive" @mouseleave="toggleButtonDisabled">
     <CheckIcon class="cursor-pointer" v-if="props.value > 9 && props.value < 14" />
     <WarningIcon class="cursor-pointer" v-else />
     <Transition>
@@ -39,7 +39,6 @@
 import { ref } from 'vue';
 import WarningIcon from '../icons/WarningIcon.vue';
 import CheckIcon from '@/components/icons/CheckIcon.vue'
-import { number } from 'echarts';
 
 const props = defineProps({
   value: {
@@ -49,10 +48,13 @@ const props = defineProps({
   },
 })
 
-const isHover = ref(false);
+const isHover = ref<boolean>(false);
 
-function toggleButton() {
-  isHover.value = !isHover.value
+const toggleButtonActive = () => {
+  isHover.value = true
+}
+const toggleButtonDisabled = () => {
+  isHover.value = false
 }
 </script>
 

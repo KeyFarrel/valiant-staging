@@ -12,8 +12,8 @@ export default class LamanService extends BaseService {
   async getMesinBaru<T>(page?:any, limit?:any, search?:any): Promise<T> {
     return this.get(`${url}laman/mesin-baru`, {page: page, limit: limit,search:search});
   }
-  async getMesinBelumInput<T>(page: number, limit: number, kodePengelola: string[]): Promise<T> {
-    return this.post(`${url}laman/mesin-belum-terinput`, {page: page, limit: limit, kode_pengelola: kodePengelola});
+  async getMesinBelumInput<T>(page: number, limit: number, kodePengelola: string[], search: string): Promise<T> {
+    return this.post(`${url}laman/mesin-belum-terinput`, {page: page, limit: limit, kode_pengelola: kodePengelola, search: search});
   }
   async getKategoriPembangkit<T>(): Promise<T> {
     return this.get(`${url}laman/kategori-pembangkit`);

@@ -132,10 +132,10 @@
 import { ref } from 'vue'
 import TableComponent from "@/components/ui/Table.vue";
 import GlobalFormat from "@/services/format/global-format";
-  
+
 const globalFormat = new GlobalFormat();
 interface Props {
-  source: PersetujuanFSItem[],
+  source: any,
 }
 
 interface PersetujuanFSItem {

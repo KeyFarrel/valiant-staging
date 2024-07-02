@@ -25,24 +25,12 @@
       </div>
       <div class="flex items-center text-xs">
         <p class="mr-2">Status Laporan</p>
-        <div
-          class="w-fit p-1 flex items-center justify-center bg-[#FAEBEA] border border-[#EFC0BD] rounded-md text-[#C53830]"
-          v-if="props.status === 'Ditolak T1'">Ditolak oleh Pembina</div>
-        <div
-          class="w-fit p-1 flex items-center justify-center bg-[#FAEBEA] border border-[#EFC0BD] rounded-md text-[#C53830]"
-          v-else-if="props.status === 'Ditolak T2'">Ditolak oleh Pengelola</div>
-        <div
-          class="w-fit p-1 flex items-center justify-center bg-[#EDF7F2] border border-[#C7E5D7] rounded-md text-[#397E5D]"
-          v-else-if="props.status === 'Disetujui'">Disetujui</div>
-        <div
-          class="w-fit p-1 flex items-center justify-center font-bold bg-[#FFF3E6] border border-[#FFD6AD] rounded-md text-[#FF8000]"
-          v-else-if="props.status === 'Menunggu Persetujuan T1'">Menunggu Persetujuan Pembina</div>
-        <div
-          class="w-fit p-1 flex items-center justify-center font-bold bg-[#FFF3E6] border border-[#FFD6AD] rounded-md text-[#FF8000]"
-          v-else-if="props.status === 'Menunggu Persetujuan T2'">Menunggu Persetujuan Pengelola</div>
-        <div
-          class="w-fit p-1 flex items-center justify-center bg-[#B7CAF5] border border-[#B7CAF5] rounded-md text-[#1D55D7]"
-          v-else-if="props.status === 'Draft'">Draft</div>
+        <ComponentDitolakT1 v-if="props.status === 'Ditolak T1'" />
+        <ComponentDitolakT2 v-else-if="props.status === 'Ditolak T2'" />
+        <ComponentDisetujui v-else-if="props.status === 'Disetujui'" />
+        <ComponentWaitingT1 v-else-if="props.status === 'Menunggu Persetujuan T1'" />
+        <ComponentWaitingT2 v-else-if="props.status === 'Menunggu Persetujuan T2'" />
+        <ComponentDraft v-else-if="props.status === 'Draft'" />
       </div>
     </div>
     <div class="grid grid-cols-4 mt-4 text-sm gap-y-5">
@@ -137,14 +125,14 @@
       <p class="font-semibold">Bahan Bakar</p>
     </div>
     <template v-if="props.bahanBakars">
-      <div class="grid grid-cols-4 mt-3 text-sm gap-y-5" v-for="(bahanBakarItem, bahanBakarIndex) in props.bahanBakars"
+      <div class="grid grid-cols-4 mt-3 text-sm gap-y-5" v-for="(bahanBakarItem, bahanBakarIndex) in bahanBakarsFinal()"
         :key="bahanBakarIndex">
         <div>
           <p class="text-gray-500">Bahan Bakar {{ bahanBakarItem.flag_bahan_bakar === 0 || bahanBakars.flag_bahan_bakar
             !== 0
             ?
             bahanBakarItem.flag_bahan_bakar === 1
-            ? 'Utama' : bahanBakarIndex + 1 : '' }}</p>
+              ? 'Utama' : bahanBakarIndex + 1 : '' }}</p>
           <p class="font-bold">{{ namaBahanBakar(bahanBakarItem.kode_bahan_bakar) }}</p>
         </div>
         <div>
@@ -154,7 +142,7 @@
             'Utama'
             : bahanBakarIndex + 1 : 'Utama' }}
           </p>
-          <p class="font-bold">{{ bahanBakarItem.harga_bahan_bakar ?
+          <p class="font-bold">{{ bahanBakarItem.harga_bahan_bakar !== '' ?
             globalFormat.formatRupiah(bahanBakarItem.harga_bahan_bakar) :
             '-'
             }}
@@ -194,6 +182,12 @@
 <script setup lang="ts">
 import GlobalFormat from '@/services/format/global-format';
 const globalFormat = new GlobalFormat();
+import ComponentDisetujui from '../Status/ComponentDisetujui.vue';
+import ComponentDitolakT1 from '../Status/ComponentDitolakT1.vue';
+import ComponentDitolakT2 from '../Status/ComponentDitolakT2.vue';
+import ComponentWaitingT1 from '../Status/ComponentWaitingT1.vue';
+import ComponentWaitingT2 from '../Status/ComponentWaitingT2.vue';
+import ComponentDraft from '../Status/ComponentDraft.vue';
 
 interface Props {
   data: string,
@@ -239,6 +233,15 @@ const labelSFC = (kodeBahanBakar: any) => {
     return result[0].satuan_sfc.replace(/ /g, '');
   }
   return '';
+}
+const bahanBakarsFinal = () => {
+  const utamaIndex = props.bahanBakars.findIndex((e: any) => e.flag_bahan_bakar === 1);
+  if (utamaIndex !== 0) {
+    const utama = props.bahanBakars[utamaIndex];
+    props.bahanBakars.splice(utamaIndex, 1);
+    props.bahanBakars.unshift(utama);
+  }
+  return props.bahanBakars;
 }
 </script>
 

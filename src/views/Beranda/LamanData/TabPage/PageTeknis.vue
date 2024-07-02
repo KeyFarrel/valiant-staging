@@ -2,10 +2,11 @@
   <Loading v-if="isLoading" />
   <div class="space-y-5">
     <div class="justify-between md:flex">
-      <SearchBox class="w-60" @on-key-enter="fetchDataTeknis" @on-click="fetchDataTeknis" v-model="searchQ" />
+      <SearchBox class="w-60" placeholder="Cari sentral..." @on-input="fetchDataTeknis" @on-key-enter="fetchDataTeknis"
+        @on-click="fetchDataTeknis" v-model="searchQ" />
       <div class="flex items-center space-x-3">
         <div class="flex flex-row items-center">
-          <p class="mr-3 font-semibold text-labelColor">Periode</p>
+          <p class="mr-3 font-semibold text-labelColor">Tahun</p>
           <VueDatePicker v-if="periodeTahun" class="date-picker" :model-value="yearRangePicked"
             @update:model-value="handleYearRangePicked" :year-range="yearRange" :clearable="false" year-picker range />
           <ShimmerLoading class="w-36 h-11" v-else />
@@ -28,55 +29,29 @@
               leave-class="scale-y-100 translate-y-0 opacity-100" leave-to-class="scale-y-0 -translate-y-1/2 opacity-0">
               <div v-show="isOptionsExpanded"
                 class="z-[40] p-1.5 absolute w-[500px] h-80 right-0 my-3 border border-gray-300 bg-white divide-y rounded-lg shadow-lg overflow-auto">
-                <div class="flex justify-between mb-4">
+                <div class="flex justify-between mb-2">
                   <h3 class="p-2 text-sm font-semibold">
                     Specific Fuel Consumption (SFC)
                   </h3>
-                  <ul class="inline-flex items-center mr-4 -space-x-px">
-                    <li>
-                      <a href="#"
-                        class="block p-1 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700">
-                        <span class="sr-only">Previous</span>
-                        <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg">
-                          <path fill-rule="evenodd"
-                            d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                            clip-rule="evenodd"></path>
-                        </svg>
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#"
-                        class="block p-1 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700">
-                        <span class="sr-only">Next</span>
-                        <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg">
-                          <path fill-rule="evenodd"
-                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                            clip-rule="evenodd"></path>
-                        </svg>
-                      </a>
-                    </li>
-                  </ul>
                 </div>
                 <div class="block max-h-[43rem] overflow-y-auto rounded-lg bg-white scrollbar-hide mx-2">
                   <table class="w-full text-sm text-left text-gray-500">
-                    <thead class="bg-white border text-xs text-[#0099AD] sticky top-0">
+                    <thead class="bg-white border-r border-l text-xs text-[#0099AD] sticky top-0">
                       <tr>
-                        <th scope="col" class="px-1 py-2 font-semibold">
+                        <th scope="col" class="px-3 py-4 font-semibold">
                           Kategori Pembangkit
                         </th>
-                        <th scope="col" class="px-1 py-2 font-semibold">
+                        <th scope="col" class="font-semibold ">
                           Jenis Bahan Bakar
                         </th>
-                        <th scope="col" class="px-1 py-2 font-semibold">Satuan SFC</th>
+                        <th scope="col" class="font-semibold text-center">Satuan SFC</th>
                       </tr>
                     </thead>
                     <tbody v-for="(item, i) in dataSFC" :key="i" class="text-xs">
                       <tr class="text-gray-900 border ">
                         <td class="px-1 py-2">{{ item.jenis_kit }}</td>
                         <td class="px-1 py-2">{{ item.bahan_bakar }}</td>
-                        <td class="px-1 py-2">{{ item.satuan }}</td>
+                        <td class="px-1 py-2 text-center">{{ item.satuan_sfc ? item.satuan_sfc : '-' }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -85,7 +60,7 @@
             </Transition>
           </div>
         </div>
-        <ButtonComponent @on-click="null" :text="'Export'" :text-color="'text-white'"
+        <ButtonComponent @on-click="handleExport" :text="'Export'" :text-color="'text-white'"
           :hover-text-color="'text-hoverColor'" :bg-color="'bg-primaryColor'" :icon-position="'Left'"
           :hover-bg-color="'bg-hoverColor'" :border-color="'bg-primaryColor'" :hover-border-color="'bg-hoverColor'">
           <svg width="16" height="12" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -100,56 +75,60 @@
       <template v-slot:table-header>
         <tr>
           <th class="border-r">
-            <div class="flex flex-row items-center justify-between space-x-5">
+            <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Unit Induk / Sentral / Mesin</h1>
-              <SortingIcon />
             </div>
           </th>
           <th class="border-r">
-            <div class="flex flex-row items-center justify-between space-x-5">
+            <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Jenis Pembangkit</h1>
-              <SortingIcon />
             </div>
           </th>
           <th class="border-r">
-            <div class="flex flex-row items-center justify-between space-x-5">
+            <div class="flex flex-row items-center justify-center space-x-5">
+              <h1 class="font-semibold">Tahun</h1>
+            </div>
+          </th>
+          <th class="border-r">
+            <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">NCF (%)</h1>
-              <SortingIcon />
             </div>
           </th>
           <th class="border-r">
-            <div class="flex flex-row items-center justify-between space-x-5">
+            <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">EAF (%)</h1>
-              <SortingIcon />
             </div>
           </th>
           <th class="border-r text-start">
-            <div class="flex flex-row items-center justify-between space-x-5">
+            <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">NPHR <br>(kcal/kWh)</h1>
-              <SortingIcon />
             </div>
           </th>
           <th class="border-r text-start">
-            <div class="flex flex-row items-center justify-between space-x-5">
-              <h1 class="font-semibold">SFC <br>(Vol.BB/kWh)</h1>
-              <SortingIcon />
+            <div class="flex flex-row items-center justify-center space-x-5">
+              <h1 class="font-semibold">SFC</h1>
             </div>
           </th>
           <th class="border-r text-start">
-            <div class="flex flex-row items-center justify-between space-x-5">
+            <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Produksi <br>Netto (MWh)</h1>
-              <SortingIcon />
             </div>
           </th>
           <th class="text-start">
-            <div class="flex flex-row items-center justify-between space-x-5">
+            <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Status Unit <br>Mesin</h1>
-              <SortingIcon />
             </div>
           </th>
         </tr>
       </template>
-      <template v-slot:table-body>
+      <template v-slot:table-body v-if="teknisData.length === 0">
+        <tr class="text-xs text-gray-900 border-b">
+          <td colspan="9">
+            <Empty />
+          </td>
+        </tr>
+      </template>
+      <template v-slot:table-body v-else>
         <template v-for="pengelola in teknisData" :key="pengelola.kode_pengelola">
           <tr class="text-xs bg-strokeColor bg-opacity-30 hover:bg-strokeColor hover:bg-opacity-60"
             :class="{ 'hover:bg-opacity-30': pengelola.pembangkits.length === 0, 'cursor-pointer': pengelola.pembangkits.length !== 0 }"
@@ -163,8 +142,8 @@
                     d="M12.4419 14.0044C12.1979 14.2485 11.8021 14.2485 11.5581 14.0044L8.43306 10.8794C8.18898 10.6354 8.18898 10.2396 8.43306 9.99556C8.67714 9.75148 9.07286 9.75148 9.31694 9.99556L12 12.6786L14.6831 9.99556C14.9271 9.75148 15.3229 9.75148 15.5669 9.99556C15.811 10.2396 15.811 10.6354 15.5669 10.8794L12.4419 14.0044Z"
                     fill="#333333" />
                 </svg>
-                <svg v-else-if="pengelola.pembangkits.length !== 0" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                  xmlns="http://www.w3.org/2000/svg">
+                <svg v-else-if="pengelola.pembangkits.length !== 0" width="24" height="24" viewBox="0 0 24 24"
+                  fill="none" xmlns="http://www.w3.org/2000/svg">
                   <rect width="24" height="24" rx="6" fill="#E5E7E9" />
                   <path fill-rule="evenodd" clip-rule="evenodd"
                     d="M11.5581 9.99556C11.8021 9.75148 12.1979 9.75148 12.4419 9.99556L15.5669 13.1206C15.811 13.3646 15.811 13.7604 15.5669 14.0044C15.3229 14.2485 14.9271 14.2485 14.6831 14.0044L12 11.3214L9.31694 14.0044C9.07286 14.2485 8.67714 14.2485 8.43306 14.0044C8.18898 13.7604 8.18898 13.3646 8.43306 13.1206L11.5581 9.99556Z"
@@ -198,44 +177,40 @@
                 </div>
               </td>
               <td class="text-center">{{ pembangkit.kode_jenis_pembangkit }}</td>
-              <td class="text-end">{{ pembangkit.net_capacity_factor || pembangkit.net_capacity_factor === 0 ?
-                globalFormat.formatRupiah(pembangkit.net_capacity_factor) : '-' }}</td>
-              <td class="text-end">{{ pembangkit.eaf || pembangkit.eaf === 0 ?
-                globalFormat.formatRupiah(pembangkit.eaf) :
-                '-' }}
-              </td>
-              <td class="text-end">{{ pembangkit.nphr || pembangkit.nphr === 0 ?
-                globalFormat.formatRupiah(pembangkit.nphr)
-                :
-                '-' }}
-              </td>
-              <td class="text-end">{{ pembangkit.sfc || pembangkit.sfc === 0 ? globalFormat.formatRupiah(pembangkit.sfc) :
-                '-' }}</td>
-              <td class="text-end">{{ pembangkit.produksi_netto || pembangkit.produksi_netto === 0 ?
-                globalFormat.formatRupiah(pembangkit.produksi_netto) : '-' }}</td>
-              <td class="text-center">{{ pembangkit.kondisi_unit }}</td>
+              <td class="text-center"></td>
+              <td class="text-end"></td>
+              <td class="text-end"></td>
+              <td class="text-end"></td>
+              <td class="text-end"></td>
+              <td class="text-end"></td>
+              <td class="text-center"></td>
             </tr>
             <template v-if="isPembangkitOpen(pembangkit.id_sentral) && isUpOpen(pengelola.kode_pengelola)"
               v-for="mesin in pembangkit.mesins" :key="mesin.id_mesin">
               <tr class="text-xs bg-strokeColor bg-opacity-10">
                 <td id="mesin">{{ mesin.mesin }}</td>
                 <td class="text-center">{{ mesin.kode_jenis_pembangkit }}</td>
-                <td class="text-end">{{ mesin.net_capacity_factor || mesin.net_capacity_factor === 0 ?
-                  globalFormat.formatRupiah(mesin.net_capacity_factor) : '-' }}</td>
-                <td class="text-end">{{ mesin.eaf || mesin.eaf === 0 ?
-                  globalFormat.formatRupiah(mesin.eaf) :
-                  '-' }}
-                </td>
-                <td class="text-end">{{ mesin.nphr || mesin.nphr === 0 ?
-                  globalFormat.formatRupiah(mesin.nphr)
-                  :
-                  '-' }}
-                </td>
-                <td class="text-end">{{ mesin.sfc || mesin.sfc === 0 ? globalFormat.formatRupiah(mesin.sfc) : '-' }}</td>
-                <td class="text-end">{{ mesin.produksi_netto || mesin.produksi_netto === 0 ?
-                  globalFormat.formatRupiah(mesin.produksi_netto) : '-' }}</td>
-                <td class="text-start">{{ mesin.kondisi_unit }}</td>
+                <td class="text-center"></td>
+                <td class="text-end"></td>
+                <td class="text-end"></td>
+                <td class="text-end"></td>
+                <td class="text-end"></td>
+                <td class="text-end"></td>
+                <td class="text-end"></td>
               </tr>
+              <template v-for="(teknisItem, transCostIndex) in mesin.detail_teknis" :key="transCostIndex">
+                <tr class="text-xs">
+                  <td></td>
+                  <td></td>
+                  <td class="text-center">{{ teknisItem.tahun }}</td>
+                  <td class="text-end">{{ globalFormat.formatRupiah(teknisItem.net_capacity_factor) }}</td>
+                  <td class="text-end">{{ globalFormat.formatRupiah(teknisItem.eaf) }}</td>
+                  <td class="text-end">{{ globalFormat.formatRupiah(teknisItem.nphr) }}</td>
+                  <td class="text-end">{{ globalFormat.formatRupiah(teknisItem.sfc) }}</td>
+                  <td class="text-end">{{ globalFormat.formatRupiah(teknisItem.produksi_netto) }}</td>
+                  <td class="text-start">{{ teknisItem.kondisi_unit }}</td>
+                </tr>
+              </template>
             </template>
           </template>
         </template>
@@ -247,10 +222,12 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { useLamanDataTabStore } from "@/store/storeLamanDataTab";
+import { encryptStorage } from "@/utils/app-encrypt-storage";
 const store = useLamanDataTabStore();
 import GlobalFormat from "@/services/format/global-format";
 const globalFormat = new GlobalFormat();
 import SearchBox from "@/components/ui/SearchBox.vue";
+import Empty from "@/components/ui/EmptyData.vue";
 import ButtonComponent from "@/components/ui/Button.vue";
 import TableComponent from "@/components/ui/Table.vue";
 import Loading from "@/components/ui/LoadingSpinner.vue";
@@ -259,6 +236,7 @@ import LamanService from "@/services/laman-service";
 import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
 import axios from "axios";
 
+const nodeMode = import.meta.env.MODE;
 const lamanService = new LamanService();
 const teknisData = ref<PengelolaItem[]>([]);
 const isUpTabOpen = ref<string[]>([]);
@@ -281,7 +259,7 @@ const isOptionsExpanded = ref(false);
 interface ItemSFC {
   jenis_kit: string
   bahan_bakar: string
-  satuan: string
+  satuan_sfc: string
 }
 interface PengelolaItem {
   meta: any
@@ -332,7 +310,8 @@ const fetchDataTeknis = async () => {
     isLoading.value = true;
     const response: PengelolaItem = await lamanService.getDataTeknis(searchQ.value, currentPage.value, pageLimit.value, tahunDari.value, tahunSampai.value);
     const { data, meta } = response;
-    teknisData.value = data;
+    const filteredResponse = data.filter((val: any) => val.pembangkits.length > 0);
+    teknisData.value = filteredResponse;
     totalPages.value = meta.totalPages;
     totalRecords.value = meta.totalRecords;
     pageLimit.value = meta.limit;
@@ -372,36 +351,37 @@ const isPembangkitOpen = (itemId: number) => {
   return isPembangkitTabOpen.value.includes(itemId);
 };
 
-// const handleExport = async () => {
-//   try {
-//     isLoading.value = true;
-//     const headers = {
-//       Authorization: `Bearer ${localStorage.getItem("token")}`,
-//     };
-//     const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/teknis/export-excel', {
-//       responseType: 'arraybuffer',
-//       headers,
-//       params: {
-//         tahun_dari: yearPicked.value,
-//         tahun_sampai: yearPicked.value
-//       }
-//     });
-//     const contentDisposition = response.headers['content-disposition'];
-//     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
-//     const fileName = fileNameMatch ? fileNameMatch[1] : `response.xlsx`;
-//     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-//     const url = window.URL.createObjectURL(blob);
-//     const link = document.createElement('a');
-//     link.href = url;
-//     link.setAttribute('download', fileName);
-//     document.body.appendChild(link);
-//     link.click();
-//     document.body.removeChild(link);
-//     isLoading.value = false;
-//   } catch (error) {
-//     console.error('Handle Download Template Rekap Error : ' + error);
-//   }
-// }
+const handleExport = async () => {
+  try {
+    isLoading.value = true;
+    const headers = {
+      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+    };
+    const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/teknis/export-excel', {
+      responseType: 'arraybuffer',
+      headers,
+      params: {
+        tahun_dari: yearRangePicked.value[0],
+        tahun_sampai: yearRangePicked.value[1],
+        search: searchQ.value.toUpperCase()
+      }
+    });
+    const contentDisposition = response.headers['content-disposition'];
+    const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
+    const fileName = fileNameMatch ? fileNameMatch[1] : `Laman Data - Teknis - ${yearRangePicked.value[0]}_${yearRangePicked.value[1]}.xlsx`;
+    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    isLoading.value = false;
+  } catch (error) {
+    console.error('Handle Download Template Rekap Error : ' + error);
+  }
+}
 
 watch(store, async (store) => {
   if (store.currentTab === 'Teknis') {

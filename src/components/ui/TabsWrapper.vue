@@ -1,12 +1,14 @@
 <template>
   <div class="whitespace-nowrap">
     <ul class="flex items-end mb-4 border-b-2 border-gray-50">
-      <li class="pb-2 mr-6 font-semibold text-gray-500 transition-all duration-300 cursor-pointer hover:text-primaryColor"
+      <li
+        class="pb-2 mr-6 font-semibold text-gray-500 transition-all duration-300 cursor-pointer hover:text-primaryColor"
         v-for="title in tabTitles" :key="title" @click="handleClick(title)"
         :class="{ selected: title === selectedTitle }">{{
           title }}</li>
       <li class="items-end content-end justify-end ml-auto justify-items-end" v-if="isLihatGrafik">
-        <RouterLink :to="{ name: 'grafik', params: { id: props.kodeSentral } }">
+        <RouterLink
+          :to="{ name: 'grafik', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(props.kodeSentral) : props.kodeSentral } }">
           <button
             class="flex space-x-2 items-center px-3 py-2 border border-[#0099AD] rounded-lg text-[#0099AD] hover:bg-blue-600 hover:border-blue-600 hover:text-white duration-300">
             <span class="font-semibold">Lihat Grafik</span>
@@ -27,6 +29,9 @@
 import { ref, provide, useSlots } from "vue";
 import { useLamanDataTabStore } from "@/store/storeLamanDataTab";
 const store = useLamanDataTabStore();
+import { usePerbaruiTabStore } from "@/store/storeRekapKertasKerja";
+const storePerbaruiTab = usePerbaruiTabStore();
+import { encryptStorage } from "@/utils/app-encrypt-storage";
 
 interface Props {
   isLihatGrafik?: boolean,
@@ -43,8 +48,10 @@ const handleClick = (title: string) => {
   if (props.lamanData === true) {
     selectedTitle.value = title;
     store.currentTab = title;
+    return;
   }
   selectedTitle.value = title;
+  storePerbaruiTab.currentTab = title;
 }
 
 const tabTitles = ref();
@@ -53,6 +60,8 @@ tabTitles.value = useSlots()
   .map((tab) => tab?.props?.title);
 const selectedTitle = ref(tabTitles.value[0]);
 provide("selectedTitle", selectedTitle);
+
+const nodeMode = import.meta.env.MODE;
 </script>
 
 <style scoped>

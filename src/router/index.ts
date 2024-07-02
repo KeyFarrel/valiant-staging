@@ -2,8 +2,9 @@ import { createRouter, createWebHistory, createWebHashHistory } from "vue-router
 import { useRoleMenuStore } from "@/store/storeRoleMenu";
 import { useNavbarLabelStore } from '@/store/storeNavbar';
 import { useRekapNavigationStore } from '@/store/storeRekapKertasKerja';
+import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
 import Sidebar from "@/components/layout/Sidebar.vue";
-import DashboardPage from "@/views/Beranda/PetaSebaran.vue";
+import PetaSebaran from "@/views/Beranda/PetaSebaran.vue";
 import LamanUtama from "@/views/Beranda/LamanUtama/LamanUtama.vue";
 import LamanData from "@/views/Beranda/LamanData/LamanData.vue";
 import LamanAnalitik from "@/views/Beranda/LamanAnalitik/LamanAnalitik.vue";
@@ -25,7 +26,7 @@ import PersetujuanKk from "@/views/Verifikasi/Sentral/TabPage/KK/DetailKK.vue";
 import PersetujuanFSMesin from "@/views/Verifikasi/Sentral/TabPage/FS/DetailFSMesin.vue";
 import PersetujuanKkMesin from "@/views/Verifikasi/Sentral/TabPage/KK/DetailKKMesin.vue";
 import InputAsumsiKKApprove from "@/views/Verifikasi/Sentral/TabPage/KK/InputAsumsiParameter.vue";
-import InputAsumsiFSApprove from "@/views/Verifikasi/Sentral/TabPage/FS/InputAsumsiParameter.vue";
+// import InputAsumsiFSApprove from "@/views/Verifikasi/Sentral/TabPage/FS/InputAsumsiParameter.vue";
 import PerbaruiKKApprove from "@/views/Verifikasi/Sentral/TabPage/KK/PerbaruiDataApprove.vue";
 import PerbaruiFSApprove from "@/views/Verifikasi/Sentral/TabPage/FS/PerbaruiDataApprove.vue";
 import SentralAdmin from "@/views/Master/SentralAdmin.vue";
@@ -39,7 +40,7 @@ import LihatOPEX from "@/views/Beranda/LamanData/LihatOPEX.vue";
 import Parameter from "@/views/Master/Parameter.vue";
 import ProfileUser from "@/views/ManajemenPengguna/ProfileUser.vue";
 import Pengguna from "@/views/ManajemenPengguna/Pengguna.vue";
-import ManajemenPenggunaRole from "@/views/ManajemenPengguna/ManajemenPenggunaRole.vue";
+import Role from "@/views/ManajemenPengguna/Role.vue";
 import EditPermission from "@/views/ManajemenPengguna/EditPermission.vue";
 // import Query from "@/views/Query/Query.vue";
 import MesinBelumTerinput from "@/views/Beranda/LamanUtama/MesinBelumTerinput.vue";
@@ -48,6 +49,8 @@ import VerifikasiSSO from "@/views/VerifikasiSSO.vue";
 import Error404Page from "@/views/404Page.vue";
 import 'vue-router'
 export {}
+
+const nodeMode: any = import.meta.env.MODE;
 
 const routes = [
   {
@@ -78,7 +81,7 @@ const routes = [
       {
         path: "/peta",
         name: "dashboard",
-        component: DashboardPage,
+        component: PetaSebaran,
         meta: {
           requiresAuth: true,
           label: 'Peta Sebaran',
@@ -330,15 +333,15 @@ const routes = [
           label: 'Perbarui Data',
         },
       },
-      {
-        path: "/input-asumsi-parameter-approveFS/:id",
-        name: "input-asumsi-parameter-approveFS",
-        component: InputAsumsiFSApprove,
-        meta: {
-          requiresAuth: true,
-          label: 'Input Asumsi Parameter',
-        },
-      },
+      // {
+      //   path: "/input-asumsi-parameter-approveFS/:id",
+      //   name: "input-asumsi-parameter-approveFS",
+      //   component: InputAsumsiFSApprove,
+      //   meta: {
+      //     requiresAuth: true,
+      //     label: 'Input Asumsi Parameter',
+      //   },
+      // },
       {
         path: "/perbarui-data-approveFS/:id",
         name: "perbarui-data-approveFS",
@@ -397,7 +400,7 @@ const routes = [
       {
         path: "/role",
         name: "role",
-        component: ManajemenPenggunaRole,
+        component: Role,
         meta: {
           requiresAuth: true,
           label: 'Role',
@@ -462,9 +465,8 @@ declare module 'vue-router' {
 
 router.beforeEach((to, _, next) => {
   const storeNavbar = useNavbarLabelStore();
-  const token = localStorage.getItem("token");
+  const token = nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem('token');
   const storeRoleMenu = useRoleMenuStore();
-  console.log(to.name);
   storeNavbar.label = to.meta.label;
   if (to.name === "redirect-sso" && !token) next();
   else if (to.name !== "login" && !token) next({ name: "login" });

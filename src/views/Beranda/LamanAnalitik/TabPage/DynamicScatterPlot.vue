@@ -37,8 +37,8 @@ const props = defineProps<{
   source: number[][]
   xData: { name: string; satuan: string }
   yData: { name: string; satuan: string }
-  pln: { x: number; y: number }
-  ipp: { x: number; y: number }
+  pln?: { x: number; y: number }
+  ipp?: { x: number; y: number }
   legends: { label: string; color: string }[]
   dataZoom: { start: number, type: string, orient: string }
 }>()
@@ -58,9 +58,23 @@ const option = computed({
       },
       tooltip: {
         formatter: function (params: any) {
-          return (params.value[3] + '<br/> <br/>' + props.xData.name + ' : ' + params.value[0] + ' ' + props.xData.satuan + '<br/>' +
-            props.yData.name + ' : ' + globalFormat.formatEnergy(params.value[1]) + ' ' + props.yData.satuan)
-        }
+          console.log(params.value)
+          if (params.seriesName === 'IPPX') {
+            return (`IPP Average: ${globalFormat.formatRupiah(params.value[1])}<br/>`)
+          }
+          else if (params.seriesName === 'IPPY') {
+            return (`IPP Average: ${globalFormat.formatRupiah(params.value[0])}<br/>`)
+          }
+          else if (params.seriesName === 'PLNX') {
+            return (`PLN Average: ${globalFormat.formatRupiah(params.value[1])}<br/>`)
+          }
+          else if (params.seriesName === 'PLNY') {
+            return (`PLN Average: ${globalFormat.formatRupiah(params.value[0])}<br/>`)
+          } else {
+            return (params.value[3] + '<br/> <br/>' + props.xData.name + ' : ' + globalFormat.formatRupiah(params.value[0]) + ' ' + props.xData.satuan + '<br/>' +
+              props.yData.name + ' : ' + globalFormat.formatRupiah(params.value[1]) + ' ' + props.yData.satuan)
+          }
+        },
       },
       xAxis: {
         type: "value",
@@ -75,8 +89,8 @@ const option = computed({
           padding: [2, 0, 0, -80],
         },
         splitNumber: 10,
-        min: Math.min.apply(Math, props.source.map(item => item[0])) - Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10),
-        max: Math.max.apply(Math, props.source.map(item => item[0])) + Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10),
+        // min: Math.min.apply(Math, props.source.map(item => item[0])) - Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10),
+        max: props.xData.satuan === '%' ? 100 : Math.max.apply(Math, props.source.map(item => item[0])) + Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10),
       },
       yAxis: {
         type: "value",
@@ -91,7 +105,7 @@ const option = computed({
           fontWeight: "bold",
         },
         splitNumber: 10,
-        min: Math.min.apply(Math, props.source.map(item => item[1])) - Math.round((Math.max.apply(Math, props.source.map(item => item[1])) - Math.min.apply(Math, props.source.map(item => item[1]))) / 10),
+        // min: Math.min.apply(Math, props.source.map(item => item[1])) - Math.round((Math.max.apply(Math, props.source.map(item => item[1])) - Math.min.apply(Math, props.source.map(item => item[1]))) / 10),
         max: Math.max.apply(Math, props.source.map(item => item[1])) + Math.round((Math.max.apply(Math, props.source.map(item => item[1])) - Math.min.apply(Math, props.source.map(item => item[1]))) / 10)
       },
       visualMap: {
@@ -118,63 +132,53 @@ const option = computed({
       dataZoom: props.dataZoom,
       series: [
         ...props.series,
-        // {
-        //   name: 'line',
-        //   type: 'line',
-        //   smooth: true,
-        //   datasetIndex: 1,
-        //   color: '#AAD9F4',
-        //   symbolSize: 0.1,
-        //   symbol: 'none',
-        //   label: {show: true, fontSize: 16},
-        //   labelLayout: {dx: -20},
-        //   encode: {label: 2, tooltip: 1}
-        // },
+        {
+          type: "line",
+          name: "NOT ACTIVATED",
+          smooth: false,
+          data: [],
+        },
         // Horizontal PLN AVG
         {
           type: "line",
-          name: "PLN",
+          name: "PLNX",
           smooth: false,
-          symbol: "none",
           data: [
-            [0, props.pln.y],
-            [Math.max.apply(Math, props.source.map(item => item[0])) + Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10), props.pln.y],
+            [0, props.pln?.y],
+            [props.xData.satuan === '%' ? 100 : props.xData.satuan === 'kcal/KWh' ? 10 : Math.max.apply(Math, props.source.map(item => item[0])) + Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10), props.pln?.y],
           ],
           color: "#FF5656",
         },
         // Vertical PLN AVG
         {
           type: "line",
-          name: "PLN",
+          name: "PLNY",
           smooth: false,
-          symbol: "none",
           data: [
-            [props.pln.x, 0],
-            [props.pln.x, Math.max.apply(Math, props.source.map(item => item[1])) + Math.round((Math.max.apply(Math, props.source.map(item => item[1])) - Math.min.apply(Math, props.source.map(item => item[1]))) / 10)],
+            [props.pln?.x, 0],
+            [props.pln?.x, Math.max.apply(Math, props.source.map(item => item[1])) + Math.round((Math.max.apply(Math, props.source.map(item => item[1])) - Math.min.apply(Math, props.source.map(item => item[1]))) / 10)],
           ],
           color: "#FF5656",
         },
         // Horizontal IPP AVG
         {
           type: "line",
-          name: "IPP",
+          name: "IPPX",
           smooth: false,
-          symbol: "none",
           data: [
-            [0, props.ipp.y],
-            [Math.max.apply(Math, props.source.map(item => item[0])) + Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10), props.ipp.y],
+            [0, props.ipp?.y],
+            [props.xData.satuan === '%' ? 100 : props.xData.satuan === 'kcal/KWh' ? 10 : Math.max.apply(Math, props.source.map(item => item[0])) + Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10), props.ipp?.y],
           ],
           color: "#0EA976",
         },
         // Vertical IPP AVG
         {
           type: "line",
-          name: "IPP",
+          name: "IPPY",
           smooth: false,
-          symbol: "none",
           data: [
-            [props.ipp.x, 0],
-            [props.ipp.x, Math.max.apply(Math, props.source.map(item => item[1])) + Math.round((Math.max.apply(Math, props.source.map(item => item[1])) - Math.min.apply(Math, props.source.map(item => item[1]))) / 10)],
+            [props.ipp?.x, 0],
+            [props.ipp?.x, Math.max.apply(Math, props.source.map(item => item[1])) + Math.round((Math.max.apply(Math, props.source.map(item => item[1])) - Math.min.apply(Math, props.source.map(item => item[1]))) / 10)],
           ],
           color: "#0EA976",
         },

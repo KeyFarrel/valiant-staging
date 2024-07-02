@@ -19,6 +19,11 @@ export const useRekapNavigationStore = defineStore('rekap-navigation', ()=>{
   return { currentPage, pageLimit, scrollPosition };
 })
 
+export const usePerbaruiTabStore = defineStore('perbarui-current-tab', () => {
+  const currentTab = ref<string>('Asumsi Makro');
+  return { currentTab };
+})
+
 // export const useBreadcrumbs = defineStore('breadcrumbs', () => {
 //   const breadcrumbs = ref<any>();
 //   return { breadcrumbs };

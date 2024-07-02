@@ -5,12 +5,13 @@
     :kode-jenis-pembangkit="mesin.kode_jenis_pembangkit ? mesin.kode_jenis_pembangkit : '-'"
     :daya-terpasang="mesin.daya_terpasang.toString()" :daya-mampu="mesin.daya_mampu.toString()"
     :tahun-operasi="mesin.tahun_operasi ? mesin.tahun_operasi : '-'"
-    :umur-teknis="approveSentralKK.umur_teknis ? approveSentralKK.umur_teknis : '-'">
+    :umur-teknis="approveSentralKK.umur_teknis ? approveSentralKK.umur_teknis : '-'" :nama-pembina="namaPembina"
+    :kondisi-unit="mesin.kondisi_unit">
     <div class="flex" v-if="approveMesinKK">
       <div v-if="approveMesinKK.status === 'Ditolak T1' || approveMesinKK.status === 'Ditolak T2'" class="flex">
         <!-- Revisi Data -->
         <RouterLink
-          :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data-approveKK', params: { id: approveMesinKK.id_mesin } }">
+          :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data-approveKK', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(approveMesinKK.id_mesin) : approveMesinKK.id_mesin } }">
           <button class="w-fit p-2 ml-1 flex items-center justify-center bg-[#0099AD] rounded-md text-white">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g clip-path="url(#clip0_8312_23311)">
@@ -29,12 +30,12 @@
         </RouterLink>
       </div>
       <div
-        v-else-if="approveMesinKK.status === 'Disetujui' || approveMesinKK.status === 'Menunggu Pesrsetujuan T1' || approveMesinKK.status === 'Menunggu Persetujuan T2'">
+        v-else-if="approveMesinKK.status === 'Disetujui' || approveMesinKK.status === 'Menunggu Persetujuan T1' || approveMesinKK.status === 'Menunggu Persetujuan T2'">
       </div>
       <div v-else-if="approveMesinKK.status === 'Draft'" class="flex">
         <!-- Edit Data -->
         <RouterLink
-          :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data-approveKK', params: { id: approveMesinKK.id_mesin } }">
+          :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data-approveKK', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(approveMesinKK.id_mesin) : approveMesinKK.id_mesin } }">
           <button
             class="w-fit p-2 mr-1 flex items-center justify-center border border-[#0099AD] rounded-md text-[#0099AD] duration-300 hover:text-white">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -63,7 +64,7 @@
           <span class="ml-2 text-sm font-semibold text-white">Kirim Data</span>
         </button>
         <ModalWrapper :showModal="modalApprove" :width="'w-[600px]'" :height="'h-auto'">
-          <div class="text-black border-b">
+          <div class="border-b text-primaryTextColor">
             <h1 class="mb-3 text-lg font-bold">Kirim Laporan?</h1>
             <p class="mb-4 text-sm">
               Apakah Anda yakin ingin Mengirim Laporan ini?
@@ -105,7 +106,8 @@
       </div>
     </div>
     <button
-      class="flex items-center text-[#0099AD] bg-white border border-[#0099AD] px-3 py-2 rounded-lg duration-300 hover:text-white">
+      class="flex items-center text-[#0099AD] bg-white border border-[#0099AD] px-3 py-2 rounded-lg duration-300 hover:text-white"
+      @click="downloadEvidence">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" clip-rule="evenodd"
           d="M6.12508 3.20964C4.75588 3.20964 3.64591 4.3196 3.64591 5.6888C3.64591 5.84688 3.66063 6.00098 3.68862 6.14997C3.74259 6.43729 3.57555 6.72018 3.2979 6.81169C2.48294 7.08026 1.89591 7.84799 1.89591 8.7513C1.89591 9.87888 2.81 10.793 3.93758 10.793H10.5001C11.386 10.793 12.1042 10.0748 12.1042 9.1888C12.1042 8.50438 11.6754 7.91867 11.0697 7.68854C10.774 7.57619 10.6217 7.24864 10.7264 6.95015C10.7686 6.83 10.7917 6.70023 10.7917 6.5638C10.7917 5.91947 10.2694 5.39714 9.62508 5.39714C9.49836 5.39714 9.37744 5.41713 9.26468 5.4537C9.11237 5.5031 8.94646 5.48772 8.80583 5.41116C8.6652 5.33461 8.56222 5.20362 8.52102 5.0489C8.23896 3.98944 7.27235 3.20964 6.12508 3.20964ZM2.47925 5.6888C2.47925 3.67526 4.11154 2.04297 6.12508 2.04297C7.62264 2.04297 8.90824 2.94548 9.46959 4.23559C9.52103 4.23219 9.57288 4.23047 9.62508 4.23047C10.9137 4.23047 11.9584 5.27514 11.9584 6.5638C11.9584 6.65152 11.9535 6.73824 11.9441 6.82366C12.7393 7.3102 13.2709 8.1869 13.2709 9.1888C13.2709 10.7191 12.0304 11.9596 10.5001 11.9596H3.93758C2.16567 11.9596 0.729248 10.5232 0.729248 8.7513C0.729248 7.50166 1.44338 6.42 2.48473 5.89018C2.48109 5.82348 2.47925 5.75633 2.47925 5.6888ZM7.00008 5.10547C7.32225 5.10547 7.58341 5.36664 7.58341 5.6888V8.21801L8.3376 7.46382C8.56541 7.23602 8.93475 7.23602 9.16256 7.46382C9.39037 7.69163 9.39037 8.06098 9.16256 8.28878L7.41256 10.0388C7.18475 10.2666 6.81541 10.2666 6.5876 10.0388L4.8376 8.28878C4.6098 8.06098 4.6098 7.69163 4.8376 7.46382C5.06541 7.23602 5.43475 7.23602 5.66256 7.46382L6.41675 8.21801V5.6888C6.41675 5.36664 6.67791 5.10547 7.00008 5.10547Z"
@@ -151,18 +153,19 @@
       </div>
     </div>
     <!-- Tabs -->
-    <TabsWrapper v-if="hasilSimulasi && mesin && approveSentralKK && approveMesinKK" :isLihatGrafik="true"
-      :laman-data="false" :id-mesin="idGrafik.toString()" :tahun-grafik="parseInt(tahunTerakhirAsumsi)"
+    <TabsWrapper v-if="hasilSimulasi && mesin && approveSentralKK && approveMesinKK && tahunGrafik !== 0"
+      :isLihatGrafik="true" :photo="mesin.photo1 === '' ? '' : mesin.photo2" :laman-data="false"
+      :id-mesin="idGrafik.toString()" :tahun-grafik="tahunGrafik"
       :nilai-asset-awal="mesin.nilai_asset_awal ? mesin.nilai_asset_awal : 0"
       :tahun="approveSentralKK.tahun ? approveSentralKK.tahun : '-'" :irr-on-project="hasilSimulasi.track_irr_project"
       :irr-on-equity="hasilSimulasi.track_irr_equity" :npv-on-equity="hasilSimulasi.track_npv_equity"
       :npv-on-project="hasilSimulasi.track_npv_project" :average-ncf="hasilSimulasi.track_average_cf"
       :average-eaf="hasilSimulasi.track_average_eaf" :nama-mesin="mesin.mesin ? mesin.mesin : '-'"
-      :nama-pengelola="approveSentralKK.pengelola ? approveSentralKK.pengelola : '-'"
-      :nama-pembina="approveSentralKK.pembina ? approveSentralKK.pembina : '-'"
+      :nama-pengelola="approveSentralKK.pengelola ? approveSentralKK.pengelola : '-'" :nama-pembina="namaPembina"
       :daya-terpasang="mesin.daya_terpasang / 1000" :daya-mampu="mesin.daya_mampu / 1000"
       :tahun-operasi="mesin.tahun_operasi ? mesin.tahun_operasi : '-'"
-      :tahun-perolehan-data="mesin.tahun_nilai_perolehan.toString() ? mesin.tahun_nilai_perolehan.toString() : '-'">
+      :tahun-perolehan-data="mesin.tahun_nilai_perolehan.toString() ? mesin.tahun_nilai_perolehan.toString() : '-'"
+      :jumlah-mesin="jumlahMesin" :status-grafik="approveMesinKK.status">
       <TabItem title="Asumsi Makro">
         <AsumsiMakro v-if="asumsiParameter" :data="data"
           :tahun="tahunTerakhirAsumsi ? parseInt(tahunTerakhirAsumsi) : '-'"
@@ -206,66 +209,16 @@
             </div>
             <div class="flex items-center text-xs font-semibold">
               <p class="mr-2 font-normal">Status Laporan</p>
-              <div
-                class="w-fit p-1 flex items-center justify-center bg-[#FAEBEA] border border-[#EFC0BD] rounded-md text-[#C53830]"
-                v-if="approveMesinKK.status === 'Ditolak T1'">
-                Ditolak oleh Pembina
-              </div>
-              <div
-                class="w-fit p-1 flex items-center justify-center bg-[#FAEBEA] border border-[#EFC0BD] rounded-md text-[#C53830]"
-                v-else-if="approveMesinKK.status === 'Ditolak T2'">
-                Ditolak oleh Pengelola
-              </div>
-              <div
-                class="w-fit p-1 flex items-center justify-center bg-[#EDF7F2] border border-[#C7E5D7] rounded-md text-[#397E5D]"
-                v-else-if="approveMesinKK.status === 'Disetujui'">
-                Disetujui
-              </div>
-              <div
-                class="w-fit p-1 flex items-center justify-center bg-[#B7CAF5] border border-[#B7CAF5] rounded-md text-[#1D55D7]"
-                v-else-if="approveMesinKK.status === 'Draft'">
-                Draft
-              </div>
-              <div
-                class="w-fit p-1 flex items-center justify-center bg-[#FFF3E6] border border-[#FFD6AD] rounded-md text-[#FF8000]"
-                v-else-if="approveMesinKK.status === 'Menunggu Persetujuan T1'">
-                Menunggu Persetujuan Pembina
-              </div>
-              <div
-                class="w-fit p-1 flex items-center justify-center bg-[#FFF3E6] border border-[#FFD6AD] rounded-md text-[#FF8000]"
-                v-else-if="approveMesinKK.status === 'Menunggu Persetujuan T2'">
-                Menunggu Persetujuan Pengelola
-              </div>
+              <ComponentDitolakT1 v-if="approveMesinKK.status === 'Ditolak T1'" />
+              <ComponentDitolakT2 v-else-if="approveMesinKK.status === 'Ditolak T2'" />
+              <ComponentDisetujui v-else-if="approveMesinKK.status === 'Disetujui'" />
+              <ComponentWaitingT1 v-else-if="approveMesinKK.status === 'Menunggu Persetujuan T1'" />
+              <ComponentWaitingT2 v-else-if="approveMesinKK.status === 'Menunggu Persetujuan T2'" />
+              <ComponentDraft v-else-if="approveMesinKK.status === 'Draft'" />
             </div>
           </div>
-          <div class="w-full overflow-auto border rounded-lg whitespace-nowrap">
-            <table v-if="dataTeknis" class="w-full text-sm">
-              <thead>
-                <tr class="text-[#0099AD] text-sm text-left border-b-2">
-                  <th class="sticky left-0 z-10 bg-white">No</th>
-                  <th class="sticky z-10 bg-white left-10">Nama</th>
-                  <th class="text-center"
-                    v-for="( item, index ) in dataTeknis.tahun.length === 0 ? 1 : dataTeknis.tahun" :key="index"
-                    :class="{ 'text-warningColor': item < tahunBerjalan, 'text-black': item === tahunBerjalan, 'text-[#0099AD]': item > tahunBerjalan, }">
-                    {{ dataTeknis.tahun.length === 0 ? "-" : item }} <br>
-                    <span class="text-xs font-normal">{{ index }} </span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="( item, index ) in dataTeknis.detail " :key="index">
-                  <td class="sticky left-0 z-10 bg-white">{{ index + 1 }}</td>
-                  <td class="sticky z-10 bg-white left-10">{{ item.uraian }}</td>
-                  <td v-for="( items, indexs ) in dataTeknis.tahun.length === 0 ? 1 : dataTeknis.tahun" :key="indexs"
-                    :class="{ 'text-right': item.uraian !== 'Type of Periodic Maintenance', 'text-center': item.uraian == 'Type of Periodic Maintenance', 'bg-blue-50': items === tahunBerjalan }">
-                    {{ dataTeknis.tahun ? item["t" + items] != null ? item.uraian === 'Type of Periodic Maintenance' ?
-                      getTypePeriodic(item["t" + items]) : item.uraian === 'Tahun Ke' ? item["t" + items] :
-                        globalFormat.formatRupiah(item["t" + items]) : "-" : "-" }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <TableDataTeknis :data-teknis="dataTeknis" :tahun-terakhir-realisasi="tahunBerjalan"
+            :type-periodic="typePeriodic" />
         </div>
       </TabItem>
       <TabItem title="Data Finansial">
@@ -283,153 +236,16 @@
             </div>
             <div class="flex items-center text-xs font-semibold">
               <p class="mr-2 font-normal">Status Laporan</p>
-              <div
-                class="w-fit p-1 flex items-center justify-center bg-[#FAEBEA] border border-[#EFC0BD] rounded-md text-[#C53830]"
-                v-if="approveMesinKK.status === 'Ditolak T1'">
-                Ditolak oleh Pembina
-              </div>
-              <div
-                class="w-fit p-1 flex items-center justify-center bg-[#FAEBEA] border border-[#EFC0BD] rounded-md text-[#C53830]"
-                v-else-if="approveMesinKK.status === 'Ditolak T2'">
-                Ditolak oleh Pengelola
-              </div>
-              <div
-                class="w-fit p-1 flex items-center justify-center bg-[#EDF7F2] border border-[#C7E5D7] rounded-md text-[#397E5D]"
-                v-else-if="approveMesinKK.status === 'Disetujui'">
-                Disetujui
-              </div>
-              <div
-                class="w-fit p-1 flex items-center justify-center bg-[#B7CAF5] border border-[#B7CAF5] rounded-md text-[#1D55D7]"
-                v-else-if="approveMesinKK.status === 'Draft'">
-                Draft
-              </div>
-              <div
-                class="w-fit p-1 flex items-center justify-center bg-[#FFF3E6] border border-[#FFD6AD] rounded-md text-[#FF8000]"
-                v-else-if="approveMesinKK.status === 'Menunggu Persetujuan T1'">
-                Menunggu Persetujuan Pembina
-              </div>
-              <div
-                class="w-fit p-1 flex items-center justify-center bg-[#FFF3E6] border border-[#FFD6AD] rounded-md text-[#FF8000]"
-                v-else-if="approveMesinKK.status === 'Menunggu Persetujuan T2'">
-                Menunggu Persetujuan Pengelola
-              </div>
+              <ComponentDitolakT1 v-if="approveMesinKK.status === 'Ditolak T1'" />
+              <ComponentDitolakT2 v-else-if="approveMesinKK.status === 'Ditolak T2'" />
+              <ComponentDisetujui v-else-if="approveMesinKK.status === 'Disetujui'" />
+              <ComponentWaitingT1 v-else-if="approveMesinKK.status === 'Menunggu Persetujuan T1'" />
+              <ComponentWaitingT2 v-else-if="approveMesinKK.status === 'Menunggu Persetujuan T2'" />
+              <ComponentDraft v-else-if="approveMesinKK.status === 'Draft'" />
             </div>
           </div>
-          <div class="w-full overflow-auto border rounded-lg whitespace-nowrap" v-if="dataFinansial">
-            <table class="w-full">
-              <thead>
-                <tr class="text-[#0099AD] text-sm text-left border-b-2">
-                  <th class="pr-96" id="tableHeader">Nama</th>
-                  <th class="text-center"
-                    v-for="( tahunItem, tahunIndex ) in dataFinansial.tahun.length === 0 ? 1 : dataFinansial.tahun "
-                    :key="tahunIndex"
-                    :class="{ 'text-warningColor': tahunItem < tahunBerjalan, 'text-black': tahunItem === tahunBerjalan, 'text-primaryColor': tahunItem > tahunBerjalan, }">
-                    {{ dataFinansial.tahun.length === 0 ? '-' : tahunItem }} <br>
-                    <span class="text-xs font-normal">{{ tahunIndex }}</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody v-for="( level1, level1Index ) in finansialMappingResult" :key="level1Index">
-                <tr class="text-sm cursor-pointer bg-strokeColor bg-opacity-40 active:bg-opacity-90"
-                  @click="toggleRow(level1.id_uraian)">
-                  <td class="border-b" :colspan="dataFinansial.tahun.length === 0 ? 2 : dataFinansial.tahun.length + 1">
-                    <div class="flex flex-row items-center">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                        class="mr-2" v-if="!isRowOpen(level1.id_uraian)">
-                        <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                          d="M12.4419 14.0044C12.1979 14.2485 11.8021 14.2485 11.5581 14.0044L8.43306 10.8794C8.18898 10.6354 8.18898 10.2396 8.43306 9.99556C8.67714 9.75148 9.07286 9.75148 9.31694 9.99556L12 12.6786L14.6831 9.99556C14.9271 9.75148 15.3229 9.75148 15.5669 9.99556C15.811 10.2396 15.811 10.6354 15.5669 10.8794L12.4419 14.0044Z"
-                          fill="white" />
-                      </svg>
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                        class="mr-2" v-else>
-                        <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                          d="M11.5581 9.99556C11.8021 9.75148 12.1979 9.75148 12.4419 9.99556L15.5669 13.1206C15.811 13.3646 15.811 13.7604 15.5669 14.0044C15.3229 14.2485 14.9271 14.2485 14.6831 14.0044L12 11.3214L9.31694 14.0044C9.07286 14.2485 8.67714 14.2485 8.43306 14.0044C8.18898 13.7604 8.18898 13.3646 8.43306 13.1206L11.5581 9.99556Z"
-                          fill="white" />
-                      </svg>
-                      <span> {{ level1.uraian }}</span>
-                    </div>
-                  </td>
-                </tr>
-                <template v-for="( level2, level2Index ) in level1.level2 " :key="level2Index"
-                  v-if="isRowOpen(level1.id_uraian)">
-                  <tr class="text-sm cursor-pointer active:bg-strokeColor active:bg-opacity-30"
-                    @click="toggleRow(level2.id_uraian)">
-                    <td id="level2" :class="{ selected: level2.level3.length === 0 }">
-                      <div class="flex flex-row items-center">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                          class="mr-2" v-if="!isRowOpen(level2.id_uraian) && level2.level3.length !== 0">
-                          <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                          <path fill-rule="evenodd" clip-rule="evenodd"
-                            d="M12.4419 14.0044C12.1979 14.2485 11.8021 14.2485 11.5581 14.0044L8.43306 10.8794C8.18898 10.6354 8.18898 10.2396 8.43306 9.99556C8.67714 9.75148 9.07286 9.75148 9.31694 9.99556L12 12.6786L14.6831 9.99556C14.9271 9.75148 15.3229 9.75148 15.5669 9.99556C15.811 10.2396 15.811 10.6354 15.5669 10.8794L12.4419 14.0044Z"
-                            fill="white" />
-                        </svg>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                          class="mr-2" v-else-if="isRowOpen(level2.id_uraian) && level2.level3.length !== 0">
-                          <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                          <path fill-rule="evenodd" clip-rule="evenodd"
-                            d="M11.5581 9.99556C11.8021 9.75148 12.1979 9.75148 12.4419 9.99556L15.5669 13.1206C15.811 13.3646 15.811 13.7604 15.5669 14.0044C15.3229 14.2485 14.9271 14.2485 14.6831 14.0044L12 11.3214L9.31694 14.0044C9.07286 14.2485 8.67714 14.2485 8.43306 14.0044C8.18898 13.7604 8.18898 13.3646 8.43306 13.1206L11.5581 9.99556Z"
-                            fill="white" />
-                        </svg>
-                        <span>{{ level2.uraian }}</span>
-                      </div>
-                    </td>
-                    <td class="text-right"
-                      v-for="( tahun, tahunIndex ) in dataFinansial.tahun.length === 0 ? 1 : dataFinansial.tahun "
-                      :class="{ 'bg-blue-50': tahun === tahunBerjalan }">
-                      {{ dataFinansial.tahun ? level2.uraian.includes('Kalkulasi' || 'kalkulasi') ? '' : level2['t' +
-                        tahun] == null ? '-' : globalFormat.formatRupiah(level2['t' + tahun]) : '-' }}
-                    </td>
-                  </tr>
-                  <template v-for="( level3, level3Index ) in level2.level3 " :key="level3Index"
-                    v-if="isRowOpen(level2.id_uraian)">
-                    <tr class="text-sm cursor-pointer" @click="toggleRow(level3.id_uraian)">
-                      <td id="level3" :class="{ selected: level3.level4.length === 0 }">
-                        <div class="flex flex-row items-center">
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                            class="mr-2" v-if="!isRowOpen(level3.id_uraian) && level3.level4.length !== 0">
-                            <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                            <path fill-rule="evenodd" clip-rule="evenodd"
-                              d="M12.4419 14.0044C12.1979 14.2485 11.8021 14.2485 11.5581 14.0044L8.43306 10.8794C8.18898 10.6354 8.18898 10.2396 8.43306 9.99556C8.67714 9.75148 9.07286 9.75148 9.31694 9.99556L12 12.6786L14.6831 9.99556C14.9271 9.75148 15.3229 9.75148 15.5669 9.99556C15.811 10.2396 15.811 10.6354 15.5669 10.8794L12.4419 14.0044Z"
-                              fill="white" />
-                          </svg>
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                            class="mr-2" v-else-if="isRowOpen(level3.id_uraian) && level3.level4.length !== 0">
-                            <rect width="24" height="24" rx="6" fill="#80C1CD" />
-                            <path fill-rule="evenodd" clip-rule="evenodd"
-                              d="M11.5581 9.99556C11.8021 9.75148 12.1979 9.75148 12.4419 9.99556L15.5669 13.1206C15.811 13.3646 15.811 13.7604 15.5669 14.0044C15.3229 14.2485 14.9271 14.2485 14.6831 14.0044L12 11.3214L9.31694 14.0044C9.07286 14.2485 8.67714 14.2485 8.43306 14.0044C8.18898 13.7604 8.18898 13.3646 8.43306 13.1206L11.5581 9.99556Z"
-                              fill="white" />
-                          </svg>
-                          <span>{{ level3.uraian }}</span>
-                        </div>
-                      </td>
-                      <td class="text-right"
-                        v-for="( tahun, tahunIndex ) in dataFinansial.tahun.length === 0 ? 1 : dataFinansial.tahun "
-                        :class="{ 'bg-blue-50': tahun === tahunBerjalan }" :key="tahunIndex">
-                        {{ dataFinansial.tahun ? level3.uraian.includes('Kalkulasi' || 'kalkulasi') ? '' : level3['t' +
-                          tahun] == null ? '-' : globalFormat.formatRupiah(level3['t' + tahun])
-                          : '-' }}
-                      </td>
-                    </tr>
-                    <template v-for="( level4, level4Index ) in level3.level4 " :key="level4Index"
-                      v-if="isRowOpen(level3.id_uraian)">
-                      <tr class="text-sm">
-                        <td id="level4">{{ level4.uraian }}</td>
-                        <td class="text-right"
-                          v-for="( tahun, tahunIndex ) in dataFinansial.tahun.length === 0 ? 1 : dataFinansial.tahun "
-                          :class="{ 'bg-blue-50': tahun === tahunBerjalan }">
-                          {{ dataFinansial.tahun ? level4.uraian.includes('Kalkulasi' || 'kalkulasi') ? '' : level4['t'
-                            +
-                            tahun] == null ? '-' : globalFormat.formatRupiah(level4['t' + tahun]) : '-' }}
-                        </td>
-                      </tr>
-                    </template>
-                  </template>
-                </template>
-              </tbody>
-            </table>
-          </div>
+          <TableDataFinansial v-if="dataFinansial" :data-finansial="dataFinansial"
+            :tahun-terakhir-realisasi="tahunBerjalan" :source="finansialMappingResult" />
         </div>
       </TabItem>
       <TabItem title="Hasil Simulasi">
@@ -447,36 +263,12 @@
             </div>
             <div class="flex items-center text-xs font-semibold">
               <p class="mr-2 font-normal">Status Laporan</p>
-              <div
-                class="w-fit p-1 flex items-center justify-center bg-[#FAEBEA] border border-[#EFC0BD] rounded-md text-[#C53830]"
-                v-if="approveMesinKK.status === 'Ditolak T1'">
-                Ditolak oleh Pembina
-              </div>
-              <div
-                class="w-fit p-1 flex items-center justify-center bg-[#FAEBEA] border border-[#EFC0BD] rounded-md text-[#C53830]"
-                v-else-if="approveMesinKK.status === 'Ditolak T2'">
-                Ditolak oleh Pengelola
-              </div>
-              <div
-                class="w-fit p-1 flex items-center justify-center bg-[#EDF7F2] border border-[#C7E5D7] rounded-md text-[#397E5D]"
-                v-else-if="approveMesinKK.status === 'Disetujui'">
-                Disetujui
-              </div>
-              <div
-                class="w-fit p-1 flex items-center justify-center bg-[#B7CAF5] border border-[#B7CAF5] rounded-md text-[#1D55D7]"
-                v-else-if="approveMesinKK.status === 'Draft'">
-                Draft
-              </div>
-              <div
-                class="w-fit p-1 flex items-center justify-center bg-[#FFF3E6] border border-[#FFD6AD] rounded-md text-[#FF8000]"
-                v-else-if="approveMesinKK.status === 'Menunggu Persetujuan T1'">
-                Menunggu Persetujuan Pembina
-              </div>
-              <div
-                class="w-fit p-1 flex items-center justify-center bg-[#FFF3E6] border border-[#FFD6AD] rounded-md text-[#FF8000]"
-                v-else-if="approveMesinKK.status === 'Menunggu Persetujuan T2'">
-                Menunggu Persetujuan Pengelola
-              </div>
+              <ComponentDitolakT1 v-if="approveMesinKK.status === 'Ditolak T1'" />
+              <ComponentDitolakT2 v-else-if="approveMesinKK.status === 'Ditolak T2'" />
+              <ComponentDisetujui v-else-if="approveMesinKK.status === 'Disetujui'" />
+              <ComponentWaitingT1 v-else-if="approveMesinKK.status === 'Menunggu Persetujuan T1'" />
+              <ComponentWaitingT2 v-else-if="approveMesinKK.status === 'Menunggu Persetujuan T2'" />
+              <ComponentDraft v-else-if="approveMesinKK.status === 'Draft'" />
             </div>
           </div>
           <nav class="rounded-md bg-primaryColor bg-opacity-5">
@@ -511,12 +303,21 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute } from 'vue-router'
+import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { notifyError } from "@/services/helper/toast-notification";
+import RekapService from "@/services/rekap-service";
+const rekapService = new RekapService();
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import PersetujuanService from '@/services/persetujuan-service';
 import DetailRekapService from "@/services/detail-rekap-service";
-import GlobalFormat from "@/services/format/global-format";
+import UserService from "@/services/user-service";
+const userService = new UserService();
 import ModalWrapper from "@/components/ui/ModalWrapper.vue";
-import InfoHeader from '@/components/ui/InfoHeaderPersetujuan.vue';
+import GlobalFormat from "@/services/format/global-format";
+const globalFormat = new GlobalFormat();
+import DetailSentralService from "@/services/detail-sentral-service";
+const detailSentralService = new DetailSentralService();
+import InfoHeader from '@/components/ui/InfoHeader.vue';
 import TabsWrapper from "@/components/ui/TabsWrapperApprove.vue";
 import TabItem from "@/components/ui/TabItem.vue";
 import AsumsiMakro from "@/components/ui/AsumsiMakroApprove.vue";
@@ -524,9 +325,17 @@ import ParameterTeknis from "@/components/ui/ParameterTeknisApprove.vue";
 import AkhirMasaManfaat from "@/views/Data/RekapKertasKerja/DetailRekap/HasilSimulasi/AkhirMasaManfaat.vue";
 import TahunBerjalan from "@/views/Data/RekapKertasKerja/DetailRekap/HasilSimulasi/TahunBerjalan.vue";
 import jsonData from "@/assets/lottie/success.json";
-// import ModalNotification from '@/components/ui/ModalNotification.vue';
-// import successJsonData from "@/assets/lottie/success.json";
+import TableDataTeknis from "@/components/RekapKertasKerja/TableDataTeknis.vue";
+import TableDataFinansial from "@/components/RekapKertasKerja/TableDataFinansial.vue";
+import ComponentDisetujui from '@/components/Status/ComponentDisetujui.vue';
+import ComponentDitolakT1 from '@/components/Status/ComponentDitolakT1.vue';
+import ComponentDitolakT2 from '@/components/Status/ComponentDitolakT2.vue';
+import ComponentWaitingT1 from '@/components/Status/ComponentWaitingT1.vue';
+import ComponentWaitingT2 from '@/components/Status/ComponentWaitingT2.vue';
+import ComponentDraft from '@/components/Status/ComponentDraft.vue';
+import axios from "axios";
 
+const nodeMode = import.meta.env.MODE;
 const route = useRoute();
 const isLoading = ref(false);
 const modalApprove = ref(false);
@@ -537,15 +346,32 @@ const isSuccess = ref(false);
 const isHover = ref(true);
 const persetujuanService = new PersetujuanService();
 const detailRekapService = new DetailRekapService();
-const globalFormat = new GlobalFormat();
+const tahunGrafik = ref<number>(0);
 
 const approveSentralKK = ref<ListApprove>();
-const approveMesinKK = ref<ListApprove>();
+const approveMesinKK = ref<ListApprove>({
+  data: [],
+  pengelola: '',
+  pembina: '',
+  umur_teknis: '',
+  tahun: '',
+  status: '',
+  keterangan: '',
+  id_mesin: '',
+  id_status: -1
+});
 const mesin = ref<MesinItem>();
-const dataTeknis = ref<DataTeknisItem>();
 const asumsiParameter = ref<AsumsiParameterItem>();
 const parameterTeknisFinansial = ref<ParameterTeknisFinancialItem>();
-
+const dataTeknis = ref<{
+  header: any[],
+  tahun: number[],
+  detail: any[]
+}>({
+  header: [],
+  tahun: [],
+  detail: []
+});
 const tahunTerakhirAsumsi = ref<any>([]);
 const tahunBerjalan = new Date().getFullYear();
 const typePeriodic = ref<Object[]>([]);
@@ -555,17 +381,15 @@ const kodeJenisPembangkit = ref<string>("");
 const comboBahanBakar = ref<any>([]);
 const bahanBakars = ref<any[]>([]);
 const namaPengelola = ref<string>('');
+const namaPembina = ref<string>('');
 const dataFinansial = ref<any>();
 const hasilSimulasi = ref();
 const updateMesin = ref<any>();
 const avrIrr = ref<number>();
-const statusMesin = ref<any>([]);
-const arrMesin = ref<any>({});
+const statusMesin = ref<number>(-1);
 
-const idGrafik = ref(route.params.id);
-const tahunGrafik = ref(route.query.tahun);
-// const idMesin = ref<any[]>([]);
-// const idSentral = ref<any>([]);
+const idGrafik = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id;
+const jumlahMesin = ref<number>(0);
 
 interface MesinItem {
   data: any
@@ -581,6 +405,8 @@ interface MesinItem {
   masa_manfaat: number
   nilai_asset_awal: number
   tahun_nilai_perolehan: string
+  photo1: string
+  photo2: string
 }
 
 interface ListApprove {
@@ -642,10 +468,16 @@ const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const fetchMesinById = async () => {
   try {
     const response: MesinItem = await detailRekapService.getMesinById(
-      route.params.id
+      idGrafik
     );
+    try {
+      const responsePhoto: any = await detailSentralService.getPhoto(response.data.photo1);
+      const blob = new Blob([responsePhoto]);
+      response.data.photo2 = URL.createObjectURL(blob);
+    } catch (error) {
+      console.error('Photo Error: ', error)
+    }
     mesin.value = response.data;
-    // idMesin.value = response.data.id_mesin;
     tahunTerakhirRealisasi.value = parseInt(response.data.tahun_realisasi);
     kodeJenisPembangkit.value = response.data.kode_jenis_pembangkit;
     avrIrr.value = response.data.avg_irr;
@@ -661,9 +493,9 @@ const fetchPersetujuanKK = async () => {
       tahun: route.query.tahun
     });
     approveSentralKK.value = response.data;
-    approveMesinKK.value = response.data.mesins.filter((val: any) => val.id_mesin === route.params.id)[0];
-    tahunTerakhirAsumsi.value = approveMesinKK.value?.tahun;
-    statusMesin.value = approveMesinKK.value?.id_status;
+    approveMesinKK.value = response.data.mesins.filter((val: any) => val.id_mesin == idGrafik)[0];
+    tahunTerakhirAsumsi.value = approveMesinKK.value.tahun;
+    statusMesin.value = approveMesinKK.value.id_status;
   } catch (error) {
     console.error('Fetch Persetujuan KK Sentral Error : ' + error);
   }
@@ -674,8 +506,9 @@ const fetchAsumsiParameterData = async () => {
     isLoading.value = true;
     const response: AsumsiParameterItem =
       await detailRekapService.getAsumsiParameter(
-        parseInt(route.query.tahun?.toString() ?? '0'),
-        parseInt(route.params.id.toString())
+        parseInt(route.query.tahun?.toString() ?? '0') - 1,
+        parseInt(idGrafik),
+        parseInt(route.query.tahun?.toString() ?? '0')
       );
     asumsiParameter.value = response.data.asumsi_makro;
     parameterTeknisFinansial.value = response.data.parameter_teknis_financial;
@@ -687,11 +520,21 @@ const fetchAsumsiParameterData = async () => {
 
 const fetchDataTeknisData = async () => {
   try {
-    const response: DataTeknisItem = await detailRekapService.getDataTeknis(
+    const response: any = await detailRekapService.getDataTeknis(
       parseInt(route.query.tahun?.toString() ?? '0'),
-      parseInt(route.params.id.toString())
+      parseInt(idGrafik)
     );
-    dataTeknis.value = response.data;
+    if (response.data.tahun[response.data.tahun.length - 1] == tahunBerjalan - 1) {
+      const responseTahunRealisasi: any = await detailRekapService.getDataTeknis(
+        parseInt(route.query.tahun?.toString() ?? '0') - 1,
+        parseInt(idGrafik)
+      );
+      dataTeknis.value = responseTahunRealisasi.data;
+      tahunGrafik.value = parseInt(route.query.tahun?.toString() ?? '0') - 1;
+    } else {
+      dataTeknis.value = response.data;
+      tahunGrafik.value = parseInt(route.query.tahun?.toString() ?? '0');
+    }
   } catch (error) {
     console.error("Fetch Data Teknis Error : " + error);
   }
@@ -701,35 +544,66 @@ const fetchDataFinansialData = async () => {
   try {
     const response: any = await detailRekapService.getDataFinansial(
       parseInt(route.query.tahun?.toString() ?? '0'),
-      parseInt(route.params.id.toString())
+      parseInt(idGrafik)
     );
     let currentLevel1: any | null = null;
     let currentLevel2: any | null = null;
     let currentLevel3: any | null = null;
-    for (const item of response.data.detail) {
-      if (item.level === 1) {
-        currentLevel1 = {
-          ...item,
-          level2: [],
-        };
-        finansialMappingResult.value.push(currentLevel1);
-      } else if (item.level === 2 && currentLevel1 !== null) {
-        currentLevel2 = {
-          ...item,
-          level3: [],
+    if (response.data.tahun[response.data.tahun.length - 1] == tahunBerjalan - 1) {
+      const responseTahunRealisasi: any = await detailRekapService.getDataFinansial(
+        parseInt(route.query.tahun?.toString() ?? '0') - 1,
+        parseInt(idGrafik)
+      );
+      for (const item of responseTahunRealisasi.data.detail) {
+        if (item.level === 1) {
+          currentLevel1 = {
+            ...item,
+            level2: [],
+          };
+          finansialMappingResult.value.push(currentLevel1);
+        } else if (item.level === 2 && currentLevel1 !== null) {
+          currentLevel2 = {
+            ...item,
+            level3: [],
+          }
+          currentLevel1.level2.push(currentLevel2);
+        } else if (item.level === 3 && currentLevel1 !== null) {
+          currentLevel3 = {
+            ...item,
+            level4: [],
+          }
+          currentLevel2.level3.push(currentLevel3);
+        } else if (item.level === 4 && currentLevel1 !== null) {
+          currentLevel3.level4.push({ ...item });
         }
-        currentLevel1.level2.push(currentLevel2);
-      } else if (item.level === 3 && currentLevel1 !== null) {
-        currentLevel3 = {
-          ...item,
-          level4: [],
-        }
-        currentLevel2.level3.push(currentLevel3);
-      } else if (item.level === 4 && currentLevel1 !== null) {
-        currentLevel3.level4.push({ ...item });
       }
+      dataFinansial.value = responseTahunRealisasi.data;
+    } else {
+      for (const item of response.data.detail) {
+        if (item.level === 1) {
+          currentLevel1 = {
+            ...item,
+            level2: [],
+          };
+          finansialMappingResult.value.push(currentLevel1);
+        } else if (item.level === 2 && currentLevel1 !== null) {
+          currentLevel2 = {
+            ...item,
+            level3: [],
+          }
+          currentLevel1.level2.push(currentLevel2);
+        } else if (item.level === 3 && currentLevel1 !== null) {
+          currentLevel3 = {
+            ...item,
+            level4: [],
+          }
+          currentLevel2.level3.push(currentLevel3);
+        } else if (item.level === 4 && currentLevel1 !== null) {
+          currentLevel3.level4.push({ ...item });
+        }
+      }
+      dataFinansial.value = response.data;
     }
-    dataFinansial.value = response.data;
   } catch (error) {
     console.error("Fetch Data Finansial Error : " + error);
   }
@@ -755,6 +629,42 @@ const getTypePeriodic = (num: number) => {
   return "-";
 }
 
+const downloadEvidence = async () => {
+  try {
+    isLoading.value = true;
+    const filePath: any = await rekapService.getEvidencePath(idGrafik, route.query.tahun?.toString() ?? '0', 0);
+    const splittedFileName = filePath.data[0].dokumen_evidence.split(' ');
+    splittedFileName.shift();
+    const finalFileName = splittedFileName.join(' ');
+    const headers = {
+      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+    };
+    const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/mutasiasset/view-dokumen', {
+      responseType: 'arraybuffer',
+      headers,
+      params: {
+        id_dokumen: filePath.data[0].dokumen_evidence
+      }
+    });
+    const contentDisposition = response.headers['content-disposition'];
+    const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
+    const fileName = fileNameMatch ? fileNameMatch[1] : `${finalFileName}`;
+    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    isLoading.value = false;
+  } catch (error) {
+    console.error('Evidence Error : ' + error)
+    isLoading.value = false;
+    notifyError('Evidence Tidak Ada', 5000)
+  }
+}
+
 const fetchComboBahanBakar = async () => {
   try {
     const response: any = await detailRekapService.getComboBahanBakar(
@@ -769,9 +679,9 @@ const fetchComboBahanBakar = async () => {
 const fetchHasilSimulasi = async () => {
   try {
     const response: any = await detailRekapService.getHasilSimulasi(
-      parseInt(route.params.id.toString()),
+      parseInt(idGrafik),
       parseInt(route.query.tahun?.toString() ?? '0'),
-      parseInt(statusMesin.value)
+      statusMesin.value
     );
     hasilSimulasi.value = response.data;
   } catch (error) {
@@ -781,13 +691,13 @@ const fetchHasilSimulasi = async () => {
 
 const updateKK = async () => {
   try {
+    isLoading.value = true;
     const response: any = await persetujuanService.updateStatusKK({
       status_approval: 0,
       keterangan: '',
       tahun: parseInt(route.query.tahun?.toString() ?? '0'),
-      id_mesin: parseInt(route.params.id.toString())
+      id_mesin: parseInt(idGrafik)
     })
-    isLoading.value = true;
     updateMesin.value = response.data;
     modalApprove.value = false;
     isLoading.value = false;
@@ -810,6 +720,14 @@ const updateKK = async () => {
     isLoading.value = false;
   }
 }
+const fetchListPembina = async () => {
+  try {
+    const response: any = await userService.getPembina('');
+    return response.data;
+  } catch (error) {
+    console.error('Fetch Pembina Error : ' + error)
+  }
+}
 const fetchUnitPengelola = async () => {
   try {
     if (mesin.value) {
@@ -817,12 +735,16 @@ const fetchUnitPengelola = async () => {
       const pembangkitResponse: any =
         await detailRekapService.getPembangkitByKode(kodeSentral);
       const kodePengelola = pembangkitResponse.data.kode_pengelola;
+      jumlahMesin.value = pembangkitResponse.data.mesins.length;
       const pengelolaResponse: any =
         await detailRekapService.getPengelolaData();
       const pengelola = pengelolaResponse.data.filter(
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola
       );
       namaPengelola.value = pengelola[0].pengelola;
+      const idPembina = pembangkitResponse.data.id_pembina;
+      const pembinaList: any = await fetchListPembina();
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina;
     }
   } catch (error) {
     console.error("Fetch Unit Pengelola Error : " + error);

@@ -12,27 +12,33 @@
   <InfoHeader v-if="mesin" :nama-mesin="mesin.mesin" :nama-pengelola="namaPengelola ? namaPengelola : '-'"
     :kondisi-unit="mesin.kondisi_unit" :kode-jenis-pembangkit="mesin.kode_jenis_pembangkit"
     :daya-terpasang="mesin.daya_terpasang.toString()" :daya-mampu="mesin.daya_mampu.toString()"
-    :tahun-operasi="mesin.tahun_operasi.toString()" :umur-teknis="mesin.masa_manfaat" />
+    :tahun-operasi="mesin.tahun_operasi.toString()" :umur-teknis="mesin.masa_manfaat" :nama-pembina="namaPembina" />
   <div class="items-start p-6 mt-4 bg-white rounded-lg" v-if="mesin">
     <TabsWrapper :laman-data="false">
       <TabItem :title="'Asumsi Makro'">
         <TabAsumsiMakro :tahun-realisasi="tahunBerjalan" :mesin="mesin.mesin" v-model:interest-rate="interestRate"
           v-model:umur-teknis="umurTeknis" v-model:loan-tenor="loanTenor" v-model:loan-portion="loanPortion"
           :error="error.asumsi" :umur-teknis-init="masaManfaat.toString()" :is-perbarui-data="false"
-          :is-realisasi-uploaded="statusRealisasi !== 'Data belum terisi'" />
+          :is-realisasi-uploaded="statusRealisasi" />
       </TabItem>
       <TabItem :title="'Parameter Teknis & Finansial'">
-        <TabParameterTeknis :is-realisasi-uploaded="statusRealisasi !== 'Data belum terisi'"
-          :tahun-realisasi="tahunBerjalan" :init-pemakaian-sendiri="pemakaianSendiri" :init-auxiliary="auxiliary"
-          :init-susut-trafo="susutTrafo" :combo-bahan-bakar="comboBahanBakar" v-model:bahan-bakars="bahanBakars"
-          :is-input-asumsi-parameter="true" :mesin="mesin.mesin" v-model:pickedValue="pickedParameterValue"
-          v-model:checkedBahanBakar="checkedBahanBakar" v-model:nphr="nphr" v-model:auxiliary="auxiliary"
-          v-model:susut-trafo="susutTrafo" v-model:pemakaian-sendiri="pemakaianSendiri"
-          v-model:electricity-price-a="electricityPriceA" v-model:electricity-price-b="electricityPriceB"
-          v-model:electricity-price-c="electricityPriceC" v-model:electricity-price-d="electricityPriceD"
-          @on-checked="handleChecked" @on-hapus-bahan-bakar="handleHapusBahanBakar"
-          @on-tambah-bahan-bakar="handleTambahBahanBakar" @on-submit="isShowModalConfirmation = true"
-          :error="error.parameter" :is-perbarui-data="false" />
+        <TabParameterTeknis :is-realisasi-uploaded="statusRealisasi" :tahun-realisasi="tahunBerjalan" :init-value="{
+          nphr: asumsiParameterInit.parameterTeknis.nphr,
+          auxiliary: asumsiParameterInit.parameterTeknis.auxiliary,
+          susutTrafo: asumsiParameterInit.parameterTeknis.susutTrafo,
+          pemakaianSendiri: asumsiParameterInit.parameterTeknis.pemakaianSendiri,
+          electricityPriceA: asumsiParameterInit.parameterTeknis.electricityPriceA,
+          electricityPriceB: asumsiParameterInit.parameterTeknis.electricityPriceB,
+          electricityPriceC: asumsiParameterInit.parameterTeknis.electricityPriceC,
+          electricityPriceD: asumsiParameterInit.parameterTeknis.electricityPriceD
+        }" :combo-bahan-bakar="comboBahanBakar" v-model:bahan-bakars="bahanBakars" :is-input-asumsi-parameter="true"
+          :mesin="mesin.mesin" v-model:pickedValue="pickedParameterValue" v-model:checkedBahanBakar="checkedBahanBakar"
+          v-model:nphr="nphr" v-model:auxiliary="auxiliary" v-model:susut-trafo="susutTrafo"
+          v-model:pemakaian-sendiri="pemakaianSendiri" v-model:electricity-price-a="electricityPriceA"
+          v-model:electricity-price-b="electricityPriceB" v-model:electricity-price-c="electricityPriceC"
+          v-model:electricity-price-d="electricityPriceD" @on-checked="handleChecked"
+          @on-hapus-bahan-bakar="handleHapusBahanBakar" @on-tambah-bahan-bakar="handleTambahBahanBakar"
+          @on-submit="isShowModalConfirmation = true" :error="error.parameter" :is-perbarui-data="false" />
       </TabItem>
     </TabsWrapper>
   </div>
@@ -40,11 +46,15 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { notifyError } from '@/services/helper/toast-notification';
+import { encryptStorage } from '@/utils/app-encrypt-storage';
 import router from '@/router';
 import { useRoute } from 'vue-router';
 const route = useRoute();
 import InputAsumsiParameterService from '@/services/input-asumsi-parameter-service';
 const inputAsumsiParameterService = new InputAsumsiParameterService();
+import UserService from "@/services/user-service";
+const userService = new UserService();
 import TabAsumsiMakro from './PerbaruiData/TabPage/TabAsumsiMakro.vue';
 import successJsonData from "@/assets/lottie/success.json";
 import errorJsonData from '@/assets/lottie/error.json';
@@ -59,21 +69,23 @@ import TabItem from '@/components/ui/TabItem.vue';
 import GlobalFormat from '@/services/format/global-format';
 const globalFormat = new GlobalFormat();
 
+const nodeMode = import.meta.env.MODE;
 const i = ref(2);
 const isLoading = ref(false);
 const isInsertSuccess = ref(false);
 const isShowModalNotification = ref(false);
 const isShowModalConfirmation = ref(false);
 const mesin = ref();
-const statusRealisasi = ref<string>('');
+const statusRealisasi = ref<boolean>(false);
 const kodeJenisPembangkit = ref();
 const asumsiParameter = ref();
 const idAsumsi = ref<number>(0);
 const status = ref<string>('');
 const statusCode = ref();
-const namaPengelola = ref();
+const namaPengelola = ref<string>('');
+const namaPembina = ref<string>('');
 const kodeMesin = ref();
-const idMesin = parseInt(route.params.id.toString());
+const idMesin = parseInt(nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString());
 const tahunBerjalan = new Date().getFullYear();
 const interestRate = ref<string>('');
 const umurTeknis = ref<string>('');
@@ -89,6 +101,41 @@ const electricityPriceC = ref<string>('');
 const electricityPriceD = ref<string>('');
 const masaManfaat = ref<any>();
 const pickedParameterValue = ref<string>('auxiliarySusut');
+const asumsiParameterInit = ref<{
+  asumsiMakro: {
+    interestRate: string,
+    umurTeknis: string,
+    loanTenor: string,
+    loanPortion: string
+  },
+  parameterTeknis: {
+    nphr: string,
+    auxiliary: string,
+    susutTrafo: string,
+    pemakaianSendiri: string,
+    electricityPriceA: string,
+    electricityPriceB: string,
+    electricityPriceC: string,
+    electricityPriceD: string,
+  }
+}>({
+  asumsiMakro: {
+    interestRate: '',
+    umurTeknis: '',
+    loanTenor: '',
+    loanPortion: ''
+  },
+  parameterTeknis: {
+    nphr: '',
+    auxiliary: '',
+    susutTrafo: '',
+    pemakaianSendiri: '',
+    electricityPriceA: '',
+    electricityPriceB: '',
+    electricityPriceC: '',
+    electricityPriceD: '',
+  }
+});
 const error = ref<{
   asumsi: {
     interestRate: boolean,
@@ -131,7 +178,7 @@ const checkedBahanBakar = ref<number[]>([]);
 const bahanBakars = ref<any[]>([
   {
     id: 1,
-    id_mesin: parseInt(route.params.id.toString()),
+    id_mesin: idMesin,
     tahun: tahunBerjalan.toString(),
     kode_bahan_bakar: "",
     harga_bahan_bakar: "",
@@ -143,7 +190,7 @@ const bahanBakars = ref<any[]>([
 const fetchMesinById = async () => {
   try {
     const response: any = await inputAsumsiParameterService.getMesinById(
-      route.params.id
+      idMesin
     );
     mesin.value = response.data;
     kodeJenisPembangkit.value = response.data.kode_jenis_pembangkit;
@@ -156,8 +203,8 @@ const fetchMesinById = async () => {
 };
 const fetchStatusRealisasiById = async () => {
   try {
-    const response: any = await inputAsumsiParameterService.getStatusRealisasiById(route.params.id);
-    statusRealisasi.value = response.data[0].status;
+    const response: any = await inputAsumsiParameterService.getStatusRealisasiById(idMesin);
+    statusRealisasi.value = response.data[0].status_kk;
   } catch (error) {
     console.error('Fetch Combo Bahan Bakar Error : ' + error);
   }
@@ -165,8 +212,9 @@ const fetchStatusRealisasiById = async () => {
 const fetchAsumsiParameter = async (isCreate: boolean) => {
   try {
     const response: any = await inputAsumsiParameterService.getAsumsiMakroData(
-      tahunBerjalan,
-      idMesin
+      tahunBerjalan - 1,
+      idMesin,
+      tahunBerjalan
     )
     if (isCreate !== true) {
       if (response.code === 200) {
@@ -189,6 +237,14 @@ const fetchAsumsiParameter = async (isCreate: boolean) => {
         electricityPriceB.value = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_b_rp_per_kwbln.toString());
         electricityPriceC.value = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_c_rp_per_kwh.toString());
         electricityPriceD.value = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_d_rp_per_kwh.toString());
+        asumsiParameterInit.value.parameterTeknis.nphr = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.nphr.toString());
+        asumsiParameterInit.value.parameterTeknis.auxiliary = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.auxiliary.toString());
+        asumsiParameterInit.value.parameterTeknis.susutTrafo = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.susut_trafo.toString());
+        asumsiParameterInit.value.parameterTeknis.pemakaianSendiri = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.ps.toString());
+        asumsiParameterInit.value.parameterTeknis.electricityPriceA = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_a_rp_per_kwbln.toString());
+        asumsiParameterInit.value.parameterTeknis.electricityPriceB = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_b_rp_per_kwbln.toString());
+        asumsiParameterInit.value.parameterTeknis.electricityPriceC = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_c_rp_per_kwh.toString());
+        asumsiParameterInit.value.parameterTeknis.electricityPriceD = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_d_rp_per_kwh.toString());
         bahanBakars.value = tempBahanBakars;
         pickedParameterValue.value = pemakaianSendiri.value === '0,00' ? 'auxiliarySusut' : 'pemakaianSendiri';
       }
@@ -211,6 +267,14 @@ const fetchComboBahanBakar = async () => {
     console.error('Fetch Combo Bahan Bakar Error : ' + error);
   }
 }
+const fetchListPembina = async () => {
+  try {
+    const response: any = await userService.getPembina('');
+    return response.data;
+  } catch (error) {
+    console.error('Fetch Pembina Error : ' + error)
+  }
+}
 const fetchUnitPengelola = async () => {
   try {
     if (mesin.value) {
@@ -224,6 +288,9 @@ const fetchUnitPengelola = async () => {
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola
       );
       namaPengelola.value = pengelola[0].pengelola;
+      const idPembina = pembangkitResponse.data.id_pembina;
+      const pembinaList: any = await fetchListPembina();
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina;
     }
   } catch (error) {
     console.error("Fetch Unit Pengelola Error : " + error);
@@ -243,7 +310,7 @@ function handleHapusBahanBakar() {
 function handleTambahBahanBakar() {
   bahanBakars.value.push({
     id: i.value++,
-    id_mesin: parseInt(route.params.id.toString()),
+    id_mesin: idMesin,
     tahun: tahunBerjalan,
     kode_bahan_bakar: "",
     harga_bahan_bakar: "",
@@ -346,14 +413,14 @@ const insertAsumsiParameter = async () => {
       for (let index = 0; index < bahanBakars.value.length; index++) {
         delete bahanBakars.value[index].id;
       }
-      const idMesin = route.params.id.toString();
       const finalInterestRate = interestRate.value.includes('.') ? interestRate.value.replace(/[.]/g, '') : interestRate.value;
       const finalLoanPortion = loanPortion.value.includes('.') ? loanPortion.value.replace(/[.]/g, '') : loanPortion.value;
       if (idAsumsi.value !== 0) {
         const formAsumsiUpdate = {
           id_asumsi: idAsumsi.value,
           tahun: tahunBerjalan,
-          id_mesin: parseInt(idMesin),
+          tahun_realisasi: tahunBerjalan - 1,
+          id_mesin: parseInt(idMesin.toString()),
           interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
           umur_teknis: parseInt(masaManfaat.value),
           loan_tenor: parseInt(loanTenor.value),
@@ -366,7 +433,7 @@ const insertAsumsiParameter = async () => {
           newValue.harga_bahan_bakar = parseFloat(finalHargaBahanBakar.replace(/,/g, '.'));
           let finalSFC = newValue.sfc.includes('.') ? newValue.sfc.replace(/[.]/g, '') : newValue.sfc;
           newValue.sfc = parseFloat(finalSFC.replace(/,/g, '.'));
-          newValue.tahun = tahunBerjalan.toString();
+          newValue.tahun = (tahunBerjalan - 1).toString();
           return newValue;
         });
         const finalNPHR = nphr.value.includes('.') ? nphr.value.replace(/[.]/g, '') : nphr.value;
@@ -379,8 +446,9 @@ const insertAsumsiParameter = async () => {
         const finalElecD = electricityPriceD.value.includes('.') ? electricityPriceD.value.replace(/[.]/g, '') : electricityPriceD.value;
         const formParameterUpdate = {
           id_asumsi: idAsumsi.value,
-          id_mesin: parseInt(idMesin),
+          id_mesin: parseInt(idMesin.toString()),
           tahun: tahunBerjalan,
+          tahun_realisasi: tahunBerjalan - 1,
           nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
           auxiliary: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalAuxiliary.replace(/,/g, '.')) : 0,
           susut_trafo: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalSusutTrafo.replace(/,/g, '.')) : 0,
@@ -401,7 +469,8 @@ const insertAsumsiParameter = async () => {
       } else {
         const formAsumsiCreate = {
           tahun: tahunBerjalan,
-          id_mesin: parseInt(idMesin),
+          tahun_realisasi: tahunBerjalan - 1,
+          id_mesin: parseInt(idMesin.toString()),
           interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
           umur_teknis: parseInt(masaManfaat.value),
           loan_tenor: parseInt(loanTenor.value),
@@ -416,7 +485,7 @@ const insertAsumsiParameter = async () => {
           newValue.harga_bahan_bakar = parseFloat(finalHargaBahanBakar.replace(/,/g, '.'));
           let finalSFC = newValue.sfc.includes('.') ? newValue.sfc.replace(/[.]/g, '') : newValue.sfc;
           newValue.sfc = parseFloat(finalSFC.replace(/,/g, '.'));
-          newValue.tahun = tahunBerjalan.toString();
+          newValue.tahun = (tahunBerjalan - 1).toString();
           return newValue;
         });
         const finalNPHR = nphr.value.includes('.') ? nphr.value.replace(/[.]/g, '') : nphr.value;
@@ -429,8 +498,9 @@ const insertAsumsiParameter = async () => {
         const finalElecD = electricityPriceD.value.includes('.') ? electricityPriceD.value.replace(/[.]/g, '') : electricityPriceD.value;
         const formParameterCreate = {
           id_asumsi: idAsumsi.value,
-          id_mesin: parseInt(idMesin),
+          id_mesin: parseInt(idMesin.toString()),
           tahun: tahunBerjalan,
+          tahun_realisasi: tahunBerjalan - 1,
           nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
           auxiliary: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalAuxiliary.replace(/,/g, '.')) : 0,
           susut_trafo: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalSusutTrafo.replace(/,/g, '.')) : 0,
@@ -449,12 +519,9 @@ const insertAsumsiParameter = async () => {
       }
     }
   } catch (error: any) {
-    // if (error.response.data.message === 'Data Asumsi sudah ada') {
-    //   notifyError('Data Asumsi sudah ada', 3500);
-    // } else {
-    //   notifyError('Data gagal dikirim', 3500);
-    // }
-    console.error('Insert Asumsi Parameter Error : ' + error);
+    if (error.response.data.code === 400) {
+      notifyError('Data gagal dikirim, mohon coba lagi nanti', 5000);
+    }
   } finally {
     isLoading.value = false;
   }

@@ -9,6 +9,17 @@
       :button-title="'Unggah Dokumen'" @on-batal-click="isShowModalConfirmation = false"
       @on-accept-click="insertAsumsiParameter" />
   </ModalWrapper>
+  <ModalWrapper :showModal="isEvidenceSuccess" :width="'w-80'" :height="'h-auto'">
+    <div class="flex flex-col items-center">
+      <Vue3Lottie :animationData="successJsonData" :width="200" :height="200" :loop="false" :speed="0.8" />
+      <h1 class="mb-3 text-lg font-semibold text-gray-700">
+        Evidence Terkirim
+      </h1>
+      <p class="text-sm text-textDisabledColor">
+        Evidence berhasil dikirim
+      </p>
+    </div>
+  </ModalWrapper>
   <ModalWrapper :show-modal="isModalUnggahKertasKerjaOpen" :width="'w-[750px]'" :height="'h-auto'"
     @on-escape="handleCancelUpload">
     <div class="flex flex-col space-y-5">
@@ -48,7 +59,8 @@
             <p>{{ selectedFile.name }} ({{ formatBytes(selectedFile.size) }})</p>
           </div>
           <div v-else-if="!isDownloaded">
-            <p class="text-lg font-bold text-center text-black">Mohon Download File Excel Terlebih Dahulu....</p>
+            <p class="text-lg font-bold text-center text-primaryTextColor">Mohon Download File Excel Terlebih Dahulu....
+            </p>
           </div>
           <div
             class="w-full flex flex-col p-2 items-center bg-primaryColor bg-opacity-10 border border-primaryColor border-dashed rounded-lg space-y-1.5"
@@ -84,25 +96,29 @@
           </div>
         </div>
         <div class="flex flex-col space-y-1">
+          <div v-if="selectedFileEvidence">
+            <p>{{ selectedFileEvidence.name }} ({{ formatBytes(selectedFileEvidence.size) }})</p>
+          </div>
           <div
-            class="w-full flex flex-col p-2 items-center bg-primaryColor bg-opacity-10 border border-primaryColor border-dashed rounded-lg space-y-1.5">
+            class="w-full flex flex-col p-2 items-center bg-primaryColor bg-opacity-10 border border-primaryColor border-dashed rounded-lg space-y-1.5"
+            v-else>
             <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M55.3067 24.6712C53.4719 20.4552 50.3054 16.9571 46.2923 14.7129C42.2793 12.4687 37.6411 11.6023 33.0885 12.2463C28.5359 12.8904 24.3201 15.0094 21.087 18.2786C17.8539 21.5479 15.782 25.7871 15.1886 30.3465C12.3257 31.0322 9.81422 32.7453 8.13117 35.1607C6.44812 37.576 5.71072 40.5254 6.05899 43.4486C6.40725 46.3718 7.81694 49.0654 10.0203 51.0177C12.2238 52.97 15.0674 54.0452 18.0113 54.039C18.8077 54.039 19.5715 53.7226 20.1347 53.1595C20.6978 52.5963 21.0142 51.8326 21.0142 51.0361C21.0142 50.2397 20.6978 49.476 20.1347 48.9128C19.5715 48.3497 18.8077 48.0333 18.0113 48.0333C16.4185 48.0333 14.8909 47.4006 13.7647 46.2743C12.6384 45.148 12.0056 43.6204 12.0056 42.0276C12.0056 40.4348 12.6384 38.9072 13.7647 37.7809C14.8909 36.6547 16.4185 36.0219 18.0113 36.0219C18.8077 36.0219 19.5715 35.7056 20.1347 35.1424C20.6978 34.5793 21.0142 33.8155 21.0142 33.0191C21.0218 29.4675 22.2882 26.0337 24.5884 23.3276C26.8885 20.6216 30.0734 18.8185 33.5773 18.2387C37.0812 17.6589 40.6772 18.34 43.7264 20.1609C46.7756 21.9818 49.0806 24.8247 50.2318 28.1845C50.4035 28.7005 50.712 29.1602 51.1246 29.5146C51.5371 29.8689 52.0381 30.1046 52.5741 30.1964C54.5742 30.5744 56.3873 31.6186 57.718 33.1588C59.0488 34.6991 59.8186 36.6446 59.9022 38.6784C59.9858 40.7121 59.3781 42.7143 58.1783 44.3585C56.9784 46.0028 55.2571 47.1922 53.2948 47.733C52.5222 47.9321 51.8605 48.4299 51.455 49.117C51.0495 49.804 50.9336 50.624 51.1327 51.3965C51.3318 52.169 51.8296 52.8308 52.5167 53.2362C53.2037 53.6417 54.0237 53.7576 54.7962 53.5585C57.9563 52.7235 60.7577 50.88 62.7747 48.308C64.7918 45.736 65.9145 42.576 65.9723 39.3078C66.03 36.0397 65.0197 32.842 63.0947 30.2004C61.1698 27.5587 58.4353 25.6174 55.3067 24.6712ZM38.1604 30.8871C37.8748 30.6137 37.5381 30.3994 37.1695 30.2565C36.4384 29.9561 35.6184 29.9561 34.8873 30.2565C34.5187 30.3994 34.182 30.6137 33.8964 30.8871L24.8878 39.8956C24.3224 40.461 24.0047 41.2279 24.0047 42.0276C24.0047 42.8273 24.3224 43.5942 24.8878 44.1596C25.4533 44.7251 26.2202 45.0427 27.0199 45.0427C27.8195 45.0427 28.5864 44.7251 29.1519 44.1596L33.0255 40.2559V57.0418C33.0255 57.8382 33.3419 58.602 33.9051 59.1652C34.4682 59.7283 35.232 60.0447 36.0284 60.0447C36.8248 60.0447 37.5886 59.7283 38.1517 59.1652C38.7149 58.602 39.0312 57.8382 39.0312 57.0418V40.2559L42.9049 44.1596C43.1841 44.4411 43.5162 44.6645 43.8821 44.8169C44.248 44.9694 44.6405 45.0479 45.0369 45.0479C45.4333 45.0479 45.8258 44.9694 46.1917 44.8169C46.5577 44.6645 46.8898 44.4411 47.1689 44.1596C47.4504 43.8805 47.6738 43.5484 47.8262 43.1824C47.9787 42.8165 48.0572 42.424 48.0572 42.0276C48.0572 41.6312 47.9787 41.2387 47.8262 40.8728C47.6738 40.5069 47.4504 40.1747 47.1689 39.8956L38.1604 30.8871Z"
                 fill="#0099AD" />
             </svg>
-            <p>Seret dan lepas berkas anda untuk unggah</p>
-            <p>ATAU</p>
-            <button
-              class="flex flex-row items-center px-3 py-2 space-x-2 text-white duration-300 rounded-lg bg-primaryColor hover:bg-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0">
+            <p>Silahkan pilih berkas evidence anda</p>
+            <!-- <p>ATAU</p> -->
+            <label for="fileInputEvidence"
+              class="flex flex-row items-center px-3 py-2 space-x-2 text-white duration-300 rounded-lg cursor-pointer bg-primaryColor hover:bg-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0">
               <IconFolder />
               <span class="font-semibold">Cari berkas</span>
-            </button>
+            </label>
+            <input ref="fileInputEvidence" id="fileInputEvidence" type="file" class="hidden"
+              @change="handleFileChangeEvidence" accept=".xlsx" />
           </div>
           <div class="flex flex-row items-center justify-between">
-            <p class="text-xs text-textDisabledColor">
-              Tipe File yang dapat diunggah .pdf, .zip, .xlsx
-            </p>
+            <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .pdf, .zip, .xlsx</p>
             <p class="text-xs text-textDisabledColor">Maximum upload file size : 2 MB</p>
           </div>
         </div>
@@ -131,7 +147,7 @@
   <InfoHeader v-if="mesin" :nama-mesin="mesin.mesin" :nama-pengelola="namaPengelola ? namaPengelola : '-'"
     :kondisi-unit="mesin.kondisi_unit" :kode-jenis-pembangkit="mesin.kode_jenis_pembangkit"
     :daya-terpasang="mesin.daya_terpasang.toString()" :daya-mampu="mesin.daya_mampu.toString()"
-    :tahun-operasi="mesin.tahun_operasi.toString()" :umur-teknis="mesin.masa_manfaat" />
+    :tahun-operasi="mesin.tahun_operasi.toString()" :umur-teknis="mesin.masa_manfaat" :nama-pembina="namaPembina" />
   <div class="items-start p-6 mt-4 bg-white rounded-lg" v-if="mesin && approveMesinKK">
     <div v-auto-animate="{ duration: 300 }"
       v-if="approveMesinKK.status === 'Ditolak T1' || approveMesinKK.status === 'Ditolak T2'"
@@ -171,7 +187,8 @@
       <TabItem :title="'Parameter Teknis & Finansial'">
         <TabParameterTeknis :is-perbarui-data="false" :tahun-realisasi="tahunBerjalan"
           :init-pemakaian-sendiri="pemakaianSendiri" :init-auxiliary="auxiliary" :init-susut-trafo="susutTrafo"
-          :combo-bahan-bakar="comboBahanBakar" :bahan-bakars="bahanBakars" :id_mesin="route.params.id"
+          :combo-bahan-bakar="comboBahanBakar" :bahan-bakars="bahanBakars"
+          :id_mesin="nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id"
           :is-input-asumsi-parameter="true" :mesin="mesin.mesin" v-model:pickedValue="pickedParameterValue"
           v-model:checkedBahanBakar="checkedBahanBakar" v-model:nphr="nphr" v-model:auxiliary="auxiliary"
           v-model:susut-trafo="susutTrafo" v-model:pemakaian-sendiri="pemakaianSendiri"
@@ -188,6 +205,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { encryptStorage } from '@/utils/app-encrypt-storage';
+import UserService from "@/services/user-service";
+const userService = new UserService();
+import RekapService from '@/services/rekap-service';
+const rekapService = new RekapService();
 import axios from "axios";
 import router from '@/router';
 import Loading from '@/components/ui/LoadingSpinner.vue';
@@ -208,6 +230,7 @@ import { Vue3Lottie } from "vue3-lottie";
 import successJsonData from "@/assets/lottie/success.json";
 import errorJsonData from '@/assets/lottie/error.json';
 
+const nodeMode = import.meta.env.MODE;
 const route = useRoute();
 const inputAsumsiParameterService = new InputAsumsiParameterService();
 const persetujuanService = new PersetujuanService();
@@ -215,6 +238,7 @@ const globalFormat = new GlobalFormat();
 const i = ref(2);
 const isLoading = ref(false);
 const isInsertSuccess = ref(false);
+const isEvidenceSuccess = ref<boolean>(false);
 const isShowModalNotification = ref(false);
 const isShowModalConfirmation = ref(false);
 const isUploadSuccess = ref(false);
@@ -223,11 +247,11 @@ const kodeJenisPembangkit = ref();
 const asumsiParameter = ref();
 const idAsumsi = ref<number>(0);
 const status = ref<string>('');
-const idMesin = parseInt(route.params.id.toString());
+const idMesin = parseInt(nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString());
 const statusCode = ref();
-const namaPengelola = ref();
+const namaPengelola = ref<string>('');
+const namaPembina = ref<string>('');
 const kodeMesin = ref();
-// const idMesin = parseInt(route.params.id.toString());
 const tahunBerjalan = new Date().getFullYear();
 const interestRate = ref<string>('');
 const umurTeknis = ref<string>('');
@@ -288,7 +312,7 @@ const checkedBahanBakar = ref<number[]>([]);
 const bahanBakars = ref<any[]>([
   {
     id: 1,
-    id_mesin: parseInt(route.params.id.toString()),
+    id_mesin: idMesin,
     tahun: tahunBerjalan.toString(),
     kode_bahan_bakar: "",
     harga_bahan_bakar: "",
@@ -299,7 +323,7 @@ const bahanBakars = ref<any[]>([
 const isHover = ref(true);
 const approveMesinKK = ref<any>();
 const year = new Date().getFullYear();
-const levelSentral = ref(localStorage.getItem("level_sentral"));
+const levelSentral = ref(nodeMode === 'production' ? encryptStorage.getItem('level_sentral') : localStorage.getItem("level_sentral"));
 
 function toggleButton() {
   isHover.value = !isHover.value;
@@ -308,7 +332,7 @@ function toggleButton() {
 const fetchPersetujuanKK = async () => {
   try {
     const response: any = await persetujuanService.getPersetujuanKKSentral({ id_sentral: levelSentral.value, tahun: year });
-    approveMesinKK.value = response.data.mesins.filter((val: any) => val.id_mesin === route.params.id)[0];
+    approveMesinKK.value = response.data.mesins.filter((val: any) => val.id_mesin == idMesin)[0];
   } catch (error) {
     console.error('Fetch Persetujuan KK Sentral Error : ' + error);
   }
@@ -317,7 +341,7 @@ const fetchPersetujuanKK = async () => {
 const fetchMesinById = async () => {
   try {
     const response: any = await inputAsumsiParameterService.getMesinById(
-      route.params.id
+      idMesin
     );
     mesin.value = response.data;
     kodeJenisPembangkit.value = response.data.kode_jenis_pembangkit;
@@ -333,8 +357,9 @@ const fetchMesinById = async () => {
 const fetchAsumsiParameter = async (isCreate: boolean) => {
   try {
     const response: any = await inputAsumsiParameterService.getAsumsiMakroData(
-      tahunBerjalan,
-      idMesin
+      tahunBerjalan - 1,
+      idMesin,
+      tahunBerjalan
     )
     if (isCreate !== true) {
       if (response.code === 200) {
@@ -380,6 +405,14 @@ const fetchComboBahanBakar = async () => {
     console.error('Fetch Combo Bahan Bakar Error : ' + error);
   }
 }
+const fetchListPembina = async () => {
+  try {
+    const response: any = await userService.getPembina('');
+    return response.data;
+  } catch (error) {
+    console.error('Fetch Pembina Error : ' + error)
+  }
+}
 
 const fetchUnitPengelola = async () => {
   try {
@@ -394,6 +427,9 @@ const fetchUnitPengelola = async () => {
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola
       );
       namaPengelola.value = pengelola[0].pengelola;
+      const idPembina = pembangkitResponse.data.id_pembina;
+      const pembinaList: any = await fetchListPembina();
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina;
     }
   } catch (error) {
     console.error("Fetch Unit Pengelola Error : " + error);
@@ -415,7 +451,7 @@ function handleHapusBahanBakar() {
 function handleTambahBahanBakar() {
   bahanBakars.value.push({
     id: i.value++,
-    id_mesin: parseInt(route.params.id.toString()),
+    id_mesin: idMesin,
     tahun: tahunBerjalan,
     kode_bahan_bakar: "",
     harga_bahan_bakar: "",
@@ -520,14 +556,14 @@ const insertAsumsiParameter = async () => {
       for (let index = 0; index < bahanBakars.value.length; index++) {
         delete bahanBakars.value[index].id;
       }
-      const idMesin = route.params.id.toString();
       const finalInterestRate = interestRate.value.includes('.') ? interestRate.value.replace(/[.]/g, '') : interestRate.value;
       const finalLoanPortion = loanPortion.value.includes('.') ? loanPortion.value.replace(/[.]/g, '') : loanPortion.value;
       if (idAsumsi.value !== 0) {
         const formAsumsiUpdate = {
           id_asumsi: idAsumsi.value,
           tahun: tahunBerjalan,
-          id_mesin: parseInt(idMesin),
+          tahun_realisasi: tahunBerjalan - 1,
+          id_mesin: idMesin,
           interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
           umur_teknis: parseInt(masaManfaat.value),
           loan_tenor: parseInt(loanTenor.value),
@@ -540,7 +576,7 @@ const insertAsumsiParameter = async () => {
           newValue.harga_bahan_bakar = parseFloat(finalHargaBahanBakar.replace(/,/g, '.'));
           let finalSFC = newValue.sfc.includes('.') ? newValue.sfc.replace(/[.]/g, '') : newValue.sfc;
           newValue.sfc = parseFloat(finalSFC.replace(/,/g, '.'));
-          newValue.tahun = tahunBerjalan.toString();
+          newValue.tahun = (tahunBerjalan - 1).toString();
           return newValue;
         });
         const finalNPHR = nphr.value.includes('.') ? nphr.value.replace(/[.]/g, '') : nphr.value;
@@ -553,8 +589,9 @@ const insertAsumsiParameter = async () => {
         const finalElecD = electricityPriceD.value.includes('.') ? electricityPriceD.value.replace(/[.]/g, '') : electricityPriceD.value;
         const formParameterUpdate = {
           id_asumsi: idAsumsi.value,
-          id_mesin: parseInt(idMesin),
+          id_mesin: idMesin,
           tahun: tahunBerjalan,
+          tahun_realisasi: tahunBerjalan - 1,
           nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
           auxiliary: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalAuxiliary.replace(/,/g, '.')) : 0,
           susut_trafo: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalSusutTrafo.replace(/,/g, '.')) : 0,
@@ -595,6 +632,7 @@ const formatBytes = (bytes: any) => {
 };
 
 const selectedFile: any = ref(null);
+const selectedFileEvidence: any = ref(null);
 const handleFileChange = (event: any) => {
   if (event.target.files.length === 1) {
     selectedFile.value = event.target.files[0];
@@ -603,11 +641,30 @@ const handleFileChange = (event: any) => {
   }
 };
 
+const uploadFileEvidence = async () => {
+  try {
+    isLoading.value = true
+    const formData = new FormData();
+    formData.append('file', selectedFileEvidence.value);
+    const response: any = await rekapService.uploadEvidence(formData);
+    await rekapService.updateEvidencePath(idMesin, tahunBerjalan.toString(), response.data, 0);
+    isLoading.value = false
+    isEvidenceSuccess.value = true;
+    await wait(1500)
+    isEvidenceSuccess.value = false;
+    isModalUnggahKertasKerjaOpen.value = false;
+  } catch (error) {
+    console.error('Error upload file : ', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
 const handleDownloadTemplateRekap = async () => {
   try {
     isLoading.value = true;
     const headers = {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
     };
     const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/export-template-first', {
       responseType: 'arraybuffer',
@@ -615,6 +672,7 @@ const handleDownloadTemplateRekap = async () => {
       params: {
         id_mesin: idMesin,
         tahun: tahunBerjalan,
+        tahun_realisasi: tahunBerjalan - 1
       }
     });
     isDownloaded.value = true;
@@ -637,6 +695,14 @@ const handleDownloadTemplateRekap = async () => {
   }
 }
 
+const handleFileChangeEvidence = (event: any) => {
+  if (event.target.files.length === 1) {
+    selectedFileEvidence.value = event.target.files[0];
+  } else {
+    selectedFileEvidence.value = null;
+  }
+};
+
 const uploadFile = async () => {
   try {
     isLoading.value = true
@@ -647,13 +713,14 @@ const uploadFile = async () => {
     const formData = new FormData();
     formData.append('file', selectedFile.value);
     const headers = {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
       'Content-Type': 'multipart/form-data',
     };
     const response = await axios.post('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/import-template-awal', formData, {
       headers,
     });
-    console.log('Sukses mengirim file : ', response.data);
+    await uploadFileEvidence();
+    isLoading.value = false;
     isUploadSuccess.value = true;
     await wait(1500)
     isUploadSuccess.value = false;

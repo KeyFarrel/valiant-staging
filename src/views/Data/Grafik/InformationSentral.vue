@@ -10,7 +10,7 @@
         </svg>
       </div>
       <div>
-        <p class="text-sm text-[#7B8DAD] mt-1">Planning / FS</p>
+        <p class="text-sm text-[#7B8DAD] mt-1">Planning / Feasibility Study</p>
       </div>
     </div>
     <hr class="mb-2" />

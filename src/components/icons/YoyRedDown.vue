@@ -17,7 +17,7 @@
       <Transition>
         <div
           v-if="isHover"
-          class="flex flex-col bg-white absolute -ml-[340px] p-2 z-10 rounded-lg whitespace-nowrap border space-y-1.5 duration-300"
+          class="flex flex-col bg-white absolute -ml-[340px] p-2 z-10 rounded-lg whitespace-nowrap border space-y-3"
         >
           <div class="flex text-xs border-b">
             <p class="font-semibold">WLC (Realisasi & Proyeksi)</p>

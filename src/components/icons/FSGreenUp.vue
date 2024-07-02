@@ -20,9 +20,9 @@
         class="flex flex-col bg-white absolute -ml-[340px] p-2 z-10 rounded-lg whitespace-nowrap border space-y-1.5 duration-300"
       >
         <div class="flex text-xs border-b">
-          <p class="font-semibold">Planning / FS</p>
+          <p class="font-semibold">WLC (Realisasi & Proyeksi) </p>
           <p class="ml-2">vs</p>
-          <p class="font-semibold ml-2">WLC (Realisasi & Proyeksi) </p>
+          <p class="font-semibold ml-2">Planning / FS </p>
         </div>
         <div class="flex text-xs">
           <svg

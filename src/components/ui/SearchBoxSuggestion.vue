@@ -105,7 +105,6 @@ onUnmounted(() => {
 
 <style scoped>
 .selected-item {
-  background-color: #007acc;
-  color: #ffffff;
+  background-color: #F1F5F9;
 }
 </style>

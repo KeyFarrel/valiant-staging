@@ -4,7 +4,8 @@
     <InfoHeader :nama-mesin="mesinDataById.mesin" :nama-pengelola="namaPengelola ? namaPengelola : '-'"
       :kondisi-unit="mesinDataById.kondisi_unit" :kode-jenis-pembangkit="mesinDataById.kode_jenis_pembangkit"
       :daya-terpasang="mesinDataById.daya_terpasang.toString()" :daya-mampu="mesinDataById.daya_mampu.toString()"
-      :tahun-operasi="mesinDataById.tahun_operasi" :umur-teknis="mesinDataById.masa_manfaat.toString()">
+      :tahun-operasi="mesinDataById.tahun_operasi" :umur-teknis="mesinDataById.masa_manfaat.toString()"
+      :nama-pembina="namaPembina">
       <!-- <button
         class="flex items-center px-3 py-2 text-white duration-300 border rounded-lg bg-primaryColor border-primaryColor hover:border-hoverColor hover:bg-hoverColor active:duration-0 active:outline active:outline-primaryColor">
         <span class="mr-2 font-semibold">Export</span>
@@ -18,11 +19,7 @@
     <main class="flex flex-col w-full p-4 space-y-5 bg-white rounded-lg">
       <div class="flex flex-row items-center justify-between">
         <h1 class="text-lg font-semibold">Operational Expenditure (OPEX)</h1>
-        <div class="flex flex-row items-center space-x-2">
-          <label>Periode</label>
-          <VueDatePicker class="date-picker" v-model="selectedYear" :year-range="[2000, 2025]" :clearable="false"
-            year-picker />
-        </div>
+        <p>Periode <span class="ml-1 font-semibold text-primaryColor">{{ tahun }}</span></p>
       </div>
       <div
         class="overflow-hidden w-full flex flex-col border px-5 pb-4 pt-1 rounded-lg shadow-sm border-l-8 border-l-[#0099AD] space-y-3">
@@ -41,35 +38,35 @@
         <div class="grid grid-cols-4 gap-5 text-sm">
           <div>
             <p class="text-textDisabledColor">Total Komponen B</p>
-            <p class="text-textDisabledColor">Rp. <span class="font-medium text-black">{{
+            <p class="text-textDisabledColor">Rp. <span class="font-medium text-primaryTextColor">{{
               globalFormat.formatRupiah(opexKomponenB.cost_component_b)
                 }}</span></p>
           </div>
           <div>
             <p class="text-textDisabledColor">Biaya Kepegawaian</p>
-            <p class="text-textDisabledColor">Rp. <span class="font-medium text-black">{{
+            <p class="text-textDisabledColor">Rp. <span class="font-medium text-primaryTextColor">{{
               globalFormat.formatRupiah(opexKomponenB.biaya_kepegawaian) }}</span></p>
           </div>
           <div>
             <p class="text-textDisabledColor">Biaya Pemeliharaan Rutin</p>
-            <p class="text-textDisabledColor">Rp. <span class="font-medium text-black">{{
+            <p class="text-textDisabledColor">Rp. <span class="font-medium text-primaryTextColor">{{
               globalFormat.formatRupiah(opexKomponenB.biaya_pemeliharaan_rutin) }}</span></p>
           </div>
           <div>
             <p class="text-textDisabledColor">Biaya Administrasi dan Umum</p>
-            <p class="text-textDisabledColor">Rp. <span class="font-medium text-black">{{
+            <p class="text-textDisabledColor">Rp. <span class="font-medium text-primaryTextColor">{{
               globalFormat.formatRupiah(opexKomponenB.biaya_administrasi_umum) }}</span>
             </p>
           </div>
           <div>
             <p class="text-textDisabledColor">Biaya Pembelian Tenaga Listrik</p>
-            <p class="text-textDisabledColor">Rp. <span class="font-medium text-black">{{
+            <p class="text-textDisabledColor">Rp. <span class="font-medium text-primaryTextColor">{{
               globalFormat.formatRupiah(opexKomponenB.biaya_pembelian_tenaga_listrik) }}</span>
             </p>
           </div>
           <div>
             <p class="text-textDisabledColor">Biaya Lain - Lain</p>
-            <p class="text-textDisabledColor">Rp. <span class="font-medium text-black">{{
+            <p class="text-textDisabledColor">Rp. <span class="font-medium text-primaryTextColor">{{
               globalFormat.formatRupiah(opexKomponenB.biaya_lain_lain) }}</span></p>
           </div>
         </div>
@@ -91,12 +88,12 @@
         <div class="grid grid-cols-4 gap-3 text-sm">
           <div>
             <p class="text-textDisabledColor">Total Komponen C</p>
-            <p class="text-textDisabledColor">Rp. <span class="font-medium text-black">{{
+            <p class="text-textDisabledColor">Rp. <span class="font-medium text-primaryTextColor">{{
               globalFormat.formatRupiah(opexKomponenC.total_component_c.cost_component_c) }}</span></p>
           </div>
           <div v-for="(komponenCItem, komponenCIndex) in opexKomponenC.detail_component_c" :key="komponenCIndex">
             <p class="text-textDisabledColor">{{ komponenCItem.bahan_bakar }}</p>
-            <p class="text-textDisabledColor">Rp. <span class="font-medium text-black">{{
+            <p class="text-textDisabledColor">Rp. <span class="font-medium text-primaryTextColor">{{
               globalFormat.formatRupiah(komponenCItem.harga_bahan_bakar) }}</span></p>
           </div>
         </div>
@@ -118,17 +115,17 @@
         <div class="grid grid-cols-4 gap-3 text-sm">
           <div>
             <p class="text-textDisabledColor">Total Komponen D</p>
-            <p class="text-textDisabledColor">Rp. <span class="font-medium text-black">{{
+            <p class="text-textDisabledColor">Rp. <span class="font-medium text-primaryTextColor">{{
               globalFormat.formatRupiah(opexKomponenD.cost_component_d) }}</span></p>
           </div>
           <div>
             <p class="text-textDisabledColor">Biaya Minyak Pelumas</p>
-            <p class="text-textDisabledColor">Rp. <span class="font-medium text-black">{{
+            <p class="text-textDisabledColor">Rp. <span class="font-medium text-primaryTextColor">{{
               globalFormat.formatRupiah(opexKomponenD.biaya_pelumas) }}</span></p>
           </div>
           <div>
             <p class="text-textDisabledColor">Biaya Bahan Kimia</p>
-            <p class="text-textDisabledColor">Rp. <span class="font-medium text-black">{{
+            <p class="text-textDisabledColor">Rp. <span class="font-medium text-primaryTextColor">{{
               globalFormat.formatRupiah(opexKomponenD.biaya_lain_lain) }}</span></p>
           </div>
         </div>
@@ -144,19 +141,24 @@ const route = useRoute();
 const idMesin = parseInt(route.params.id.toString());
 import LihatOPEXService from '@/services/lihat-opex-service'
 const lihatOPEXService = new LihatOPEXService();
+import UserService from "@/services/user-service";
+const userService = new UserService();
 import InfoHeader from '@/components/ui/InfoHeader.vue';
 import Loading from '@/components/ui/LoadingSpinner.vue';
 import GlobalFormat from '@/services/format/global-format';
+import { parse } from 'path';
 const globalFormat = new GlobalFormat();
 
-const isLoading = ref<boolean>();
+const isLoading = ref<boolean>(false);
 const mesinDataById = ref<any>();
-const namaPengelola = ref<any>();
+const namaPengelola = ref<string>('');
+const namaPembina = ref<string>('');
 const umurTeknis = ref<any>();
 const opexKomponenB = ref<any>();
 const opexKomponenC = ref<any>();
 const opexKomponenD = ref<any>();
-const selectedYear = ref<number>();
+const tahun = route.query.tahun;
+const tahunBerjalan = new Date().getFullYear();
 
 const fetchMesinById = async () => {
   try {
@@ -164,11 +166,18 @@ const fetchMesinById = async () => {
       idMesin
     );
     mesinDataById.value = response.data;
-    selectedYear.value = response.data.tahun_realisasi;
   } catch (error) {
     console.error("Fetch Mesin By Id Error : " + error);
   }
 };
+const fetchListPembina = async () => {
+  try {
+    const response: any = await userService.getPembina('');
+    return response.data;
+  } catch (error) {
+    console.error('Fetch Pembina Error : ' + error)
+  }
+}
 const fetchUnitPengelola = async () => {
   try {
     if (mesinDataById.value) {
@@ -182,6 +191,9 @@ const fetchUnitPengelola = async () => {
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola
       );
       namaPengelola.value = pengelola[0].pengelola;
+      const idPembina = pembangkitResponse.data.id_pembina;
+      const pembinaList: any = await fetchListPembina();
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina;
     }
   } catch (error) {
     console.error("Fetch Unit Pengelola Error : " + error);
@@ -191,8 +203,9 @@ const fetchAsumsiParameter = async () => {
   try {
     const response: any =
       await lihatOPEXService.getAsumsiParameterData(
-        2022,
+        parseInt(tahun ? tahun.toString() : tahunBerjalan.toString()),
         idMesin,
+        parseInt(tahun ? tahun.toString() : tahunBerjalan.toString()) + 1
       );
     umurTeknis.value = response.data.asumsi_makro.umur_teknis;
   } catch (error) {
@@ -204,7 +217,7 @@ const fetchOPEXKomponenB = async () => {
   try {
     const response: any = await lihatOPEXService.getOPEXKomponenB(
       idMesin,
-      mesinDataById.value.tahun_realisasi
+      parseInt(tahun ? tahun.toString() : tahunBerjalan.toString())
     );
     opexKomponenB.value = response.data;
   } catch (error) {
@@ -215,7 +228,7 @@ const fetchOPEXKomponenC = async () => {
   try {
     const response: any = await lihatOPEXService.getOPEXKomponenC(
       idMesin,
-      mesinDataById.value.tahun_realisasi
+      parseInt(tahun ? tahun.toString() : tahunBerjalan.toString())
     );
     opexKomponenC.value = response.data;
   } catch (error) {
@@ -226,7 +239,7 @@ const fetchOPEXKomponenD = async () => {
   try {
     const response: any = await lihatOPEXService.getOPEXKomponenD(
       idMesin,
-      mesinDataById.value.tahun_realisasi
+      parseInt(tahun ? tahun.toString() : tahunBerjalan.toString())
     );
     opexKomponenD.value = response.data;
   } catch (error) {
@@ -236,20 +249,13 @@ const fetchOPEXKomponenD = async () => {
 
 onMounted(async () => {
   isLoading.value = true;
-  try {
-    await fetchMesinById();
-    await fetchUnitPengelola();
-    await fetchAsumsiParameter();
-    await fetchOPEXKomponenB();
-    await fetchOPEXKomponenC();
-    await fetchOPEXKomponenD();
-    console.log(mesinDataById.value);
-  } catch (error) {
-    isLoading.value = false;
-    console.log('Fetch All API Error : ' + error);
-  } finally {
-    isLoading.value = false;
-  }
+  await fetchMesinById();
+  await fetchUnitPengelola();
+  await fetchAsumsiParameter();
+  await fetchOPEXKomponenB();
+  await fetchOPEXKomponenC();
+  await fetchOPEXKomponenD();
+  isLoading.value = false;
 })
 </script>
 

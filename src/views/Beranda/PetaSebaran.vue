@@ -2,15 +2,17 @@
   <Loading v-if="isLoading" />
   <div class="p-4 space-y-4 bg-white border rounded-md min-h-[75dvh]">
     <div class="flex justify-between"
-      v-if="authService.checkRole() === 'Admin' || authService.checkRole() === 'Pengelola' || authService.checkRole() === 'Pembina'">
+      v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina'">
       <div class="flex items-center">
-        <SearchBox @on-focus="handleFocus" v-model="selectedSearchQuery" class="w-60" />
+        <SearchBox @on-focus="handleFocus" v-model="selectedSearchQuery" class="w-72" />
         <ModalSearch v-if="isSearchModalOpen" v-model="searchQuery" :show-modal="isSearchModalOpen"
-          :source="listDataPeta" @on-click-close="isSearchModalOpen = false" @on-escape="isSearchModalOpen = false"
+          :source="listDataPeta"
+          @on-click-close="isSearchModalOpen = false; selectedSearchQuery === '' ? null : fetchPetaSentral(); searchQuery === '' ? selectedSearchQuery = '' : selectedSearchQuery = searchQuery"
+          @on-escape="isSearchModalOpen = false"
           @on-click="selectedSearchQuery = searchQuery; isSearchModalOpen = false; fetchPetaSentral()"
           @on-key-enter="selectedSearchQuery = searchQuery; isSearchModalOpen = false; fetchPetaSentral()" />
         <button type="button"
-          class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center"
+          class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#0099AD] hover:text-white duration-300 focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center"
           @click="showModal = !showModal">
           <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2">
             <path
@@ -18,6 +20,9 @@
               fill="#0099AD" />
           </svg>
           Filter
+          <div v-if="pengelola.length || pembangkit.length || umur.length"
+            class="absolute z-10 border-2 border-[#FFE5E6] w-2.5 h-2.5 rounded-full right-0.5 top-0.5  bg-warningColor">
+          </div>
         </button>
         <ModalWrapper :showModal="showModal" :width="'w-[500px]'" :height="'h-auto'">
           <div class="flex flex-col space-y-5">
@@ -28,7 +33,7 @@
                     d="M4.6665 7.33073H11.3332V8.66406H4.6665V7.33073ZM2.6665 4.66406H13.3332V5.9974H2.6665V4.66406ZM6.6665 9.9974H9.33317V11.3307H6.6665V9.9974Z"
                     fill="#333333" />
                 </svg>
-                <span class="text-base font-semibold text-black">Filter</span>
+                <span class="text-base font-semibold text-primaryTextColor">Filter</span>
               </div>
               <button @click="showModal = false">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -42,33 +47,53 @@
             <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Induk / Subholding / Anak Perusahaan</h3>
             <el-select v-model="pengelola" multiple clearable collapse-tags
               placeholder="Pilih Unit Induk / Subholding / Anak Perusahaan" popper-class="custom-header"
-              :max-collapse-tags="15" class="w-full text-black">
+              :max-collapse-tags="15" class="w-full text-primaryTextColor">
               <template #header>
-                <el-checkbox v-model="checkPengelola" :indeterminate="indeterminate" @change="handleCheckPengelola">
+                <el-checkbox v-model="checkPengelola" :indeterminate="indeterminatePengelola"
+                  @change="handleCheckPengelola">
                   Select All Items
                 </el-checkbox>
               </template>
               <el-option v-for="item in itemsPengelola" :key="item.id" :label="item.name" :value="item.id" />
             </el-select>
           </div>
-          <div class="mt-4">
+          <div class="mt-3">
             <h3 class="mb-2 text-[#4D5E80] font-semibold">Kategori Pembangkit</h3>
             <el-select v-model="pembangkit" multiple clearable collapse-tags placeholder="Pilih Kategori Pembangkit"
-              popper-class="custom-header" :max-collapse-tags="15" class="w-full text-black">
+              popper-class="custom-header" :max-collapse-tags="15" class="w-full text-primaryTextColor">
               <template #header>
-                <el-checkbox v-model="checkPembangkit" :indeterminate="indeterminate" @change="handleCheckPembangkit">
+                <el-checkbox v-model="checkPembangkit" :indeterminate="indeterminatePembangkit"
+                  @change="handleCheckPembangkit">
                   Select All Items
                 </el-checkbox>
               </template>
               <el-option v-for="item in itemsPembangkit" :key="item.id" :label="item.name" :value="item.id" />
             </el-select>
           </div>
+          <div v-show="pembangkit.includes('PLTU')" class="mt-3">
+            <h3 class="mb-2 text-[#4D5E80] font-semibold">DMN</h3>
+            <el-select v-model="dmn" multiple clearable collapse-tags placeholder="Pilih DMN"
+              popper-class="custom-header" :max-collapse-tags="15" class="w-full text-primaryTextColor">
+              <template #header>
+                <el-checkbox v-model="checkDmn" :indeterminate="indeterminateDmn" @change="handleCheckDmn">
+                  Select All Items
+                </el-checkbox>
+              </template>
+              <el-option v-for="item in childDmn" :key="item.id" :label="item.name" :value="item.id" />
+            </el-select>
+            <div class="flex mt-1 -mb-2">
+              <p class="text-[#FF5656] text-lg mr-1 -mt-1">*</p>
+              <p class="text-[#333333] text-xs ml-1">DMN hanya akan muncul jika Anda memilih PLTU dari Kategori
+                Pembangkit</p>
+            </div>
+          </div>
           <div class="my-4">
             <h3 class="mb-2 text-[#4D5E80] font-semibold">Umur Mesin</h3>
             <el-select v-model="umur" multiple clearable collapse-tags placeholder="Pilih Umur Mesin"
-              popper-class="custom-header" :max-collapse-tags="15" class="w-full text-black">
+              popper-class="custom-header" :max-collapse-tags="15" class="w-full text-primaryTextColor">
               <template #header>
-                <el-checkbox v-model="checkUmur" :indeterminate="indeterminate" @change="handleCheckUmur"> Select All
+                <el-checkbox v-model="checkUmur" :indeterminate="indeterminateUmur" @change="handleCheckUmur"> Select
+                  All
                   Items
                 </el-checkbox>
               </template>
@@ -78,22 +103,30 @@
           <hr class="w-full my-4" />
           <div class="flex justify-end">
             <div class="flex items-start">
-              <button type="submit" @click="showModal = false"
-                class="w-full text-[#0099AD] bg-white border-2 border-[#80C1CD] hover:bg-[#80C1CD] focus:ring-2 focus:outline-none focus:ring-[#0099AD] font-medium rounded-lg text-xs mr-2 px-5 py-2.5 text-center dark:bg-[#007E8F] dark:hover:bg-white dark:focus:ring-bg-[#80C1CD]">
-                Batal
+              <button type="submit" @click="umur = []; pembangkit = []; dmn = [], pengelola = []"
+                class="w-full text-[#0099AD] bg-white border-2 hover:text-white duration-300 border-primaryColor hover:border-hoverColor hover:bg-hoverColor active:ring-2 active:outline-none active:ring-[#0099AD] font-medium rounded-lg text-xs mr-2 px-5 py-2.5 text-center dark:bg-[#007E8F] dark:hover:bg-white dark:active:ring-bg-[#80C1CD]">
+                Reset
               </button>
-              <button type="submit" @click="changeData()"
-                class="w-full text-white bg-[#0099AD] hover:bg-[#005A66] focus:ring-2 focus:outline-none focus:ring-[#80C1CD] font-medium rounded-lg text-xs px-5 py-3 text-center dark:bg-[#007E8F] dark:hover:bg-[#0099AD] dark:focus:ring-[#005A66]">
-                Terapkan
-              </button>
+              <div v-if="pembangkit.includes('PLTU')">
+                <button type="submit" @click="changeData()"
+                  class="w-full text-white bg-[#0099AD] hover:bg-hoverColor duration-300 active:ring-2 active:outline-none active:ring-[#80C1CD] font-medium rounded-lg text-xs px-5 py-3 text-center dark:bg-[#007E8F] dark:hover:bg-[#0099AD] dark:active:ring-[#005A66]">
+                  Terapkan
+                </button>
+              </div>
+              <div v-else>
+                <button type="submit" @click="changeDataNoDMN()"
+                  class="w-full text-white bg-[#0099AD] hover:bg-hoverColor duration-300 active:ring-2 active:outline-none active:ring-[#80C1CD] font-medium rounded-lg text-xs px-5 py-3 text-center dark:bg-[#007E8F] dark:hover:bg-[#0099AD] dark:active:ring-[#005A66]">
+                  Terapkan
+                </button>
+              </div>
             </div>
           </div>
         </ModalWrapper>
       </div>
       <BestPerformance />
     </div>
-    <div class="z-0 h-full space-y-3">
-      <ol-map style="width: 100%; height: 75dvh;" @moveend="consoleZoom">
+    <div class="z-0 space-y-3 h-[75dvh]">
+      <ol-map style="width: 100%; height: 71.5dvh;" @moveend="consoleZoom">
         <ol-view ref="viewRef" :center="center" :rotation="rotation" :zoom="zoom" :minZoom="4"
           :projection="projection" />
         <ol-tile-layer>
@@ -149,14 +182,14 @@
                   <p class="pl-2 text-slate-400">Unit</p>
                 </div>
               </div>
-              <div class="flex justify-between px-4 py-1 text-xs">
+              <div class="flex justify-between px-4 py-1 mb-2 text-xs">
                 <p class="text-slate-400">Daya Terpasang</p>
                 <div class="flex">
-                  <p>{{ formatFixed(item.daya_terpasang) }}</p>
+                  <p>{{ globalFormat.formatRupiah(item.daya_terpasang) }}</p>
                   <p class="pl-2 text-slate-400">MW</p>
                 </div>
               </div>
-              <div class="flex justify-between px-4 py-1 text-xs">
+              <!-- <div class="flex justify-between px-4 py-1 text-xs">
                 <p class="text-slate-400">IRR on Project</p>
                 <div class="flex">
                   <p>{{ item.irr_project
@@ -169,7 +202,7 @@
                 <p class="text-slate-400">IRR on Equity</p>
                 <div class="flex">
                   <p>{{ item.irr_equity
-                    ? formatFixed(globalFormat.formatRupiah(item.irr_equity))
+                    ? globalFormat.formatRupiah(item.irr_equity)
                     : "-" }}</p>
                   <p class="pl-2 text-slate-400">%</p>
                 </div>
@@ -178,7 +211,7 @@
                 <p class="text-slate-400">Average NCF</p>
                 <div class="flex">
                   <p>{{ item.average_cf
-                    ? formatFixed(globalFormat.formatRupiah(item.average_cf))
+                    ? globalFormat.formatRupiah(item.average_cf)
                     : "-" }}</p>
                   <p class="pl-2 text-slate-400">%</p>
                 </div>
@@ -190,8 +223,8 @@
                   <p class="pl-2 text-slate-400">%</p>
                 </div>
               </div>
+            </div> -->
             </div>
-            <!-- </div> -->
           </template>
         </ol-overlay>
       </ol-map>
@@ -246,6 +279,9 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
+import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { notifyError } from "@/services/helper/toast-notification";
+import type { CheckboxValueType } from 'element-plus';
 import PetaService from "@/services/peta-service";
 import GlobalFormat from "@/services/format/global-format";
 import BestPerformance from "@/components/Peta/BestPerformance.vue"
@@ -254,11 +290,10 @@ import ModalWrapper from "@/components/ui/ModalWrapper.vue";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import ModalSearch from "@/components/ModalSearch.vue";
 import type View from "ol/View";
-import { notifyError } from "@/services/helper/toast-notification";
-import type { CheckboxValueType } from 'element-plus';
 import AuthService from "@/services/auth-service";
 const authService = new AuthService();
 
+const nodeMode = import.meta.env.MODE;
 const router = useRouter();
 const globalFormat = new GlobalFormat();
 const petaService = new PetaService();
@@ -281,15 +316,24 @@ const rotation = ref(0);
 
 const checkPengelola = ref(false)
 const checkPembangkit = ref(false)
+const checkDmn = ref(true)
 const checkUmur = ref(false)
-const indeterminate = ref(false)
-const pengelola = ref<CheckboxValueType[]>([])
-const pembangkit = ref<CheckboxValueType[]>([])
-const umur = ref<CheckboxValueType[]>([])
+const indeterminatePengelola = ref(false)
+const indeterminatePembangkit = ref(false)
+const indeterminateDmn = ref(false)
+const indeterminateUmur = ref(false)
 const itemsPengelola = ref<{ id: string; name: string; }[]>([])
 const itemsPembangkit = ref<{ id: string; name: string; power?: string }[]>([])
-const itemsDmn = ref<{ id: string; name: string; power?: string }[]>([])
+const itemsDmn = ref<{
+  [x: string]: any; id: string; name: string;
+}[]>([])
+const childDmn = ref<any[]>([])
 const itemsUmurMesin = ref<{ id: string; name: string; }[]>([])
+const pengelola = ref<CheckboxValueType[]>([])
+const pembangkit = ref<CheckboxValueType[]>([])
+const dmn = ref<CheckboxValueType[]>([1, 2, 3])
+// const no_dmn = ref<CheckboxValueType[]>([])
+const umur = ref<CheckboxValueType[]>([])
 
 interface PetaItem {
   data: any;
@@ -312,7 +356,7 @@ interface PetaItem {
 const fetchPetaSentral = async () => {
   try {
     isLoading.value = true;
-    const response: any = await petaService.getPetaSentral({ sentral: searchQuery.value, pengelola: [], pembina: [], jenis_kit: [], daya_mampu: [], umur: [] });
+    const response: any = await petaService.getPetaSentral({ sentral: searchQuery.value, pengelola: [], pembina: [], jenis_kit: [], id_daya: [], umur: [] });
     if (listDataPeta.value.length === 0) {
       listDataPeta.value = response.data;
       dataPeta.value = response.data;
@@ -324,9 +368,15 @@ const fetchPetaSentral = async () => {
     if (dataPeta.value.length === 1) {
       center.value = [parseFloat(dataPeta.value[0].lng), parseFloat(dataPeta.value[0].lat)]
       zoom.value = 17;
+    } else {
+      center.value = [117.478751, -0.808498];
+      zoom.value = 5;
+    }
+    if (dataPeta.value.length === 0) {
+      notifyError("Data Peta Sebaran Tidak Ditemukan", false);
     }
   } catch (error) {
-    notifyError("Data Peta Sebaran Gagal Dimuat, Mohon Coba Lagi", false);
+    console.error(error);
   } finally {
     isLoading.value = false;
   }
@@ -338,7 +388,7 @@ function getDetailSentral(kode: string) {
     petaService.getSentralByKode(kode);
     return router.push({
       name: "grafik",
-      params: { id: kode },
+      params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(kode) : kode },
     });
   } catch (error) {
     console.error('Fetch Detail Sentral By Kode Error : ' + error);
@@ -394,18 +444,26 @@ async function getDataPembangkit() {
             id: item.jenis_kit,
             name: item.jenis_kit
           })
-          if (item.dmn) {
-            item.dmn.map((child: any) => {
-              if (child.daya_mampu != "")
-                itemsPembangkit.value.push({
-                  id: item.jenis_kit,
-                  name: `${item.jenis_kit} ${child.daya_mampu}`,
-                  power: child.daya_mampu,
-                })
+          // if (item.dmn) {
+          //   item.dmn.map((child: any) => {
+          //     if (child.daya_mampu != "")
+          //       itemsDmn.value.push({
+          //         id: item.jenis_kit,
+          //         name: `${item.jenis_kit} ${child.daya_mampu}`,
+          //         power: child.daya_mampu,
+          //       })
+          //   })
+          // }
+        })
+        itemsDmn.value = response.data[11].dmn
+        for (var i = 0; i < itemsDmn.value.length; i++) {
+          if (itemsDmn.value[i].daya_mampu != "") {
+            childDmn.value.push({
+              id: itemsDmn.value[i].id_daya,
+              name: 'PLTU ' + itemsDmn.value[i].daya_mampu
             })
           }
-        })
-
+        }
       }
     }
     itemsPembangkit.value.reverse()
@@ -437,41 +495,53 @@ async function getDataUmurMesin() {
 watch(pengelola, (val) => {
   if (val.length === 0) {
     checkPengelola.value = false
-    indeterminate.value = false
+    indeterminatePengelola.value = false
   } else if (val.length === itemsPengelola.value.length) {
     checkPengelola.value = true
-    indeterminate.value = false
+    indeterminatePengelola.value = false
   } else {
-    indeterminate.value = true
+    indeterminatePengelola.value = true
   }
 })
 
 watch(pembangkit, (val) => {
   if (val.length === 0) {
     checkPembangkit.value = false
-    indeterminate.value = false
+    indeterminatePembangkit.value = false
   } else if (val.length === itemsPembangkit.value.length) {
     checkPembangkit.value = true
-    indeterminate.value = false
+    indeterminatePembangkit.value = false
   } else {
-    indeterminate.value = true
+    indeterminatePembangkit.value = true
+  }
+})
+
+watch(dmn, (val) => {
+  if (val.length === 0) {
+    checkDmn.value = false
+    indeterminateDmn.value = false
+  } else if (val.length === childDmn.value.length) {
+    checkDmn.value = true
+    indeterminateDmn.value = false
+  } else {
+    indeterminateDmn.value = true
   }
 })
 
 watch(umur, (val) => {
   if (val.length === 0) {
     checkUmur.value = false
-    indeterminate.value = false
+    indeterminateUmur.value = false
   } else if (val.length === itemsUmurMesin.value.length) {
     checkUmur.value = true
-    indeterminate.value = false
+    indeterminateUmur.value = false
   } else {
-    indeterminate.value = true
+    indeterminateUmur.value = true
   }
 })
 
 const handleCheckPengelola = (val: CheckboxValueType) => {
-  indeterminate.value = false
+  indeterminatePengelola.value = false
   if (val) {
     pengelola.value = itemsPengelola.value.map((_) => _.id)
   } else {
@@ -480,7 +550,7 @@ const handleCheckPengelola = (val: CheckboxValueType) => {
 }
 
 const handleCheckPembangkit = (val: CheckboxValueType) => {
-  indeterminate.value = false
+  indeterminatePembangkit.value = false
   if (val) {
     pembangkit.value = itemsPembangkit.value.map((_) => _.name)
   } else {
@@ -488,8 +558,17 @@ const handleCheckPembangkit = (val: CheckboxValueType) => {
   }
 }
 
+const handleCheckDmn = (val: CheckboxValueType) => {
+  indeterminateDmn.value = false
+  if (val) {
+    dmn.value = childDmn.value.map((_) => _.id)
+  } else {
+    dmn.value = []
+  }
+}
+
 const handleCheckUmur = (val: CheckboxValueType) => {
-  indeterminate.value = false
+  indeterminateUmur.value = false
   if (val) {
     umur.value = itemsUmurMesin.value.map((_) => _.id)
   } else {
@@ -500,17 +579,42 @@ const handleCheckUmur = (val: CheckboxValueType) => {
 async function changeData() {
   try {
     isLoading.value = true;
-    const response: any = await petaService.getPetaSentral({ sentral: searchQuery.value, pengelola: pengelola.value ? pengelola.value : "", pembina: [], jenis_kit: pembangkit.value ? pembangkit.value : "", daya_mampu: [], umur: umur.value ? umur.value : "" });
+    const response: any = await petaService.getPetaSentral({ sentral: searchQuery.value, pengelola: pengelola.value ? pengelola.value : "", pembina: [], jenis_kit: pembangkit.value ? pembangkit.value : "", id_daya: dmn.value ? dmn.value : "", umur: umur.value ? umur.value : "" });
     if (listDataPeta.value.length === 0) {
       listDataPeta.value = response.data;
       dataPeta.value = response.data;
     } else {
       dataPeta.value = response.data;
-      console.log(response.data);
+      // console.log(response.data);
     }
     showModal.value = false;
+    if (dataPeta.value.length === 0) {
+      notifyError("Data Peta Sebaran Tidak Ditemukan", false);
+    }
   } catch (error) {
-    notifyError("Data Peta Sebaran Gagal Dimuat, Mohon Coba Lagi", false);
+    console.error(error)
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+async function changeDataNoDMN() {
+  try {
+    isLoading.value = true;
+    const response: any = await petaService.getPetaSentral({ sentral: searchQuery.value, pengelola: pengelola.value ? pengelola.value : "", pembina: [], jenis_kit: pembangkit.value ? pembangkit.value : "", id_daya: [], umur: umur.value ? umur.value : "" });
+    if (listDataPeta.value.length === 0) {
+      listDataPeta.value = response.data;
+      dataPeta.value = response.data;
+    } else {
+      dataPeta.value = response.data;
+      // console.log(response.data);
+    }
+    showModal.value = false;
+    if (dataPeta.value.length === 0) {
+      notifyError("Data Peta Sebaran Tidak Ditemukan", false);
+    }
+  } catch (error) {
+    console.error(error)
   } finally {
     isLoading.value = false;
   }

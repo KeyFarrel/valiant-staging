@@ -6,16 +6,17 @@
       <span class="text-gray-200"> / </span>
       <span class="font-medium text-gray-400">Unit : </span>
       <span class="font-semibold">{{ props.mesin }}</span>
-      <span class="text-gray-200"> / </span>
+      <!-- <span class="text-gray-200"> / </span>
       <span class="mr-1.5 font-medium text-gray-400">Catatan : </span>
       <div class="flex flex-row items-center space-x-1">
         <WarningIcon />
-        <span class="text-warningColor" v-if="isParameterUpdated === true">Data yang ditampilkan merupakan data
+        <span class="text-warningColor" v-if="props.isPermanent === true">Data yang ditampilkan merupakan data tahun
+          sebelumnya, silahkan lakukan
+          update terhadap data tersebut!</span>
+        <span class="text-warningColor" v-else>Data yang ditampilkan merupakan data
           simulasi,
           mohon pilih opsi simulasi untuk mengubah ke data tetap</span>
-        <span class="text-warningColor" v-else>Data yang ditampilkan merupakan data tahun sebelumnya, silahkan lakukan
-          update terhadap data tersebut!</span>
-      </div>
+      </div> -->
     </section>
     <section class="text-xs" v-else-if="props.isPerbaruiData === false">
       <span class="font-medium text-gray-400">Periode : </span>
@@ -24,57 +25,58 @@
       <span class="font-medium text-gray-400">Unit : </span>
       <span class="font-semibold">{{ props.mesin }}</span>
     </section>
-    <div class="flex space-x-3">
+    <div class="flex space-x-3" v-if="props.isIntegrasi === false">
       <div class="flex space-x-1.5">
         <input type="radio" id="auxiliarySusut" class="radio radio-sm radio-info" value="auxiliarySusut"
-          v-model="pickedValue" :disabled="props.initAuxiliary === '0,00' || props.initSusutTrafo === '0,00'" />
+          v-model="pickedValue"
+          :disabled="props.initValue?.auxiliary === '0,00' && props.initValue?.susutTrafo === '0,00'" />
         <label class="text-sm" for="auxiliarySusut">Auxiliary & Susut Trafo</label>
       </div>
       <div class="flex space-x-3">
         <div class="flex space-x-1.5">
           <input type="radio" id="pemakaianSendiri" class="radio radio-sm radio-info" value="pemakaianSendiri"
-            v-model="pickedValue" :disabled="props.initPemakaianSendiri === '0,00'" />
+            v-model="pickedValue" :disabled="props.initValue?.pemakaianSendiri === '0,00'" />
           <label label class="text-sm" for="pemakaianSendiri">Pemakaian Sendiri (PS)</label>
         </div>
       </div>
     </div>
     <form class="flex flex-col space-y-6 text-sm">
       <div class="grid gap-x-6"
-        :class="{ 'grid-cols-3': pickedValue === 'auxiliarySusut', 'grid-cols-2': pickedValue === 'pemakaianSendiri' }">
+        :class="{ 'grid-cols-3': pickedValue === 'auxiliarySusut', 'grid-cols-2': pickedValue === 'pemakaianSendiri', 'grid-cols-4': props.isIntegrasi }">
         <div class="space-y-1">
           <label class="block font-bold text-gray-500">Net Plant Heat Rate (NPHR) <span
               class="text-warningColor">*</span></label>
           <div class="flex items-center justify-end">
             <TextField @on-input="handleInputDecimalRupiah('nphr')" v-model="nphr" class="pr-20"
-              :disabled="isRealisasiUploaded === true" />
+              :disabled="props.isRealisasiUploaded === true || props.isIntegrasi" />
             <label class="absolute pr-3 text-sm text-primaryColor">Kcal/kWH</label>
           </div>
           <div class="text-xs text-warningColor" v-if="props.error?.nphr === true">NPHR wajib diisi</div>
         </div>
-        <div class="space-y-1" v-if="pickedValue === 'auxiliarySusut'">
+        <div class="space-y-1" v-if="pickedValue === 'auxiliarySusut' || props.isIntegrasi">
           <label class="block font-bold text-gray-500">Auxiliary <span class="text-warningColor">*</span></label>
           <div class="flex items-center justify-end">
             <TextField @on-input="handleInputDecimalRupiah('auxiliary')" v-model="auxiliary" class="pr-10"
-              :disabled="isRealisasiUploaded === true" />
+              :disabled="props.isRealisasiUploaded === true || props.isIntegrasi" />
             <label class="absolute pr-3 text-sm text-primaryColor">%</label>
           </div>
           <div class="text-xs text-warningColor" v-if="props.error?.auxiliary === true">Auxiliary wajib diisi</div>
         </div>
-        <div class="space-y-1" v-if="pickedValue === 'auxiliarySusut'">
+        <div class="space-y-1" v-if="pickedValue === 'auxiliarySusut' || props.isIntegrasi">
           <label class="block font-bold text-gray-500">Susut Trafo <span class="text-warningColor">*</span></label>
           <div class="flex items-center justify-end">
             <TextField @on-input="handleInputDecimalRupiah('susutTrafo')" v-model="susutTrafo" class="pr-10"
-              :disabled="isRealisasiUploaded === true" />
+              :disabled="props.isRealisasiUploaded === true || props.isIntegrasi" />
             <label class="absolute pr-3 text-sm text-primaryColor">%</label>
           </div>
           <div class="text-xs text-warningColor" v-if="props.error?.susutTrafo === true">Susut Trafo wajib diisi</div>
         </div>
-        <div class="space-y-1" v-if="pickedValue === 'pemakaianSendiri'">
+        <div class="space-y-1" v-if="pickedValue === 'pemakaianSendiri' || props.isIntegrasi">
           <label class="block font-bold text-gray-500">Pemakaian Sendiri (PS) <span
               class="text-warningColor">*</span></label>
           <div class="flex items-center justify-end">
             <TextField @on-input="handleInputDecimalRupiah('pemakaianSendiri')" v-model="pemakaianSendiri" class="pr-10"
-              :disabled="isRealisasiUploaded === true" />
+              :disabled="props.isRealisasiUploaded === true || props.isIntegrasi" />
             <label class="absolute pr-3 text-sm text-primaryColor">%</label>
           </div>
           <div class="text-xs text-warningColor" v-if="props.error?.pemakaianSendiri === true">Pemakaian Sendiri wajib
@@ -88,7 +90,7 @@
               class="text-warningColor">*</span></label>
           <div class="flex items-center justify-end">
             <TextField @on-input="handleInputDecimalRupiah('electricityPriceA')" v-model="electricityPriceA"
-              class="pr-16" :disabled="isRealisasiUploaded === true" />
+              class="pr-20" :disabled="props.isRealisasiUploaded === true" />
             <label class="absolute pr-3 text-sm text-primaryColor">Rp/kW.bln</label>
           </div>
           <div class="text-xs text-warningColor" v-if="props.error?.electricityPriceA === true">Electricity Price A
@@ -100,7 +102,7 @@
               class="text-warningColor">*</span></label>
           <div class="flex items-center justify-end">
             <TextField @on-input="handleInputDecimalRupiah('electricityPriceB')" v-model="electricityPriceB"
-              class="pr-16" :disabled="isRealisasiUploaded === true" />
+              class="pr-20" :disabled="props.isRealisasiUploaded === true" />
             <label class="absolute pr-3 text-sm text-primaryColor">Rp/kW.bln</label>
           </div>
           <div class="text-xs text-warningColor" v-if="props.error?.electricityPriceB === true">Electricity Price B
@@ -112,7 +114,7 @@
               class="text-warningColor">*</span></label>
           <div class="flex items-center justify-end">
             <TextField @on-input="handleInputDecimalRupiah('electricityPriceC')" v-model="electricityPriceC"
-              class="pr-18" :disabled="isRealisasiUploaded === true" />
+              class="pr-18" :disabled="props.isRealisasiUploaded === true" />
             <label class="absolute pr-3 text-sm text-primaryColor">Rp/kWh</label>
           </div>
           <div class="text-xs text-warningColor" v-if="props.error?.electricityPriceC === true">Electricity Price C
@@ -124,7 +126,7 @@
               class="text-warningColor">*</span></label>
           <div class="flex items-center justify-end">
             <TextField @on-input="handleInputDecimalRupiah('electricityPriceD')" v-model="electricityPriceD"
-              class="pr-18" :disabled="isRealisasiUploaded === true" />
+              class="pr-18" :disabled="props.isRealisasiUploaded === true" />
             <label class="absolute pr-3 text-sm text-primaryColor">Rp/kWh</label>
           </div>
           <div class="text-xs text-warningColor" v-if="props.error?.electricityPriceD === true">Electricity Price D
@@ -137,15 +139,17 @@
       <p class="font-semibold text-gray-500">Bahan Bakar</p>
       <div class="text-xs text-warningColor" v-if="props.error?.bahanBakar === true">Bahan Bakar wajib diisi</div>
       <div class="grid grid-cols-3 gap-5">
-        <template v-for="( bahanBakarItem, bahanBakarIndex ) in bahanBakars" :key="bahanBakarIndex">
+        <template v-for="( bahanBakarItem, bahanBakarIndex ) in bahanBakarsFinal()" :key="bahanBakarIndex">
           <div class="flex flex-row items-center space-x-3">
             <input type="checkbox" name="" class="rounded-[3.5px] border-primaryColor cursor-pointer"
               :id="bahanBakarItem.id" :value="bahanBakarItem.id" v-model="checkedBahanBakar" @change="emit('onChecked')"
-              v-if="isRealisasiUploaded === false && bahanBakarItem.flag_bahan_bakar === 0">
+              v-if="props.isRealisasiUploaded === false && bahanBakarItem.flag_bahan_bakar === 0">
             <div class="flex flex-col w-full space-y-1">
-              <label class="block font-bold text-gray-500">Bahan Bakar <span class="text-warningColor">*</span></label>
+              <label class="block font-bold text-gray-500">Bahan Bakar {{ bahanBakars.length > 0 ?
+                bahanBakarItem.flag_bahan_bakar === 1 ? 'Utama' : bahanBakarIndex + 1 : '-' }}<span
+                  class="text-warningColor">*</span></label>
               <select class="text-sm border-gray-300 rounded-lg" v-model="bahanBakarItem.kode_bahan_bakar" required
-                :disabled="isRealisasiUploaded === true">
+                :disabled="props.isRealisasiUploaded === true">
                 <option value="" disabled hidden>Pilih Bahan Bakar</option>
                 <option v-for="( comboBahanBakarItem, comboBahanBakarIndex ) in props.comboBahanBakar"
                   :value="(comboBahanBakarItem as any).kode_bahan_bakar" :key="comboBahanBakarIndex"
@@ -158,31 +162,33 @@
             </div>
           </div>
           <div class="space-y-1">
-            <label class="block font-bold text-gray-500">Harga Bahan Bakar {{ bahanBakars.length > 1 ?
-              bahanBakarIndex + 1 === 1 ? 'Utama' : bahanBakarIndex + 1 : 'Utama' }}<span class="text-warningColor">
+            <label class="block font-bold text-gray-500">Harga Bahan Bakar {{ bahanBakars.length > 0 ?
+              bahanBakarItem.flag_bahan_bakar === 1 ? 'Utama' : bahanBakarIndex + 1 : '-' }}<span
+                class="text-warningColor">
                 *</span></label>
             <div class="flex items-center justify-end">
               <TextField @on-input="handleInputDecimalRupiah('hargaBahanBakar', bahanBakarIndex)" class="pr-18"
-                v-model="bahanBakarItem.harga_bahan_bakar" :disabled="isRealisasiUploaded === true" />
+                v-model="bahanBakarItem.harga_bahan_bakar" :disabled="props.isRealisasiUploaded === true" />
               <label class="absolute pr-3 text-sm text-primaryColor">{{
                 labelBahanBakar(bahanBakarItem.kode_bahan_bakar) }}</label>
             </div>
           </div>
           <!-- v-if="isSfcTrue(bahanBakarItem.kode_bahan_bakar) == true" -->
           <div class="space-y-1">
-            <label class="block font-bold text-gray-500">Specific Fuel Consumption (SFC) <span
+            <label class="block font-bold text-gray-500">Specific Fuel Consumption (SFC) {{ bahanBakars.length > 0 ?
+              bahanBakarItem.flag_bahan_bakar === 1 ? 'Utama' : bahanBakarIndex + 1 : '-' }}<span
                 class="text-warningColor">*</span></label>
             <div class="flex items-center justify-end">
               <TextField @on-input="handleInputDecimalRupiah('sfc', bahanBakarIndex)" class="pr-24"
                 v-model="bahanBakarItem.sfc"
-                :disabled="bahanBakarItem.status_sfc === false || isRealisasiUploaded === true" />
+                :disabled="bahanBakarItem.status_sfc === false || props.isRealisasiUploaded === true || props.isIntegrasi" />
               <label class="absolute pr-3 text-sm text-primaryColor">{{ labelSFC(bahanBakarItem.kode_bahan_bakar)
                 }}</label>
             </div>
           </div>
         </template>
       </div>
-      <div class="flex flex-row items-center justify-end space-x-3" v-if="isRealisasiUploaded === false">
+      <div class="flex flex-row items-center justify-end space-x-3" v-if="props.isRealisasiUploaded === false">
         <button
           class="px-3 py-2 font-semibold duration-300 rounded-lg text-warningColor hover:border-warningColor hover:bg-warningColor hover:text-white active:ring active:ring-warningColor active:ring-opacity-50 active:duration-0"
           @click="emit('onHapusBahanBakar')" v-if="bahanBakars.length > 1">Hapus</button>
@@ -209,7 +215,7 @@
     <button
       class="px-3 py-2 ml-auto font-semibold text-white rounded-lg bg-primaryColor hover:bg-hoverColor active:outline active:outline-primaryColor hover:duration-300 active:duration-0"
       type="submit" @click="props.isInputAsumsiParameter === true ? emit('onSubmit') : selectedTitle = 'Data Teknis'"
-      v-if="isRealisasiUploaded === false">
+      v-if="props.isRealisasiUploaded === false">
       {{ props.isInputAsumsiParameter === true ? 'Kirim' : 'Selanjutnya' }}
     </button>
   </div>
@@ -221,7 +227,6 @@ import GlobalFormat from '@/services/format/global-format';
 const globalFormat = new GlobalFormat();
 import TextField from '@/components/ui/TextField.vue';
 import WarningIcon from '@/components/icons/WarningIcon.vue';
-import CheckIcon from '@/components/icons/CheckIcon.vue';
 
 const checkedBahanBakar = defineModel('checkedBahanBakar');
 const bahanBakars: any = defineModel('bahanBakars');
@@ -249,24 +254,43 @@ interface Props {
     electricityPriceD: boolean,
     bahanBakar: boolean
   }
-  initAuxiliary: string
-  initSusutTrafo: string
-  initPemakaianSendiri: string
+  initValue?: {
+    nphr: string,
+    auxiliary: string,
+    susutTrafo: string,
+    pemakaianSendiri: string,
+    electricityPriceA: string,
+    electricityPriceB: string,
+    electricityPriceC: string,
+    electricityPriceD: string
+  }
   mesin: string
   tahunRealisasi: number
   isInputAsumsiParameter: boolean
   comboBahanBakar: any
-  isParameterUpdated?: boolean
+  isPermanent?: boolean
   isPerbaruiData?: boolean
   isRealisasiUploaded?: boolean
+  kodePengelola?: string
+  isIntegrasi?: boolean
 }
-console.log(bahanBakars.value);
 
 const props = withDefaults(defineProps<Props>(), {
-  isParameterUpdated: false,
+  isPermanent: true,
   isPerbaruiData: true,
-  isRealisasiUploaded: false
+  isRealisasiUploaded: false,
+  kodePengelola: '',
+  isIntegrasi: false
 });
+const bahanBakarsFinal = () => {
+  const utamaIndex = bahanBakars.value.findIndex((e: any) => e.flag_bahan_bakar === 1);
+  if (utamaIndex !== 0) {
+    const utama = bahanBakars.value[utamaIndex];
+    bahanBakars.value.splice(utamaIndex, 1);
+    bahanBakars.value.unshift(utama);
+  }
+  return bahanBakars.value;
+}
 const comboBahanBakar = () => {
   if (bahanBakars.value.length === 0 || !bahanBakars.value) {
     return props.comboBahanBakar;

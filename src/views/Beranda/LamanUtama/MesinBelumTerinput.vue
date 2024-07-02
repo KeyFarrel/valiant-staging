@@ -1,14 +1,28 @@
 <template>
   <Loading v-if="isLoading" />
-  <div class="h-full p-6 space-y-5 bg-white rounded-lg">
-    <SearchBox class="w-60" v-model="searchQuery" @on-click="handleSearch" @on-key-enter="handleSearch" />
+  <div class="p-6 space-y-5 bg-white rounded-lg">
+    <SearchBox class="w-72" v-model="searchQuery" @on-click="handleSearch" @on-key-enter="handleSearch"
+      @on-input="handleSearch" />
     <div class="whitespace-nowrap">
       <ul class="flex w-full overflow-x-auto">
         <li v-for="(pengelola, pengelolaIndex) in pengelolaData" :key="pengelolaIndex"
           class="p-2 ml-5 text-xs font-bold text-gray-400 border border-gray-300 rounded-lg cursor-pointer w-fit hover:text-primaryColor first:ml-0 hover:border-primaryColor active:bg-primaryColor active:bg-opacity-20"
-          :class="{ selected: selectedPengelola.includes(pengelola.kode_pengelola) || selectedAll.includes(pengelola.kode_pengelola) }"
+          :class="{ selected: selectedPengelola.includes(pengelola.kode_pengelola) || kodePengelola === pengelola.kode_pengelola }"
           @click="changeSelectedPengelola(pengelola.kode_pengelola)">
           {{ pengelola.pengelola }}
+          <template
+            v-if="selectedPengelola.includes(pengelola.kode_pengelola) || kodePengelola === pengelola.kode_pengelola">
+            <div class="absolute bottom-0 right-0">
+              <svg width="62" height="18" viewBox="0 0 62 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle opacity="0.15" cx="59.5" cy="59.5" r="59.5" fill="#80C1CD" />
+              </svg>
+            </div>
+            <div class="absolute bottom-0 right-0">
+              <svg width="22" height="40" viewBox="0 0 22 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle opacity="0.15" cx="59.5" cy="41.5" r="59.5" fill="#80C1CD" />
+              </svg>
+            </div>
+          </template>
         </li>
       </ul>
     </div>
@@ -19,10 +33,17 @@
           <th scope="col" class="text-left">Unit Induk / Subholding / <br>Anak Perusahaan</th>
           <th scope="col" class="text-left">Unit Sentral</th>
           <th scope="col" class="text-left">Unit Mesin</th>
-          <th scope="col" class="text-left">Total Daya Terpasang (MW)</th>
+          <th scope="col" class="text-center">Total Daya Terpasang (MW)</th>
         </tr>
       </template>
-      <template v-slot:table-body>
+      <template v-slot:table-body v-if="mesinBelumTerinput.length === 0">
+        <tr>
+          <td colspan="5">
+            <Empty :subtitle="'Data tidak tersedia, silahkan cari unit mesin lain'" />
+          </td>
+        </tr>
+      </template>
+      <template v-slot:table-body v-else>
         <tr v-for="(mesinBelumTerinputItem, mesinBelumTerinputIndex) in mesinBelumTerinput"
           :key="mesinBelumTerinputIndex" class="border">
           <td class="text-center">{{ mesinBelumTerinputIndex + 1 }}</td>
@@ -33,7 +54,7 @@
           <td>
             {{ mesinBelumTerinputItem.mesin }}
           </td>
-          <td>{{ mesinBelumTerinputItem.daya_terpasang }}</td>
+          <td class="text-center">{{ globalFormat.formatRupiah(mesinBelumTerinputItem.daya_terpasang) }}</td>
         </tr>
       </template>
     </TableComponent>
@@ -90,12 +111,15 @@
 import { ref, onMounted, computed } from "vue";
 import LamanService from "@/services/laman-service";
 const lamanService = new LamanService();
+import GlobalFormat from "@/services/format/global-format";
+const globalFormat = new GlobalFormat();
 import SearchBox from "@/components/ui/SearchBox.vue";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import TableComponent from "@/components/ui/Table.vue";
+import Empty from "@/components/ui/EmptyData.vue";
 
 const isLoading = ref(false);
-const selectedAll = ref<string[]>(['ALL']);
+const kodePengelola = ref<any>('ALL');
 const mesinBelumTerinput = ref<any[]>([]);
 const searchQuery = ref("");
 const selectedPengelola = ref<string[]>([]);
@@ -115,7 +139,7 @@ const navigation = ref<{
 const fetchMesinBelumInput = async () => {
   isLoading.value = true;
   try {
-    const response: any = await lamanService.getMesinBelumInput(navigation.value.currentPage, navigation.value.limit, selectedPengelola.value);
+    const response: any = await lamanService.getMesinBelumInput(navigation.value.currentPage, navigation.value.limit, selectedPengelola.value, searchQuery.value);
     mesinBelumTerinput.value = response.data;
     navigation.value.totalRecords = response.meta.totalRecords;
     navigation.value.totalPages = response.meta.totalPages;
@@ -126,9 +150,11 @@ const fetchMesinBelumInput = async () => {
     isLoading.value = false;
   }
 };
+
 const handleSearch = async () => {
-  console.log('');
+  await fetchMesinBelumInput();
 };
+
 const fetchPengelolaData = async () => {
   try {
     isLoading.value = true;
@@ -142,23 +168,26 @@ const fetchPengelolaData = async () => {
     pengelolaData.value.reverse();
   } catch (error) {
     console.error(error);
+  } finally {
+    isLoading.value = false;
   }
 };
 const changeSelectedPengelola = async (pengelola: any) => {
   isLoading.value = true;
   if (pengelola === 'ALL') {
-    selectedAll.value.push(pengelola);
-    selectedPengelola.value = [];
-    await fetchMesinBelumInput();
+    if (kodePengelola.value !== 'ALL') {
+      kodePengelola.value = pengelola;
+      selectedPengelola.value = [];
+      await fetchMesinBelumInput();
+    }
   } else {
     if (!selectedPengelola.value.includes(pengelola)) {
-      selectedAll.value = [];
       selectedPengelola.value.push(pengelola);
+      kodePengelola.value = null;
       await fetchMesinBelumInput();
     } else {
       if (selectedPengelola.value.length === 1) {
-        selectedPengelola.value = [];
-        selectedAll.value = ['ALL'];
+        kodePengelola.value = 'ALL';
       }
       const pengelolaIndex = selectedPengelola.value.indexOf(pengelola);
       selectedPengelola.value.splice(pengelolaIndex, 1);
@@ -226,16 +255,9 @@ const goToNext = () => {
   goToPage(navigation.value.currentPage + 1);
 };
 
-onMounted(async () => {
-  isLoading.value = true;
-  try {
-    await fetchMesinBelumInput();
-    await fetchPengelolaData();
-  } catch (error) {
-    console.error("Failed to fetch data:", error);
-  } finally {
-    isLoading.value = false;
-  }
+onMounted(() => {
+  fetchMesinBelumInput();
+  fetchPengelolaData();
 });
 </script>
 

@@ -136,7 +136,7 @@ import GlobalFormat from "@/services/format/global-format";
 
 const globalFormat = new GlobalFormat();
 interface Props {
-  source: PersetujuanKertasKerjaItem[],
+  source: any,
 }
 
 interface PersetujuanKertasKerjaItem {

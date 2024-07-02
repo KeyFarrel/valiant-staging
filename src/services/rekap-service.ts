@@ -4,8 +4,20 @@ const url = import.meta.env.VITE_API_URL;
 
 export default class RekapService extends BaseService {
 
-  async getSentralData<T>(sentral: string, pengelola: Array<string>, jenis_kit: Array<string>, kondisi_mesin: Array<string>, umur: Array<string>, page: number, limit: number): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/all-rekap-kertas-kerja`, {sentral: sentral, pengelola: pengelola, jenis_kit: jenis_kit, kondisi_mesin: kondisi_mesin, umur: umur, page: page, limit: limit});
+  async getSentralData<T>(sentral: string, pengelola: Array<string>, jenis_kit: Array<string>, id_daya: any, kondisi_mesin: Array<string>, umur: Array<string>, page: number, limit: number): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/all-rekap-kertas-kerja`, {sentral: sentral, pengelola: pengelola, jenis_kit: jenis_kit, id_daya: id_daya, kondisi_mesin: kondisi_mesin, umur: umur, page: page, limit: limit});
+  }
+  async uploadEvidence<T>(file: any): Promise<T> {
+    return this.postFile(`${url}mutasiasset/upload-minio`, file);
+  }
+  async getEvidencePath<T>(id_mesin: string, tahun: string, status_fs: any): Promise<T> {
+    return this.get(`${url}evidence`, {id_mesin: id_mesin, tahun: tahun, status_fs: status_fs},);
+  }
+  async downloadEvidence<T>(file: string): Promise<T> {
+    return this.get(`${url}mutasiasset/view-dokumen`, {id_dokumen: file}, 'arraybuffer');
+  }
+  async updateEvidencePath<T>(id_mesin: any, tahun_upload: any, dokumen_evidence: any, status_fs: any): Promise<T> {
+    return this.post(`${url}evidence`, {id_mesin: id_mesin, tahun_upload: tahun_upload, dokumen_evidence: dokumen_evidence, status_fs: status_fs});
   }
   async getPengelolaData<T>(): Promise<T> {
     return this.get(`${url}filter/combo-pengelola`);

@@ -1,43 +1,31 @@
 <template>
   <Loading v-if="isLoading" />
-  <div class="w-full bg-white border rounded-md h-22">
-    <div class="justify-between md:flex">
-      <div class="flex items-center py-1.5 px-4">
-        <SearchBox @on-focus="handleFocus" v-model="selectedSearchQuery" class="w-60" />
+  <div class="w-full p-4 space-y-3 bg-white border rounded-md h-22">
+    <div class="flex justify-between md:flex">
+      <div class="flex items-center">
+        <SearchBox v-if="authService.checkLevel() !== 'Sentral'" @on-focus="handleFocus" v-model="selectedSearchQuery"
+          class="w-60" />
         <ModalSearch v-if="isSearchModalOpen" v-model="searchQuery" :show-modal="isSearchModalOpen"
           :source="listDataPeta" @on-click-close="isSearchModalOpen = false" @on-escape="isSearchModalOpen = false"
           @on-click="selectedSearchQuery = searchQuery; isSearchModalOpen = false; handleChangeSentral()"
           @on-key-enter="selectedSearchQuery = searchQuery; isSearchModalOpen = false; handleChangeSentral()" />
       </div>
-      <div class="px-4 py-3">
-        <div class="flex flex-row items-center ml-4 space-x-3">
-          <label class="text-sm font-semibold text-labelColor" for="">Periode</label>
-          <VueDatePicker class="mr-3 date-picker" v-model="yearPickedSentral" :year-range="periodeTahunSentral"
-            :clearable="false" year-picker />
-        </div>
-        <!-- <div v-for="(item, i) in dataUnit" :key="i" v-show="selectedTitle === item.mesin" class="flex flex-row items-center ml-4 space-x-3">
-          <label class="text-sm font-semibold text-labelColor" for="">Periode</label>
-          <VueDatePicker class="mr-3 date-picker" v-model="yearPickedMesin" :year-range="periodeTahunMesin" :clearable="false" year-picker/>
-        </div> -->
-      </div>
     </div>
-    <div class="sticky top-0 z-10 bg-white">
-      <div>
-        <ul class="flex pb-2 overflow-auto font-medium text-center whitespace-nowrap scrollbar-hide">
-          <!-- <li class="ml-5 text-gray-500 transition-all duration-300 cursor-pointer"
+    <div class="bg-white">
+      <ul class="flex items-end space-x-8 overflow-auto border-b-2 border-gray-50 whitespace-nowrap scrollbar-hide"
+        :class="authService.checkLevel() === 'Sentral' ? 'mt-14' : 'mt-0'">
+        <!-- <li class="ml-5 text-gray-500 transition-all duration-300 cursor-pointer"
             :class="{ selected: 'Unit Sentral' === selectedTitle }" @click="selectedTitle = 'Unit Sentral'">
             Unit Sentral
           </li> -->
-          <li v-for="(item, i) in dataUnit" :key="i"
-            class="ml-5 text-gray-500 transition-all duration-300 cursor-pointer"
-            :class="{ selected: item.mesin === selectedTitle }" @click="changeTabMesin(item.mesin)">
-            {{ item.mesin }}
-          </li>
-        </ul>
-      </div>
+        <li v-for="(item, i) in dataUnit" :key="i"
+          class="pb-2 text-base font-bold transition-all duration-300 cursor-pointer text-textDisabledColor"
+          :class="{ selected: item.mesin === selectedTitle }" @click="changeTabMesin(item.mesin)">
+          {{ item.mesin }}
+        </li>
+      </ul>
     </div>
   </div>
-
   <!-- Sental -->
   <div v-show="selectedTitle === 'Unit Sentral'" @click="selectedTitle = 'Unit Sentral'">
     <div class="flex mt-2">
@@ -69,7 +57,9 @@
             <div>
               <div class="flex flex-row mt-4">
                 <Chips :title="'Unit Pengelola'" :content="dataSentral.pengelola" />
-                <Chips :title="'Unit Pembina'" :content="dataSentral.pembina" />
+                <Chips :title="'Unit Pembina'" :content="dataSentral.pembina" class="block w-56 truncate"
+                  @mouseover="detailPembina" @mouseout="detailPembina">
+                </Chips>
                 <Chips :title="'Jumlah Unit'" :content="dataSentral.jumlah_mesin" />
                 <div class="flex items-center rounded-xl border border-[#007E8F] bg-blue-50 px-3 py-1 text-xs">
                   <p class="text-[#007E8F]">Tahun COD :</p>
@@ -97,6 +87,13 @@
                   </div>
                 </div>
               </div>
+              <Transition>
+                <div v-if="pembinaHover"
+                  class="flex flex-col bg-blue-50 border border-[#0099AD] absolute text-xs p-2 mt-3 ml-48 z-10 rounded-lg whitespace-nowrap space-y-1.5 duration-300 font-bold text-[#0099AD]"
+                  id="tooltipContentPembina">
+                  {{ dataSentral.pembina }}
+                </div>
+              </Transition>
               <div class="flex flex-row mt-3">
                 <Chips :title="'Daya Terpasang'" :content="dataSentral.data_terpasang + ' MW'" />
                 <Chips :title="'Daya Mampu(Netto)'" :content="dataSentral.data_mampu + ' MW'" />
@@ -147,7 +144,7 @@
                   <div>
                     <button @click="changeTab(2)"
                       class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD] dark:hover:bg-[#80C1CD] dark:hover:text-[#80C1CD]">
-                      Planning / FS
+                      Planning / Feasibility Study
                     </button>
                   </div>
                   <div>
@@ -202,177 +199,208 @@
     </div>
   </div>
   <!-- Mesin -->
-  <div v-for="(item, i) in dataUnit" :key="i" v-show="selectedTitle === item.mesin" @click="selectedTitle = item.mesin">
-    <div class="flex mt-2">
-      <div v-auto-animate="{ duration: 300 }" class="w-full px-4 py-2 mr-2 bg-white border rounded-md">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="ml-1 text-lg font-semibold text-primaryTextColor">
-              {{ item.mesin }}
-            </p>
-          </div>
-          <div class="cursor-pointer" @click="toggleButton">
-            <svg v-if="isHover" width="20" height="20" viewBox="0 0 20 20" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M5.29289 7.29289C5.68342 6.90237 6.31658 6.90237 6.70711 7.29289L10 10.5858L13.2929 7.29289C13.6834 6.90237 14.3166 6.90237 14.7071 7.29289C15.0976 7.68342 15.0976 8.31658 14.7071 8.70711L10.7071 12.7071C10.3166 13.0976 9.68342 13.0976 9.29289 12.7071L5.29289 8.70711C4.90237 8.31658 4.90237 7.68342 5.29289 7.29289Z"
-                fill="#0099AD" />
-            </svg>
-            <svg v-if="!isHover" width="20" height="20" viewBox="0 0 20 20" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M14.7071 12.7071C14.3166 13.0976 13.6834 13.0976 13.2929 12.7071L10 9.41421L6.70711 12.7071C6.31658 13.0976 5.68342 13.0976 5.29289 12.7071C4.90237 12.3166 4.90237 11.6834 5.29289 11.2929L9.29289 7.29289C9.68342 6.90237 10.3166 6.90237 10.7071 7.29289L14.7071 11.2929C15.0976 11.6834 15.0976 12.3166 14.7071 12.7071Z"
-                fill="#0099AD" />
-            </svg>
-          </div>
-        </div>
-        <div v-if="isHover">
-          <div class="flex my-3">
-            <div class="bg-[url('../assets/img/img-cik.png')] bg-cover bg-center w-40 h-42 rounded-md mr-2"></div>
+  <template v-if="selectedYear.length !== 0">
+    <div v-for="(item, i) in dataUnit" :key="i" v-show="selectedTitle === item.mesin"
+      @click="selectedTitle = item.mesin">
+      <div class="absolute z-20 flex flex-row items-center ml-4 space-x-3 right-5"
+        :class="authService.checkLevel() === 'Sentral' ? '-top-[120px]' : '-top-[118px]'"
+        v-if="selectedYear[i].tahun !== null || (selectedYear[i].range[0] !== null && selectedYear[i].range[1] !== null)">
+        <label class="text-sm font-semibold text-labelColor" for="">Periode</label>
+        <VueDatePicker class="mr-3 text-xs date-picker" v-model="selectedYear[i].tahun"
+          :year-range="selectedYear[i].range" :clearable="false" year-picker :teleport="true" />
+      </div>
+      <div class="flex mt-2">
+        <div v-auto-animate="{ duration: 300 }" class="w-full px-4 py-2 mr-2 bg-white border rounded-md">
+          <div class="flex items-center justify-between">
             <div>
-              <div class="flex flex-row mt-4">
-                <Chips :title="'Unit Pengelola'" :content="item.pengelola" />
-                <Chips :title="'Unit Pembina'" :content="item.pembina" />
-                <Chips :title="'Tahun COD'" :content="item.tahun" />
+              <p class="text-lg font-semibold text-primaryTextColor">
+                {{ item.mesin }}
+              </p>
+            </div>
+            <div class="cursor-pointer" @click="toggleButton">
+              <svg v-if="isHover" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M5.29289 7.29289C5.68342 6.90237 6.31658 6.90237 6.70711 7.29289L10 10.5858L13.2929 7.29289C13.6834 6.90237 14.3166 6.90237 14.7071 7.29289C15.0976 7.68342 15.0976 8.31658 14.7071 8.70711L10.7071 12.7071C10.3166 13.0976 9.68342 13.0976 9.29289 12.7071L5.29289 8.70711C4.90237 8.31658 4.90237 7.68342 5.29289 7.29289Z"
+                  fill="#0099AD" />
+              </svg>
+              <svg v-if="!isHover" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M14.7071 12.7071C14.3166 13.0976 13.6834 13.0976 13.2929 12.7071L10 9.41421L6.70711 12.7071C6.31658 13.0976 5.68342 13.0976 5.29289 12.7071C4.90237 12.3166 4.90237 11.6834 5.29289 11.2929L9.29289 7.29289C9.68342 6.90237 10.3166 6.90237 10.7071 7.29289L14.7071 11.2929C15.0976 11.6834 15.0976 12.3166 14.7071 12.7071Z"
+                  fill="#0099AD" />
+              </svg>
+            </div>
+          </div>
+          <div v-if="isHover">
+            <div class="flex my-3">
+              <div class="w-40 mr-5" v-if="item.photo1 !== ''">
+                <img :src="item.photo2" alt="Preview" class="object-cover rounded-lg h-44"></img>
               </div>
-              <div class="flex flex-row mt-3">
-                <Chips :title="'Daya Terpasang'" :content="item.data_terpasang + ' MW'" />
-                <Chips :title="'Daya Mampu(Netto)'" :content="item.data_mampu + ' MW'" />
-                <Chips :title="'Tahun Perolehan Data'" :content="item.tahun_nilai_perolehan" />
-              </div>
-              <div class="flex justify-between mr-3">
-                <div>
-                  <div class="flex mt-4 text-sm">
-                    <p class="text-[#7B8DAD] font-bold">Nilai Aset Awal</p>
-                    <p class="text-[#7B8DAD] ml-1">:</p>
-                  </div>
-                  <div class="flex text-sm mt-1.5">
-                    <p class="mr-2 text-[#7F7F80]">Rp.</p>
-                    <div class="text-[#333333]">
-                      {{ globalFormat.formatRupiah(item.asset_awal) }}
-                    </div>
-                  </div>
+              <div v-else class="w-40 mr-5 bg-red-500 rounded-lg h-44"></div>
+              <div>
+                <div class="flex flex-row mt-4">
+                  <Chips :title="'Unit Pengelola'" :content="item.pengelola" class="block w-58" />
+                  <Chips :title="'Unit Pembina'" :content="item.pembina ? item.pembina : '-'"
+                    class="block truncate max-w-56 w-fit" :class="item.pembina.length >= 16 ? 'cursor-pointer' : ''"
+                    @mouseover="detailPembina" @mouseout="detailPembina">
+                  </Chips>
+                  <Chips :title="'Tahun COD'" :content="item.tahun" />
                 </div>
-                <div class="ml-4">
-                  <div class="flex mt-4 text-sm">
-                    <p class="text-[#7B8DAD] font-bold">Masa Manfaat</p>
-                    <p class="text-[#7B8DAD] ml-1">:</p>
+                <Transition>
+                  <div v-if="pembinaHover" v-show="item.pembina !== '' && item.pembina.length > 16"
+                    class="bg-blue-50 border border-[#0099AD] absolute text-xs p-2 -mt-[60px] z-10 rounded-lg whitespace-nowrap duration-300 font-bold text-[#0099AD]"
+                    :class="item.pembina.length <= 16 ? 'ml-[350px]' : 'ml-[195px] '" id="tooltipContentPembina">
+                    {{ item.pembina ? item.pembina : '-' }}
                   </div>
-                  <div class="flex text-sm mt-1.5">
-                    <div class="text-[#333333] mr-2">
-                      {{ item.masa_manfaat }}
-                    </div>
-                    <p class="text-[#7F7F80]">Tahun</p>
-                  </div>
+                </Transition>
+                <div class="flex flex-row mt-3">
+                  <Chips :title="'Daya Terpasang'" :content="item.data_terpasang + ' MW'" />
+                  <Chips :title="'Daya Mampu(Netto)'" :content="item.data_mampu + ' MW'" />
+                  <Chips :title="'Tahun Perolehan Data'" :content="item.tahun_nilai_perolehan" />
                 </div>
-                <div class="ml-4">
-                  <div class="flex mt-4 text-sm">
-                    <p class="text-[#7B8DAD] font-bold">Sisa Masa Manfaat</p>
-                    <p class="text-[#7B8DAD] ml-1">:</p>
-                  </div>
-                  <div class="flex text-sm mt-1.5">
-                    <div class="text-[#333333] mr-2">
-                      {{ item.sisa_masa_manfaat }}
+                <div class="flex justify-between mr-3">
+                  <div>
+                    <div class="flex mt-4 text-sm">
+                      <p class="text-[#7B8DAD] font-bold">Nilai Aset Awal</p>
+                      <p class="text-[#7B8DAD] ml-1">:</p>
                     </div>
-                    <p class="text-[#7F7F80]">Tahun</p>
+                    <div class="flex text-sm mt-1.5">
+                      <p class="mr-2 text-[#7F7F80]">Rp.</p>
+                      <div class="text-[#333333]">
+                        {{ globalFormat.formatRupiah(item.asset_awal) }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="ml-4">
+                    <div class="flex mt-4 text-sm">
+                      <p class="text-[#7B8DAD] font-bold">Masa Manfaat</p>
+                      <p class="text-[#7B8DAD] ml-1">:</p>
+                    </div>
+                    <div class="flex text-sm mt-1.5">
+                      <div class="text-[#333333] mr-2">
+                        {{ item.masa_manfaat }}
+                      </div>
+                      <p class="text-[#7F7F80]">Tahun</p>
+                    </div>
+                  </div>
+                  <div class="ml-4">
+                    <div class="flex mt-4 text-sm">
+                      <p class="text-[#7B8DAD] font-bold">Sisa Masa Manfaat</p>
+                      <p class="text-[#7B8DAD] ml-1">:</p>
+                    </div>
+                    <div class="flex text-sm mt-1.5">
+                      <div class="text-[#333333] mr-2">
+                        {{ item.sisa_masa_manfaat }}
+                      </div>
+                      <p class="text-[#7F7F80]">Tahun</p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div v-auto-animate="{ duration: 300 }" class="w-full px-4 py-2 bg-white border rounded-md">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <p class="mt-1 mr-2 text-sm font-semibold text-primaryTextColor">
-              {{ tabs }}
-            </p>
-            <div class=" text-[#0099AD] font-semibold mt-1.5 text-xs cursor-pointer z-20" @click="showElement">
-              Ubah Grafik
-              <Transition>
-                <div v-if="message"
-                  class="flex flex-col bg-white text-xs px-2 py-1 mt-0.5 left-12 rounded-lg whitespace-nowrap border space-y-1.5 duration-300"
-                  id="FilterContent">
-                  <div class="flex justify-between">
-                    <div class="flex">
-                      <svg width="12" height="11" viewBox="0 0 12 11" class="mt-2" fill="none"
+        <div v-auto-animate="{ duration: 300 }" class="w-full px-4 py-2 bg-white border rounded-md">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <p class="mt-1 mr-2 text-sm font-semibold text-primaryTextColor">
+                {{ tabs }}
+              </p>
+              <div class=" text-[#0099AD] font-semibold mt-1.5 text-xs cursor-pointer z-10" @click="showElement">
+                Ubah Grafik
+                <Transition>
+                  <div v-if="message"
+                    class="flex flex-col bg-white text-xs px-2 py-1 mt-0.5 left-12 rounded-lg whitespace-nowrap border space-y-1.5 duration-300"
+                    id="FilterContent">
+                    <div class="flex justify-between">
+                      <div class="flex">
+                        <svg width="12" height="11" viewBox="0 0 12 11" class="mt-2" fill="none"
+                          xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M0.666016 9.66667H11.3327M0.666016 7L3.33268 3L5.99935 4.33333L8.66602 1L11.3327 3.66667"
+                            stroke="#333333" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <p class="mt-1 ml-2 font-semibold text-slate-800">Grafik</p>
+                      </div>
+                      <svg width="12" height="12" viewBox="0 0 20 20" fill="none" class="mt-1"
                         xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M0.666016 9.66667H11.3327M0.666016 7L3.33268 3L5.99935 4.33333L8.66602 1L11.3327 3.66667"
-                          stroke="#333333" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M4.5 19.5L19.5 4.5M4.5 4.5L19.5 19.5" stroke="#333333" stroke-width="1.5"
+                          stroke-linecap="round" stroke-linejoin="round" />
                       </svg>
-                      <p class="mt-1 ml-2 font-semibold text-slate-800">Grafik</p>
                     </div>
-                    <svg width="12" height="12" viewBox="0 0 20 20" fill="none" class="mt-1"
-                      xmlns="http://www.w3.org/2000/svg">
-                      <path d="M4.5 19.5L19.5 4.5M4.5 4.5L19.5 19.5" stroke="#333333" stroke-width="1.5"
-                        stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
+                    <div>
+                      <button @click="changeTab(2)"
+                        class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD] dark:hover:bg-[#80C1CD] dark:hover:text-[#80C1CD]">
+                        Planning / Feasibility Study
+                      </button>
+                    </div>
+                    <div>
+                      <button @click="changeTab(1)"
+                        class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD] dark:hover:bg-[#80C1CD] dark:hover:text-[#80C1CD]">
+                        WLC (Realisasi & Proyeksi)
+                      </button>
+                    </div>
+                    <div>
+                      <button @click="changeTab(3)"
+                        class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD] dark:hover:bg-[#80C1CD] dark:hover:text-[#80C1CD]">
+                        Planning & Realisasi + Proyeksi
+                      </button>
+                    </div>
+                    <div>
+                      <button @click="changeTab(4)"
+                        class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD] dark:hover:bg-[#80C1CD] dark:hover:text-[#80C1CD]">
+                        Planning vs Realisasi s/d Tahun Berjalan
+                      </button>
+                    </div>
                   </div>
-                  <div>
-                    <button @click="changeTab(2)"
-                      class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD] dark:hover:bg-[#80C1CD] dark:hover:text-[#80C1CD]">
-                      Planning / FS
-                    </button>
-                  </div>
-                  <div>
-                    <button @click="changeTab(1)"
-                      class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD] dark:hover:bg-[#80C1CD] dark:hover:text-[#80C1CD]">
-                      WLC (Realisasi & Proyeksi)
-                    </button>
-                  </div>
-                  <div>
-                    <button @click="changeTab(3)"
-                      class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD] dark:hover:bg-[#80C1CD] dark:hover:text-[#80C1CD]">
-                      Planning & Realisasi + Proyeksi
-                    </button>
-                  </div>
-                  <div>
-                    <button @click="changeTab(4)"
-                      class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD] dark:hover:bg-[#80C1CD] dark:hover:text-[#80C1CD]">
-                      Planning vs Realisasi s/d Tahun Berjalan
-                    </button>
-                  </div>
-                </div>
-              </Transition>
+                </Transition>
+              </div>
+            </div>
+            <div class="cursor-pointer mt-1.5" @click="toggleButton">
+              <svg v-if="isHover" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M5.29289 7.29289C5.68342 6.90237 6.31658 6.90237 6.70711 7.29289L10 10.5858L13.2929 7.29289C13.6834 6.90237 14.3166 6.90237 14.7071 7.29289C15.0976 7.68342 15.0976 8.31658 14.7071 8.70711L10.7071 12.7071C10.3166 13.0976 9.68342 13.0976 9.29289 12.7071L5.29289 8.70711C4.90237 8.31658 4.90237 7.68342 5.29289 7.29289Z"
+                  fill="#0099AD" />
+              </svg>
+              <svg v-if="!isHover" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M14.7071 12.7071C14.3166 13.0976 13.6834 13.0976 13.2929 12.7071L10 9.41421L6.70711 12.7071C6.31658 13.0976 5.68342 13.0976 5.29289 12.7071C4.90237 12.3166 4.90237 11.6834 5.29289 11.2929L9.29289 7.29289C9.68342 6.90237 10.3166 6.90237 10.7071 7.29289L14.7071 11.2929C15.0976 11.6834 15.0976 12.3166 14.7071 12.7071Z"
+                  fill="#0099AD" />
+              </svg>
             </div>
           </div>
-          <div class="cursor-pointer mt-1.5" @click="toggleButton">
-            <svg v-if="isHover" width="20" height="20" viewBox="0 0 20 20" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M5.29289 7.29289C5.68342 6.90237 6.31658 6.90237 6.70711 7.29289L10 10.5858L13.2929 7.29289C13.6834 6.90237 14.3166 6.90237 14.7071 7.29289C15.0976 7.68342 15.0976 8.31658 14.7071 8.70711L10.7071 12.7071C10.3166 13.0976 9.68342 13.0976 9.29289 12.7071L5.29289 8.70711C4.90237 8.31658 4.90237 7.68342 5.29289 7.29289Z"
-                fill="#0099AD" />
-            </svg>
-            <svg v-if="!isHover" width="20" height="20" viewBox="0 0 20 20" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M14.7071 12.7071C14.3166 13.0976 13.6834 13.0976 13.2929 12.7071L10 9.41421L6.70711 12.7071C6.31658 13.0976 5.68342 13.0976 5.29289 12.7071C4.90237 12.3166 4.90237 11.6834 5.29289 11.2929L9.29289 7.29289C9.68342 6.90237 10.3166 6.90237 10.7071 7.29289L14.7071 11.2929C15.0976 11.6834 15.0976 12.3166 14.7071 12.7071Z"
-                fill="#0099AD" />
-            </svg>
+          <div v-if="isHover" class="mt-3">
+            <TagMesin :id-mesin="item.id_mesin" :tahun-data="parseInt(selectedYear[i].tahun)"
+              v-if="dataUnit.length !== 0" />
           </div>
         </div>
-        <div v-if="isHover" class="mt-3">
-          <TagMesin :id-mesin="item.id_mesin" :tahun-data="parseInt(yearPickedSentral)" v-if="dataUnit.length !== 0" />
-        </div>
+      </div>
+      <div class="w-full py-3 mt-2 bg-white border rounded-md h-1/2">
+        <GrafikMesin :id-mesin="item.id_mesin" :tahun-data="parseInt(selectedYear[i].tahun)"
+          v-if="dataUnit.length !== 0" />
+      </div>
+      <div class="grid grid-cols-3 gap-2 mt-2">
+        <InfoMesin :id-mesin="item.id_mesin" :tahun-data="parseInt(selectedYear[i].tahun)"
+          v-if="dataUnit.length !== 0" />
       </div>
     </div>
-    <div class="w-full mt-2 bg-white border rounded-md h-1/2">
-      <GrafikMesin :id-mesin="item.id_mesin" :tahun-data="parseInt(yearPickedSentral)" v-if="dataUnit.length !== 0" />
-    </div>
-    <div class="grid grid-cols-3 gap-3 mt-2">
-      <InfoMesin :id-mesin="item.id_mesin" :tahun-data="parseInt(yearPickedSentral)" v-if="dataUnit.length !== 0" />
-    </div>
-  </div>
+  </template>
 </template>
 
 <script setup lang="ts">
-import { ref, provide, onMounted, watch } from "vue";
+import { ref, provide, onMounted, watch, onUnmounted } from "vue";
 import router from "@/router";
 import { useRoute } from "vue-router";
 import { useTagSentral } from "@/store/storeTagGrafik";
 import { useTagMesin } from "@/store/storeTagGrafik";
+import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
+import DetailSentralService from "@/services/detail-sentral-service";
+const detailSentralService = new DetailSentralService();
+import AuthService from "@/services/auth-service";
+const authService = new AuthService();
 import PetaService from "@/services/peta-service";
 import GrafikService from "@/services/grafik-service";
 import GlobalFormat from "@/services/format/global-format";
@@ -387,10 +415,8 @@ import ModalSearch from "@/components/ModalSearch.vue";
 import Chips from "@/components/ui/Chips.vue";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import { notifyError } from "@/services/helper/toast-notification";
-// import Export from "@/components/ui/ExportModal.vue";
-// import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
-// const periodeTahunMesin = ref<Array<number>>([]);
 
+const nodeMode = import.meta.env.MODE;
 const route = useRoute();
 const store = useTagSentral();
 const stored = useTagMesin();
@@ -405,6 +431,8 @@ const dataPeta = ref<SentralItem[]>([]);
 const kodeSentral = ref<any>('');
 const idSentral = ref<any>('');
 const tahunSentral = ref<any>('');
+const yearPickedMesin = ref<any>('2024');
+const jumlahMesin = ref<any>('');
 const idMesin = ref<any>([]);
 const namaMesin = ref<any>();
 const tahunMesin = ref<any>([]);
@@ -413,11 +441,17 @@ const selectedSearchQuery = ref("");
 const isSearchModalOpen = ref<boolean>(false);
 const periodeTahunSentral = ref<any>();
 const yearPickedSentral = ref<any>();
+const periodeTahunMesin = ref<any>();
+const selectedYear = ref<any[]>([]);
+const yearResponseMesin = ref<any>();
 
+const levelID = ref(nodeMode === 'production' ? encryptStorage.getItem('level_id') : localStorage.getItem("level_id"));
+const level_ID = ref(levelID.value);
 const isLoading = ref(false);
 const isHover = ref(true);
 const isOver = ref(false);
 const message = ref(false);
+const pembinaHover = ref(false);
 const tabs = ref("WLC (Realisasi & Proyeksi)");
 // const selectedTitle = ref("Unit Sentral");
 const selectedTitle = ref(namaMesin);
@@ -428,6 +462,10 @@ function toggleButton() {
 
 function toggleDetail() {
   isOver.value = !isOver.value;
+}
+
+function detailPembina() {
+  pembinaHover.value = !pembinaHover.value;
 }
 
 const props = defineProps({
@@ -447,58 +485,71 @@ const handleFocus = () => {
 }
 
 interface SentralItem {
-  data: any;
-  kode_sentral: string;
-  id_sentral: string;
-  sentral: string;
-  pengelola: string;
-  pembina: string;
-  jenis_pembangkit: string;
-  data_terpasang: string;
-  data_mampu: string;
-  asset_awal: string;
-  jumlah_mesin: number;
-  tahun_nilai_perolehan: string;
-  tahun_data: string;
-  tahun: number;
-  photo: string;
+  data: any
+  kode_sentral: string
+  id_sentral: string
+  sentral: string
+  pengelola: string
+  pembina: string
+  jenis_pembangkit: string
+  data_terpasang: string
+  data_mampu: string
+  asset_awal: string
+  jumlah_mesin: number
+  tahun_nilai_perolehan: string
+  tahun_data: string
+  tahun: number
+  photo: string
 }
 
 interface UnitItem {
-  kode_sentral: string;
-  mesin: string;
-  id_mesin: number;
-  sentral: string;
-  pengelola: string;
-  pembina: string;
-  jenis_pembangkit: string;
-  data_terpasang: string;
-  data_mampu: string;
-  asset_awal: string;
-  sisa_masa_manfaat: number;
-  masa_manfaat: number;
-  tahun_data: string;
-  tahun_nilai_perolehan: string;
-  tahun: number;
-  photo: string;
+  kode_sentral: string
+  mesin: string
+  id_mesin: number
+  sentral: string
+  pengelola: string
+  pembina: string
+  jenis_pembangkit: string
+  data_terpasang: string
+  data_mampu: string
+  asset_awal: string
+  sisa_masa_manfaat: number
+  masa_manfaat: number
+  tahun_data: string
+  tahun_nilai_perolehan: string
+  tahun: number
+  photo: string
+  photo1: string
+  photo2: string
+  length: number
 }
 
 const fetchDataSentral = async () => {
   try {
     isLoading.value = true;
+    selectedYear.value = []
     const response: SentralItem = await petaService.getSentralByKode(
-      route.params.id
+      nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id
     );
     // const { data } = response;
     dataSentral.value = response.data;
     idSentral.value = response.data.id_sentral;
     tahunSentral.value = response.data.tahun_data;
-    dataUnit.value = response.data.mesins;
     namaMesin.value = response.data.mesins[0].mesin;
+    jumlahMesin.value = response.data.jumlah_mesin
     for (var i = 0; i < response.data.mesins.length; i++) {
       idMesin.value.push(response.data.mesins[i].id_mesin)
       tahunMesin.value.push(response.data.mesins[i].tahun_data)
+      try {
+        const responsePhoto: any = await detailSentralService.getPhoto(response.data.mesins[i].photo1);
+        const blob = new Blob([responsePhoto]);
+        response.data.mesins[i].photo2 = URL.createObjectURL(blob);
+      } catch (error) {
+        console.error('Error Fetch Photo: ', error)
+      }
     }
+    dataUnit.value = response.data.mesins;
+    console.log(selectedYear.value)
     isLoading.value = false;
   } catch (error) {
     console.error(error);
@@ -506,7 +557,12 @@ const fetchDataSentral = async () => {
 };
 
 const replaceSentral = async () => {
-  router.push({ path: `/grafik/${kodeSentral.value}` });
+  router.push(
+    {
+      name: "grafik",
+      params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(kodeSentral.value) : kodeSentral.value }
+    },
+  );
 };
 
 const fetchPetaSentral = async () => {
@@ -537,25 +593,35 @@ const fetchPetaSentral = async () => {
 const handleChangeSentral = async () => {
   try {
     await fetchPetaSentral();
+    await fetchDataSentral();
+    await fetchPeriodeTahunSentral();
+    selectedTitle.value = selectedTitle.value;
     replaceSentral();
-    selectedTitle.value = namaMesin;
   } catch (error) {
     console.error('Handle Change Sentral Error : ' + error);
   }
 }
 
-// const tahunSen = tahunSentral;
-// const yearPickedSentral = ref(tahunSen);
-// const tahunMes = tahunMesin;
-// const yearPickedMesin = ref(tahunMes);
-
 const fetchPeriodeTahunSentral = async () => {
   try {
     const response: any = await grafikService.getYearSentral({
-      kode_sentral: route.params.id,
+      kode_sentral: nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id,
     });
     periodeTahunSentral.value = [response.data[0].tahun, response.data[response.data.length - 1].tahun];
-    yearPickedSentral.value = response.data[response.data.length - 1].tahun
+    yearPickedSentral.value = response.data[response.data.length - 1].tahun;
+    for (let i = 0; i < dataUnit.value.length; i++) {
+      const responseLimitTahun: any = await grafikService.getYearMesin({
+        id_mesin: dataUnit.value[i].id_mesin
+      });
+      console.log('resp', responseLimitTahun.data)
+      if (responseLimitTahun.data !== null) {
+        selectedYear.value.push({ tahun: responseLimitTahun.data[responseLimitTahun.data.length - 1].tahun, range: [responseLimitTahun.data[0].tahun, responseLimitTahun.data[responseLimitTahun.data.length - 1].tahun] })
+        console.log('year', responseLimitTahun.data, selectedYear.value)
+      } else {
+        selectedYear.value.push({ tahun: null, range: [null, null] })
+      }
+    }
+    console.log(selectedYear.value, '23')
     // console.log('year', yearPickedSentral.value)
   } catch (error) {
     console.error('Fetch Tahun Grafik Sentral Error : ' + error);
@@ -565,9 +631,11 @@ const fetchPeriodeTahunSentral = async () => {
 // const fetchPeriodeTahunMesin = async () => {
 //   try {
 //     const response: any = await grafikService.getYearMesin({
-//       id_mesin: idMesin.value,
+//       id_mesin: item.id_mesin
 //     });
 //     periodeTahunMesin.value = [response.data[0].tahun, response.data[response.data.length - 1].tahun];
+//     selectedYear.value = response.data[response.data.length - 1].tahun
+//     // console.log('year', selectedYear.value)
 //   } catch (error) {
 //     console.error('Fetch Tahun Grafik Mesin Error : ' + error);
 //   }
@@ -576,7 +644,6 @@ const fetchPeriodeTahunSentral = async () => {
 watch(route, async (value) => {
   await fetchDataSentral();
   await fetchPeriodeTahunSentral();
-  // await fetchPeriodeTahunMesin();
 })
 
 onMounted(async () => {
@@ -588,7 +655,6 @@ onMounted(async () => {
   await fetchDataSentral();
   await fetchPetaSentral();
   await fetchPeriodeTahunSentral();
-  // await fetchPeriodeTahunMesin();
 });
 
 function changeTab(tabb: number) {
@@ -597,9 +663,9 @@ function changeTab(tabb: number) {
     stored.currentTabMesin = "WLC (Realisasi & Proyeksi)";
     tabs.value = "WLC (Realisasi & Proyeksi)";
   } else if (tabb === 2) {
-    store.currentTabSentral = "Planning / FS";
-    stored.currentTabMesin = "Planning / FS";
-    tabs.value = "Planning / FS";
+    store.currentTabSentral = "Planning / Feasibility Study";
+    stored.currentTabMesin = "Planning / Feasibility Study";
+    tabs.value = "Planning / Feasibility Study";
   } else if (tabb === 3) {
     store.currentTabSentral = "Planning & Realisasi + Proyeksi";
     stored.currentTabMesin = "Planning & Realisasi + Proyeksi";
@@ -611,12 +677,18 @@ function changeTab(tabb: number) {
   }
 }
 
+onUnmounted(() => {
+  store.currentTabSentral = "WLC (Realisasi & Proyeksi)";
+  stored.currentTabMesin = "WLC (Realisasi & Proyeksi)";
+  tabs.value = "WLC (Realisasi & Proyeksi)";
+})
+
 provide("selectedTitle", selectedTitle);
 </script>
 
 <style scoped>
 ul li.selected {
-  border-bottom-width: 5px;
+  border-bottom-width: 4px;
   border-color: #0099ad;
   color: #0099ad;
 }
@@ -668,5 +740,16 @@ ul li.selected {
   /* IE and Edge */
   scrollbar-width: none;
   /* Firefox */
+}
+
+#tooltipContentPembina::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  rotate: 270deg;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent black transparent transparent;
 }
 </style>

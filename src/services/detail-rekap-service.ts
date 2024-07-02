@@ -16,20 +16,20 @@ export default class DetailRekapService extends BaseService {
     return this.get(`${url}kertas-kerja-detail/type-periodic`, {kode_jenis_pembangkit: kode_jenis_pembangkit});
   }
   // Mesin
-  async getAsumsiParameter<T>(tahun_realisasi:any, id_mesin:any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/asumsi-parameter`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
+  async getAsumsiParameter<T>(tahun_realisasi:any, id_mesin:any, tahun: any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/asumsi-parameter`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin, tahun: tahun});
   }
-  async getDataTeknis<T>(tahun_realisasi:any, id_mesin:any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/data-teknis-final`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
+  async getDataTeknis<T>(tahun:any, id_mesin:any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/data-teknis-final`, {tahun: tahun, id_mesin: id_mesin});
   }
-  async getDataFinansial<T>(tahun_realisasi:any, id_mesin:any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/data-finansial-final`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
+  async getDataFinansial<T>(tahun:any, id_mesin:any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/data-finansial-final`, {tahun: tahun, id_mesin: id_mesin});
   }
   async getComboBahanBakar<T>(jenis_pembangkit:any): Promise<T> {
     return this.get(`${url}filter/combo-bahan-bakar`, {jenis_pembangkit: jenis_pembangkit});
   }
   async getTahunRealisasi<T>(id_mesin:any): Promise<T> {
-    return this.get(`${url}kertas-kerja-detail/tahun-realisasi`, {id_mesin: id_mesin});
+    return this.get(`${url}filter/tahun-permesin`, {id_mesin: id_mesin});
   }
   async downloadExcelMesin<T>(id_mesin: number, tahun: number): Promise<T> {
     return this.get(`${url}kertas-kerja-detail/export-template-awal`, {id_mesin: id_mesin, tahun: tahun}, 'arraybuffer');

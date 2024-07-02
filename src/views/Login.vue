@@ -10,27 +10,32 @@
           <!-- Item 1 -->
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
             <img src="../assets/img/Carousel2.jpg"
-              class="absolute block w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="..." />
+              class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+              alt="..." />
           </div>
           <!-- Item 2 -->
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
             <img src="../assets/img/carousel4.jpg"
-              class="absolute block w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="..." />
+              class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+              alt="..." />
           </div>
           <!-- Item 3 -->
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
             <img src="../assets/img/carousel5.jpg"
-              class="absolute block w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="..." />
+              class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+              alt="..." />
           </div>
           <!-- Item 4 -->
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
             <img src="../assets/img/carousel6.jpg"
-              class="absolute block w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="..." />
+              class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+              alt="..." />
           </div>
           <!-- Item 5 -->
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
             <img src="../assets/img/Carousel3.jpg"
-              class="absolute block w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="..." />
+              class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
+              alt="..." />
           </div>
         </div>
         <!-- Slider indicators -->
@@ -60,7 +65,7 @@
         <div>
           <label for="emailAddress" class="text-xs text-[#5979A6] mb-1">Email</label>
           <input v-model="valEmail" id="emailAddress" type="email" autocomplete="new-email"
-            class="block bg-white p-3 w-[350px] mb-4 text-xs text-gray-900 rounded-md border-l-2 border border-gray-300 focus:ring-[#0099AD] focus:border-[#0099AD]"
+            class="block bg-white p-3 w-[350px] mb-4 text-xs text-gray-900 rounded-md border border-gray-300 focus:ring-[#0099AD] focus:border-[#0099AD]"
             placeholder="Masukkan Email Anda" />
         </div>
         <p class="mb-2 -mt-2 text-xs text-red-500">{{ valEmailErr }}</p>
@@ -68,7 +73,7 @@
           <label for="password1" class="text-xs text-[#5979A6] mb-1">Password</label>
           <div class="relative">
             <input v-model="valPassword" autocomplete="new-password"
-              class="block bg-white py-3 w-[350px] text-xs mb-6 text-gray-900 rounded-md border-l-2 border border-gray-300 focus:ring-[#0099AD] focus:border-[#0099AD]"
+              class="block bg-white py-3 w-[350px] text-xs mb-6 text-gray-900 rounded-md border border-gray-300 focus:ring-[#0099AD] focus:border-[#0099AD]"
               :type="showPassword ? 'text' : 'password'" id="password1" placeholder="Masukkan Kata Sandi"
               @keyup.enter="onSubmit" @paste="onPaste" @copy="onCopy" />
             <button @click="visiblePassword" class="absolute transform -translate-y-1/2 top-1/2 right-3" type="button">
@@ -97,9 +102,9 @@
             Captcha
           </div>
           <div
-            class="bg-gray-200 text-black h-[80px] w-[350px] px-4 border-2 border-gray-200 flex items-center justify-between rounded-md">
+            class="bg-gray-200 text-primaryTextColor h-[80px] w-[350px] px-4 border-2 border-gray-200 flex items-center justify-between rounded-md">
             <label for="check">
-              <input type="checkbox" id="check" v-model="checkbox" @click="checkboxChange" />
+              <input type="checkbox" id="check" class="cursor-pointer" v-model="checkbox" @click="checkboxChange" />
               <span class="p-2 text-xs" :class="ceklistCaptcha === true
                 ? 'text-green-500'
                 : ceklistCaptcha === false
@@ -119,7 +124,7 @@
               </div>
             </div>
           </div>
-          <div class="bg-white text-black h-[140px] w-[350px] border border-gray-300 rounded-md"
+          <div class="bg-white text-primaryTextColor h-[140px] w-[350px] border border-gray-300 rounded-md"
             :class="box === true ? 'block' : 'hidden'">
             <input type="text" id="captchaInput" class="w-[330px] mx-2 text-xs m-1 border-0" placeholder="Type the text"
               v-model="valCaptcha" />
@@ -138,7 +143,7 @@
                 <img src="https://www.gstatic.com/recaptcha/api2/info.png" alt="info" class="w-5 h-5" />
               </div>
               <button
-                class="w-20 p-1 text-xs font-semibold tracking-wide text-white bg-indigo-600 rounded-md shadow-lg font-display focus:outline-none focus:shadow-outline hover:bg-indigo-300 hover:text-indigo-600"
+                class="w-20 p-1 text-xs font-semibold tracking-wide text-white duration-300 bg-indigo-600 rounded-md shadow-lg font-display focus:outline-none focus:shadow-outline hover:bg-indigo-300 hover:text-indigo-600"
                 @click="checkCaptcha" type="button">
                 Verify
               </button>
@@ -146,16 +151,16 @@
           </div>
         </div>
         <button
-          class="text-black font-semibold bg-slate-300 w-[350px] focus:ring-4 focus:ring-slate-700 rounded-lg text-xs p-3 my-4 dark:bg-slate-700 dark:hover:bg-slate-300 focus:outline-none dark:focus:ring-slate-400"
+          class="text-primaryTextColor uppercase  bg-slate-300 w-[350px] cursor-not-allowed focus:ring-4 focus:ring-slate-700 rounded-lg text-xs p-3 my-4 dark:bg-slate-700 dark:hover:bg-slate-300 focus:outline-none dark:focus:ring-slate-400"
           v-if="valEmail.length === 0 && valPassword.length === 0" disabled>
-          <p>Masuk Ke Aplikasi</p>
+          <p class="font-medium">Masuk Ke Aplikasi</p>
         </button>
         <button @click="onSubmit" type="button"
-          class="text-white font-semibold bg-[#0099AD] w-[350px] hover:bg-[#0099AD] hover:text-white focus:ring-4 focus:ring-[#005A66] rounded-lg text-xs p-3 my-4 dark:bg-[#005A66] dark:hover:bg-slate-300 focus:outline-none dark:focus:ring-[#0099AD]"
+          class="text-white uppercase  bg-[#0099AD] w-[350px] hover:bg-[#0099AD] hover:text-white active:ring active:ring-[#005A66] rounded-lg text-xs p-3 my-4 dark:bg-[#005A66] dark:hover:bg-slate-300 focus:outline-none dark:focus:ring-[#0099AD]"
           v-else>
-          <p v-show="!isLoading">Masuk Ke Aplikasi</p>
-          <div v-show="isLoading">
-            <svg aria-hidden="true" class="inline w-5 h-5 mr-2 text-gray-200 animate-spin fill-[#0099AD]"
+          <p v-show="!isLoading" class="font-semibold">Masuk Ke Aplikasi</p>
+          <div v-show="isLoading" class="flex flex-row items-center justify-center space-x-2">
+            <svg aria-hidden="true" class="inline w-5 h-5 text-gray-200 animate-spin fill-[#0099AD]"
               viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
@@ -164,16 +169,16 @@
                 d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
                 fill="currentFill" />
             </svg>
-            <span>Loading...</span>
+            <span class="font-medium">Loading...</span>
           </div>
         </button>
-        <div class="flex mb-4">
-          <div class="w-[102px] h-[1px] bg-slate-300 flex mt-3 mr-2"></div>
+        <div class="flex flex-row items-center justify-center mb-4 space-x-3">
+          <div class="w-16 h-[1px] bg-slate-300"></div>
           <p class="mr-1 text-xs text-center">atau masuk dengan</p>
-          <div class="w-[102px] h-[1px] bg-slate-300 flex mt-3 ml-2"></div>
+          <div class="w-16 h-[1px] bg-slate-300"></div>
         </div>
         <button type="button" @click="loginSSO"
-          class="text-[#0099AD] bg-white w-[350px] hover:bg-blue-100 border border-blue-200 focus:ring-4 focus:outline-none focus:ring-blue-100 font-medium rounded-lg text-xs p-3 text-center dark:focus:ring-[#007E8F] dark:bg-white dark:border-[#0099AD] dark:text-[#005A66] dark:hover:bg-blue-200 mr-2">
+          class="text-[#0099AD] duration-300 bg-white w-[350px] hover:bg-blue-100 border border-blue-200 focus:ring-4 focus:outline-none focus:ring-blue-100 font-medium rounded-lg text-xs p-3 text-center dark:focus:ring-[#007E8F] dark:bg-white dark:border-[#0099AD] dark:text-[#005A66] dark:hover:bg-blue-200 mr-2">
           LOGIN SSO
         </button>
       </form>
@@ -188,6 +193,7 @@ import LoginService from "../services/auth-service";
 import { initFlowbite } from "flowbite";
 import axios from "axios";
 import { store } from "../store";
+import { encryptStorage } from "@/utils/app-encrypt-storage";
 
 const router = useRouter();
 const isLoading = ref(false);
@@ -214,9 +220,9 @@ function visiblePassword() {
 const captcha: any = ref([]);
 async function onSubmit() {
   if (valEmail.value === "") {
-    valEmailErr.value = "Email Kosong Mohon diisi.";
+    valEmailErr.value = "Email kosong mohon diisi";
   } else if (valPassword.value === "") {
-    valPasswordErr.value = "Password Kosong Mohon diisi.";
+    valPasswordErr.value = "Password kosong mohon diisi";
     valEmailErr.value = "";
   } else {
     valEmailErr.value = "";
@@ -237,7 +243,7 @@ async function onSubmit() {
       };
     }
     if (verify.value !== true && box.value !== true) {
-      valPasswordErr.value = "Anda Belum Melakukan Verifikasi`I'm not a robot`";
+      valPasswordErr.value = "Anda belum melakukan 'Verifikasi Captcha'";
       isLoading.value = false;
       return;
     } else {
@@ -252,31 +258,20 @@ async function onSubmit() {
     try {
       const response: any = await loginService.login(param);
       const token = response.data.token;
-      const namaPegawai = response.data.nama_pegawai;
-      const levelID = response.data.id_level;
-      const levelSentral = response.data.id_sentral === '' ? 0 : response.data.id_sentral;
-      const idPembina = response.data.id_pembina === '' ? 0 : response.data.id_pembina;
-      const kodePengelola = response.data.kode_pengelola === '' ? 0 : response.data.kode_pengelola;
       const permission = await axios.get(`${url}permission`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       store.setMenus(permission.data.data);
-      localStorage.setItem("token", token);
-      localStorage.setItem("nama_pegawai", namaPegawai);
-      localStorage.setItem("level_id", levelID);
-      localStorage.setItem("level_sentral", levelSentral);
-      localStorage.setItem("id_pembina", idPembina);
-      localStorage.setItem("kode_pengelola", kodePengelola);
       setTimeout(() => {
         router.push({ name: "dashboard" });
       }, 500);
     } catch (e) {
       isLoading.value = false;
       console.log(e);
-      valEmailErr.value = "Invalid Email or Password is wrong";
-      valPasswordErr.value = "Invalid Email or Password is wrong";
+      valEmailErr.value = "Email atau Password salah";
+      valPasswordErr.value = "Email atau Password salah";
     }
   }
 }
@@ -334,3 +329,5 @@ onMounted(() => {
   initFlowbite();
 });
 </script>
+
+<style lang="scss"></style>

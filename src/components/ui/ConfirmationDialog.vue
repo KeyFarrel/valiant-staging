@@ -5,10 +5,10 @@
     <div class="w-full h-0.5 bg-strokeColor"></div>
     <div class="flex flex-row justify-end space-x-3">
       <button
-        class="px-3 py-2 text-primaryColor rounded-lg hover:text-white hover:bg-hoverColor cursor-pointer duration-300"
+        class="px-3 py-2 duration-300 rounded-lg cursor-pointer text-primaryColor hover:text-white hover:bg-hoverColor"
         @click="emit('onBatalClick')">Batal</button>
       <button
-        class="px-3 py-2 bg-primaryColor text-white font-semibold rounded-lg hover:bg-hoverColor cursor-pointer duration-300"
+        class="px-3 py-2 font-semibold text-white duration-300 rounded-lg cursor-pointer bg-primaryColor hover:bg-hoverColor"
         @click="emit('onAcceptClick')">{{
           props.buttonTitle }}</button>
     </div>

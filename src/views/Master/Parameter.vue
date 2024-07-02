@@ -15,18 +15,15 @@
     <p class="text-sm text-gray-500">Data telah berhasil dikirimkan</p>
   </ModalWrapper>
   <div class="p-6 space-y-5 bg-white rounded-lg">
-    <div class="flex flex-row items-center justify-between">
-      <SearchBox class="w-60" />
-      <button @click="isModalOpen = true" type="button"
-        class="px-3 py-2 space-x-3 text-white bg-[#0099AD] hover:bg-[#007E8F] focus:ring-4 focus:ring-[#9ddee7] font-medium rounded-lg text-sm flex justify-center items-center dark:bg-[#005A66] dark:hover:bg-[#0099AD] focus:outline-none dark:focus:ring-[#007E8F] duration-300">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" clip-rule="evenodd"
-            d="M7 0.875C7.48325 0.875 7.875 1.26675 7.875 1.75V6.125H12.25C12.7332 6.125 13.125 6.51675 13.125 7C13.125 7.48325 12.7332 7.875 12.25 7.875H7.875V12.25C7.875 12.7332 7.48325 13.125 7 13.125C6.51675 13.125 6.125 12.7332 6.125 12.25V7.875H1.75C1.26675 7.875 0.875 7.48325 0.875 7C0.875 6.51675 1.26675 6.125 1.75 6.125H6.125V1.75C6.125 1.26675 6.51675 0.875 7 0.875Z"
-            fill="white" />
-        </svg>
-        <span class="font-semibold">Tambah Parameter</span>
-      </button>
-    </div>
+    <button @click="isModalOpen = true" type="button"
+      class="px-3 py-2 ml-auto space-x-3 text-white bg-[#0099AD] hover:bg-[#007E8F] focus:ring-4 focus:ring-[#9ddee7] font-medium rounded-lg text-sm flex justify-center items-center dark:bg-[#005A66] dark:hover:bg-[#0099AD] focus:outline-none dark:focus:ring-[#007E8F] duration-300">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd"
+          d="M7 0.875C7.48325 0.875 7.875 1.26675 7.875 1.75V6.125H12.25C12.7332 6.125 13.125 6.51675 13.125 7C13.125 7.48325 12.7332 7.875 12.25 7.875H7.875V12.25C7.875 12.7332 7.48325 13.125 7 13.125C6.51675 13.125 6.125 12.7332 6.125 12.25V7.875H1.75C1.26675 7.875 0.875 7.48325 0.875 7C0.875 6.51675 1.26675 6.125 1.75 6.125H6.125V1.75C6.125 1.26675 6.51675 0.875 7 0.875Z"
+          fill="white" />
+      </svg>
+      <span class="font-semibold">Tambah Parameter</span>
+    </button>
     <TableComponent>
       <template v-slot:table-header>
         <tr>
@@ -47,18 +44,19 @@
             {{ item.tahun }}
           </td>
           <td class="text-center">
-            {{ item.discount_rate }}
+            {{ globalFormat.formatRupiah(item.discount_rate) }}
           </td>
           <td class="text-center">
-            {{ item.corporate_tax_rate }}
+            {{ globalFormat.formatRupiah(item.corporate_tax_rate) }}
           </td>
           <td class="flex justify-center">
-            <div v-if="item.status == 1"
-              class="w-fit p-1 rounded-md bg-[#E2FCF3] flex justify-center items-center text-[#397E5D]">
-              Aktif
+            <div v-if="item.status === 1"
+              class="px-1.5 py-1 border border-[#C7E5D7] w-fit rounded-xl bg-[#E2FCF3] text-center flex justify-center items-center ">
+              <p class="text-[#397E5D] font-semibold">Aktif</p>
             </div>
-            <div v-else class="w-fit p-1 rounded-md bg-[#E0E0E0] flex justify-center items-center text-[#7F7F80]">
-              Tidak Aktif
+            <div v-else
+              class="px-1.5 py-1 w-fit rounded-xl border border-[#EFC0BD] bg-[#FAEBEA] text-center flex justify-center items-center">
+              <p class="text-[#C53830] font-semibold">Tidak Aktif</p>
             </div>
           </td>
           <td class="text-center">
@@ -275,6 +273,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
+import GlobalFormat from "@/services/format/global-format";
+const globalFormat = new GlobalFormat();
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import Vue3Lottie from "vue3-lottie";
 import ParameterService from "@/services/parameter-service";
@@ -299,7 +299,8 @@ const errors = ref<string[]>([]);
 const errors_DT = ref<string[]>([]);
 const errors_CT = ref<string[]>([]);
 const currentYear = new Date().getFullYear();
-const tahunOptions = ref(2026);
+let years = generateYears(currentYear);
+const tahunOptions = ref(years);
 const navigation = ref<{
   currentPage: number;
   totalPages: number;
@@ -358,6 +359,14 @@ const fetchData = async () => {
     isLoading.value = false;
   }
 };
+function generateYears(currentYear: number) {
+  const generatedYears = [];
+  for (let i = currentYear; i <= currentYear; i++) {
+    generatedYears.push(i.toString());
+  }
+  return generatedYears;
+}
+
 const validForm_DT = () => {
   errors_DT.value = [];
   const discountRate = formData.value.discount_rate;

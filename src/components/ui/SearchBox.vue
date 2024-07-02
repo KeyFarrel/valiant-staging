@@ -2,8 +2,8 @@
   <div class="flex items-center">
     <input type="search" autocomplete="off" id="search"
       class="block px-3 py-2 w-full text-sm text-gray-900 rounded-l-lg border border-[#0099AD] focus:ring-[#80C1CD] focus:border-[#80C1CD]"
-      placeholder="Cari..." @focus="handleFocus" @keyup.enter="emit('onKeyEnter')" @input="emit('onInput')"
-      v-model="model" />
+      :placeholder="props.placeholder" @change="emit('onChange')" @focus="handleFocus" @keyup.enter="emit('onKeyEnter')"
+      @input="emit('onInput')" v-model="model" />
     <button type="submit"
       class="relative float-left px-2 py-2.5 text-sm font-medium text-white bg-[#0099AD] rounded-r-lg border border-[#0099AD] hover:bg-[#007E8F] focus:ring-2 focus:outline-none focus:ring-[#9ddee7]"
       @click="emit('onClick')">
@@ -19,11 +19,17 @@
 
 <script setup lang="ts">
 const model = defineModel();
-const emit = defineEmits(['onInput', 'onKeyEnter', 'onClick', 'onFocus']);
+const emit = defineEmits(['onInput', 'onKeyEnter', 'onClick', 'onFocus', 'onChange']);
 
 const handleFocus = () => {
   emit('onFocus');
 };
+
+const props = withDefaults(defineProps<{
+  placeholder?: string;
+}>(), {
+  placeholder: 'Cari...',
+});
 </script>
 
 <style scoped></style>

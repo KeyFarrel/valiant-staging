@@ -3,17 +3,22 @@
   "compilerOptions": {
     "types": ["vitest/globals"],
     "module": "CommonJS",
-    "target": "ES6",
+    "target": "ES5",
     "sourceMap": true,
     "baseUrl": "./",
     "paths": {
       "actions" :["src/service/peta-service"]
     },
-    //"forceConsistentCasingInFileNames": true,//tambahan acep
+    "forceConsistentCasingInFileNames": true, //tambahan acep
     //"moduleResolution": "node",//tambahan acep
-    "lib": ["dom","ESNext"]
+    "lib": [
+      "DOM",
+      "ES6",
+      "ES5",
+      "ESNext"
+    ]
   },  
-  //"include": ["src/**/*"],
+  // "include": ["src/**/*"],
   "exclude": ["node_modules", "src/**/*.spec.ts"], 
   "references": [
     {

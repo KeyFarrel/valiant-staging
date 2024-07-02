@@ -8,13 +8,13 @@
           <div class="space-y-0.5">
             <h2 class="text-lg font-semibold text-[7B8DAD]">
               Role :
-              <span class="text-lg font-semibold text-black">{{ roleData.role }}</span>
+              <span class="text-lg font-semibold text-primaryTextColor">{{ roleData.role }}</span>
             </h2>
             <h5 class="font-semibold text-[7B8DAD]">
               Level :
-              <span class="text-black">{{
+              <span class="text-primaryTextColor">{{
                 levelMappings[roleData.kode_level]
-              }}</span>
+                }}</span>
             </h5>
           </div>
         </div>

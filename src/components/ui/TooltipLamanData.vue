@@ -11,20 +11,20 @@
     </button>
     <Transition>
       <div v-if="isOpen"
-        class="flex flex-col justify-center bg-white absolute text-xs bottom-5 right-2 rounded-lg whitespace-nowrap border duration-300"
+        class="absolute flex flex-col justify-center text-xs duration-300 bg-white border rounded-lg bottom-5 right-2 whitespace-nowrap"
         id="tooltipContent">
-        <RouterLink :to="{ name: 'lihat-capex', params: { id: props.idMesin } }">
-          <button class="w-full cursor-pointer hover:bg-strokeColor hover:bg-opacity-60 p-2"
+        <!-- <RouterLink :to="{ name: 'lihat-capex', params: { id: props.idMesin } }">
+          <button class="w-full p-2 cursor-pointer hover:bg-strokeColor hover:bg-opacity-60"
             @click="handleChangePage(props.tahun)">
             <div class="flex flex-row space-x-2">
               <IconView />
               <p class="text-xs">Lihat CAPEX</p>
             </div>
           </button>
-        </RouterLink>
-        <hr class="w-full">
-        <RouterLink :to="{ name: 'lihat-opex', params: { id: props.idMesin } }">
-          <button class="w-full cursor-pointer hover:bg-strokeColor hover:bg-opacity-60 p-2"
+        </RouterLink> -->
+        <!-- <hr class="w-full"> -->
+        <RouterLink :to="{ name: 'lihat-opex', params: { id: props.idMesin }, query: { tahun: props.tahun } }">
+          <button class="w-full p-2 cursor-pointer hover:bg-strokeColor hover:bg-opacity-60"
             @click="handleChangePage(props.tahun)">
             <div class="flex flex-row space-x-2">
               <IconView />

@@ -36,7 +36,7 @@
         <li class="ml-10">
           <button @click="changeTab(1)" class="inline-flex pb-2 text-sm" :class="[
             tabGraphic === 'Semua'
-              ? 'font-semibold text-black'
+              ? 'font-semibold text-primaryTextColor'
               : 'font-normal',
           ]">
             Semua
@@ -47,7 +47,7 @@
         <li class="ml-5">
           <button @click="changeTab(2)" class="inline-flex pb-2 text-sm" :class="[
             tabGraphic === 'Biaya Komponen'
-              ? 'font-semibold text-black'
+              ? 'font-semibold text-primaryTextColor'
               : 'font-normal',
           ]">
             Biaya Komponen
@@ -76,13 +76,13 @@
       </div>
     </div>
   </div>
-  <div v-else-if="store.currentTabSentral === 'Planning / FS'">
+  <div v-else-if="store.currentTabSentral === 'Planning / Feasibility Study'">
     <div class="flex justify-between">
       <div>
-        <h1 class="px-6 pt-4 text-lg font-bold">Planning / FS</h1>
+        <h1 class="px-6 pt-4 text-lg font-bold">Planning / Feasibility Study</h1>
       </div>
       <div class="px-6 pt-2">
-        <RouterLink :to="{ name: 'detail-rekap', params: { id: props.idSentral } }">
+        <RouterLink :to="{ name: 'feasibility-study', params: { id: props.idSentral } }">
           <button type="button"
             class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center dark:bg-[#005A66] dark:hover:bg-[#0099AD] focus:outline-none dark:focus:ring-[#007E8F]">
             <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -98,9 +98,8 @@
     <div v-if="dataPlanning === null">
       <Empty />
     </div>
-    <div v-else>
+    <div v-else class="mb-5">
       <vue-echarts :option="chartPlanning" style="height: 450px" @click="handleClickPlan" />
-      <Legend />
     </div>
   </div>
   <div v-else-if="store.currentTabSentral === 'Planning & Realisasi + Proyeksi'">
@@ -133,7 +132,7 @@
     </div>
   </div>
   <div v-else-if="store.currentTabSentral === 'Planning vs Realisasi s/d Tahun Berjalan'
-    ">
+  ">
     <div class="flex justify-between">
       <div>
         <h1 class="px-6 pt-4 text-lg font-bold">
@@ -207,11 +206,13 @@
             </tr>
           </thead>
           <tbody v-for="(item, i) in datatableWlcAll" :key="i" class="text-xs">
-            <tr class="border-b bg-[#E5E7E9] cursor-pointer">
+            <tr class="border-b bg-[#E5E7E9]">
               <td scope="row" class="px-2 py-2 font-medium whitespace-nowrap">
                 <div class="bg-[#F7F7F7] rounded-md flex justify-center py-1.5">
                   <svg width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M4.44194 5.00444C4.19786 5.24852 3.80214 5.24852 3.55806 5.00444L0.433058 1.87944C0.18898 1.63536 0.18898 1.23964 0.433058 0.995558C0.677136 0.751481 1.07286 0.751481 1.31694 0.995558L4 3.67862L6.68306 0.995558C6.92714 0.751481 7.32286 0.751481 7.56694 0.995558C7.81102 1.23964 7.81102 1.63536 7.56694 1.87944L4.44194 5.00444Z" fill="#333333"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M4.44194 5.00444C4.19786 5.24852 3.80214 5.24852 3.55806 5.00444L0.433058 1.87944C0.18898 1.63536 0.18898 1.23964 0.433058 0.995558C0.677136 0.751481 1.07286 0.751481 1.31694 0.995558L4 3.67862L6.68306 0.995558C6.92714 0.751481 7.32286 0.751481 7.56694 0.995558C7.81102 1.23964 7.81102 1.63536 7.56694 1.87944L4.44194 5.00444Z"
+                      fill="#333333" />
                   </svg>
                 </div>
               </td>
@@ -219,7 +220,7 @@
               <td class="px-1 py-2 text-right">{{ globalFormat.formatRupiah(item.realisasi) }}</td>
               <td class="px-1 py-2 text-right">{{ globalFormat.formatRupiah(item.planning) }}</td>
             </tr>
-            <!-- <tr class="text-center text-gray-900 border-b cursor-pointer">
+            <!-- <tr class="text-center text-gray-900 border-b">
               <th
                 scope="row"
                 class="px-2 py-2 font-medium text-center whitespace-nowrap"
@@ -277,11 +278,13 @@
             </tr>
           </thead>
           <tbody v-for="(item, i) in datatableWlcKom" :key="i" class="text-xs">
-            <tr class="border-b bg-[#E5E7E9] cursor-pointer">
+            <tr class="border-b bg-[#E5E7E9]">
               <td scope="row" class="px-2 py-2 font-medium whitespace-nowrap">
                 <div class="bg-[#F7F7F7] rounded-md flex justify-center py-1.5">
                   <svg width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M4.44194 5.00444C4.19786 5.24852 3.80214 5.24852 3.55806 5.00444L0.433058 1.87944C0.18898 1.63536 0.18898 1.23964 0.433058 0.995558C0.677136 0.751481 1.07286 0.751481 1.31694 0.995558L4 3.67862L6.68306 0.995558C6.92714 0.751481 7.32286 0.751481 7.56694 0.995558C7.81102 1.23964 7.81102 1.63536 7.56694 1.87944L4.44194 5.00444Z" fill="#333333"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M4.44194 5.00444C4.19786 5.24852 3.80214 5.24852 3.55806 5.00444L0.433058 1.87944C0.18898 1.63536 0.18898 1.23964 0.433058 0.995558C0.677136 0.751481 1.07286 0.751481 1.31694 0.995558L4 3.67862L6.68306 0.995558C6.92714 0.751481 7.32286 0.751481 7.56694 0.995558C7.81102 1.23964 7.81102 1.63536 7.56694 1.87944L4.44194 5.00444Z"
+                      fill="#333333" />
                   </svg>
                 </div>
               </td>
@@ -338,11 +341,13 @@
             </tr>
           </thead>
           <tbody v-for="(item, i) in datatablePlan" :key="i" class="text-xs">
-            <tr class="border-b bg-[#E5E7E9] cursor-pointer">
+            <tr class="border-b bg-[#E5E7E9]">
               <td scope="row" class="px-2 py-2 font-medium whitespace-nowrap">
                 <div class="bg-[#F7F7F7] rounded-md flex justify-center py-1.5">
                   <svg width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M4.44194 5.00444C4.19786 5.24852 3.80214 5.24852 3.55806 5.00444L0.433058 1.87944C0.18898 1.63536 0.18898 1.23964 0.433058 0.995558C0.677136 0.751481 1.07286 0.751481 1.31694 0.995558L4 3.67862L6.68306 0.995558C6.92714 0.751481 7.32286 0.751481 7.56694 0.995558C7.81102 1.23964 7.81102 1.63536 7.56694 1.87944L4.44194 5.00444Z" fill="#333333"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M4.44194 5.00444C4.19786 5.24852 3.80214 5.24852 3.55806 5.00444L0.433058 1.87944C0.18898 1.63536 0.18898 1.23964 0.433058 0.995558C0.677136 0.751481 1.07286 0.751481 1.31694 0.995558L4 3.67862L6.68306 0.995558C6.92714 0.751481 7.32286 0.751481 7.56694 0.995558C7.81102 1.23964 7.81102 1.63536 7.56694 1.87944L4.44194 5.00444Z"
+                      fill="#333333" />
                   </svg>
                 </div>
               </td>
@@ -399,11 +404,13 @@
             </tr>
           </thead>
           <tbody v-for="(item, i) in datatablePRP" :key="i" class="text-xs">
-            <tr class="border-b bg-[#E5E7E9] cursor-pointer">
+            <tr class="border-b bg-[#E5E7E9]">
               <td scope="row" class="px-2 py-2 font-medium whitespace-nowrap">
                 <div class="bg-[#F7F7F7] rounded-md flex justify-center py-1.5">
                   <svg width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M4.44194 5.00444C4.19786 5.24852 3.80214 5.24852 3.55806 5.00444L0.433058 1.87944C0.18898 1.63536 0.18898 1.23964 0.433058 0.995558C0.677136 0.751481 1.07286 0.751481 1.31694 0.995558L4 3.67862L6.68306 0.995558C6.92714 0.751481 7.32286 0.751481 7.56694 0.995558C7.81102 1.23964 7.81102 1.63536 7.56694 1.87944L4.44194 5.00444Z" fill="#333333"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M4.44194 5.00444C4.19786 5.24852 3.80214 5.24852 3.55806 5.00444L0.433058 1.87944C0.18898 1.63536 0.18898 1.23964 0.433058 0.995558C0.677136 0.751481 1.07286 0.751481 1.31694 0.995558L4 3.67862L6.68306 0.995558C6.92714 0.751481 7.32286 0.751481 7.56694 0.995558C7.81102 1.23964 7.81102 1.63536 7.56694 1.87944L4.44194 5.00444Z"
+                      fill="#333333" />
                   </svg>
                 </div>
               </td>
@@ -460,11 +467,13 @@
             </tr>
           </thead>
           <tbody v-for="(item, i) in datatableLastY" :key="i" class="text-xs">
-            <tr class="border-b bg-[#E5E7E9] cursor-pointer">
+            <tr class="border-b bg-[#E5E7E9]">
               <td scope="row" class="px-2 py-2 font-medium whitespace-nowrap">
                 <div class="bg-[#F7F7F7] rounded-md flex justify-center py-1.5">
                   <svg width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M4.44194 5.00444C4.19786 5.24852 3.80214 5.24852 3.55806 5.00444L0.433058 1.87944C0.18898 1.63536 0.18898 1.23964 0.433058 0.995558C0.677136 0.751481 1.07286 0.751481 1.31694 0.995558L4 3.67862L6.68306 0.995558C6.92714 0.751481 7.32286 0.751481 7.56694 0.995558C7.81102 1.23964 7.81102 1.63536 7.56694 1.87944L4.44194 5.00444Z" fill="#333333"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M4.44194 5.00444C4.19786 5.24852 3.80214 5.24852 3.55806 5.00444L0.433058 1.87944C0.18898 1.63536 0.18898 1.23964 0.433058 0.995558C0.677136 0.751481 1.07286 0.751481 1.31694 0.995558L4 3.67862L6.68306 0.995558C6.92714 0.751481 7.32286 0.751481 7.56694 0.995558C7.81102 1.23964 7.81102 1.63536 7.56694 1.87944L4.44194 5.00444Z"
+                      fill="#333333" />
                   </svg>
                 </div>
               </td>
@@ -788,120 +797,120 @@ function handleClickWlcAll(param: any) {
   showModalWlcAll.value = true;
   tahunDetail.value = tahunWLCAll.value[param.dataIndex];
   // console.log(param);
-  
-    grafikService
-      .getGrafikWLCALLDetail({
-        id_sentral: props.idSentral,
-        tahun: tahunWLCAll.value[param.dataIndex],
-        tahun_realisasi: tahunData.value
-      })
-      .then((res: any) => {
-        judulDetWlcAll.value = [];
-        realDetWlcAll.value = [];
-        planDetWlcAll.value = [];
 
-        dataDetailWlcAll.value = res.data.graph;
-        datatableWlcAll.value = res.data.table;
-        dataDetailWlcAll.value.reverse();
-        datatableWlcAll.value.reverse();
+  grafikService
+    .getGrafikWLCALLDetail({
+      id_sentral: props.idSentral,
+      tahun: tahunWLCAll.value[param.dataIndex],
+      tahun_realisasi: tahunData.value
+    })
+    .then((res: any) => {
+      judulDetWlcAll.value = [];
+      realDetWlcAll.value = [];
+      planDetWlcAll.value = [];
 
-        for (var i = 0; i < res.data.graph.length; i++) {
-          judulDetWlcAll.value.push(res.data.graph[i].judul);
-          realDetWlcAll.value.push(res.data.graph[i].realisasi);
-          planDetWlcAll.value.push(res.data.graph[i].planning);
-        }
+      dataDetailWlcAll.value = res.data.graph;
+      datatableWlcAll.value = res.data.table;
+      dataDetailWlcAll.value.reverse();
+      datatableWlcAll.value.reverse();
 
-        chartDetailWLCAll.value = {
-          title: {
-            show: false,
+      for (var i = 0; i < res.data.graph.length; i++) {
+        judulDetWlcAll.value.push(res.data.graph[i].judul);
+        realDetWlcAll.value.push(res.data.graph[i].realisasi);
+        planDetWlcAll.value.push(res.data.graph[i].planning);
+      }
+
+      chartDetailWLCAll.value = {
+        title: {
+          show: false,
+        },
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "shadow",
           },
-          tooltip: {
-            trigger: "axis",
-            axisPointer: {
-              type: "shadow",
+        },
+        legend: {
+          bottom: "bottom",
+          data: ["Realisasi + Proyeksi", "Planning"],
+        },
+        grid: {
+          top: "3%",
+          left: "2%",
+          right: "2%",
+          bottom: "3%",
+          containLabel: true,
+        },
+        xAxis: [
+          {
+            type: "category",
+            data: judulDetWlcAll,
+            axisLabel: {
+              fontSize: 10,
+              rotate: 25
             },
           },
-          legend: {
-            bottom: "bottom",
-            data: ["Realisasi + Proyeksi", "Planning"],
+        ],
+        yAxis: [
+          {
+            type: "value",
+            name: "Triliun Rupiah",
+            nameLocation: "center",
+            nameTextStyle: {
+              align: "left",
+              padding: [30, 20, 20, -25],
+              fontSize: 14,
+              color: "#4D5E80",
+              fontWeight: "bold",
+            },
+            axisLabel: {
+              fontSize: 10,
+              formatter: function (value: any) {
+                return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
+              },
+            },
           },
-          grid: {
-            top: "3%",
-            left: "2%",
-            right: "2%",
-            bottom: "3%",
-            containLabel: true,
+        ],
+        series: [
+          {
+            name: "Planning",
+            type: "bar",
+            stack: "Ad",
+            emphasis: {
+              focus: "series",
+            },
+            data: planDetWlcAll,
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatRupiah(value) + " Rp(Juta)",
+            },
           },
-          xAxis: [
-            {
-              type: "category",
-              data: judulDetWlcAll,
-              axisLabel: {
-                fontSize: 10,
-                rotate: 25
-              },
+          {
+            name: "Realisasi + Proyeksi",
+            type: "bar",
+            stack: "Ad",
+            emphasis: {
+              focus: "series",
             },
-          ],
-          yAxis: [
-            {
-                type: "value",
-                name: "Triliun Rupiah",
-                nameLocation: "center",
-                nameTextStyle: {
-                  align: "left",
-                  padding: [30, 20, 20, -25],
-                  fontSize: 14,
-                  color: "#4D5E80",
-                  fontWeight: "bold",
-                },
-                axisLabel: {
-                  fontSize: 10,
-                  formatter: function (value: any) {
-                    return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
-                  },
-                },
-              },
-          ],
-          series: [
-            {
-              name: "Planning",
-              type: "bar",
-              stack: "Ad",
-              emphasis: {
-                focus: "series",
-              },
-              data: planDetWlcAll,
-              tooltip: {
-                valueFormatter: (value: any) =>
-                  globalFormat.formatRupiah(value) + " Rp(Juta)",
-              },
+            data: realDetWlcAll,
+            // label: {
+            //   show: true,
+            //   position: "top",
+            //   fontSize: 10,
+            //   formatter: function (params: any) {
+            //     return globalFormat.formatEnergy(params.value / 1000) + ' k'
+            //   },
+            // },
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatRupiah(value) + " Rp(Juta)",
             },
-            {
-              name: "Realisasi + Proyeksi",
-              type: "bar",
-              stack: "Ad",
-              emphasis: {
-                focus: "series",
-              },
-              data: realDetWlcAll,
-              // label: {
-              //   show: true,
-              //   position: "top",
-              //   fontSize: 10,
-              //   formatter: function (params: any) {
-              //     return globalFormat.formatEnergy(params.value / 1000) + ' k'
-              //   },
-              // },
-              tooltip: {
-                valueFormatter: (value: any) =>
-                  globalFormat.formatRupiah(value) + " Rp(Juta)",
-              },
-            },
-          ],
-          color: ["#0D5A71", "#97E4FF"],
-        };
-        forceRender5();
-      });
+          },
+        ],
+        color: ["#0D5A71", "#97E4FF"],
+      };
+      forceRender5();
+    });
 }
 
 function handleClickWlcKom(param: any) {
@@ -909,111 +918,111 @@ function handleClickWlcKom(param: any) {
   tahunDetail.value = tahunWLCKom.value[param.dataIndex];
   // console.log(tahunDetail.value);
 
-    grafikService
-      .getGrafikWLCKomDetail({
-        id_sentral: props.idSentral,
-        tahun: tahunWLCKom.value[param.dataIndex],
-        tahun_realisasi: tahunData.value
-      })
-      .then((res: any) => {
-        judulDetWlcKom.value = [];
-        realDetWlcKom.value = [];
-        planDetWlcKom.value = [];
+  grafikService
+    .getGrafikWLCKomDetail({
+      id_sentral: props.idSentral,
+      tahun: tahunWLCKom.value[param.dataIndex],
+      tahun_realisasi: tahunData.value
+    })
+    .then((res: any) => {
+      judulDetWlcKom.value = [];
+      realDetWlcKom.value = [];
+      planDetWlcKom.value = [];
 
-        dataDetailWlcKom.value = res.data.graph;
-        datatableWlcKom.value = res.data.table;
-        dataDetailWlcKom.value.reverse();
-        datatableWlcKom.value.reverse();
+      dataDetailWlcKom.value = res.data.graph;
+      datatableWlcKom.value = res.data.table;
+      dataDetailWlcKom.value.reverse();
+      datatableWlcKom.value.reverse();
 
-        for (var i = 0; i < res.data.graph.length; i++) {
-          judulDetWlcKom.value.push(res.data.graph[i].judul);
-          realDetWlcKom.value.push(res.data.graph[i].realisasi);
-          planDetWlcKom.value.push(res.data.graph[i].planning);
-        }
+      for (var i = 0; i < res.data.graph.length; i++) {
+        judulDetWlcKom.value.push(res.data.graph[i].judul);
+        realDetWlcKom.value.push(res.data.graph[i].realisasi);
+        planDetWlcKom.value.push(res.data.graph[i].planning);
+      }
 
-        chartDetailWLCKom.value = {
-          title: {
-            show: false,
+      chartDetailWLCKom.value = {
+        title: {
+          show: false,
+        },
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "shadow",
           },
-          tooltip: {
-            trigger: "axis",
-            axisPointer: {
-              type: "shadow",
+        },
+        legend: {
+          bottom: "bottom",
+          data: ["Realisasi + Proyeksi", "Planning"],
+        },
+        grid: {
+          top: "3%",
+          left: "2%",
+          right: "2%",
+          bottom: "3%",
+          containLabel: true,
+        },
+        xAxis: [
+          {
+            type: "category",
+            data: judulDetWlcKom,
+            axisLabel: {
+              fontSize: 10,
+              rotate: 25
             },
           },
-          legend: {
-            bottom: "bottom",
-            data: ["Realisasi + Proyeksi", "Planning"],
+        ],
+        yAxis: [
+          {
+            type: "value",
+            name: "Triliun Rupiah",
+            nameLocation: "center",
+            nameTextStyle: {
+              align: "left",
+              padding: [30, 20, 20, -25],
+              fontSize: 14,
+              color: "#4D5E80",
+              fontWeight: "bold",
+            },
+            axisLabel: {
+              fontSize: 10,
+              formatter: function (value: any) {
+                return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
+              },
+            },
           },
-          grid: {
-            top: "3%",
-            left: "2%",
-            right: "2%",
-            bottom: "3%",
-            containLabel: true,
+        ],
+        series: [
+          {
+            name: "Planning",
+            type: "bar",
+            stack: "Ad",
+            emphasis: {
+              focus: "series",
+            },
+            data: planDetWlcKom,
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatRupiah(value) + " Rp(Juta)",
+            },
           },
-          xAxis: [
-            {
-              type: "category",
-              data: judulDetWlcKom,
-              axisLabel: {
-                fontSize: 10,
-                rotate: 25
-              },
+          {
+            name: "Realisasi + Proyeksi",
+            type: "bar",
+            stack: "Ad",
+            emphasis: {
+              focus: "series",
             },
-          ],
-          yAxis: [
-              {
-                type: "value",
-                name: "Triliun Rupiah",
-                nameLocation: "center",
-                nameTextStyle: {
-                  align: "left",
-                  padding: [30, 20, 20, -25],
-                  fontSize: 14,
-                  color: "#4D5E80",
-                  fontWeight: "bold",
-                },
-                axisLabel: {
-                  fontSize: 10,
-                  formatter: function (value: any) {
-                    return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
-                  },
-                },
-              },
-          ],
-          series: [
-            {
-              name: "Planning",
-              type: "bar",
-              stack: "Ad",
-              emphasis: {
-                focus: "series",
-              },
-              data: planDetWlcKom,
-              tooltip: {
-                valueFormatter: (value: any) =>
-                  globalFormat.formatRupiah(value) + " Rp(Juta)",
-              },
+            data: realDetWlcKom,
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatRupiah(value) + " Rp(Juta)",
             },
-            {
-              name: "Realisasi + Proyeksi",
-              type: "bar",
-              stack: "Ad",
-              emphasis: {
-                focus: "series",
-              },
-              data: realDetWlcKom,
-              tooltip: {
-                valueFormatter: (value: any) =>
-                  globalFormat.formatRupiah(value) + " Rp(Juta)",
-              },
-            },
-          ],
-          color: ["#0D5A71", "#97E4FF"],
-        };
-        forceRender6();
-      });
+          },
+        ],
+        color: ["#0D5A71", "#97E4FF"],
+      };
+      forceRender6();
+    });
 }
 
 function handleClickPlan(param: any) {
@@ -1021,111 +1030,111 @@ function handleClickPlan(param: any) {
   tahunDetail.value = tahunPlanning.value[param.dataIndex];
   // console.log(tahunDetail.value);
 
-    grafikService
-      .getGrafikPlanDetail({
-        id_sentral: props.idSentral,
-        tahun: tahunPlanning.value[param.dataIndex],
-        tahun_realisasi: tahunData.value
-      })
-      .then((res: any) => {
-        judulDetPlan.value = [];
-        realDetPlan.value = [];
-        planDetPlan.value = [];
+  grafikService
+    .getGrafikPlanDetail({
+      id_sentral: props.idSentral,
+      tahun: tahunPlanning.value[param.dataIndex],
+      tahun_realisasi: tahunData.value
+    })
+    .then((res: any) => {
+      judulDetPlan.value = [];
+      realDetPlan.value = [];
+      planDetPlan.value = [];
 
-        dataDetailPlan.value = res.data.graph;
-        datatablePlan.value = res.data.table;
-        dataDetailPlan.value.reverse();
-        datatablePlan.value.reverse();
+      dataDetailPlan.value = res.data.graph;
+      datatablePlan.value = res.data.table;
+      dataDetailPlan.value.reverse();
+      datatablePlan.value.reverse();
 
-        for (var i = 0; i < res.data.graph.length; i++) {
-          judulDetPlan.value.push(res.data.graph[i].judul);
-          realDetPlan.value.push(res.data.graph[i].realisasi);
-          planDetPlan.value.push(res.data.graph[i].planning);
-        }
+      for (var i = 0; i < res.data.graph.length; i++) {
+        judulDetPlan.value.push(res.data.graph[i].judul);
+        realDetPlan.value.push(res.data.graph[i].realisasi);
+        planDetPlan.value.push(res.data.graph[i].planning);
+      }
 
-        chartDetailPlan.value = {
-          title: {
-            show: false,
+      chartDetailPlan.value = {
+        title: {
+          show: false,
+        },
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "shadow",
           },
-          tooltip: {
-            trigger: "axis",
-            axisPointer: {
-              type: "shadow",
+        },
+        legend: {
+          bottom: "bottom",
+          data: ["Realisasi + Proyeksi", "Planning"],
+        },
+        grid: {
+          top: "3%",
+          left: "2%",
+          right: "2%",
+          bottom: "3%",
+          containLabel: true,
+        },
+        xAxis: [
+          {
+            type: "category",
+            data: judulDetPlan,
+            axisLabel: {
+              fontSize: 10,
+              rotate: 25
             },
           },
-          legend: {
-            bottom: "bottom",
-            data: ["Realisasi + Proyeksi", "Planning"],
+        ],
+        yAxis: [
+          {
+            type: "value",
+            name: "Triliun Rupiah",
+            nameLocation: "center",
+            nameTextStyle: {
+              align: "left",
+              padding: [30, 20, 20, -25],
+              fontSize: 14,
+              color: "#4D5E80",
+              fontWeight: "bold",
+            },
+            axisLabel: {
+              fontSize: 10,
+              formatter: function (value: any) {
+                return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
+              },
+            },
           },
-          grid: {
-            top: "3%",
-            left: "2%",
-            right: "2%",
-            bottom: "3%",
-            containLabel: true,
+        ],
+        series: [
+          {
+            name: "Planning",
+            type: "bar",
+            stack: "Ad",
+            emphasis: {
+              focus: "series",
+            },
+            data: planDetPlan,
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatRupiah(value) + " Rp(Juta)",
+            },
           },
-          xAxis: [
-            {
-              type: "category",
-              data: judulDetPlan,
-              axisLabel: {
-                fontSize: 10,
-                rotate: 25
-              },
+          {
+            name: "Realisasi + Proyeksi",
+            type: "bar",
+            stack: "Ad",
+            emphasis: {
+              focus: "series",
             },
-          ],
-          yAxis: [
-              {
-                type: "value",
-                name: "Triliun Rupiah",
-                nameLocation: "center",
-                nameTextStyle: {
-                  align: "left",
-                  padding: [30, 20, 20, -25],
-                  fontSize: 14,
-                  color: "#4D5E80",
-                  fontWeight: "bold",
-                },
-                axisLabel: {
-                  fontSize: 10,
-                  formatter: function (value: any) {
-                    return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
-                  },
-                },
-              },
-          ],
-          series: [
-            {
-              name: "Planning",
-              type: "bar",
-              stack: "Ad",
-              emphasis: {
-                focus: "series",
-              },
-              data: planDetPlan,
-              tooltip: {
-                valueFormatter: (value: any) =>
-                  globalFormat.formatRupiah(value) + " Rp(Juta)",
-              },
+            data: realDetPlan,
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatRupiah(value) + " Rp(Juta)",
             },
-            {
-              name: "Realisasi + Proyeksi",
-              type: "bar",
-              stack: "Ad",
-              emphasis: {
-                focus: "series",
-              },
-              data: realDetPlan,
-              tooltip: {
-                valueFormatter: (value: any) =>
-                  globalFormat.formatRupiah(value) + " Rp(Juta)",
-              },
-            },
-          ],
-          color: ["#0D5A71", "#97E4FF"],
-        };
-        forceRender7();
-      });
+          },
+        ],
+        color: ["#0D5A71", "#97E4FF"],
+      };
+      forceRender7();
+    });
 }
 
 function handleClickPRP(param: any) {
@@ -1190,24 +1199,24 @@ function handleClickPRP(param: any) {
             },
           ],
           yAxis: [
-              {
-                type: "value",
-                name: "Triliun Rupiah",
-                nameLocation: "center",
-                nameTextStyle: {
-                  align: "left",
-                  padding: [30, 20, 20, -25],
-                  fontSize: 14,
-                  color: "#4D5E80",
-                  fontWeight: "bold",
-                },
-                axisLabel: {
-                  fontSize: 10,
-                  formatter: function (value: any) {
-                    return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
-                  },
+            {
+              type: "value",
+              name: "Triliun Rupiah",
+              nameLocation: "center",
+              nameTextStyle: {
+                align: "left",
+                padding: [30, 20, 20, -25],
+                fontSize: 14,
+                color: "#4D5E80",
+                fontWeight: "bold",
+              },
+              axisLabel: {
+                fontSize: 10,
+                formatter: function (value: any) {
+                  return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
                 },
               },
+            },
           ],
           series: [
             {
@@ -1249,111 +1258,111 @@ function handleClickLastY(param: any) {
   tahunDetail.value = tahunLastYear.value[param.dataIndex];
   // console.log(tahunDetail.value);
 
-    grafikService
-      .getGrafikLastYearDetail({
-        id_sentral: props.idSentral,
-        tahun: tahunLastYear.value[param.dataIndex],
-        tahun_realisasi: tahunData.value
-      })
-      .then((res: any) => {
-        judulDetLastY.value = [];
-        realDetLastY.value = [];
-        planDetLastY.value = [];
+  grafikService
+    .getGrafikLastYearDetail({
+      id_sentral: props.idSentral,
+      tahun: tahunLastYear.value[param.dataIndex],
+      tahun_realisasi: tahunData.value
+    })
+    .then((res: any) => {
+      judulDetLastY.value = [];
+      realDetLastY.value = [];
+      planDetLastY.value = [];
 
-        dataDetailLastY.value = res.data.graph;
-        datatableLastY.value = res.data.table;
-        dataDetailLastY.value.reverse();
-        datatableLastY.value.reverse();
+      dataDetailLastY.value = res.data.graph;
+      datatableLastY.value = res.data.table;
+      dataDetailLastY.value.reverse();
+      datatableLastY.value.reverse();
 
-        for (var i = 0; i < res.data.graph.length; i++) {
-          judulDetLastY.value.push(res.data.graph[i].judul);
-          realDetLastY.value.push(res.data.graph[i].realisasi);
-          planDetLastY.value.push(res.data.graph[i].planning);
-        }
+      for (var i = 0; i < res.data.graph.length; i++) {
+        judulDetLastY.value.push(res.data.graph[i].judul);
+        realDetLastY.value.push(res.data.graph[i].realisasi);
+        planDetLastY.value.push(res.data.graph[i].planning);
+      }
 
-        chartDetailLastY.value = {
-          title: {
-            show: false,
+      chartDetailLastY.value = {
+        title: {
+          show: false,
+        },
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "shadow",
           },
-          tooltip: {
-            trigger: "axis",
-            axisPointer: {
-              type: "shadow",
+        },
+        legend: {
+          bottom: "bottom",
+          data: ["Realisasi + Proyeksi", "Planning"],
+        },
+        grid: {
+          top: "3%",
+          left: "2%",
+          right: "2%",
+          bottom: "3%",
+          containLabel: true,
+        },
+        xAxis: [
+          {
+            type: "category",
+            data: judulDetLastY,
+            axisLabel: {
+              fontSize: 10,
+              rotate: 25
             },
           },
-          legend: {
-            bottom: "bottom",
-            data: ["Realisasi + Proyeksi", "Planning"],
+        ],
+        yAxis: [
+          {
+            type: "value",
+            name: "Triliun Rupiah",
+            nameLocation: "center",
+            nameTextStyle: {
+              align: "left",
+              padding: [30, 20, 20, -25],
+              fontSize: 14,
+              color: "#4D5E80",
+              fontWeight: "bold",
+            },
+            axisLabel: {
+              fontSize: 10,
+              formatter: function (value: any) {
+                return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
+              },
+            },
           },
-          grid: {
-            top: "3%",
-            left: "2%",
-            right: "2%",
-            bottom: "3%",
-            containLabel: true,
+        ],
+        series: [
+          {
+            name: "Planning",
+            type: "bar",
+            stack: "Ad",
+            emphasis: {
+              focus: "series",
+            },
+            data: planDetLastY,
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatRupiah(value) + " Rp(Juta)",
+            },
           },
-          xAxis: [
-            {
-              type: "category",
-              data: judulDetLastY,
-              axisLabel: {
-                fontSize: 10,
-                rotate: 25
-              },
+          {
+            name: "Realisasi + Proyeksi",
+            type: "bar",
+            stack: "Ad",
+            emphasis: {
+              focus: "series",
             },
-          ],
-          yAxis: [
-              {
-                type: "value",
-                name: "Triliun Rupiah",
-                nameLocation: "center",
-                nameTextStyle: {
-                  align: "left",
-                  padding: [30, 20, 20, -25],
-                  fontSize: 14,
-                  color: "#4D5E80",
-                  fontWeight: "bold",
-                },
-                axisLabel: {
-                  fontSize: 10,
-                  formatter: function (value: any) {
-                    return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
-                  },
-                },
-              },
-          ],
-          series: [
-            {
-              name: "Planning",
-              type: "bar",
-              stack: "Ad",
-              emphasis: {
-                focus: "series",
-              },
-              data: planDetLastY,
-              tooltip: {
-                valueFormatter: (value: any) =>
-                  globalFormat.formatRupiah(value) + " Rp(Juta)",
-              },
+            data: realDetLastY,
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatRupiah(value) + " Rp(Juta)",
             },
-            {
-              name: "Realisasi + Proyeksi",
-              type: "bar",
-              stack: "Ad",
-              emphasis: {
-                focus: "series",
-              },
-              data: realDetLastY,
-              tooltip: {
-                valueFormatter: (value: any) =>
-                  globalFormat.formatRupiah(value) + " Rp(Juta)",
-              },
-            },
-          ],
-          color: ["#0D5A71", "#97E4FF"],
-        };
-        forceRender9();
-      });
+          },
+        ],
+        color: ["#0D5A71", "#97E4FF"],
+      };
+      forceRender9();
+    });
 }
 
 watch(tahunData, async (tahun) => {
@@ -1453,7 +1462,7 @@ watch(tahunData, async (tahun) => {
                 const filterTahun = tahun.toString();
                 if (value < filterTahun) {
                   return '#FF5656';
-                } else if (value === filterTahun) {
+                } else if (value == filterTahun) {
                   return '#6C6C6C';
                 } else if (value > filterTahun) {
                   return '#37B1D5';
@@ -1685,7 +1694,7 @@ watch(tahunData, async (tahun) => {
                 const filterTahun = tahun.toString();
                 if (value < filterTahun) {
                   return '#FF5656';
-                } else if (value === filterTahun) {
+                } else if (value == filterTahun) {
                   return '#6C6C6C';
                 } else if (value > filterTahun) {
                   return '#37B1D5';
@@ -1870,16 +1879,7 @@ watch(tahunData, async (tahun) => {
             data: tahunPlanning,
             axisLabel: {
               fontSize: 10,
-              color: function (value: any, index: number) {
-                const filterTahun = tahun.toString();
-                if (value < filterTahun) {
-                  return '#FF5656';
-                } else if (value === filterTahun) {
-                  return '#6C6C6C';
-                } else if (value > filterTahun) {
-                  return '#37B1D5';
-                }
-              },
+              color: '#37B1D5',
               formatter: function (value: any, index: number) {
                 return index + 1 + `\n${value}`;
               },
@@ -2228,7 +2228,7 @@ watch(tahunData, async (tahun) => {
                 const filterTahun = tahun.toString();
                 if (value < filterTahun) {
                   return '#FF5656';
-                } else if (value === filterTahun) {
+                } else if (value == filterTahun) {
                   return '#6C6C6C';
                 } else if (value > filterTahun) {
                   return '#37B1D5';
@@ -2871,7 +2871,7 @@ watch(tahunData, async (tahun) => {
                 const filterTahun = tahun.toString();
                 if (value < filterTahun) {
                   return '#FF5656';
-                } else if (value === filterTahun) {
+                } else if (value == filterTahun) {
                   return '#6C6C6C';
                 } else if (value > filterTahun) {
                   return '#37B1D5';
@@ -3403,7 +3403,7 @@ watch(tahunData, async (tahun) => {
 //                 const filterTahun = tahunData.value;
 //                 if (value < filterTahun) {
 //                   return '#FF5656';
-//                 } else if (value === filterTahun) {
+//                 } else if (value == filterTahun) {
 //                   return '#6C6C6C';
 //                 } else if (value > filterTahun) {
 //                   return '#37B1D5';
@@ -3638,7 +3638,7 @@ watch(tahunData, async (tahun) => {
 //                 const filterTahun = tahunData.value;
 //                 if (value < filterTahun) {
 //                   return '#FF5656';
-//                 } else if (value === filterTahun) {
+//                 } else if (value == filterTahun) {
 //                   return '#6C6C6C';
 //                 } else if (value > filterTahun) {
 //                   return '#37B1D5';

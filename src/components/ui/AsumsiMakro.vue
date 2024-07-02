@@ -12,11 +12,9 @@
     </div>
     <div class="flex items-center justify-between pb-4 border-b border-b-gray-200">
       <p class="text-base font-bold">Asumsi Makro</p>
-      <div class="flex items-center">
-        <p class="mr-3 font-bold text-gray-500" v-if="props.listTahunAsumsi">Periode</p>
-        <VueDatePicker v-if="props.listTahunAsumsi" class="date-picker" v-model="selectedTahun"
-          :year-range="[props.listTahunAsumsi.start, props.listTahunAsumsi.end]" :clearable="false" year-picker
-          @update:model-value="emit('onChange')" />
+      <div class="flex items-center space-x-2" v-if="props.selectedYear">
+        <p class="font-bold text-gray-500">Periode</p>
+        <span class="font-semibold text-primaryColor">{{ props.selectedYear }}</span>
       </div>
     </div>
     <div class="grid grid-cols-3 mt-4 gap-y-5">
@@ -67,16 +65,17 @@ import GlobalFormat from '@/services/format/global-format';
 const globalFormat = new GlobalFormat();
 
 interface Props {
-  corporateTaxRate: string | number,
-  discountRate: string | number,
-  interestRate: string | number,
-  loanTenor: string | number,
-  loanPortion: string | number,
-  equityPortion: string | number,
+  corporateTaxRate: string | number
+  discountRate: string | number
+  interestRate: string | number
+  loanTenor: string | number
+  loanPortion: string | number
+  equityPortion: string | number
   listTahunAsumsi?: {
-    start: string | number,
+    start: string | number
     end: string | number
   }
+  selectedYear?: string | number
 }
 
 const emit = defineEmits(['onChange'])
@@ -84,10 +83,4 @@ const selectedTahun = defineModel('selectedTahun');
 const props = defineProps<Props>()
 </script>
 
-<style scoped>
-.date-picker {
-  width: 10rem;
-  --dp-border-radius: 10px;
-  --dp-icon-color: #0099AD;
-}
-</style>
+<style scoped></style>

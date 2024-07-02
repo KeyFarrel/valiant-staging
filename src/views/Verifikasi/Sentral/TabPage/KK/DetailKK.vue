@@ -33,7 +33,7 @@
 import { ref, onMounted } from "vue";
 import PersetujuanService from '@/services/persetujuan-service';
 import Loading from "@/components/ui/LoadingSpinner.vue";
-import InfoHeader from '@/components/ui/InfoHeaderPersetujuan.vue';
+import InfoHeader from '@/components/ui/InfoHeader.vue';
 import { useRoute } from 'vue-router'
 
 const route = useRoute();

@@ -12,13 +12,15 @@
         </button>
       </div>
       <div class="flex justify-between">
-        <input ref="searchInput" type="search" name="" id="search" placeholder="Cari..." class="w-full text-sm"
-          v-model="searchQuery" @keydown.down.prevent="selectNextItem" @keydown.up.prevent="selectPreviousItem"
-          @keyup.enter="searchQuery = selectedSentral; emit('onKeyEnter')" />
+        <input ref="searchInput" type="search" name="" placeholder="Cari..."
+          class="w-full text-sm rounded-md text-primaryTextColor" v-model="searchQuery"
+          @input="setSelected(searchResults[0].sentral, 0)" @keydown.down.prevent="selectNextItem"
+          @keydown.up.prevent="selectPreviousItem" @keyup.enter="searchQuery = selectedSentral; emit('onKeyEnter')" />
       </div>
       <hr />
       <ul class="space-y-2 overflow-auto max-h-48" ref="listContainer">
-        <li class="p-2 text-xs duration-200 cursor-pointer hover:bg-primaryColor hover:text-white"
+        <li
+          class="px-3 py-2.5 text-xs text-primaryTextColor duration-200 cursor-pointer rounded-[3px] hover:bg-primaryColor hover:text-white"
           v-for="(pembangkitItem, pembangkitIndex) in searchResults" :key="pembangkitIndex"
           :class="{ 'selected-item': pembangkitItem.sentral === selectedSentral }"
           @click="searchQuery = pembangkitItem.sentral; selectedSentral = pembangkitItem.sentral; emit('onClick')">
@@ -103,7 +105,7 @@ onMounted(() => {
 
 <style scoped>
 .selected-item {
-  background-color: #007acc;
-  color: #ffffff;
+  background-color: #F1F5F9;
+  border-radius: 3px;
 }
 </style>

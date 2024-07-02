@@ -2,7 +2,7 @@
   <div class="flex items-center justify-center">
     <div class="relative text-lg">
       <button
-        class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] rounded-lg text-sm p-3 flex justify-center items-center dark:bg-[#005A66] dark:hover:bg-[#0099AD]"
+        class="text-[#0099AD] hover:text-white hover:border-[#007E8F] bg-white border border-[#0099AD] hover:bg-[#007E8F] duration-300 active:ring rounded-lg text-sm p-3 flex justify-center items-center dark:bg-[#005A66] dark:hover:bg-[#0099AD]"
         @click="isOptionsExpanded = !isOptionsExpanded">
         <svg width="16" height="16" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path fill-rule="evenodd" clip-rule="evenodd"
@@ -16,7 +16,7 @@
         leave-active-class="transition duration-300 transform ease-custom"
         leave-class="scale-y-100 translate-y-0 opacity-100" leave-to-class="scale-y-0 -translate-y-1/2 opacity-0">
         <div v-show="isOptionsExpanded"
-          class="absolute z-10 w-auto p-2 my-3 overflow-hidden bg-white border border-gray-300 divide-y rounded-lg shadow-lg -right-3">
+          class="absolute z-10 w-auto p-2 mt-1 overflow-hidden bg-white border border-gray-300 divide-y rounded-lg shadow-lg -right-3">
           <div class=" max-y-[600px] overflow-y-auto space-y-3">
             <div class="flex items-center justify-between">
               <h3 class="text-base font-medium">
@@ -25,11 +25,8 @@
               <div class="flex items-center mr-4">
                 <p class="mr-2 text-sm font-medium">Periode</p>
                 <div class="w-32 z-[25]">
-                  <!-- <VueDatePicker v-model="yearModel" year-picker :clearable="false"
-                    :year-range="[props.startYear, props.endYear]" @update:model-value="emit('onYearUpdate')"
-                    :teleport="true"  calendar-class-name="dp-custom-calendar" /> -->
                   <select v-model="yearModel" @change="fetchBestPerformance"
-                    class="bg-gray-50 mt-1 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#0099AD] focus:border-[#0099AD] block w-full p-2 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                    class="mt-1 border border-gray-300 text-gray-900 text-sm rounded-lg hover:cursor-pointer focus:ring-[#0099AD] focus:border-[#0099AD] block w-full p-2 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
                     <option disable hidden>Pilih Tahun</option>
                     <option v-for="item in tahun" :key="item" :value="item">{{ item }}
                     </option>
@@ -37,13 +34,14 @@
                 </div>
               </div>
             </div>
-            <div class="block max-h-[50rem] overflow-y-auto rounded-lg bg-white scrollbar-hide">
+            <div class="block max-w-[55rem] max-h-[50rem] overflow-y-auto rounded-lg bg-white scrollbar-hide">
               <TableComponent>
                 <template v-slot:table-header>
                   <tr>
                     <th scope="col" class="text-xs text-center">No</th>
-                    <th scope="col" class="text-xs">Unit Sentral</th>
                     <th scope="col" class="text-xs">Unit Pengelola</th>
+                    <th scope="col" class="text-xs">Unit Sentral</th>
+                    <th scope="col" class="text-xs">Unit Mesin</th>
                     <th scope="col" class="text-xs text-center">
                       NPV On Equity Rp (Juta)
                     </th>
@@ -59,32 +57,36 @@
                   <template v-if="bpaData.length">
                     <tr class="text-gray-900 border border-gray-300" v-for="(item, index) in bpaData"
                       :key="item.kode_sentral">
-                      <th scope="row" class="text-xs font-medium text-center whitespace-nowrap">
+                      <td scope="row" class="text-xs font-normal text-center whitespace-nowrap">
                         {{ index + 1 }}
-                      </th>
-                      <td class="text-xs">
-                        {{ item.sentral }}
                       </td>
                       <td class="text-xs">
                         {{ item.pengelola }}
                       </td>
-                      <td class="text-xs text-center">
+                      <td class="text-xs">
+                        {{ item.sentral }}
+                      </td>
+                      <td class="text-xs">
+                        {{ item.mesin }}
+                      </td>
+                      <td class="text-xs text-end">
                         {{ globalFormat.formatRupiah(item.npv_equity) }}
                       </td>
-                      <td class="text-xs text-center">
-                        {{ formatFixed(item.irr_equity) }}
+                      <td class="text-xs text-end">
+                        {{ globalFormat.formatRupiah(item.irr_equity) }}
                       </td>
-                      <td class="text-xs text-center">
-                        {{ formatFixed(item.average_cf) }}
+                      <td class="text-xs text-end">
+                        {{ globalFormat.formatRupiah(item.average_cf) }}
                       </td>
                     </tr>
                   </template>
                   <template v-else>
                     <tr class="text-gray-900 border border-gray-300">
-                      <td class="p-2" colspan="6">
+                      <td class="p-2" colspan="7">
                         <svg width="170" height="150" class="m-auto" viewBox="0 0 74 60" fill="none"
                           xmlns="http://www.w3.org/2000/svg">
-                          <ellipse cx="36.2549" cy="30.94" rx="22.4673" ry="21.9744" fill="#D3D3D3" fill-opacity="0.2" />
+                          <ellipse cx="36.2549" cy="30.94" rx="22.4673" ry="21.9744" fill="#D3D3D3"
+                            fill-opacity="0.2" />
                           <ellipse cx="36.2546" cy="30.9399" rx="17.9739" ry="17.5795" fill="#CCCCCC" />
                           <path fill-rule="evenodd" clip-rule="evenodd"
                             d="M18.3727 12.643C18.6766 12.643 18.9229 12.402 18.9229 12.1048C18.9229 11.8076 18.6766 11.5667 18.3727 11.5667C18.0688 11.5667 17.8225 11.8076 17.8225 12.1048C17.8225 12.402 18.0688 12.643 18.3727 12.643ZM18.3727 12.9121C18.8285 12.9121 19.198 12.5506 19.198 12.1048C19.198 11.659 18.8285 11.2976 18.3727 11.2976C17.9169 11.2976 17.5474 11.659 17.5474 12.1048C17.5474 12.5506 17.9169 12.9121 18.3727 12.9121Z"
@@ -217,18 +219,15 @@ const tahunBerjalan = new Date().getFullYear();
 const yearModel = ref<string>(tahunBerjalan.toString());
 
 interface BestItem {
-  kode_pengelola: string;
-  pengelola: string;
-  kode_sentral: number;
-  sentral: string;
-  tahun: number;
-  irr_equity: string;
-  npv_equity: string;
-  average_cf: string;
-}
-
-function formatFixed(x: any) {
-  return Number.parseFloat(x).toFixed(2);
+  kode_pengelola: string
+  pengelola: string
+  kode_sentral: number
+  sentral: string
+  tahun: number
+  irr_equity: string
+  npv_equity: string
+  average_cf: string
+  mesin: string
 }
 
 const fetchBestPerformance = async () => {
@@ -267,6 +266,11 @@ onMounted(async () => {
 </script>
 
 <style lang="scss">
+button:hover svg,
+button:hover svg path {
+  fill: white;
+}
+
 .dp-custom-calendar {
   box-shadow: 0 0 6px #1976d2;
 }

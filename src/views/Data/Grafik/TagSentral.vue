@@ -126,7 +126,7 @@
       </div>
     </div>
   </div>
-  <div v-else-if="store.currentTabSentral === 'Planning / FS'">
+  <div v-else-if="store.currentTabSentral === 'Planning / Feasibility Study'">
     <div class="text-xs">
       <div class="flex justify-between py-1">
         <div class="flex">

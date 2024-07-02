@@ -5,11 +5,11 @@
       <TabItem title="Kertas Kerja">
         <div class="flex flex-row items-center justify-between mb-4">
           <div class="flex flex-row space-x-4">
-            <SearchBox class="w-60" @on-key-enter="fetchPersetujuanKK() " @on-click="fetchPersetujuanKK()"
-              v-model="searchQ" />
+            <SearchBox class="w-60" @on-key-enter="changeDataKK" @on-click="changeDataKK" @on-input="changeDataKK"
+              v-model="searchQKK" />
             <button type="button"
               class="text-primaryColor bg-white border border-primaryColor hover:bg-primaryColor focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center duration-300 hover:text-white"
-              @click="showModal = !showModal">
+              @click="showModalKK = !showModalKK">
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
                 class="mr-2">
                 <path
@@ -17,8 +17,11 @@
                   fill="#0099AD" />
               </svg>
               Filter
+              <div v-if="level_ID == '1' ? pengelola.length : pembina.length || persetujuan.length"
+                class="absolute z-10 border-2 border-[#FFE5E6] w-2.5 h-2.5 rounded-full right-0.5 top-0.5  bg-warningColor">
+              </div>
             </button>
-            <ModalWrapper :showModal="showModal" :width="'w-[500px]'" :height="'h-auto'">
+            <ModalWrapper :showModal="showModalKK" :width="'w-[500px]'" :height="'h-auto'">
               <div class="flex flex-col space-y-5">
                 <div class="flex justify-between">
                   <div class="flex items-center space-x-2">
@@ -27,9 +30,9 @@
                         d="M4.6665 7.33073H11.3332V8.66406H4.6665V7.33073ZM2.6665 4.66406H13.3332V5.9974H2.6665V4.66406ZM6.6665 9.9974H9.33317V11.3307H6.6665V9.9974Z"
                         fill="#333333" />
                     </svg>
-                    <span class="text-base font-semibold text-black">Filter</span>
+                    <span class="text-base font-semibold text-primaryTextColor">Filter</span>
                   </div>
-                  <button @click="showModal = false">
+                  <button @click="showModalKK = false">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M4.5 19.5L19.5 4.5M4.5 4.5L19.5 19.5" stroke="#333333" stroke-width="1.5"
                         stroke-linecap="round" stroke-linejoin="round" />
@@ -37,24 +40,24 @@
                   </button>
                 </div>
               </div>
-              <div v-if="level_ID === '1'" class="mt-4">
+              <div v-if="level_ID == '1'" class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pengelola</h3>
                 <el-select v-model="pengelola" multiple clearable collapse-tags placeholder="Pilih Unit Pengelola"
-                  popper-class="custom-header" :max-collapse-tags="5" class="w-full text-black">
+                  popper-class="custom-header" :max-collapse-tags="5" class="w-full text-primaryTextColor">
                   <template #header>
-                    <el-checkbox v-model="checkPengelola" :indeterminate="indeterminate" @change="handleCheckPengelola">
+                    <el-checkbox v-model="checkPengelola" :indeterminate="indeterminatePengelola" @change="handleCheckPengelola">
                       Select All Items
                     </el-checkbox>
                   </template>
                   <el-option v-for="item in itemsPengelola" :key="item.id" :label="item.name" :value="item.id" />
                 </el-select>
               </div>
-              <div v-if="level_ID === '2'" class="mt-4">
+              <div v-if="level_ID == '2'" class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pembina</h3>
                 <el-select v-model="pembina" multiple clearable collapse-tags placeholder="Pilih Unit Pembina"
-                  popper-class="custom-header" :max-collapse-tags="5" class="w-full text-black">
+                  popper-class="custom-header" :max-collapse-tags="5" class="w-full text-primaryTextColor">
                   <template #header>
-                    <el-checkbox v-model="checkPembina" :indeterminate="indeterminate" @change="handleCheckPembina">
+                    <el-checkbox v-model="checkPembina" :indeterminate="indeterminatePembina" @change="handleCheckPembina">
                       Select All Items
                     </el-checkbox>
                   </template>
@@ -64,9 +67,9 @@
               <div class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Status Persetujuan</h3>
                 <el-select v-model="persetujuan" multiple clearable collapse-tags placeholder="Pilih Status Persetujuan"
-                  popper-class="custom-header" :max-collapse-tags="6" class="w-full text-black">
+                  popper-class="custom-header" :max-collapse-tags="6" class="w-full text-primaryTextColor">
                   <template #header>
-                    <el-checkbox v-model="checkPersetujuan" :indeterminate="indeterminate"
+                    <el-checkbox v-model="checkPersetujuan" :indeterminate="indeterminateStatus"
                       @change="handleCheckPersetujuan">
                       Select All Items
                     </el-checkbox>
@@ -77,11 +80,11 @@
               <hr class="w-full my-4" />
               <div class="flex justify-end">
                 <div class="flex items-start">
-                  <button type="submit" @click="showModal = false"
+                  <button type="submit" @click="pengelola = []; pembina = []; persetujuan = []"
                     class="w-full text-primaryColor bg-white border-2 border-[#80C1CD] hover:bg-[#80C1CD] focus:ring-2 focus:outline-none focus:ring-primaryColor font-medium rounded-lg text-xs mr-2 px-5 py-2.5 text-center dark:bg-[#007E8F] dark:hover:bg-white dark:focus:ring-bg-[#80C1CD]">
-                    Batal
+                    Reset
                   </button>
-                  <button type="submit" @click="changeData()"
+                  <button type="submit" @click="changeDataKK"
                     class="w-full text-white bg-primaryColor hover:bg-[#005A66] focus:ring-2 focus:outline-none focus:ring-[#80C1CD] font-medium rounded-lg text-xs px-5 py-3 text-center dark:bg-[#007E8F] dark:hover:bg-primaryColor dark:focus:ring-[#005A66]">
                     Terapkan
                   </button>
@@ -91,58 +94,55 @@
           </div>
           <div class="flex flex-row items-center ml-4 space-x-3">
             <label class="text-sm font-semibold text-labelColor" for="">Periode</label>
-            <!-- <VueDatePicker class="mr-2 date-picker" v-model="tahun" :clearable="false" year-picker /> -->
-            <VueDatePicker class="mr-3 date-picker" v-model="yearPicked" :clearable="false" year-picker
-              @update:model-value="fetchPersetujuanKK()" />
+            <VueDatePicker class="mr-3 date-picker" v-model="yearPicked" :clearable="false" year-picker :teleport="true" @update:model-value="fetchPersetujuanKK()" />
           </div>
         </div>
         <TableComponent>
           <template v-slot:table-header>
-            <tr class="text-xs bg-gray-100">
-              <th class="text-center border">No</th>
-              <th class="border" v-if="level_ID === '1'">
-                <div class="flex flex-row items-center justify-center space-x-10 text-center ">
+            <tr class="text-xs">
+              <th class="text-center border-r">No</th>
+              <th v-if="level_ID == '1'" class="border-r">
+                <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Pengelola</h1>
                 </div>
               </th>
-              <th class="border" v-if="level_ID === '1' || level_ID === '2'">
-                <div class="flex flex-row items-center justify-center space-x-10 text-center ">
+              <th v-if="level_ID == '1' || level_ID == '2'" class="border-r">
+                <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Pembina</h1>
                 </div>
               </th>
-              <th class="border">
-                <div class="flex flex-row items-center justify-center space-x-10 text-center ">
+              <th class="border-r">
+                <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Sentral</h1>
                 </div>
               </th>
-              <th class="border">
-                <div class="flex flex-row items-center justify-center space-x-10 text-center ">
+              <th class="border-r">
+                <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Mesin</h1>
                 </div>
               </th>
-              <th class="border">
-                <div class="flex flex-row items-center justify-center space-x-10 text-center ">
+              <th class="border-r">
+                <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">IRR on Equity (%)</h1>
                 </div>
               </th>
-              <th class="border">
-                <div class="flex flex-row items-center justify-center space-x-10 text-center ">
+              <th class="border-r">
+                <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">NPV on Equity (Rp Juta)</h1>
                 </div>
               </th>
-              <th class="border">
+              <th class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Status</h1>
                 </div>
               </th>
-              <th class="text-center border">Aksi</th>
+              <th class="text-center">Aksi</th>
             </tr>
           </template>
-          <template v-slot:table-body v-if="persetujuanKK === null">
-            <tr class="text-xs text-gray-900 border-b hover:bg-gray-100">
-              <td colspan="8">
-                <h1 class="mb-2 text-lg font-semibold text-center">Data Tidak Tersedia</h1>
-                <p class="text-center">Silahkan lakukan pengisian atau hubungi unit terkait</p>
+          <template v-slot:table-body v-if="persetujuanKK.length === 0">
+            <tr class="text-xs text-gray-900 border-b">
+              <td colspan="9">
+                <Empty />
               </td>
             </tr>
           </template>
@@ -153,12 +153,13 @@
                 {{ index + 1 }}
               </td>
               <!-- <td v-if="props.pengelolaList.length" class="text-center">{{ props.pengelolaList.filter((pengelola: any) => pengelola.kode_pengelola === persetujuanKKItem.kode_pengelola)[0].pengelola ?? '' }}</td> -->
-              <td v-if="pengelolaList.length && level_ID === '1'" class="text-center">{{ pengelolaList.filter((pengelola:any) =>
+              <td v-if="pengelolaList.length && level_ID == '1'" class="text-left">{{
+                pengelolaList.filter((pengelola:any) =>
                 pengelola.kode_pengelola === item.kode_pengelola)[0] ? pengelolaList.filter((pengelola:any) =>
                 pengelola.kode_pengelola === item.kode_pengelola)[0].pengelola : '-' }}</td>
-              <td class="text-center" v-if="level_ID === '1' || level_ID === '2'">{{ item.pembina }}</td>
-              <td class="text-center">{{ item.sentral }}</td>
-              <td class="text-center">{{ item.mesin }}</td>
+              <td class="text-left" v-if="level_ID == '1' || level_ID == '2'">{{ item.pembina }}</td>
+              <td class="text-left">{{ item.sentral }}</td>
+              <td class="text-left">{{ item.mesin }}</td>
               <td class="text-right">{{ globalFormat.formatRupiah(item.irr_on_equity) }}</td>
               <td class="text-right">{{ globalFormat.formatRupiah(item.npv_on_equity) }}</td>
               <td class="flex items-center justify-center text-center">
@@ -196,7 +197,7 @@
               <td class="text-center">
                 <div>
                   <RouterLink
-                    :to="{ name: 'app-kk-mesin', params: { id: item.id_mesin}, query: {id_sentral: item.id_sentral, tahun: item.tahun} }">
+                    :to="{ name: 'app-kk-mesin', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(item.id_mesin) : item.id_mesin }, query: {id_sentral: item.id_sentral, tahun: item.tahun} }">
                     <button>
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -261,11 +262,11 @@
       <TabItem title="Feasibility Study">
         <div class="flex flex-row items-center justify-between mb-4">
           <div class="flex flex-row space-x-4">
-            <SearchBox class="w-60" @on-key-enter="fetchPersetujuanFS()" @on-click="fetchPersetujuanFS()"
-              v-model="searchQ" />
+            <SearchBox class="w-60" @on-key-enter="changeFS" @on-click="changeFS" @on-input="changeFS"
+              v-model="searchQFS" />
             <button type="button"
               class="text-primaryColor bg-white border border-primaryColor hover:bg-primaryColor focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center duration-300 hover:text-white"
-              @click="showModal = !showModal">
+              @click="showModalFS = !showModalFS">
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
                 class="mr-2">
                 <path
@@ -274,7 +275,7 @@
               </svg>
               Filter
             </button>
-            <ModalWrapper :showModal="showModal" :width="'w-[500px]'" :height="'h-auto'">
+            <ModalWrapper :showModal="showModalFS" :width="'w-[500px]'" :height="'h-auto'">
               <div class="flex flex-col space-y-5">
                 <div class="flex justify-between">
                   <div class="flex items-center space-x-2">
@@ -283,9 +284,9 @@
                         d="M4.6665 7.33073H11.3332V8.66406H4.6665V7.33073ZM2.6665 4.66406H13.3332V5.9974H2.6665V4.66406ZM6.6665 9.9974H9.33317V11.3307H6.6665V9.9974Z"
                         fill="#333333" />
                     </svg>
-                    <span class="text-base font-semibold text-black">Filter</span>
+                    <span class="text-base font-semibold text-primaryTextColor">Filter</span>
                   </div>
-                  <button @click="showModal = false">
+                  <button @click="showModalFS = false">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M4.5 19.5L19.5 4.5M4.5 4.5L19.5 19.5" stroke="#333333" stroke-width="1.5"
                         stroke-linecap="round" stroke-linejoin="round" />
@@ -293,24 +294,24 @@
                   </button>
                 </div>
               </div>
-              <div v-if="level_ID === '1'" class="mt-4">
+              <div v-if="level_ID == '1'" class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pengelola</h3>
                 <el-select v-model="pengelola" multiple clearable collapse-tags placeholder="Pilih Unit Pengelola"
-                  popper-class="custom-header" :max-collapse-tags="5" class="w-full text-black">
+                  popper-class="custom-header" :max-collapse-tags="5" class="w-full text-primaryTextColor">
                   <template #header>
-                    <el-checkbox v-model="checkPengelola" :indeterminate="indeterminate" @change="handleCheckPengelola">
+                    <el-checkbox v-model="checkPengelola" :indeterminate="indeterminatePengelola" @change="handleCheckPengelola">
                       Select All Items
                     </el-checkbox>
                   </template>
                   <el-option v-for="item in itemsPengelola" :key="item.id" :label="item.name" :value="item.id" />
                 </el-select>
               </div>
-              <div v-if="level_ID === '2'" class="mt-4">
+              <div v-if="level_ID == '2'" class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pembina</h3>
                 <el-select v-model="pembina" multiple clearable collapse-tags placeholder="Pilih Unit Pembina"
-                  popper-class="custom-header" :max-collapse-tags="5" class="w-full text-black">
+                  popper-class="custom-header" :max-collapse-tags="5" class="w-full text-primaryTextColor">
                   <template #header>
-                    <el-checkbox v-model="checkPembina" :indeterminate="indeterminate" @change="handleCheckPembina">
+                    <el-checkbox v-model="checkPembina" :indeterminate="indeterminatePembina" @change="handleCheckPembina">
                       Select All Items
                     </el-checkbox>
                   </template>
@@ -320,9 +321,9 @@
               <div class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Status Persetujuan</h3>
                 <el-select v-model="persetujuan" multiple clearable collapse-tags placeholder="Pilih Status Persetujuan"
-                  popper-class="custom-header" :max-collapse-tags="6" class="w-full text-black">
+                  popper-class="custom-header" :max-collapse-tags="6" class="w-full text-primaryTextColor">
                   <template #header>
-                    <el-checkbox v-model="checkPersetujuan" :indeterminate="indeterminate"
+                    <el-checkbox v-model="checkPersetujuan" :indeterminate="indeterminateStatus"
                       @change="handleCheckPersetujuan">
                       Select All Items
                     </el-checkbox>
@@ -333,11 +334,11 @@
               <hr class="w-full my-4" />
               <div class="flex justify-end">
                 <div class="flex items-start">
-                  <button type="submit" @click="showModal = false"
+                  <button type="submit" @click="showModalFS = false"
                     class="w-full text-primaryColor bg-white border-2 border-[#80C1CD] hover:bg-[#80C1CD] focus:ring-2 focus:outline-none focus:ring-primaryColor font-medium rounded-lg text-xs mr-2 px-5 py-2.5 text-center dark:bg-[#007E8F] dark:hover:bg-white dark:focus:ring-bg-[#80C1CD]">
                     Batal
                   </button>
-                  <button type="submit" @click="changeFS()"
+                  <button type="submit" @click="changeFS"
                     class="w-full text-white bg-primaryColor hover:bg-[#005A66] focus:ring-2 focus:outline-none focus:ring-[#80C1CD] font-medium rounded-lg text-xs px-5 py-3 text-center dark:bg-[#007E8F] dark:hover:bg-primaryColor dark:focus:ring-[#005A66]">
                     Terapkan
                   </button>
@@ -348,51 +349,50 @@
         </div>
         <TableComponent>
           <template v-slot:table-header>
-            <tr class="text-xs bg-gray-100">
-              <th class="text-center border">No</th>
-              <th class="border" v-if="level_ID === '1'">
-                <div class="flex flex-row items-center justify-center space-x-10 text-center ">
+            <tr class="text-xs">
+              <th class="text-center border-r">No</th>
+              <th class="border-r" v-if="level_ID == '1'">
+                <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Pengelola</h1>
                 </div>
               </th>
-              <th class="border" v-if="level_ID === '1' || level_ID === '2'">
-                <div class="flex flex-row items-center justify-center space-x-10 text-center ">
+              <th class="border-r" v-if="level_ID == '1' || level_ID == '2'">
+                <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Pembina</h1>
                 </div>
               </th>
-              <th class="border">
-                <div class="flex flex-row items-center justify-center space-x-10 text-center ">
+              <th class="border-r">
+                <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Sentral</h1>
                 </div>
               </th>
-              <th class="border">
-                <div class="flex flex-row items-center justify-center space-x-10 text-center ">
+              <th class="border-r">
+                <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Mesin</h1>
                 </div>
               </th>
-              <th class="border">
-                <div class="flex flex-row items-center justify-center space-x-10 text-center ">
+              <th class="border-r">
+                <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">IRR on Equity (%)</h1>
                 </div>
               </th>
-              <th class="border">
-                <div class="flex flex-row items-center justify-center space-x-10 text-center ">
+              <th class="border-r">
+                <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">NPV on Equity (Rp Juta)</h1>
                 </div>
               </th>
-              <th class="border">
+              <th class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Status</h1>
                 </div>
               </th>
-              <th class="text-center border">Aksi</th>
+              <th class="text-center">Aksi</th>
             </tr>
           </template>
-          <template v-slot:table-body v-if="persetujuanFS === null">
-            <tr class="text-xs text-gray-900 border-b hover:bg-gray-100">
-              <td colspan="8">
-                <h1 class="mb-2 text-lg font-semibold text-center">Data Tidak Tersedia</h1>
-                <p class="text-center">Silahkan lakukan pengisian atau hubungi unit terkait</p>
+          <template v-slot:table-body v-if="persetujuanFS.length === 0">
+            <tr class="text-xs text-gray-900 border-b">
+              <td colspan="9">
+                <Empty />
               </td>
             </tr>
           </template>
@@ -402,12 +402,13 @@
               <td scope="row" class="text-center whitespace-nowrap">
                 {{ index + 1 }}
               </td>
-              <td v-if="pengelolaList.length && level_ID === '1'" class="text-center">{{ pengelolaList.filter((pengelola:any) =>
+              <td v-if="pengelolaList.length && level_ID == '1'" class="text-left">{{
+                pengelolaList.filter((pengelola:any) =>
                 pengelola.kode_pengelola === item.kode_pengelola)[0] ? pengelolaList.filter((pengelola:any) =>
                 pengelola.kode_pengelola === item.kode_pengelola)[0].pengelola : '-' }}</td>
-              <td class="text-center" v-if="level_ID === '1' || level_ID === '2'">{{ item.pembina }}</td>
-              <td class="text-center">{{ item.sentral }}</td>
-              <td class="text-center">{{ item.mesin }}</td>
+              <td class="text-left" v-if="level_ID == '1' || level_ID == '2'">{{ item.pembina }}</td>
+              <td class="text-left">{{ item.sentral }}</td>
+              <td class="text-left">{{ item.mesin }}</td>
               <td class="text-right">{{ globalFormat.formatRupiah(item.irr_on_equity) }}</td>
               <td class="text-right">{{ globalFormat.formatRupiah(item.npv_on_equity) }}</td>
               <td class="flex items-center justify-center text-center">
@@ -445,7 +446,7 @@
               <td class="text-center">
                 <div>
                   <RouterLink
-                    :to="{ name: 'app-fs-mesin', params: { id: item.id_mesin}, query: {id_sentral: item.id_sentral} }">
+                    :to="{ name: 'app-fs-mesin', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(item.id_mesin) : item.id_mesin }, query: {id_sentral: item.id_sentral} }">
                     <button>
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -512,6 +513,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from "vue";
+import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
 import PersetujuanService from '@/services/persetujuan-service';
 import PetaService from "@/services/peta-service";
 import GlobalFormat from "@/services/format/global-format";
@@ -523,20 +525,24 @@ import ModalWrapper from "@/components/ui/ModalWrapper.vue";
 import type { CheckboxValueType } from 'element-plus';
 import TableComponent from "@/components/ui/Table.vue";
 import { notifyError } from "@/services/helper/toast-notification";
+import Empty from "@/components/ui/EmptyData.vue";
 
+const nodeMode = import.meta.env.MODE;
 const persetujuanService = new PersetujuanService();
 const petaService = new PetaService();
 const globalFormat = new GlobalFormat();
-const isLoading = ref(false);
+const isLoading = ref<boolean>(false);
 const date = new Date();
 const tahunBerjalan = date.getFullYear();
 const yearPicked = ref<number>(tahunBerjalan);
-const showModal = ref(false);
-const searchQ = ref<string>("");
+const showModalKK = ref<boolean>(false);
+const showModalFS = ref<boolean>(false);
+const searchQKK = ref<string>("");
+const searchQFS = ref<string>("");
 const title = ref('Kertas Kerja');
 
-const levelID = ref(localStorage.getItem("level_id"));
-const level_ID = ref(levelID);
+const levelID = ref(nodeMode === 'production' ? encryptStorage.getItem('level_id') : localStorage.getItem("level_id"));
+const level_ID = ref(levelID.value);
 const pengelolaList = ref<any[]>([]);
 const pembinaList = ref<any[]>([]);
 const persetujuanKK = ref<any[]>([]);
@@ -551,7 +557,9 @@ const totalPagesFS = ref(0);
 const pageLimitFS = ref(10);
 const totalRecordsFS = ref();
 
-const indeterminate = ref(false);
+const indeterminatePengelola = ref(false);
+const indeterminatePembina = ref(false);
+const indeterminateStatus = ref(false);
 const checkPengelola = ref(false);
 const checkPembina = ref(false);
 const checkPersetujuan = ref(false);
@@ -562,6 +570,22 @@ const itemsPengelola = ref<{ id: string; name: string; }[]>([]);
 const itemsPembina = ref<{ id: number; name: string; }[]>([]);
 const itemsPersetujuan = ref([
   {
+    id: 3,
+    name: 'Draft',
+  },
+  {
+    id: 4,
+    name: 'Disetujui',
+  },
+  {
+    id: 2,
+    name: 'Ditolak oleh Pembina',
+  },
+  {
+    id: 5,
+    name: 'Ditolak oleh Pengelola',
+  },
+  {
     id: 0,
     name: 'Menunggu Persetujuan Pembina',
   },
@@ -569,23 +593,9 @@ const itemsPersetujuan = ref([
     id: 1,
     name: 'Menunggu Persetujuan Pengelola',
   },
-  {
-    id: 2,
-    name: 'Ditolak oleh Pembina',
-  },
-  {
-    id: 3,
-    name: 'Draft',
-  },
-  {
-    id: 4,
-    name: 'Ditolak oleh Pengelola',
-  },
-  {
-    id: 5,
-    name: 'Disetujui',
-  },
 ])
+// const listStatus = ref(Math.min(itemsPersetujuan.value))
+// console.log(listStatus.value)
 
 async function getDataPengelola() {
   try {
@@ -630,18 +640,19 @@ async function getDataPembina() {
 const fetchPersetujuanKK = async () => {
   try {
     const response: any = await persetujuanService.getPersetujuanKertasKerja({
-      kode_pengelola : [],
+      kode_pengelola: pengelola.value,
       id_pembina: [],
-      status: [],
+      status: persetujuan.value,
       page: currentPage.value,
       limit: pageLimit.value,
-      tahun: yearPicked.value,
-      search: searchQ.value
+      tahun: yearPicked.value.toString(),
+      search: searchQKK.value.toUpperCase()
     });
     persetujuanKK.value = response.data;
     totalPages.value = response.meta.totalPages;
     totalRecords.value = response.meta.totalRecords;
     pageLimit.value = response.meta.limit;
+    showModalKK.value = false
   } catch (error) {
     console.error('Fetch Persetujuan KK Error : ' + error);
   }
@@ -649,60 +660,82 @@ const fetchPersetujuanKK = async () => {
 const fetchPersetujuanFS = async () => {
   try {
     const response: any = await persetujuanService.getPersetujuanFS({
-      kode_pengelola : [],
+      kode_pengelola: pengelola.value,
       id_pembina: [],
-      status: [],
+      status: persetujuan.value,
       page: currentPage.value,
       limit: pageLimitFS.value,
-      search: searchQ.value
+      search: searchQFS.value.toUpperCase()
     });
     persetujuanFS.value = response.data;
     totalPagesFS.value = response.meta.totalPages;
     totalRecordsFS.value = response.meta.totalRecords;
     pageLimitFS.value = response.meta.limit;
+    showModalFS.value = false
   } catch (error) {
     console.error('Fetch Persetujuan FS Error : ' + error);
+  }
+}
+const changeDataKK = async () => {
+  try {
+    isLoading.value = true;
+    await fetchPersetujuanKK();
+  } catch (error) {
+    notifyError("Data Persetujuan Gagal Dimuat, Mohon Coba Lagi", false);
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+const changeFS = async () => {
+  try {
+    isLoading.value = true;
+    await fetchPersetujuanFS();
+  } catch (error) {
+    notifyError("Data Persetujuan Gagal Dimuat, Mohon Coba Lagi", false);
+  } finally {
+    isLoading.value = false;
   }
 }
 
 watch(pengelola, (val) => {
   if (val.length === 0) {
     checkPengelola.value = false
-    indeterminate.value = false
+    indeterminatePengelola.value = false
   } else if (val.length === itemsPengelola.value.length) {
     checkPengelola.value = true
-    indeterminate.value = false
+    indeterminatePengelola.value = false
   } else {
-    indeterminate.value = true
+    indeterminatePengelola.value = true
   }
 })
 
 watch(pembina, (val) => {
   if (val.length === 0) {
     checkPembina.value = false
-    indeterminate.value = false
+    indeterminatePembina.value = false
   } else if (val.length === itemsPembina.value.length) {
     checkPembina.value = true
-    indeterminate.value = false
+    indeterminatePembina.value = false
   } else {
-    indeterminate.value = true
+    indeterminatePembina.value = true
   }
 })
 
 watch(persetujuan, (val) => {
   if (val.length === 0) {
     checkPersetujuan.value = false
-    indeterminate.value = false
+    indeterminateStatus.value = false
   } else if (val.length === itemsPersetujuan.value.length) {
     checkPersetujuan.value = true
-    indeterminate.value = false
+    indeterminateStatus.value = false
   } else {
-    indeterminate.value = true
+    indeterminateStatus.value = true
   }
 })
 
 const handleCheckPengelola = (val: CheckboxValueType) => {
-  indeterminate.value = false
+  indeterminatePengelola.value = false
   if (val) {
     pengelola.value = itemsPengelola.value.map((_) => _.id)
   } else {
@@ -711,7 +744,7 @@ const handleCheckPengelola = (val: CheckboxValueType) => {
 }
 
 const handleCheckPembina = (val: CheckboxValueType) => {
-  indeterminate.value = false
+  indeterminatePembina.value = false
   if (val) {
     pembina.value = itemsPembina.value.map((_) => _.id)
   } else {
@@ -720,58 +753,11 @@ const handleCheckPembina = (val: CheckboxValueType) => {
 }
 
 const handleCheckPersetujuan = (val: CheckboxValueType) => {
-  indeterminate.value = false
+  indeterminateStatus.value = false
   if (val) {
     persetujuan.value = itemsPersetujuan.value.map((_) => _.id)
   } else {
     persetujuan.value = []
-  }
-}
-
-async function changeData() {
-  try {
-    isLoading.value = true;
-    const response: any = await persetujuanService.getPersetujuanKertasKerja({
-      kode_pengelola : pengelola.value ? pengelola.value : "",
-      id_pembina: pembina.value ? pembina.value : "",
-      status: persetujuan.value ? persetujuan.value : "",
-      page: currentPage.value,
-      limit: pageLimit.value,
-      tahun: 2024,
-      mesin: searchQ.value
-    });
-    persetujuanKK.value = response.data;
-    totalPages.value = response.meta.totalPages;
-    totalRecords.value = response.meta.totalRecords;
-    pageLimit.value = response.meta.limit;
-    showModal.value = false;
-  } catch (error) {
-    notifyError("Data Persetujuan Gagal Dimuat, Mohon Coba Lagi", false);
-  } finally {
-    isLoading.value = false;
-  }
-}
-
-async function changeFS() {
-  try {
-    isLoading.value = true;
-    const response: any = await persetujuanService.getPersetujuanFS({
-      kode_pengelola : pengelola.value ? pengelola.value : "",
-      id_pembina: pembina.value ? pembina.value : "",
-      status: persetujuan.value ? persetujuan.value : "",
-      page: currentPage.value,
-      limit: pageLimit.value,
-      mesin: searchQ.value
-    });
-    persetujuanFS.value = response.data;
-    totalPagesFS.value = response.meta.totalPages;
-    totalRecordsFS.value = response.meta.totalRecords;
-    pageLimitFS.value = response.meta.limit;
-    showModal.value = false;
-  } catch (error) {
-    notifyError("Data Persetujuan Gagal Dimuat, Mohon Coba Lagi", false);
-  } finally {
-    isLoading.value = false;
   }
 }
 

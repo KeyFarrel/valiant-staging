@@ -31,7 +31,7 @@ export default class UserService extends BaseService {
         return this.post(`${url}user`, dataToPost);
     }
     async updateUser<T>(id: number, data: any): Promise<T> {
-        return this.put(`${url}user/${id}`, data);
+        return this.patch(`${url}user/${id}`, data);
     }
     async getSentralByPengelola<T>(idPengelola: number, idPembina: number): Promise<T> {
         return this.get(`${url}filter/combo-sentral`, {id_pengelola: idPengelola, id_pembina: idPembina});

@@ -13,57 +13,57 @@
           ? asumsiParameter.asumsi_makro.corporate_tax_rate
           : '-'
           " :discount-rate="asumsiParameter ? asumsiParameter.asumsi_makro.discount_rate : '-'
-    " :interest-rate="asumsiParameter ? asumsiParameter.asumsi_makro.discount_rate : '-'
-    " :loan-tenor="asumsiParameter ? asumsiParameter.asumsi_makro.loan_tenor : '-'
-    " :loan-portion="asumsiParameter ? asumsiParameter.asumsi_makro.loan_portion : '-'
-    " :equity-portion="asumsiParameter ? asumsiParameter.asumsi_makro.equity : '-'
-    " />
+            " :interest-rate="asumsiParameter ? asumsiParameter.asumsi_makro.discount_rate : '-'
+      " :loan-tenor="asumsiParameter ? asumsiParameter.asumsi_makro.loan_tenor : '-'
+      " :loan-portion="asumsiParameter ? asumsiParameter.asumsi_makro.loan_portion : '-'
+      " :equity-portion="asumsiParameter ? asumsiParameter.asumsi_makro.equity : '-'
+      " />
       </TabItem>
       <TabItem title="Parameter Teknis & Finansial">
         <ParameterTeknis v-model="tahunRealisasi" :daya-terpasang="asumsiParameter
           ? asumsiParameter.parameter_teknis_financial.daya_terpasang
           : '-'
           " :daya-mampu-netto="asumsiParameter
-    ? asumsiParameter.parameter_teknis_financial.daya_mampu_netto_mw
-    : '-'
-    " :auxiliary="asumsiParameter
-    ? asumsiParameter.parameter_teknis_financial.auxiliary
-    : '-'
-    " :susut-trafo="asumsiParameter
-    ? asumsiParameter.parameter_teknis_financial.susut_trafo
-    : '-'
-    " :pemakaian-sendiri="asumsiParameter
-    ? asumsiParameter.parameter_teknis_financial.ps
-    : '-'
-    " :net-plant-heat-rate="asumsiParameter
-    ? asumsiParameter.parameter_teknis_financial.nphr
-    : '-'
-    " :total-project-cost="asumsiParameter
-    ? asumsiParameter.parameter_teknis_financial.total_project_cost
-    : '-'
-    " :loan="asumsiParameter
-    ? asumsiParameter.parameter_teknis_financial.loan
-    : '-'
-    " :equity="asumsiParameter
-    ? asumsiParameter.parameter_teknis_financial.equity
-    : '-'
-    " :electricity-price-a="asumsiParameter
-    ? asumsiParameter.parameter_teknis_financial
-      .electricity_price_a_rp_per_kwbln
-    : '-'
-    " :electricity-price-b="asumsiParameter
-    ? asumsiParameter.parameter_teknis_financial
-      .electricity_price_b_rp_per_kwbln
-    : '-'
-    " :electricity-price-c="asumsiParameter
-    ? asumsiParameter.parameter_teknis_financial
-      .electricity_price_c_rp_per_kwh
-    : '-'
-    " :electricity-price-d="asumsiParameter
-    ? asumsiParameter.parameter_teknis_financial
-      .electricity_price_d_rp_per_kwh
-    : '-'
-    " :bahan-bakars="asumsiParameter ? asumsiParameter.bahan_bakars : '-'" />
+            ? asumsiParameter.parameter_teknis_financial.daya_mampu_netto_mw
+            : '-'
+            " :auxiliary="asumsiParameter
+      ? asumsiParameter.parameter_teknis_financial.auxiliary
+      : '-'
+      " :susut-trafo="asumsiParameter
+      ? asumsiParameter.parameter_teknis_financial.susut_trafo
+      : '-'
+      " :pemakaian-sendiri="asumsiParameter
+      ? asumsiParameter.parameter_teknis_financial.ps
+      : '-'
+      " :net-plant-heat-rate="asumsiParameter
+      ? asumsiParameter.parameter_teknis_financial.nphr
+      : '-'
+      " :total-project-cost="asumsiParameter
+      ? asumsiParameter.parameter_teknis_financial.total_project_cost
+      : '-'
+      " :loan="asumsiParameter
+      ? asumsiParameter.parameter_teknis_financial.loan
+      : '-'
+      " :equity="asumsiParameter
+      ? asumsiParameter.parameter_teknis_financial.equity
+      : '-'
+      " :electricity-price-a="asumsiParameter
+      ? asumsiParameter.parameter_teknis_financial
+        .electricity_price_a_rp_per_kwbln
+      : '-'
+      " :electricity-price-b="asumsiParameter
+      ? asumsiParameter.parameter_teknis_financial
+        .electricity_price_b_rp_per_kwbln
+      : '-'
+      " :electricity-price-c="asumsiParameter
+      ? asumsiParameter.parameter_teknis_financial
+        .electricity_price_c_rp_per_kwh
+      : '-'
+      " :electricity-price-d="asumsiParameter
+      ? asumsiParameter.parameter_teknis_financial
+        .electricity_price_d_rp_per_kwh
+      : '-'
+      " :bahan-bakars="asumsiParameter ? asumsiParameter.bahan_bakars : '-'" />
       </TabItem>
       <TabItem title="Data Teknis">
         <div class="w-full overflow-auto border rounded-lg whitespace-nowrap">
@@ -75,10 +75,10 @@
                 <th v-for="(item, index) in dataTeknis.tahun.length === 0
                   ? 1
                   : dataTeknis.tahun" :key="index" :class="{
-    'text-warningColor': item < tahunRealisasi,
-    'text-black': item === tahunRealisasi,
-    'text-[#0099AD]': item > tahunRealisasi,
-  }">
+                    'text-warningColor': item < tahunRealisasi,
+                    'text-primaryTextColor': item === tahunRealisasi,
+                    'text-[#0099AD]': item > tahunRealisasi,
+                  }">
                   {{ dataTeknis.tahun.length === 0 ? "-" : item }}
                 </th>
               </tr>
@@ -88,15 +88,15 @@
                 <td class="sticky left-0 z-10 bg-white">{{ index + 1 }}</td>
                 <td class="sticky z-10 bg-white left-10">{{ item.uraian }}</td>
                 <td v-for="(items, indexs) in dataTeknis.tahun.length === 0
-                      ? 1
-                      : dataTeknis.tahun" :key="indexs" :class="{ 'bg-blue-50': items === tahunRealisasi }">
+                  ? 1
+                  : dataTeknis.tahun" :key="indexs" :class="{ 'bg-blue-50': items === tahunRealisasi }">
                   {{
                     dataTeknis.tahun
-                    ? item["t" + items] != null
-                      ? item.uraian === 'Type of Periodic Maintenance' ? getTypePeriodic(item["t" + items]) :
-                        globalFormat.formatRupiah(item["t" + items])
+                      ? item["t" + items] != null
+                        ? item.uraian === 'Type of Periodic Maintenance' ? getTypePeriodic(item["t" + items]) :
+                          globalFormat.formatRupiah(item["t" + items])
+                        : "-"
                       : "-"
-                    : "-"
                   }}
                 </td>
               </tr>
@@ -113,7 +113,7 @@
                 <th v-for="(tahunItem, tahunIndex) in dataFinansial.tahun.length === 0 ? 1 : dataFinansial.tahun"
                   :key="tahunIndex" :class="{
                     'text-warningColor': tahunItem < tahunRealisasi,
-                    'text-black': tahunItem === tahunRealisasi,
+                    'text-primaryTextColor': tahunItem === tahunRealisasi,
                     'text-primaryColor': tahunItem > tahunRealisasi,
                   }">
                   {{ dataFinansial.tahun.length === 0 ? '-' : tahunItem }}
@@ -218,7 +218,8 @@
               <tr v-for="(level0, index) in dataFinansial.detail.filter((level0Item: any) => level0Item.level === 0)">
                 <td>{{ level0.uraian }}</td>
                 <td v-for="(tahuns, index) in dataFinansial.tahun.length === 0 ? 1 : dataFinansial.tahun"
-                  :class="{ 'bg-blue-50': tahuns === 2023 }">{{ level0['t' + tahuns] ? level0['t' + tahuns] : '-' }}</td>
+                  :class="{ 'bg-blue-50': tahuns === 2023 }">{{ level0['t' + tahuns] ? level0['t' + tahuns] : '-' }}
+                </td>
               </tr>
             </tbody>
           </table>

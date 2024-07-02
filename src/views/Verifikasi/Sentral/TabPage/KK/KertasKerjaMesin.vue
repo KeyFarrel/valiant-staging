@@ -1,29 +1,29 @@
 <template>
   <TableComponent class="scrollbar-hide">
     <template v-slot:table-header>
-      <tr class="text-xs bg-gray-100">
-        <th class="text-center border">No</th>
-        <th class="border">
+      <tr class="text-xs">
+        <th class="text-center border-r">No</th>
+        <th class="border-r">
           <div class="flex flex-row items-center justify-center space-x-10 text-center ">
             <h1 class="font-semibold">Periode</h1>
           </div>
         </th>
-        <th class="border">
+        <th class="border-r">
           <div class="flex flex-row items-center justify-center space-x-10 text-center ">
             <h1 class="font-semibold">IRR on Equity (%)</h1>
           </div>
         </th>
-        <th class="border">
+        <th class="border-r">
           <div class="flex flex-row items-center justify-center space-x-10 text-center ">
             <h1 class="font-semibold">NPV on Equity (Rp Juta)</h1>
           </div>
         </th>
-        <th class="border">
+        <th class="border-r">
           <div class="flex flex-row items-center justify-center space-x-10 text-center">
             <h1 class="font-semibold">Status</h1>
           </div>
         </th>
-        <th class="text-center border">Aksi</th>
+        <th class="text-center">Aksi</th>
       </tr>
     </template>
     <template v-slot:table-body v-if="!props.source?.length">
@@ -39,7 +39,7 @@
         v-for="(persetujuanKKItem, persetujuanKKIndex) in props.source" :key="persetujuanKKIndex">
         <td scope="row" class="px-1 py-4 text-center whitespace-nowrap">{{persetujuanKKIndex + 1}}</td>
         <td class="text-center">{{ persetujuanKKItem.tahun ? persetujuanKKItem.tahun : '-' }}</td>
-        <td class="text-right">{{ persetujuanKKItem.irr_on_equity }}</td>
+        <td class="text-right">{{ globalFormat.formatRupiah(persetujuanKKItem.irr_on_equity) }}</td>
         <td class="text-right">{{ globalFormat.formatRupiah(persetujuanKKItem.npv_on_equity) }}</td>
         <td class="flex items-center justify-center text-center">
           <div
@@ -76,7 +76,7 @@
         <td class="text-center">
           <div>
             <RouterLink
-              :to="{ name: 'persetujuan-kk', params: { id: persetujuanKKItem.id_mesin}, query: {id_sentral: persetujuanKKItem.id_sentral, tahun: persetujuanKKItem.tahun} }">
+              :to="{ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(persetujuanKKItem.id_mesin) : persetujuanKKItem.id_mesin}, query: {id_sentral: persetujuanKKItem.id_sentral, tahun: persetujuanKKItem.tahun} }">
               <button>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" clip-rule="evenodd"
@@ -131,6 +131,8 @@
 </template>
 
 <script setup lang="ts">
+import { encryptStorage } from "@/utils/app-encrypt-storage";
+const nodeMode = import.meta.env.MODE;
 import TableComponent from "@/components/ui/Table.vue";
 import GlobalFormat from "@/services/format/global-format";
 
