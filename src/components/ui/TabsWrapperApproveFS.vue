@@ -124,7 +124,10 @@
           <div v-if="tab === 'next'">
             <div class="text-xs">
               <div class="flex justify-between py-1">
-                <div class="text-slate-500">IRR On Project</div>
+                <div class="flex">
+                  <div class="text-slate-500">IRR On Project</div>
+                  <PopUp class="ml-2" title="WACC On Project" :content="props.waccOnProject ? globalFormat.formatEnergy(props.waccOnProject) : '-'" />
+                </div>
                 <div class="flex">
                   <p class="mr-2 font-bold">
                     {{ globalFormat.formatRupiah(props.irrOnProject) }}
@@ -133,7 +136,10 @@
                 </div>
               </div>
               <div class="flex justify-between py-1">
-                <div class="text-slate-500">IRR On Equity</div>
+                <div class="flex">
+                  <div class="text-slate-500">IRR On Equity</div>
+                  <PopUp class="ml-2" title="WACC On Equity" :content="props.waccOnEquity ? globalFormat.formatEnergy(props.waccOnEquity) : '-'" />
+                </div>
                 <div class="flex">
                   <p class="mr-2 font-bold">
                     {{ globalFormat.formatRupiah(props.irrOnEquity) }}
@@ -339,6 +345,7 @@ import { ref, provide, useSlots, onMounted, nextTick } from "vue";
 import { VueEcharts } from "vue3-echarts";
 import ModalWrapper from "@/components/ui/ModalWrapper.vue";
 import Chips from "@/components/ui/Chips.vue";
+import PopUp from "@/components/Grafik/PoupWacc.vue";
 import { useLamanDataTabStore } from "@/store/storeLamanDataTab";
 import GlobalFormat from "@/services/format/global-format";
 import GrafikService from "@/services/grafik-service";
@@ -366,6 +373,7 @@ const datatablePlanKomMesin = ref<table[]>([]);
 let chartPlanningMesin = ref();
 let updatePlanningMesin = ref(true);
 let tahunPlanningMesin = ref<any>([]);
+let profitLoss = ref<any[]>([]);
 let capexPlanMesin = ref<any>([]);
 let comBDPlanMesin = ref<any>([]);
 let fuelComPlanMesin = ref<any>([]);
@@ -426,6 +434,8 @@ interface Props {
   tahunGrafik: number
   irrOnProject: number
   irrOnEquity: number
+  waccOnProject: number
+  waccOnEquity: number
   npvOnEquity: number
   npvOnProject: number
   averageNcf: number
@@ -508,16 +518,30 @@ onMounted(async () => {
       yAxisPlan.value = [];
 
       if (res.data != null) {
+        var wlcAnnu = [];
+        var revenAnnu = [];
+        var capexAnnu = [];
+        var comBDAnnu = [];
+        var fuelComAnnu = [];
+        var finalMax;
+
         for (var i = 0; i < res.data.length; i++) {
           tahunPlanningMesin.value.push(res.data[i].tahun);
           capexPlanMesin.value.push(res.data[i].capex_annualized);
           comBDPlanMesin.value.push(res.data[i].cost_component_bd);
           revPlanMesin.value.push(res.data[i].revenue_annualized);
+          profitLoss.value.push(res.data[i].profit_loss);
           fuelComPlanMesin.value.push(res.data[i].cost_component_c_annualized);
           sumLccPlanMesin.value.push(res.data[i].total_wlcc_annualized);
           yAxisPlan.value.push(res.data[i].capex_annualized + res.data[i].cost_component_bd + res.data[i].cost_component_c_annualized);
           maxPlanBep.value = Math.max.apply(Math, yAxisPlan.value) * 1.1;
           maxPlanOpt.value = Math.max.apply(Math, yAxisPlan.value);
+
+          wlcAnnu.push(res.data[i].total_wlcc_annualized);
+          revenAnnu.push(res.data[i].revenue_annualized);
+          capexAnnu.push(res.data[i].capex_annualized);
+          comBDAnnu.push(res.data[i].cost_component_bd);
+          fuelComAnnu.push(res.data[i].cost_component_c_annualized);
 
           const difference = Math.abs(res.data[i].total_wlcc_annualized - res.data[i].revenue_annualized);
           if (difference < selisih) {
@@ -527,14 +551,21 @@ onMounted(async () => {
             tahunBEP = res.data[i].tahun
           }
 
-          const diffOpt = Math.min.apply(Math, sumLccPlanMesin.value)
-          if (diffOpt < selisihOpt) {
-            indexOptimum = i;
-            indexOpt = i + 1;
-            selisihOpt = diffOpt;
+          const finalOptimum = Math.max.apply(Math, profitLoss.value)
+          if (finalOptimum == res.data[i].profit_loss) {
+            indexOptimum = i
+            indexOpt = i + 1
             tahunOptimum = res.data[i].tahun
           }
         }
+        var maxWlc = Math.max.apply(Math, wlcAnnu);
+        var maxRev = Math.max.apply(Math, revenAnnu);
+        var maxCapex = Math.max.apply(Math, capexAnnu);
+        var maxComBD = Math.max.apply(Math, comBDAnnu);
+        var maxFuelCom = Math.max.apply(Math, fuelComAnnu);
+
+        var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxWlc, maxRev];
+        finalMax = Math.max.apply(Math, listOfMax);
       } else {
         dataPlanMesin == null;
       }
@@ -600,7 +631,7 @@ onMounted(async () => {
             },
             splitNumber: 20,
             min: 0,
-            max: maxPlanBep
+            max: finalMax ? finalMax * 1.1 : finalMax
           },
         ],
         series: [
@@ -618,8 +649,8 @@ onMounted(async () => {
               symbolSize: [90, 30],
               itemStyle: { color: '#0D5A71' },
               label: { fontSize: 10, fontWeight: 'bold' },
-              data: [{ name: 'Max', value: `BEP FS : ${tahunBEP} (${indexBEP})`, xAxis: indexTerdekat, yAxis: maxPlanBep }],
-              symbolOffset: [0, 10]
+              data: [{ name: 'Max', value: `BEP FS : ${tahunBEP} (${indexBEP})`, xAxis: indexTerdekat, yAxis: finalMax }],
+              symbolOffset: [0, 0]
             },
             markArea: {
               silent: true,
@@ -647,7 +678,7 @@ onMounted(async () => {
               symbolSize: [95, 30],
               itemStyle: { color: '#0D5A71' },
               label: { fontSize: 10, fontWeight: 'bold' },
-              data: [{ name: 'Min', value: `Optimum life FS : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: maxPlanOpt }],
+              data: [{ name: 'Min', value: `Optimum life FS : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: finalMax }],
               symbolOffset: [0, 20]
             },
             markArea: {
@@ -755,7 +786,7 @@ onMounted(async () => {
         },
         grid: {
           top: "8%",
-          left: "3%",
+          left: "5%",
           right: "3%",
           bottom: "8%",
           containLabel: true,

@@ -28,6 +28,7 @@
           </th>
           <th scope="col" class="text-left">Nama</th>
           <th scope="col" class="text-left">Email</th>
+          <th scope="col" class="text-left">Level</th>
           <th scope="col" class="text-left">Role</th>
           <th scope="col" class="text-center">Status</th>
           <th scope="col" class="text-center">Aksi</th>
@@ -58,6 +59,9 @@
           </td>
           <td>
             {{ user.email }}
+          </td>
+          <td>
+            {{ userLevel(user.level_id)}}
           </td>
           <td>
             <span v-for="(item, index) in user.role">{{ item.role }}</span>
@@ -264,7 +268,7 @@
         <div>
           <label for="role" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Role <span
               class="text-warningColor">*</span></label>
-          <select v-model="formData.role_id" :disabled="formData.id_pengelola == ''"
+          <select v-model="formData.role_id" :disabled="formData.level_id == ''"
             class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer">
             <option value="" disable hidden>Pilih Role</option>
             <option v-for="item in comboRole" :key="item.id" :value="item.id">
@@ -380,7 +384,8 @@
           <label for="level" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Level <span
               class="text-warningColor">*</span></label>
           <select v-model="formData.level_id"
-            class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer">
+            class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer"
+            @change="handleChangeLevel(formData.level_id)">
             <option value="" disable hidden>Pilih Level</option>
             <option v-for="item in comboLevel" :key="item.kode_level" :value="item.kode_level">
               {{ item.level }}
@@ -402,7 +407,7 @@
         <div>
           <label for="role" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Role <span
               class="text-warningColor">*</span></label>
-          <select v-model="formData.role_id" :disabled="formData.id_pengelola === ''"
+          <select v-model="formData.role_id" :disabled="formData.level_id === ''"
             class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer">
             <option value="" disable hidden>Pilih Role</option>
             <option v-for="item in comboRole" :key="item.id" :value="item.id">
@@ -722,6 +727,7 @@ const isActive = computed({
 
 const openEditModals = async (id: number) => {
   try {
+    isLoading.value = true;
     const response: any = await userService.getUserById(id);
     formData.value.nama_pegawai = response.data.nama_pegawai;
     formData.value.nip = response.data.nip;
@@ -747,8 +753,10 @@ const openEditModals = async (id: number) => {
     console.log('sentral', formData.value.id_sentral);
     isModalEdit.value = true;
     selectedUserId.value = id;
+    isLoading.value = false;
   } catch (error) {
     console.error("Error fetching role data:", error);
+    isLoading.value = false;
   }
 };
 
@@ -768,6 +776,16 @@ const userPembina = (idPembina: number) => {
     }
     return 'Tidak Tersedia'
   }
+}
+
+const userLevel = (idLevel: number) => {
+  if (idLevel) {
+    if (idLevel === 1) return 'Pusat';
+    else if (idLevel === 2) return 'Pengelola';
+    else if (idLevel === 3) return 'Sentral';
+    else if (idLevel === 4) return 'Pembina';
+  }
+  return 'Tidak Tersedia';
 }
 
 const editUserDataAndCloseModal = async () => {

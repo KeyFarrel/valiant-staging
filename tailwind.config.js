@@ -5,6 +5,13 @@ export default {
   'node_modules/flowbite/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
+      screens: {
+        '3xl': '1620px',
+        '4xl': '2100px',
+        '5xl': '2800px',
+        '6xl': '4000px',
+        '7xl': '5500px'
+      },
       spacing: {
         18: '4.5rem',
       },

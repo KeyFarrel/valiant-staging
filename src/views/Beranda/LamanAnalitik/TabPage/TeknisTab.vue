@@ -43,26 +43,25 @@ async function getCategory() {
             id: item.jenis_kit,
             name: item.jenis_kit
           })
-          // if (item.dmn) {
-          //   item.dmn.map((child: any) => {
-          //     if (child.daya_mampu != "") 
-          //     itemsCategory.value.push({
-          //       id: item.jenis_kit,
-          //       name: `${item.jenis_kit} ${child.daya_mampu}`,
-          //       power: child.daya_mampu
-          //     })
-          //   })
-          // }
-        })
-        itemsDmn.value = response.data[11].dmn
-          for(var i = 0; i < itemsDmn.value.length; i++) {
-              if(itemsDmn.value[i].daya_mampu != ""){
+          if (item.dmn) {
+            item.dmn.map((child: any) => {
+              if (child.daya_mampu != "")
                 childDmn.value.push({
-                  id: itemsDmn.value[i].id_daya,
-                  name: 'PLTU ' + itemsDmn.value[i].daya_mampu
+                  id: child.id_daya,
+                  name: 'PLTU ' + child.daya_mampu
                 })
-              }
-            }
+            })
+          }
+        })
+        // itemsDmn.value = response.data[11].dmn
+        //   for(var i = 0; i < itemsDmn.value.length; i++) {
+        //       if(itemsDmn.value[i].daya_mampu != ""){
+        //         childDmn.value.push({
+        //           id: itemsDmn.value[i].id_daya,
+        //           name: 'PLTU ' + itemsDmn.value[i].daya_mampu
+        //         })
+        //       }
+        //     }
       }
     }
     itemsCategory.value.reverse()

@@ -57,7 +57,7 @@
             <el-select v-model="dmn" multiple clearable collapse-tags placeholder="Pilih DMN"
               popper-class="custom-header" :max-collapse-tags="15" class="w-full text-primaryTextColor">
               <template #header>
-                <el-checkbox v-model="checkDmn" :indeterminate="indeterminate" @change="handleCheckDmn">
+                <el-checkbox v-model="checkDmn" :indeterminate="indeterminateDmn" @change="handleCheckDmn">
                   Select All Items
                 </el-checkbox>
               </template>
@@ -437,7 +437,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="mt-4 border-b"></div>
+                <div class="mt-4 border-b" v-if="authService.checkRole() !== 'Approver'"></div>
                 <div class="flex mt-2 space-x-3"
                   v-if="listStatusInputAsumsiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0]">
                   <RouterLink
@@ -474,7 +474,7 @@
                     name: 'feasibility-study', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(mesinItem.id_mesin) : mesinItem.id_mesin },
                   }
                     "
-                    v-else-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data sudah update'">
+                    v-else-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data sudah update' && authService.checkRole() !== 'Approver'">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
                       id="button-hover-putih">
@@ -521,7 +521,7 @@
                   </RouterLink>
                   <RouterLink
                     :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(mesinItem.id_mesin) : mesinItem.id_mesin }, query: { tahun: tahunBerjalan } }"
-                    v-else-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data sudah update'">
+                    v-else-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data sudah update' && authService.checkRole() !== 'Approver'">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
                       id="button-hover-putih">
@@ -974,6 +974,7 @@ const checkPembangkit = ref(false)
 const checkDmn = ref(true)
 const pengelola = ref<CheckboxValueType[]>([])
 const indeterminate = ref(false);
+const indeterminateDmn = ref(false);
 const listSentralData = ref<any[]>([]);
 const selectedKategoriPembangkit = ref<string[]>([]);
 const dmn = ref<CheckboxValueType[]>([])
@@ -1121,26 +1122,25 @@ const fetchComboKategoriPembangkit = async () => {
             id: item.jenis_kit,
             name: item.jenis_kit
           })
-          // if (item.dmn) {
-          //   item.dmn.map((child: any) => {
-          //     if (child.daya_mampu != "")
-          //       kategoriPembangkitData.value.push({
-          //         id: item.jenis_kit,
-          //         name: `${item.jenis_kit} ${child.daya_mampu}`,
-          //         power: child.daya_mampu,
-          //       })
-          //   })
-          // }
-        })
-        itemsDmn.value = response.data[11].dmn
-        for (var i = 0; i < itemsDmn.value.length; i++) {
-          if (itemsDmn.value[i].daya_mampu != "") {
-            childDmn.value.push({
-              id: itemsDmn.value[i].id_daya,
-              name: 'PLTU ' + itemsDmn.value[i].daya_mampu
+          if (item.dmn) {
+            item.dmn.map((child: any) => {
+              if (child.daya_mampu != "")
+                childDmn.value.push({
+                  id: child.id_daya,
+                  name: 'PLTU ' + child.daya_mampu
+                })
             })
           }
-        }
+        })
+        // itemsDmn.value = response.data[11].dmn
+        // for (var i = 0; i < itemsDmn.value.length; i++) {
+        //   if (itemsDmn.value[i].daya_mampu != "") {
+        //     childDmn.value.push({
+        //       id: itemsDmn.value[i].id_daya,
+        //       name: 'PLTU ' + itemsDmn.value[i].daya_mampu
+        //     })
+        //   }
+        // }
       }
     }
     kategoriPembangkitData.value.reverse();
@@ -1652,6 +1652,18 @@ watch(pengelola, (val) => {
     indeterminate.value = false
   } else if (val.length === kategoriPembangkitData.value.length) {
     checkPembangkit.value = true
+    indeterminate.value = false
+  } else {
+    indeterminate.value = true
+  }
+})
+
+watch(dmn, (val) => {
+  if (val.length === 0) {
+    checkDmn.value = false
+    indeterminate.value = false
+  } else if (val.length === childDmn.value.length) {
+    checkDmn.value = true
     indeterminate.value = false
   } else {
     indeterminate.value = true

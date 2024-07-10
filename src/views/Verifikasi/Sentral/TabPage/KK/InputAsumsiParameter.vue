@@ -648,7 +648,8 @@ const uploadFileEvidence = async () => {
     formData.append('file', selectedFileEvidence.value);
     const response: any = await rekapService.uploadEvidence(formData);
     await rekapService.updateEvidencePath(idMesin, tahunBerjalan.toString(), response.data, 0);
-    isLoading.value = false
+    isLoading.value = false;
+    isModalUnggahKertasKerjaOpen.value = false;
     isEvidenceSuccess.value = true;
     await wait(1500)
     isEvidenceSuccess.value = false;
@@ -719,7 +720,9 @@ const uploadFile = async () => {
     const response = await axios.post('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/import-template-awal', formData, {
       headers,
     });
-    await uploadFileEvidence();
+    if (selectedFileEvidence.value) {
+      await uploadFileEvidence();
+    }
     isLoading.value = false;
     isUploadSuccess.value = true;
     await wait(1500)

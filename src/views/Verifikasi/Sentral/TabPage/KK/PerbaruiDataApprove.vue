@@ -283,8 +283,8 @@
         </TabItem>
         <TabItem :title="'Opsi Simulasi'" class="w-full">
           <div class="flex flex-col w-full space-y-5" v-if="statusDataFinansial === 'Simulasi'">
-            <div class="flex flex-row w-full space-x-5">
-              <aside class="mt-6 w-fit">
+            <div class="flex w-full space-x-5 ">
+              <aside class="w-[15%] max-w-fit mt-6">
                 <ul class="w-40 space-y-10 text-sm text-textDisabledColor">
                   <li id="aside"
                     class="flex flex-row items-center justify-between duration-300 cursor-pointer hover:text-primaryColor"
@@ -330,7 +330,8 @@
                   </li>
                 </ul>
               </aside>
-              <div class="flex flex-col w-full space-y-3.5">
+              <div
+                class="flex flex-col space-y-3.5 2xl:w-[88%] 3xl:w-[90%] w-[87%] 4xl:w-[91.5%] 5xl:w-[94%] 6xl:w-[96%] 7xl:w-full">
                 <nav class="w-full bg-primaryColor bg-opacity-5 p-1.5 rounded-lg">
                   <ul class="table w-full text-sm text-center text-primaryColor border-spacing-x-3">
                     <li id="tab"
@@ -406,7 +407,7 @@
                   </div>
                 </section>
                 <section class="w-full overflow-clip mt-2 space-y-3.5" v-if="selectedAside === 'Data Teknis'">
-                  <div v-if="selectedSimulasiTab === 'Simulasi 1'" class="flex flex-col space-y-3.5">
+                  <div v-if="selectedSimulasiTab === 'Simulasi 1'" class="flex flex-col space-y-3.5 w-full">
                     <InfoComponent simulasi="Simulasi 1" proyeksi="Proyeksi Sebelumnya" />
                     <div class="flex items-center justify-between w-full">
                       <h1 class="text-lg font-semibold">Simulasi - Data Teknis</h1>
@@ -420,7 +421,7 @@
                     <TableDataTeknis v-if="simulasi1DataTeknis" :data-teknis="simulasi1DataTeknis"
                       :tahun-terakhir-realisasi="tahunBerjalan" :type-periodic="listTypePeriodic" />
                   </div>
-                  <div v-if="selectedSimulasiTab === 'Simulasi 2'" class="flex flex-col space-y-3.5">
+                  <div v-if="selectedSimulasiTab === 'Simulasi 2'" class="flex flex-col space-y-3.5 w-full">
                     <div class="flex items-center justify-between w-full">
                       <h1 class="text-lg font-semibold">Simulasi - Data Teknis</h1>
                       <div class="flex flex-row space-x-3">
@@ -435,7 +436,7 @@
                   </div>
                 </section>
                 <section class="w-full overflow-clip mt-2 space-y-3.5" v-if="selectedAside === 'Data Finansial'">
-                  <div v-if="selectedSimulasiTab === 'Simulasi 1'" class="flex flex-col space-y-3.5">
+                  <div v-if="selectedSimulasiTab === 'Simulasi 1'" class="flex flex-col space-y-3.5 w-full">
                     <InfoComponent simulasi="Simulasi 1" proyeksi="Proyeksi Sebelumnya" />
                     <div class="flex items-center justify-between w-full">
                       <h1 class="text-lg font-semibold">Simulasi - Data Finansial</h1>
@@ -449,7 +450,7 @@
                     <TableDataFinansial v-if="dataFinansialSimulasi1" :source="simulasi1DataFinansial"
                       :data-finansial="dataFinansialSimulasi1" :tahun-terakhir-realisasi="tahunBerjalan" />
                   </div>
-                  <div v-if="selectedSimulasiTab === 'Simulasi 2'" class="flex flex-col space-y-3.5">
+                  <div v-if="selectedSimulasiTab === 'Simulasi 2'" class="flex flex-col space-y-3.5 w-full">
                     <div class="flex items-center justify-between w-full">
                       <h1 class="text-lg font-semibold">Simulasi - Data Finansial</h1>
                       <div class="flex flex-row space-x-3">
@@ -739,15 +740,14 @@ const dataTeknisInit = ref<{
 const dataFinansialDetail = ref();
 const biayaKepegawaian = ref('');
 const costComponentA = ref('');
-const biayaPeriodicMaintenance = ref();
 const costComponentADetail = ref<any[]>([]);
 const costComponentB = ref(picked.value === 'pisah' ? '' : '');
-const biayaPemeliharaanRutin = ref();
-const biayaAdministrasiUmum = ref();
-const biayaPembelianTenagaListrik = ref();
-const biayaLainLain = ref();
-const oMCost = ref();
-const periodicMaintenanceCost = ref();
+const biayaPemeliharaanRutin = ref('');
+const biayaAdministrasiUmum = ref('');
+const biayaPembelianTenagaListrik = ref('');
+const biayaLainLain = ref('');
+const oMCost = ref('');
+const periodicMaintenanceCost = ref('');
 const costComponentC = ref('');
 const biayaMinyakPelumas = ref('');
 const bahanKimia = ref('');
@@ -1532,6 +1532,7 @@ const uploadFileSimulasi1 = async () => {
     isLoading.value = true;
     simulasi1DataFinansial.value = [];
     dataFinansialSimulasi1.value = [];
+    bahanBakarGroup.value.fuelConsumption = [];
     await fetchAsumsiParameter();
     await fetchDataFinansialDetail();
     await fetchDataTeknisByPeriode();
@@ -1539,6 +1540,8 @@ const uploadFileSimulasi1 = async () => {
     await fetchDataTeknisSimulasi2();
     await fetchDataFinansialSimulasi1();
     await fetchDataFinansialSimulasi2();
+    console.log(bahanBakarGroup.value);
+    selectedFileSimulasi1.value = null
     isLoading.value = false;
   } catch (error) {
     isLoading.value = false;
@@ -1580,6 +1583,7 @@ const uploadFile = async () => {
     isLoading.value = true;
     simulasi2DataFinansial.value = [];
     dataFinansialSimulasi2.value = [];
+    bahanBakarGroup.value.fuelConsumption = [];
     await fetchAsumsiParameter();
     await fetchDataFinansialDetail();
     await fetchDataTeknisByPeriode();
@@ -1587,6 +1591,8 @@ const uploadFile = async () => {
     await fetchDataTeknisSimulasi2();
     await fetchDataFinansialSimulasi1();
     await fetchDataFinansialSimulasi2();
+    console.log(bahanBakarGroup.value);
+    selectedFile.value = null
     isLoading.value = false;
   } catch (error) {
     isLoading.value = false;
@@ -1737,7 +1743,6 @@ const fetchDataFinansialSimulasi2 = async () => {
 }
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const handleSubmit = async () => {
-  console.log(bahanBakarGroup.value);
   const errorAsumsiInput = error.value.asumsi;
   const errorParameterTeknis = error.value.parameter;
   const errorDataTeknis = error.value.teknis;
@@ -1847,11 +1852,6 @@ const handleSubmit = async () => {
   } else {
     errorDataFinansial.costComponentA = false;
   }
-  if (biayaPeriodicMaintenance.value === 'NaN' || biayaPeriodicMaintenance.value === '') {
-    errorDataFinansial.biayaPeriodicMaintenance = true;
-  } else {
-    errorDataFinansial.biayaPeriodicMaintenance = false;
-  }
   if (costComponentADetail.value.some(obj => Object.values(obj).some(value => value === ""))) {
     errorDataFinansial.biayaInvestasiAiAki = true;
   } else {
@@ -1952,6 +1952,7 @@ const handleSubmit = async () => {
   }
   if (Object.values(errorAsumsiInput).some(value => value === true) || Object.values(errorParameterTeknis).some(value => value === true) || Object.values(errorDataTeknis).some(value => value === true) || Object.values(errorDataFinansial).some(value => value === true)) {
     isShowModalNotification.value = true;
+    console.log(error.value)
     await wait(5000);
     isShowModalNotification.value = false;
   } else {
@@ -2116,21 +2117,35 @@ const handleSubmit = async () => {
           value.realisasi_aki = parseFloat(value.realisasi_aki.toString().replace(/,/g, ''));
         }
       }
+      console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 1')
       const finalCostComponentA = costComponentA.value.includes('.') ? costComponentA.value.replace(/[.]/g, '') : costComponentA.value;
+      console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 2')
       // const finalBiayaPeriodicMaintenance = parseFloat(biayaPeriodicMaintenance.value.replace(/,/g, '.'));
       // const finalCostComponentADetail = costComponentADetail.value;
       const finalCostComponentB = costComponentB.value.includes('.') ? costComponentB.value.replace(/[.]/g, '') : costComponentB.value;
+      console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 3')
       const finalBiayaKepegawaian = biayaKepegawaian.value.includes('.') ? biayaKepegawaian.value.replace(/[.]/g, '') : biayaKepegawaian.value;
+      console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 4')
+      console.log(periodicMaintenanceCost.value, 'Cost C Detail 4.1')
       const finalBiayaPeriodic = periodicMaintenanceCost.value.includes('.') ? periodicMaintenanceCost.value.replace(/[.]/g, '') : periodicMaintenanceCost.value;
+      console.log(finalBiayaPeriodic, 'Cost C Detail 5')
       const finalBiayaPemeliharaanRutin = biayaPemeliharaanRutin.value.includes('.') ? biayaPemeliharaanRutin.value.replace(/[.]/g, '') : biayaPemeliharaanRutin.value;
+      console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 6')
       const finalBiayaAdministrasiUmum = biayaAdministrasiUmum.value.includes('.') ? biayaAdministrasiUmum.value.replace(/[.]/g, '') : biayaAdministrasiUmum.value;
+      console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 7')
       const finalBiayaPembelianTenagaListrik = biayaPembelianTenagaListrik.value.includes('.') ? biayaPembelianTenagaListrik.value.replace(/[.]/g, '') : biayaPembelianTenagaListrik.value;
+      console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 8')
       const finalBiayaLainLain = biayaLainLain.value.includes('.') ? biayaLainLain.value.replace(/[.]/g, '') : biayaLainLain.value;
+      console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 9')
       const finalOMCost = oMCost.value.includes('.') ? oMCost.value.replace(/[.]/g, '') : oMCost.value;
+      console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 10')
       const finalCostComponentC = costComponentC.value.includes('.') ? costComponentC.value.replace(/[.]/g, '') : costComponentC.value;
+      console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 11')
       const finalCostComponentCDetail = [];
+
       for (const item of bahanBakarGroup.value.costCDetail) {
         const formattedFuelCost = item.fuel_cost.includes('.') ? item.fuel_cost.replace(/[.]/g, '') : item.fuel_cost;
+        console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail', item.fuel_cost)
         finalCostComponentCDetail.push({
           id_mesin: idMesin,
           tahun: tahunBerjalan - 1,
@@ -2239,6 +2254,7 @@ const handleSubmit = async () => {
       await fetchDataFinansialSimulasi2();
       await fetchHasilSimulasi1();
       await fetchHasilSimulasi2();
+      console.log(bahanBakarGroup.value);
       storePerbaruiTab.currentTab = 'Opsi Simulasi';
     } catch (error) {
       console.error('Update Error : ' + error);

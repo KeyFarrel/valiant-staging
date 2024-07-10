@@ -204,6 +204,7 @@
       :irr-on-project="hasilSimulasi.fs_irr_project" :irr-on-equity="hasilSimulasi.fs_irr_equity"
       :npv-on-equity="hasilSimulasi.fs_npv_equity" :npv-on-project="hasilSimulasi.fs_npv_project"
       :average-ncf="hasilSimulasi.fs_average_cf" :average-eaf="hasilSimulasi.fs_average_eaf"
+      :wacc-on-project="hasilSimulasi.fs_on_project" :wacc-on-equity="hasilSimulasi.fs_on_equity"
       :nama-mesin="mesinDataById.mesin ? mesinDataById.mesin : '-'"
       :nama-pengelola="approveSentralFS.pengelola ? approveSentralFS.pengelola : '-'" :nama-pembina="namaPembina"
       :daya-terpasang="mesinDataById.daya_terpasang" :daya-mampu="mesinDataById.daya_mampu"
@@ -514,6 +515,7 @@ const fetchPersetujuanFS = async () => {
     });
     approveSentralFS.value = response.data;
     approveMesinFS.value = response.data.mesins.filter((val: any) => val.id_mesin == idGrafik)[0];
+    // console.log(response.data)
     statusMesin.value = approveMesinFS.value?.id_status;
   } catch (error) {
     console.error('Fetch Persetujuan FS Sentral Error : ' + error);

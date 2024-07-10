@@ -124,7 +124,10 @@
           <div v-if="tab === 'next'">
             <div class="text-xs">
               <div class="flex justify-between py-1">
-                <div class="text-slate-500">IRR On Project</div>
+                <div class="flex">
+                  <div class="text-slate-500">IRR On Project</div>
+                  <PopUp class="ml-2" title="WACC On Project" :content="props.waccOnProject ? globalFormat.formatEnergy(props.waccOnProject) : '-'" />
+                </div>
                 <div class="flex">
                   <p class="mr-2 font-bold">
                     {{ globalFormat.formatRupiah(props.irrOnProject) }}
@@ -133,7 +136,10 @@
                 </div>
               </div>
               <div class="flex justify-between py-1">
-                <div class="text-slate-500">IRR On Equity</div>
+                <div class="flex">
+                  <div class="text-slate-500">IRR On Equity</div>
+                  <PopUp class="ml-2" title="WACC On Equity" :content="props.waccOnEquity ? globalFormat.formatEnergy(props.waccOnEquity) : '-'" />
+                </div>
                 <div class="flex">
                   <p class="mr-2 font-bold">
                     {{ globalFormat.formatRupiah(props.irrOnEquity) }}
@@ -345,17 +351,18 @@ import { ref, provide, useSlots, onMounted, nextTick } from "vue";
 import { VueEcharts } from "vue3-echarts";
 import ModalWrapper from "@/components/ui/ModalWrapper.vue";
 import Chips from "@/components/ui/Chips.vue";
+import PopUp from "@/components/Grafik/PoupWacc.vue";
 import { useLamanDataTabStore } from "@/store/storeLamanDataTab";
 import GlobalFormat from "@/services/format/global-format";
 import GrafikService from "@/services/grafik-service";
 import DetailSentralService from "@/services/detail-sentral-service";
-const detailSentralService = new DetailSentralService();
 import Legend from "@/components/Grafik/LegendGrafik.vue";
 import Empty from "@/components/ui/EmptyData.vue";
 import StatusGrafik from "@/components/Status/StatusGrafik.vue";
 
 const store = useLamanDataTabStore();
 const grafikService = new GrafikService();
+const detailSentralService = new DetailSentralService();
 const globalFormat = new GlobalFormat();
 const tabGraphic = ref("Semua");
 const showModal = ref(false);
@@ -436,6 +443,8 @@ interface Props {
   tahunGrafik: number
   irrOnProject: number
   irrOnEquity: number
+  waccOnProject: number
+  waccOnEquity: number
   npvOnEquity: number
   npvOnProject: number
   averageNcf: number
@@ -526,7 +535,6 @@ onMounted(async () => {
           comBDWLCMesin.value.push(res.data[i].cost_component_bd);
           fuelComWLCMesin.value.push(res.data[i].cost_component_c_annualized);
           yAxisWlc.value.push(res.data[i].capex_annualized + res.data[i].cost_component_bd + res.data[i].cost_component_c_annualized);
-          console.log('maximum', Math.max.apply(Math, yAxisWlc.value) * 1.1)
           maxWlcBep.value = Math.max.apply(Math, yAxisWlc.value) * 1.1;
           maxWlcOpt.value = Math.max.apply(Math, yAxisWlc.value);
 
@@ -674,8 +682,8 @@ onMounted(async () => {
               symbolSize: [80, 30],
               itemStyle: { color: '#0D5A71' },
               label: { fontSize: 10, fontWeight: 'bold' },
-              data: [{ name: 'Max', value: `BEP : ${tahunBEP} (${indexBEP})`, xAxis: indexTerdekat, yAxis: maxWlcBep }],
-              symbolOffset: [0, 10]
+              data: [{ name: 'Max', value: `BEP : ${tahunBEP} (${indexBEP})`, xAxis: indexTerdekat, yAxis: finalMax }],
+              symbolOffset: [0, 0]
             },
             markArea: {
               silent: true,
@@ -703,7 +711,7 @@ onMounted(async () => {
               symbolSize: [85, 30],
               itemStyle: { color: '#295C02' },
               label: { fontSize: 10, fontWeight: 'bold' },
-              data: [{ name: 'Min', value: `Optimum life : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: maxWlcOpt }],
+              data: [{ name: 'Min', value: `Optimum life : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: finalMax }],
               symbolOffset: [0, 20]
             },
             markArea: {
@@ -788,7 +796,7 @@ onMounted(async () => {
         },
         grid: {
           top: "8%",
-          left: "3%",
+          left: "5%",
           right: "3%",
           bottom: "8%",
           containLabel: true,

@@ -282,6 +282,7 @@
       :tahun="tahunData ? tahunData : '-'" :irr-on-project="hasilSimulasi.fs_irr_project"
       :irr-on-equity="hasilSimulasi.fs_irr_equity" :npv-on-equity="hasilSimulasi.fs_npv_equity"
       :npv-on-project="hasilSimulasi.fs_npv_project" :average-ncf="hasilSimulasi.fs_average_cf"
+      :wacc-on-project="hasilSimulasi.fs_on_project" :wacc-on-equity="hasilSimulasi.fs_on_equity"
       :average-eaf="hasilSimulasi.fs_average_eaf" :nama-mesin="mesinDataById.mesin ? mesinDataById.mesin : '-'"
       :nama-pengelola="approveSentralFS.pengelola ? approveSentralFS.pengelola : '-'" :nama-pembina="namaPembina"
       :daya-terpasang="mesinDataById.daya_terpasang" :daya-mampu="mesinDataById.daya_mampu"

@@ -34,7 +34,7 @@
           <div class="text-white -ml-[72px]" :class="isSidebarOpen ? 'ml-10' : ''">
             <div class="text-lg font-bold">{{ store.label }}</div>
             <p class="text-xs font-semibold">
-              {{ authService.checkRole() }}
+              {{ store.label }}
             </p>
           </div>
         </div>
@@ -74,8 +74,8 @@
                     <span class="text-xl font-semibold text-white uppercase">{{ namaPegawai?.split('')[0] }}</span>
                   </div>
                 </div>
-                <div class="flex flex-col justify-center space-y-0.5">
-                  <p class="text-sm font-semibold text-primaryTextColor">{{ namaPegawai }}</p>
+                <div class="flex flex-col justify-center space-y-0.5">                  
+                  <p class="text-sm font-semibold text-primaryTextColor max-w-36 truncate">{{ namaPegawai }}</p>
                   <RouterLink to="/profile-user" class="text-[#2671D9] underline text-xs">Lihat Profil</RouterLink>
                 </div>
               </div>
@@ -120,13 +120,13 @@
           </RouterLink>
         </li>
         <li class="px-3"
-          v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina'">
+          v-if="(authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina') && (authService.checkRole() === 'Monitoring' || authService.checkRole() === 'Super Admin')">
           <div class="flex items-center px-2 pt-1 text-[#7F7F80] dark:text-white">
             <span class="ml-8 text-xs font-semibold">Laman</span>
           </div>
         </li>
         <li
-          v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina'">
+          v-if="authService.checkLevel() === 'Admin' && (authService.checkRole() === 'Monitoring' || authService.checkRole() === 'Super Admin')">
           <RouterLink to="/laman" id="sidebar-button" @click="store.label = 'Laman Utama'"
             class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
             :class="{ selected: store.label === 'Laman Utama' }">
@@ -140,7 +140,7 @@
           </RouterLink>
         </li>
         <li
-          v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina'">
+          v-if="(authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina') && (authService.checkRole() === 'Monitoring' || authService.checkRole() === 'Super Admin')">
           <RouterLink id="sidebar-button" @click="store.label = 'Laman Data'" to="/laman-data"
             class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
             :class="{ selected: store.label === 'Laman Data' }">
@@ -154,7 +154,7 @@
           </RouterLink>
         </li>
         <li
-          v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina'">
+          v-if="(authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina') && (authService.checkRole() === 'Monitoring' || authService.checkRole() === 'Super Admin')">
           <RouterLink id="sidebar-button" @click="store.label = 'Laman Analitik'" to="/laman-analitik"
             class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
             :class="{ selected: store.label === 'Laman Analitik' }">
@@ -186,7 +186,7 @@
             <span class="ml-8 text-xs">Grafik</span>
           </RouterLink>
         </li>
-        <li>
+        <li v-if="authService.checkRole() !== 'Approver'">
           <RouterLink id="sidebar-button"
             @click="store.label = 'Rekap Kertas Kerja'; rekapStore.searchRekapQuery = ''; rekapStore.selectedRekapSearchQuery = '';"
             to="/rekap-kertas-kerja" href="#" class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
@@ -194,7 +194,8 @@
             <span class="ml-8 text-xs">Rekap Kertas Kerja</span>
           </RouterLink>
         </li>
-        <li class="px-3">
+        <li class="px-3"
+          v-if="authService.checkRole() == 'Approver' || authService.checkRole() == 'Staff' || authService.checkRole() == 'Super Admin'">
           <div class="flex items-center px-2 text-[#7F7F80] dark:text-white">
             <svg
               class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -206,7 +207,8 @@
             <span class="mt-1 ml-3 text-sm font-semibold">Verifikasi</span>
           </div>
         </li>
-        <li v-if="levelID == '1' || levelID == '2' || levelID == '4'">
+        <li
+          v-if="(authService.checkLevel() == 'Pembina' || authService.checkLevel() == 'Pengelola' || authService.checkLevel() == 'Admin') && authService.checkRole() !== 'Monitoring'">
           <RouterLink id="sidebar-button" @click="store.label = 'Persetujuan'" to="/persetujuan-by-approve"
             class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
             :class="{ selected: store.label === 'Persetujuan' }">
@@ -217,7 +219,7 @@
             </span>
           </RouterLink>
         </li>
-        <li v-else-if="levelID == '3'">
+        <li v-else-if="authService.checkLevel() == 'Sentral'">
           <RouterLink id="sidebar-button" @click="store.label = 'Persetujuan'" to="/persetujuan"
             class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
             :class="{ selected: store.label === 'Persetujuan' }">

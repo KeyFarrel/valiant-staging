@@ -159,6 +159,7 @@
       :nilai-asset-awal="mesin.nilai_asset_awal ? mesin.nilai_asset_awal : 0"
       :tahun="approveSentralKK.tahun ? approveSentralKK.tahun : '-'" :irr-on-project="hasilSimulasi.track_irr_project"
       :irr-on-equity="hasilSimulasi.track_irr_equity" :npv-on-equity="hasilSimulasi.track_npv_equity"
+      :wacc-on-project="hasilSimulasi.wacc_on_project" :wacc-on-equity="hasilSimulasi.wacc_on_equity"
       :npv-on-project="hasilSimulasi.track_npv_project" :average-ncf="hasilSimulasi.track_average_cf"
       :average-eaf="hasilSimulasi.track_average_eaf" :nama-mesin="mesin.mesin ? mesin.mesin : '-'"
       :nama-pengelola="approveSentralKK.pengelola ? approveSentralKK.pengelola : '-'" :nama-pembina="namaPembina"
@@ -542,6 +543,7 @@ const fetchDataTeknisData = async () => {
 
 const fetchDataFinansialData = async () => {
   try {
+    finansialMappingResult.value = [];
     const response: any = await detailRekapService.getDataFinansial(
       parseInt(route.query.tahun?.toString() ?? '0'),
       parseInt(idGrafik)

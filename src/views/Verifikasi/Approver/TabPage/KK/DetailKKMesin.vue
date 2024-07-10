@@ -30,7 +30,9 @@
     :umur-teknis="mesin.masa_manfaat ? mesin.masa_manfaat : '-'" :nama-pembina="namaPembina"
     :kondisi-unit="mesin.kondisi_unit">
 
-    <div v-if="arrMesin.status === 'Menunggu Persetujuan T2' && level_ID == '2'" class="flex">
+    <div
+      v-if="arrMesin.status === 'Menunggu Persetujuan T2' && (authService.checkLevel() == 'Admin' || authService.checkLevel() == 'Pengelola')"
+      class="flex">
       <!-- Tolak Laporan -->
       <button
         class="border border-[#C53830] hover:border-[#C53830] mr-1.5 px-3 py-2 text-[#C53830] hover:text-white rounded-lg hover:bg-[#C53830] duration-300"
@@ -95,7 +97,9 @@
         </div>
       </ModalWrapper>
     </div>
-    <div v-else-if="arrMesin.status === 'Menunggu Persetujuan T1' && level_ID == '4'" class="flex">
+    <div
+      v-else-if="arrMesin.status === 'Menunggu Persetujuan T1' && (authService.checkLevel() == 'Admin' || authService.checkLevel() == 'Pembina')"
+      class="flex">
       <!-- Tolak Laporan -->
       <button
         class="border border-[#C53830] hover:border-[#C53830] mr-1.5 px-3 py-2 text-[#C53830] hover:text-white rounded-lg hover:bg-[#C53830] duration-300"
@@ -192,6 +196,7 @@
       :irr-on-project="hasilSimulasi.track_irr_project" :irr-on-equity="hasilSimulasi.track_irr_equity"
       :npv-on-equity="hasilSimulasi.track_npv_equity" :npv-on-project="hasilSimulasi.track_npv_project"
       :average-ncf="hasilSimulasi.track_average_cf" :average-eaf="hasilSimulasi.track_average_eaf"
+      :wacc-on-project="hasilSimulasi.wacc_on_project" :wacc-on-equity="hasilSimulasi.wacc_on_equity"
       :nama-mesin="mesin.mesin ? mesin.mesin : '-'"
       :nama-pengelola="approveSentralKK.pengelola ? approveSentralKK.pengelola : '-'" :nama-pembina="namaPembina"
       :daya-terpasang="mesin.daya_terpasang / 1000" :daya-mampu="mesin.daya_mampu / 1000"
@@ -343,6 +348,8 @@ import RekapService from "@/services/rekap-service";
 const rekapService = new RekapService();
 import GlobalFormat from "@/services/format/global-format";
 const globalFormat = new GlobalFormat();
+import AuthService from "@/services/auth-service";
+const authService = new AuthService();
 import DetailSentralService from "@/services/detail-sentral-service";
 const detailSentralService = new DetailSentralService();
 import TableDataTeknis from "@/components/RekapKertasKerja/TableDataTeknis.vue";
@@ -557,6 +564,7 @@ const fetchDataTeknisData = async () => {
 
 const fetchDataFinansialData = async () => {
   try {
+    finansialMappingResult.value = [];
     const response: any = await detailRekapService.getDataFinansial(
       parseInt(route.query.tahun?.toString() ?? '0'),
       parseInt(idGrafik)
