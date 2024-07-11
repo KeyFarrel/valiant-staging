@@ -677,18 +677,13 @@ const downloadEvidence = async () => {
   try {
     isLoading.value = true;
     const filePath: any = await rekapService.getEvidencePath(idGrafik, tahunBerjalan.toString() ?? '0', 1);
-    const splittedFileName = filePath.data[0].dokumen_evidence.split(' ');
-    splittedFileName.shift();
-    const finalFileName = splittedFileName.join(' ');
+    const finalFileName: any = filePath.data[0].file_name;
     const headers = {
       Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
     };
-    const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/mutasiasset/view-dokumen', {
+    const response: any = await axios.get(`https://portalapp.iconpln.co.id:5080/valiant-be/v1/mutasiasset/s3-amazon-download/${filePath.data[0].dokumen_evidence}`, {
       responseType: 'arraybuffer',
-      headers,
-      params: {
-        id_dokumen: filePath.data[0].dokumen_evidence
-      }
+      headers
     });
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);

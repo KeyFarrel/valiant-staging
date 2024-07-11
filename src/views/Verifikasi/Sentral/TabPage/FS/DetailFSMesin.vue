@@ -63,7 +63,7 @@
           </div>
           <div class="flex flex-col space-y-1">
             <div v-if="selectedFileFS">
-              <p>{{ selectedFileFS.name }} ({{ formatBytes(selectedFileFS.size) }})</p>
+              <p>{{ selectedFileFS.name }} ({{ globalFormat.formatBytes(selectedFileFS.size) }})</p>
             </div>
             <div
               class="w-full flex flex-col p-2 items-center bg-primaryColor bg-opacity-10 border border-primaryColor border-dashed rounded-lg space-y-1.5"
@@ -99,7 +99,7 @@
           </div>
           <div class="flex flex-col space-y-1">
             <div v-if="selectedFileEvidence">
-              <p>{{ selectedFileEvidence.name }} ({{ formatBytes(selectedFileEvidence.size) }})</p>
+              <p>{{ selectedFileEvidence.name }} ({{ globalFormat.formatBytes(selectedFileEvidence.size) }})</p>
             </div>
             <div
               class="w-full flex flex-col p-2 items-center bg-primaryColor bg-opacity-10 border border-primaryColor border-dashed rounded-lg space-y-1.5"
@@ -244,17 +244,19 @@
   <!-- Tab Detail -->
   <div class="items-start p-6 mt-4 bg-white rounded-lg">
     <!-- Keterangan di Tolak -->
-    <div v-for="item in approveMesinFS">
-      <div v-auto-animate="{ duration: 300 }" v-if="item.status === 'Ditolak T1' || item.status === 'Ditolak T2'"
-        class="p-3 -mt-1 mb-3 w-full bg-[#FFE5E6] border-2 border-[#FF5656] rounded-md">
-        <div class="flex justify-between px-2">
-          <div class="flex">
+    <div v-if="approveMesinFS">
+      <div v-auto-animate="{ duration: 300 }"
+        v-if="approveMesinFS.status === 'Ditolak T1' || approveMesinFS.status === 'Ditolak T2'"
+        class="p-2 -mt-1 mb-3 w-full bg-[#FFE5E6] border-2 border-[#FF5656] rounded-md">
+        <div class="flex justify-between">
+          <div class="flex space-x-0.5">
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd" clip-rule="evenodd"
                 d="M11.0002 3.66536C6.95007 3.66536 3.66683 6.94861 3.66683 10.9987C3.66683 15.0488 6.95007 18.332 11.0002 18.332C15.0503 18.332 18.3335 15.0488 18.3335 10.9987C18.3335 6.94861 15.0503 3.66536 11.0002 3.66536ZM1.8335 10.9987C1.8335 5.93609 5.93755 1.83203 11.0002 1.83203C16.0628 1.83203 20.1668 5.93609 20.1668 10.9987C20.1668 16.0613 16.0628 20.1654 11.0002 20.1654C5.93755 20.1654 1.8335 16.0613 1.8335 10.9987ZM11.0002 7.33203C11.5064 7.33203 11.9168 7.74244 11.9168 8.2487V11.6862C11.9168 12.1925 11.5064 12.6029 11.0002 12.6029C10.4939 12.6029 10.0835 12.1925 10.0835 11.6862V8.2487C10.0835 7.74244 10.4939 7.33203 11.0002 7.33203ZM10.0835 14.4362C10.0835 13.9299 10.4939 13.5195 11.0002 13.5195H11.007C11.5133 13.5195 11.9237 13.9299 11.9237 14.4362V14.4431C11.9237 14.9493 11.5133 15.3597 11.007 15.3597H11.0002C10.4939 15.3597 10.0835 14.9493 10.0835 14.4431V14.4362Z"
                 fill="#FF5656" />
             </svg>
-            <p class="ml-2 font-semibold">Ditolak Unit Pembina</p>
+            <p class="font-semibold" v-if="approveMesinFS.status === 'Ditolak T1'">Ditolak Unit Pembina</p>
+            <p class="font-semibold" v-else-if="approveMesinFS.status === 'Ditolak T2'">Ditolak Unit Pengelola</p>
           </div>
           <div class="cursor-pointer" @click="toggleButton">
             <svg v-if="isHover" width="20" height="20" viewBox="0 0 20 20" fill="none"
@@ -271,7 +273,7 @@
             </svg>
           </div>
         </div>
-        <p v-if="isHover" v-for="item in approveMesinFS" class="mt-2 ml-8 text-sm capitalize">{{ item.keterangan }}</p>
+        <p v-if="isHover" class="mt-2 ml-6 text-sm capitalize">{{ approveMesinFS.keterangan }}</p>
       </div>
     </div>
     <!-- Tabs -->
@@ -540,6 +542,7 @@ interface ListApprove {
   tahun: string
   status: string
   id_mesin: string
+  keterangan: string
 }
 
 interface AsumsiMakroItem {
@@ -599,6 +602,7 @@ const fetchPersetujuanFS = async () => {
     });
     approveSentralFS.value = response.data;
     approveMesinFS.value = response.data.mesins.filter((val: any) => val.id_mesin == idGrafik)[0];
+    console.log(approveMesinFS.value)
     arrMesin.value = response.data.mesins.filter((val: any) => val.id_mesin == idGrafik)[0];
     statusMesin.value = response.data.mesins.filter((val: any) => val.id_mesin == idGrafik)[0].id_status;
   } catch (error) {
@@ -672,7 +676,7 @@ const uploadFileEvidence = async () => {
     const formData = new FormData();
     formData.append('file', selectedFileEvidence.value);
     const response: any = await rekapService.uploadEvidence(formData);
-    await rekapService.updateEvidencePath(parseInt(idGrafik), tahunBerjalan.toString(), response.data, 1);
+    await rekapService.updateEvidencePath(parseInt(idGrafik), tahunBerjalan.toString(), response.data, 1, selectedFileEvidence.value.name);
     isLoading.value = false
     isEvidenceSuccess.value = true;
     await wait(1500)
@@ -687,18 +691,13 @@ const downloadEvidence = async () => {
   try {
     isLoading.value = true;
     const filePath: any = await rekapService.getEvidencePath(idGrafik, tahunBerjalan.toString() ?? '0', 1);
-    const splittedFileName = filePath.data[0].dokumen_evidence.split(' ');
-    splittedFileName.shift();
-    const finalFileName = splittedFileName.join(' ');
+    const finalFileName: any = filePath.data[0].file_name;
     const headers = {
       Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
     };
-    const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/mutasiasset/view-dokumen', {
+    const response: any = await axios.get(`https://portalapp.iconpln.co.id:5080/valiant-be/v1/mutasiasset/s3-amazon-download/${filePath.data[0].dokumen_evidence}`, {
       responseType: 'arraybuffer',
-      headers,
-      params: {
-        id_dokumen: filePath.data[0].dokumen_evidence
-      }
+      headers
     });
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);

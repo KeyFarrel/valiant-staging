@@ -7,7 +7,8 @@
       :tahun-operasi="mesin.tahun_operasi.toString()" :umur-teknis="mesin.masa_manfaat" :nama-pembina="namaPembina">
       <div class="flex flex-row items-center space-x-3">
         <VueDatePicker class="date-picker" v-model="selectedYear" @update:model-value="handleYearChange" year-picker
-          teleport :clearable="false" :yearRange="listYear" />
+          teleport :clearable="false" :yearRange="listYear"
+          :filters="yearPickerService.filterYears(listYear[0], listYear[1])" />
         <button
           class="flex items-center border border-[#0099AD] hover:border-hoverColor mr-3 px-3 py-2 rounded-lg text-[#0099AD] hover:text-white hover:bg-hoverColor duration-300">
           <span class="mr-2 font-semibold"
@@ -116,15 +117,17 @@
 import { ref, onMounted } from "vue";
 import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
 import { notifyError } from "@/services/helper/toast-notification";
+import { useRoute } from "vue-router";
+const route = useRoute();
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import TabsWrapper from "@/components/ui/TabsWrapper.vue";
 import TabItem from "@/components/ui/TabItem.vue";
+import YearPickerService from "@/services/helper/year-picker-service";
+const yearPickerService = new YearPickerService();
 import RekapService from "@/services/rekap-service";
 const rekapService = new RekapService();
 import DetailRekapService from "@/services/detail-rekap-service";
 const detailRekapService = new DetailRekapService();
-import { useRoute } from "vue-router";
-const route = useRoute();
 import router from "@/router";
 import AkhirMasaManfaat from "@/views/Data/RekapKertasKerja/DetailRekap/HasilSimulasi/AkhirMasaManfaat.vue";
 import UserService from "@/services/user-service";
@@ -247,18 +250,13 @@ const downloadEvidence = async () => {
   try {
     isLoading.value = true;
     const filePath: any = await rekapService.getEvidencePath(idMesin.value, route.query.tahun?.toString() ?? '0', 0);
-    const splittedFileName = filePath.data[0].dokumen_evidence.split(' ');
-    splittedFileName.shift();
-    const finalFileName = splittedFileName.join(' ');
+    const finalFileName: any = filePath.data[0].file_name;
     const headers = {
       Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
     };
-    const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/mutasiasset/view-dokumen', {
+    const response: any = await axios.get(`https://portalapp.iconpln.co.id:5080/valiant-be/v1/mutasiasset/s3-amazon-download/${filePath.data[0].dokumen_evidence}`, {
       responseType: 'arraybuffer',
-      headers,
-      params: {
-        id_dokumen: filePath.data[0].dokumen_evidence
-      }
+      headers
     });
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);

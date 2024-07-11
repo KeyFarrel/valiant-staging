@@ -46,7 +46,7 @@
         </div>
         <div class="flex flex-col space-y-1">
           <div v-if="selectedFileSimulasi1">
-            <p>{{ selectedFileSimulasi1.name }} ({{ formatBytes(selectedFileSimulasi1.size) }})</p>
+            <p>{{ selectedFileSimulasi1.name }} ({{ globalFormat.formatBytes(selectedFileSimulasi1.size) }})</p>
           </div>
           <div
             class="w-full flex flex-col p-2 items-center bg-primaryColor bg-opacity-10 border border-primaryColor border-dashed rounded-lg space-y-1.5"
@@ -106,7 +106,7 @@
         </div>
         <div class="flex flex-col space-y-1">
           <div v-if="selectedFileSimulasi1">
-            <p>{{ selectedFileSimulasi1.name }} ({{ formatBytes(selectedFileSimulasi1.size) }})</p>
+            <p>{{ selectedFileSimulasi1.name }} ({{ globalFormat.formatBytes(selectedFileSimulasi1.size) }})</p>
           </div>
           <div
             class="w-full flex flex-col p-2 items-center bg-primaryColor bg-opacity-10 border border-primaryColor border-dashed rounded-lg space-y-1.5"
@@ -166,7 +166,7 @@
         </div>
         <div class="flex flex-col space-y-1">
           <div v-if="selectedFile">
-            <p>{{ selectedFile.name }} ({{ formatBytes(selectedFile.size) }})</p>
+            <p>{{ selectedFile.name }} ({{ globalFormat.formatBytes(selectedFile.size) }})</p>
           </div>
           <div
             class="w-full flex flex-col p-2 items-center bg-primaryColor bg-opacity-10 border border-primaryColor border-dashed rounded-lg space-y-1.5"

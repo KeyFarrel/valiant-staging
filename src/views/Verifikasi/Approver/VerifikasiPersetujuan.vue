@@ -45,7 +45,8 @@
                 <el-select v-model="pengelola" multiple clearable collapse-tags placeholder="Pilih Unit Pengelola"
                   popper-class="custom-header" :max-collapse-tags="5" class="w-full text-primaryTextColor">
                   <template #header>
-                    <el-checkbox v-model="checkPengelola" :indeterminate="indeterminatePengelola" @change="handleCheckPengelola">
+                    <el-checkbox v-model="checkPengelola" :indeterminate="indeterminatePengelola"
+                      @change="handleCheckPengelola">
                       Select All Items
                     </el-checkbox>
                   </template>
@@ -57,7 +58,8 @@
                 <el-select v-model="pembina" multiple clearable collapse-tags placeholder="Pilih Unit Pembina"
                   popper-class="custom-header" :max-collapse-tags="5" class="w-full text-primaryTextColor">
                   <template #header>
-                    <el-checkbox v-model="checkPembina" :indeterminate="indeterminatePembina" @change="handleCheckPembina">
+                    <el-checkbox v-model="checkPembina" :indeterminate="indeterminatePembina"
+                      @change="handleCheckPembina">
                       Select All Items
                     </el-checkbox>
                   </template>
@@ -94,7 +96,8 @@
           </div>
           <div class="flex flex-row items-center ml-4 space-x-3">
             <label class="text-sm font-semibold text-labelColor" for="">Periode</label>
-            <VueDatePicker class="mr-3 date-picker" v-model="yearPicked" :clearable="false" year-picker :teleport="true" @update:model-value="fetchPersetujuanKK()" />
+            <VueDatePicker class="mr-3 date-picker" v-model="yearPicked" :clearable="false" year-picker :teleport="true"
+              @update:model-value="fetchPersetujuanKK()" />
           </div>
         </div>
         <TableComponent>
@@ -154,9 +157,9 @@
               </td>
               <!-- <td v-if="props.pengelolaList.length" class="text-center">{{ props.pengelolaList.filter((pengelola: any) => pengelola.kode_pengelola === persetujuanKKItem.kode_pengelola)[0].pengelola ?? '' }}</td> -->
               <td v-if="pengelolaList.length && level_ID == '1'" class="text-left">{{
-                pengelolaList.filter((pengelola:any) =>
-                pengelola.kode_pengelola === item.kode_pengelola)[0] ? pengelolaList.filter((pengelola:any) =>
-                pengelola.kode_pengelola === item.kode_pengelola)[0].pengelola : '-' }}</td>
+                pengelolaList.filter((pengelola: any) =>
+                  pengelola.kode_pengelola === item.kode_pengelola)[0] ? pengelolaList.filter((pengelola: any) =>
+                    pengelola.kode_pengelola === item.kode_pengelola)[0].pengelola : '-' }}</td>
               <td class="text-left" v-if="level_ID == '1' || level_ID == '2'">{{ item.pembina }}</td>
               <td class="text-left">{{ item.sentral }}</td>
               <td class="text-left">{{ item.mesin }}</td>
@@ -197,7 +200,7 @@
               <td class="text-center">
                 <div>
                   <RouterLink
-                    :to="{ name: 'app-kk-mesin', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(item.id_mesin) : item.id_mesin }, query: {id_sentral: item.id_sentral, tahun: item.tahun} }">
+                    :to="{ name: 'app-kk-mesin', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(item.id_mesin) : item.id_mesin }, query: { id_sentral: item.id_sentral, tahun: item.tahun } }">
                     <button>
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -299,7 +302,8 @@
                 <el-select v-model="pengelola" multiple clearable collapse-tags placeholder="Pilih Unit Pengelola"
                   popper-class="custom-header" :max-collapse-tags="5" class="w-full text-primaryTextColor">
                   <template #header>
-                    <el-checkbox v-model="checkPengelola" :indeterminate="indeterminatePengelola" @change="handleCheckPengelola">
+                    <el-checkbox v-model="checkPengelola" :indeterminate="indeterminatePengelola"
+                      @change="handleCheckPengelola">
                       Select All Items
                     </el-checkbox>
                   </template>
@@ -311,7 +315,8 @@
                 <el-select v-model="pembina" multiple clearable collapse-tags placeholder="Pilih Unit Pembina"
                   popper-class="custom-header" :max-collapse-tags="5" class="w-full text-primaryTextColor">
                   <template #header>
-                    <el-checkbox v-model="checkPembina" :indeterminate="indeterminatePembina" @change="handleCheckPembina">
+                    <el-checkbox v-model="checkPembina" :indeterminate="indeterminatePembina"
+                      @change="handleCheckPembina">
                       Select All Items
                     </el-checkbox>
                   </template>
@@ -403,9 +408,9 @@
                 {{ index + 1 }}
               </td>
               <td v-if="pengelolaList.length && level_ID == '1'" class="text-left">{{
-                pengelolaList.filter((pengelola:any) =>
-                pengelola.kode_pengelola === item.kode_pengelola)[0] ? pengelolaList.filter((pengelola:any) =>
-                pengelola.kode_pengelola === item.kode_pengelola)[0].pengelola : '-' }}</td>
+                pengelolaList.filter((pengelola: any) =>
+                  pengelola.kode_pengelola === item.kode_pengelola)[0] ? pengelolaList.filter((pengelola: any) =>
+                    pengelola.kode_pengelola === item.kode_pengelola)[0].pengelola : '-' }}</td>
               <td class="text-left" v-if="level_ID == '1' || level_ID == '2'">{{ item.pembina }}</td>
               <td class="text-left">{{ item.sentral }}</td>
               <td class="text-left">{{ item.mesin }}</td>
@@ -446,7 +451,7 @@
               <td class="text-center">
                 <div>
                   <RouterLink
-                    :to="{ name: 'app-fs-mesin', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(item.id_mesin) : item.id_mesin }, query: {id_sentral: item.id_sentral} }">
+                    :to="{ name: 'app-fs-mesin', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(item.id_mesin) : item.id_mesin }, query: { id_sentral: item.id_sentral } }">
                     <button>
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -584,7 +589,7 @@ const itemsPersetujuan = ref([
   {
     id: 5,
     name: 'Ditolak oleh Pengelola',
-  },
+  },
   {
     id: 0,
     name: 'Menunggu Persetujuan Pembina',

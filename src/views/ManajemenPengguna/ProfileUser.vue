@@ -5,8 +5,8 @@
       <div class="flex">
         <div class="w-[400px] bg-white mt-8 ml-10 rounded-[8px]">
           <div class="flex justify-center my-5">
-            <div class="flex flex-row items-center justify-center rounded-full w-24 h-24 bg-[#C7E5D7]">
-              <span class="font-bold uppercase text-xl">{{ data.nama_pegawai?.split('')[0] }}</span>
+            <div class="flex flex-row items-center justify-center rounded-full w-24 h-24 bg-warningColor">
+                <p class="text-xl text-white font-bold uppercase">{{ data.nama_pegawai?.split('')[0] }}</p>
             </div>
           </div>
           <div class="text-center my-5">
@@ -16,7 +16,7 @@
           </div>
           <div class="flex justify-between items-center px-5">
             <p class="font-medium text-[12px] text-[#7B8DAD] pb-5">Id</p>
-            <p class="pb-5 text-[12px]">{{ data.id_user ? data.id_user : "-"}}</p>
+            <p class="pb-5 text-[12px] font-medium">{{ data.id_user ? data.id_user : "-"}}</p>
           </div>
           <div class="flex justify-between items-center px-5">
             <p class="font-medium text-[12px] text-[#7B8DAD] pb-5">Role</p>
@@ -44,7 +44,7 @@
           </div>
           <div class="flex justify-between items-center px-5">
             <p class="font-medium text-[12px] text-[#7B8DAD] pb-5">Aktif Sejak</p>
-            <p class="pb-5 text-[12px]"></p>
+            <p class="pb-5 text-[12px] font-medium">{{ activeDate ? activeDate : '-' }}</p>
           </div>
         </div>
         <div class="w-[832px] bg-white mt-8 p-5 mx-10 rounded-[8px]">
@@ -111,12 +111,14 @@ interface dataItem {
 }
 
 const data = ref<dataItem>({});
-
+const activeDate = ref<any>('');
 const fetchDataProfile = async () => {
   try {
     const response: dataItem = await loginService.profile();
     data.value = response.data;
-    console.log(data.value)
+    const date = new Date(data.value.created_at)
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    activeDate.value = date.toLocaleDateString("en-US", options) 
   } catch (error) {
     console.error("Error fetching data:", error);
   }

@@ -56,7 +56,7 @@
         </div>
         <div class="flex flex-col space-y-1">
           <div v-if="selectedFile">
-            <p>{{ selectedFile.name }} ({{ formatBytes(selectedFile.size) }})</p>
+            <p>{{ selectedFile.name }} ({{ globalFormat.formatBytes(selectedFile.size) }})</p>
           </div>
           <div v-else-if="!isDownloaded">
             <p class="text-lg font-bold text-center text-primaryTextColor">Mohon Download File Excel Terlebih Dahulu....
@@ -97,7 +97,7 @@
         </div>
         <div class="flex flex-col space-y-1">
           <div v-if="selectedFileEvidence">
-            <p>{{ selectedFileEvidence.name }} ({{ formatBytes(selectedFileEvidence.size) }})</p>
+            <p>{{ selectedFileEvidence.name }} ({{ globalFormat.formatBytes(selectedFileEvidence.size) }})</p>
           </div>
           <div
             class="w-full flex flex-col p-2 items-center bg-primaryColor bg-opacity-10 border border-primaryColor border-dashed rounded-lg space-y-1.5"
@@ -210,12 +210,13 @@ import UserService from "@/services/user-service";
 const userService = new UserService();
 import RekapService from '@/services/rekap-service';
 const rekapService = new RekapService();
+import GlobalFormat from '@/services/format/global-format';
+const globalFormat = new GlobalFormat();
 import axios from "axios";
 import router from '@/router';
 import Loading from '@/components/ui/LoadingSpinner.vue';
 import InputAsumsiParameterService from '@/services/input-asumsi-parameter-service';
 import PersetujuanService from '@/services/persetujuan-service';
-import GlobalFormat from '@/services/format/global-format';
 import TabAsumsiMakro from '@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabAsumsiMakro.vue';
 import ModalWrapper from '@/components/ui/ModalWrapper.vue';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog.vue';
@@ -234,7 +235,6 @@ const nodeMode = import.meta.env.MODE;
 const route = useRoute();
 const inputAsumsiParameterService = new InputAsumsiParameterService();
 const persetujuanService = new PersetujuanService();
-const globalFormat = new GlobalFormat();
 const i = ref(2);
 const isLoading = ref(false);
 const isInsertSuccess = ref(false);
@@ -647,7 +647,7 @@ const uploadFileEvidence = async () => {
     const formData = new FormData();
     formData.append('file', selectedFileEvidence.value);
     const response: any = await rekapService.uploadEvidence(formData);
-    await rekapService.updateEvidencePath(idMesin, tahunBerjalan.toString(), response.data, 0);
+    await rekapService.updateEvidencePath(idMesin, tahunBerjalan.toString(), response.data, 0, selectedFileEvidence.value.name);
     isLoading.value = false;
     isModalUnggahKertasKerjaOpen.value = false;
     isEvidenceSuccess.value = true;

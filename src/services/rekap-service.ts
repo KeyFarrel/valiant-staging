@@ -8,16 +8,16 @@ export default class RekapService extends BaseService {
     return this.post(`${url}kertas-kerja-detail/all-rekap-kertas-kerja`, {sentral: sentral, pengelola: pengelola, jenis_kit: jenis_kit, id_daya: id_daya, kondisi_mesin: kondisi_mesin, umur: umur, page: page, limit: limit});
   }
   async uploadEvidence<T>(file: any): Promise<T> {
-    return this.postFile(`${url}mutasiasset/upload-minio`, file);
+    return this.postFile(`${url}mutasiasset/s3-amazon-upload-file`, file);
   }
   async getEvidencePath<T>(id_mesin: string, tahun: string, status_fs: any): Promise<T> {
     return this.get(`${url}evidence`, {id_mesin: id_mesin, tahun: tahun, status_fs: status_fs},);
   }
   async downloadEvidence<T>(file: string): Promise<T> {
-    return this.get(`${url}mutasiasset/view-dokumen`, {id_dokumen: file}, 'arraybuffer');
+    return this.get(`${url}/mutasiasset/s3-amazon-download/${file}`, 'arraybuffer');
   }
-  async updateEvidencePath<T>(id_mesin: any, tahun_upload: any, dokumen_evidence: any, status_fs: any): Promise<T> {
-    return this.post(`${url}evidence`, {id_mesin: id_mesin, tahun_upload: tahun_upload, dokumen_evidence: dokumen_evidence, status_fs: status_fs});
+  async updateEvidencePath<T>(id_mesin: any, tahun_upload: any, dokumen_evidence: any, status_fs: any, file_name: string): Promise<T> {
+    return this.post(`${url}evidence`, {id_mesin: id_mesin, tahun_upload: tahun_upload, dokumen_evidence: dokumen_evidence, status_fs: status_fs, file_name: file_name});
   }
   async getPengelolaData<T>(): Promise<T> {
     return this.get(`${url}filter/combo-pengelola`);

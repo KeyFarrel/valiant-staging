@@ -580,7 +580,7 @@
             </div>
             <div class="flex flex-col space-y-1">
               <div v-if="selectedFile">
-                <p>{{ selectedFile.name }} ({{ formatBytes(selectedFile.size) }})</p>
+                <p>{{ selectedFile.name }} ({{ globalFormat.formatBytes(selectedFile.size) }})</p>
               </div>
               <div
                 class="w-full flex flex-col p-2 items-center bg-primaryColor bg-opacity-10 border border-primaryColor border-dashed rounded-lg space-y-1.5"
@@ -616,7 +616,7 @@
             </div>
             <div class="flex flex-col space-y-1">
               <div v-if="selectedFileEvidence">
-                <p>{{ selectedFileEvidence.name }} ({{ formatBytes(selectedFileEvidence.size) }})</p>
+                <p>{{ selectedFileEvidence.name }} ({{ globalFormat.formatBytes(selectedFileEvidence.size) }})</p>
               </div>
               <div
                 class="w-full flex flex-col p-2 items-center bg-primaryColor bg-opacity-10 border border-primaryColor border-dashed rounded-lg space-y-1.5"
@@ -634,11 +634,11 @@
                   <span class="font-semibold">Cari berkas</span>
                 </label>
                 <input ref="fileInputEvidence" id="fileInputEvidence" type="file" class="hidden"
-                  @change="handleFileChangeEvidence" accept=".xlsx" />
+                  @change="handleFileChangeEvidence" accept=".xlsx, .zip" />
               </div>
               <div class="flex flex-row items-center justify-between">
-                <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .pdf, .zip, .xlsx</p>
-                <p class="text-xs text-textDisabledColor">Maximum upload file size : 2 MB</p>
+                <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx, .zip</p>
+                <p class="text-xs text-textDisabledColor">Maximum upload file size : 10 MB</p>
               </div>
             </div>
           </div>
@@ -687,7 +687,7 @@
             </div>
             <div class="flex flex-col space-y-1">
               <div v-if="selectedFileFS">
-                <p>{{ selectedFileFS.name }} ({{ formatBytes(selectedFileFS.size) }})</p>
+                <p>{{ selectedFileFS.name }} ({{ globalFormat.formatBytes(selectedFileFS.size) }})</p>
               </div>
               <div
                 class="w-full flex flex-col p-2 items-center bg-primaryColor bg-opacity-10 border border-primaryColor border-dashed rounded-lg space-y-1.5"
@@ -723,7 +723,7 @@
             </div>
             <div class="flex flex-col space-y-1">
               <div v-if="selectedFileEvidence">
-                <p>{{ selectedFileEvidence.name }} ({{ formatBytes(selectedFileEvidence.size) }})</p>
+                <p>{{ selectedFileEvidence.name }} ({{ globalFormat.formatBytes(selectedFileEvidence.size) }})</p>
               </div>
               <div
                 class="w-full flex flex-col p-2 items-center bg-primaryColor bg-opacity-10 border border-primaryColor border-dashed rounded-lg space-y-1.5"
@@ -741,11 +741,11 @@
                   <span class="font-semibold">Cari berkas</span>
                 </label>
                 <input ref="fileInputEvidenceFS" id="fileInputEvidenceFS" type="file" class="hidden"
-                  @change="handleFileChangeEvidence" accept=".xlsx" />
+                  @change="handleFileChangeEvidence" accept=".xlsx, .zip" />
               </div>
               <div class="flex flex-row items-center justify-between">
-                <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .pdf, .zip, .xlsx</p>
-                <p class="text-xs text-textDisabledColor">Maximum upload file size : 2 MB</p>
+                <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx, .zip</p>
+                <p class="text-xs text-textDisabledColor">Maximum upload file size : 10 MB</p>
               </div>
             </div>
           </div>
@@ -1366,7 +1366,7 @@ const uploadFileEvidence = async (statusFS: any) => {
     const formData = new FormData();
     formData.append('file', selectedFileEvidence.value);
     const response: any = await rekapService.uploadEvidence(formData);
-    await rekapService.updateEvidencePath(currentIdMesin.value, tahunBerjalan.value.toString(), response.data, statusFS);
+    await rekapService.updateEvidencePath(currentIdMesin.value, tahunBerjalan.value.toString(), response.data, statusFS, selectedFileEvidence.value.name);
     isLoading.value = false
     isEvidenceSuccess.value = true;
     await wait(1500)
@@ -1396,16 +1396,23 @@ const uploadFile = async () => {
     await axios.post('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/import-template-awal', formData, {
       headers,
     });
-    await uploadFileEvidence(0);
+    if (selectedFileEvidence.value) {
+      await uploadFileEvidence(0);
+    }
     isLoading.value = false;
     isRekapUploadSuccess.value = true;
-    await wait(1500)
+    await wait(1500);
     isRekapUploadSuccess.value = false;
     isModalUnggahKertasKerjaOpen.value = false;
     await fetchStatusRealisasiSentral();
     await fetchStatusRealisasiMesin();
-    selectedFileEvidence.value = null
-    router.push({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { id_sentral: currentIdSentral.value, tahun: tahunBerjalan.value } });
+    selectedFileEvidence.value = null;
+    if (authService.checkLevel() === 'Sentral') {
+      router.push({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { id_sentral: currentIdSentral.value, tahun: tahunBerjalan.value } });
+    }
+    else {
+      router.push({ name: 'persetujuan-by-approve' });
+    }
   } catch (error) {
     console.error('Error upload file : ', error);
   } finally {
@@ -1428,7 +1435,9 @@ const uploadFileFS = async () => {
     await axios.post('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/import-template-fs', formData, {
       headers,
     });
-    await uploadFileEvidence(1);
+    if (selectedFileEvidence.value) {
+      await uploadFileEvidence(1);
+    }
     isLoading.value = false;
     isFSUploadSuccess.value = true;
     await wait(1500)
@@ -1437,7 +1446,11 @@ const uploadFileFS = async () => {
     await fetchStatusFSSentral();
     await fetchStatusFSMesin();
     selectedFileEvidence.value = null
-    router.push({ name: 'persetujuan-fs', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { id_sentral: currentIdSentral.value } });
+    if (authService.checkLevel() === 'Sentral') {
+      router.push({ name: 'persetujuan-fs', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { id_sentral: currentIdSentral.value } });
+    } else {
+      router.push({ name: 'persetujuan-by-approve' });
+    }
   } catch (error) {
     console.error('Error upload file : ', error);
   } finally {
@@ -1445,13 +1458,6 @@ const uploadFileFS = async () => {
   }
 };
 
-const formatBytes = (bytes: any) => {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(k)).toString());
-  return Math.round(100 * (bytes / Math.pow(k, i))) / 100 + ' ' + sizes[i];
-};
 const changeSelectedPengelola = async (pengelola: any) => {
   isLoading.value = true;
   if (pengelola === 'ALL') {

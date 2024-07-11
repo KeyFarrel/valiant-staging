@@ -117,4 +117,13 @@ export default class GlobalFormat {
     }
     return numString;
   }
+
+  formatBytes = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1000;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const size = bytes / Math.pow(k, i);
+    return size.toFixed(2) + ' ' + sizes[i];
+  }
 }

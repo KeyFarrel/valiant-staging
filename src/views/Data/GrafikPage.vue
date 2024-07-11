@@ -207,7 +207,8 @@
         v-if="selectedYear[i].tahun !== null || (selectedYear[i].range[0] !== null && selectedYear[i].range[1] !== null)">
         <label class="text-sm font-semibold text-labelColor" for="">Periode</label>
         <VueDatePicker class="mr-3 text-xs date-picker" v-model="selectedYear[i].tahun"
-          :year-range="selectedYear[i].range" :clearable="false" year-picker :teleport="true" />
+          :year-range="selectedYear[i].range" :clearable="false" year-picker :teleport="true"
+          :filters="yearPickerService.filterYears(selectedYear[i].range[0], selectedYear[i].range[1])" />
       </div>
       <div class="flex mt-2">
         <div v-auto-animate="{ duration: 300 }" class="w-full px-4 py-2 mr-2 bg-white border rounded-md">
@@ -401,6 +402,8 @@ import DetailSentralService from "@/services/detail-sentral-service";
 const detailSentralService = new DetailSentralService();
 import AuthService from "@/services/auth-service";
 const authService = new AuthService();
+import YearPickerService from "@/services/helper/year-picker-service";
+const yearPickerService = new YearPickerService();
 import PetaService from "@/services/peta-service";
 import GrafikService from "@/services/grafik-service";
 import GlobalFormat from "@/services/format/global-format";

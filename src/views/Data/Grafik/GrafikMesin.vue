@@ -31,7 +31,7 @@
           v-if="props.tahunData && authService.checkRole() !== 'Approver'">
           <RouterLink
             :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(props.idMesin) : props.idMesin }, query: { tahun: props.tahunData } }">
-            <button type="button"
+            <button type="button" :disabled="statusApprove === 'Data belum terisi'"
               class="space-x-2 text-[#0099AD] hover:text-white hover:bg-primaryColor bg-white border border-[#0099AD] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2.5 flex justify-center items-center duration-300 focus:outline-none">
               <p class="font-semibold">Lihat Data</p>
               <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -114,7 +114,7 @@
         <div class="flex items-center justify-center px-6">
           <RouterLink
             :to="{ name: 'feasibility-study', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(props.idMesin) : props.idMesin } }">
-            <button type="button"
+            <button type="button" :disabled="statusApprovePlanning === 'Data belum terisi'"
               class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center dark:bg-[#005A66] dark:hover:bg-[#0099AD] focus:outline-none dark:focus:ring-[#007E8F]">
               <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -195,7 +195,7 @@
         <div class="flex items-center justify-center px-6">
           <RouterLink
             :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(props.idMesin) : props.idMesin }, query: { tahun: props.tahunData } }">
-            <button type="button"
+            <button type="button" :disabled="statusApprove === 'Data belum terisi'"
               class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center dark:bg-[#005A66] dark:hover:bg-[#0099AD] focus:outline-none dark:focus:ring-[#007E8F]">
               <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -255,7 +255,7 @@
         <div class="flex items-center justify-center px-6">
           <RouterLink
             :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(props.idMesin) : props.idMesin }, query: { tahun: props.tahunData } }">
-            <button type="button"
+            <button type="button" :disabled="statusApprove === 'Data belum terisi'"
               class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center dark:bg-[#005A66] dark:hover:bg-[#0099AD] focus:outline-none dark:focus:ring-[#007E8F]">
               <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"

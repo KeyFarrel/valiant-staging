@@ -6,7 +6,7 @@
     :subtitle="'Data telah berhasil dikirim, silahkan lanjutkan perbarui dengan memilih opsi simulasi'" />
   <ModalNotification :show-modal="isSuccessPermanent" :animation-data="successJsonData"
     :title="'Data berhasil disimpan'" :subtitle="'Data telah berhasil disimpan'" />
-  <ModalWrapper :show-modal="isShowFinalConfirmation" :width="'w-auto'" :height="'h-auto'">
+  <ModalWrapper :show-modal="isShowFinalConfirmation" :z-index="'z-[55]'" :width="'w-auto'" :height="'h-auto'">
     <ConfirmationDialog :title="'Konfirmasi'"
       :subtitle="'Apakah anda yakin menyimpan? <br>Inputan tidak dapat diubah jika sudah disimpan'"
       :button-title="'Simpan'" @on-batal-click="isShowFinalConfirmation = false" @on-accept-click="handleFinalSubmit" />
@@ -22,6 +22,70 @@
       <p class="text-sm text-textDisabledColor">
         Kertas Kerja berhasil dikirim
       </p>
+    </div>
+  </ModalWrapper>
+  <ModalWrapper :show-modal="isShowModalEvidence" :width="'w-[750px]'" :height="'h-auto'">
+    <div class="flex flex-col space-y-5">
+      <div class="flex flex-row items-center justify-between">
+        <p class="text-xl font-bold text-primaryTextColor">Unggah Evidence</p>
+      </div>
+      <div class="flex flex-col space-y-3">
+        <div class="flex flex-col space-y-3">
+          <p class="text-sm text-primaryTextColor">Apakah Anda yakin ingin menyimpan Opsi Simulasi ini? <br>
+            Silahkan Unggah Evidence sebagai tahap akhir penyelesaian.</p>
+          <div class="flex flex-col space-y-1">
+            <p class="text-sm font-semibold text-labelColor">Evidence</p>
+            <p class="text-xs text-textDisabledColor">Silahkan unggah Evidence yang berkaitan dengan Opsi Simulasi.</p>
+          </div>
+        </div>
+        <div class="flex flex-col space-y-1">
+          <div v-if="selectedFileEvidence" class="flex flex-row items-center justify-between">
+            <p>{{ selectedFileEvidence.name }} ({{ globalFormat.formatBytes(selectedFileEvidence.size) }})
+            </p>
+            <div class="flex flex-row items-center space-x-3">
+              <label for="fileInputEvidence"
+                class="flex flex-row items-center px-3 py-2 space-x-2 text-primaryColor duration-300 rounded-lg cursor-pointer bg-[#F7FBFC] hover:ring-1 hover:ring-primaryColor active:ring active:ring-infoComponentBorderColor active:duration-0">
+                <IconFolderBlue />
+                <span class="font-semibold">Ganti berkas</span>
+              </label>
+              <input ref="fileInputEvidence" id="fileInputEvidence" type="file" class="hidden"
+                @change="handleFileChangeEvidence" accept=".xlsx, .zip" />
+              <button
+                class="px-3 py-2 font-semibold duration-300 rounded-lg text-warningColor hover:bg-warningColor hover:text-white active:ring active:ring-red-500"
+                @click="selectedFileEvidence = null">Hapus</button>
+            </div>
+          </div>
+          <div
+            class="w-full flex flex-col p-2 items-center bg-primaryColor bg-opacity-10 border border-primaryColor border-dashed rounded-lg space-y-1.5"
+            v-else>
+            <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M55.3067 24.6712C53.4719 20.4552 50.3054 16.9571 46.2923 14.7129C42.2793 12.4687 37.6411 11.6023 33.0885 12.2463C28.5359 12.8904 24.3201 15.0094 21.087 18.2786C17.8539 21.5479 15.782 25.7871 15.1886 30.3465C12.3257 31.0322 9.81422 32.7453 8.13117 35.1607C6.44812 37.576 5.71072 40.5254 6.05899 43.4486C6.40725 46.3718 7.81694 49.0654 10.0203 51.0177C12.2238 52.97 15.0674 54.0452 18.0113 54.039C18.8077 54.039 19.5715 53.7226 20.1347 53.1595C20.6978 52.5963 21.0142 51.8326 21.0142 51.0361C21.0142 50.2397 20.6978 49.476 20.1347 48.9128C19.5715 48.3497 18.8077 48.0333 18.0113 48.0333C16.4185 48.0333 14.8909 47.4006 13.7647 46.2743C12.6384 45.148 12.0056 43.6204 12.0056 42.0276C12.0056 40.4348 12.6384 38.9072 13.7647 37.7809C14.8909 36.6547 16.4185 36.0219 18.0113 36.0219C18.8077 36.0219 19.5715 35.7056 20.1347 35.1424C20.6978 34.5793 21.0142 33.8155 21.0142 33.0191C21.0218 29.4675 22.2882 26.0337 24.5884 23.3276C26.8885 20.6216 30.0734 18.8185 33.5773 18.2387C37.0812 17.6589 40.6772 18.34 43.7264 20.1609C46.7756 21.9818 49.0806 24.8247 50.2318 28.1845C50.4035 28.7005 50.712 29.1602 51.1246 29.5146C51.5371 29.8689 52.0381 30.1046 52.5741 30.1964C54.5742 30.5744 56.3873 31.6186 57.718 33.1588C59.0488 34.6991 59.8186 36.6446 59.9022 38.6784C59.9858 40.7121 59.3781 42.7143 58.1783 44.3585C56.9784 46.0028 55.2571 47.1922 53.2948 47.733C52.5222 47.9321 51.8605 48.4299 51.455 49.117C51.0495 49.804 50.9336 50.624 51.1327 51.3965C51.3318 52.169 51.8296 52.8308 52.5167 53.2362C53.2037 53.6417 54.0237 53.7576 54.7962 53.5585C57.9563 52.7235 60.7577 50.88 62.7747 48.308C64.7918 45.736 65.9145 42.576 65.9723 39.3078C66.03 36.0397 65.0197 32.842 63.0947 30.2004C61.1698 27.5587 58.4353 25.6174 55.3067 24.6712ZM38.1604 30.8871C37.8748 30.6137 37.5381 30.3994 37.1695 30.2565C36.4384 29.9561 35.6184 29.9561 34.8873 30.2565C34.5187 30.3994 34.182 30.6137 33.8964 30.8871L24.8878 39.8956C24.3224 40.461 24.0047 41.2279 24.0047 42.0276C24.0047 42.8273 24.3224 43.5942 24.8878 44.1596C25.4533 44.7251 26.2202 45.0427 27.0199 45.0427C27.8195 45.0427 28.5864 44.7251 29.1519 44.1596L33.0255 40.2559V57.0418C33.0255 57.8382 33.3419 58.602 33.9051 59.1652C34.4682 59.7283 35.232 60.0447 36.0284 60.0447C36.8248 60.0447 37.5886 59.7283 38.1517 59.1652C38.7149 58.602 39.0312 57.8382 39.0312 57.0418V40.2559L42.9049 44.1596C43.1841 44.4411 43.5162 44.6645 43.8821 44.8169C44.248 44.9694 44.6405 45.0479 45.0369 45.0479C45.4333 45.0479 45.8258 44.9694 46.1917 44.8169C46.5577 44.6645 46.8898 44.4411 47.1689 44.1596C47.4504 43.8805 47.6738 43.5484 47.8262 43.1824C47.9787 42.8165 48.0572 42.424 48.0572 42.0276C48.0572 41.6312 47.9787 41.2387 47.8262 40.8728C47.6738 40.5069 47.4504 40.1747 47.1689 39.8956L38.1604 30.8871Z"
+                fill="#0099AD" />
+            </svg>
+            <p>Silahkan pilih berkas anda</p>
+            <label for="fileInputEvidence"
+              class="flex flex-row items-center px-3 py-2 space-x-2 text-white duration-300 rounded-lg cursor-pointer bg-primaryColor hover:bg-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0">
+              <IconFolder />
+              <span class="font-semibold">Cari berkas</span>
+            </label>
+            <input ref="fileInputEvidence" id="fileInputEvidence" type="file" class="hidden"
+              @change="handleFileChangeEvidence" accept=".xlsx, .zip" />
+          </div>
+          <div class="flex flex-row items-center justify-between">
+            <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx, .zip</p>
+            <p class="text-xs text-textDisabledColor">Maximum upload file size : 10 MB</p>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-row justify-end space-x-3">
+        <button
+          class="px-3 py-2 font-semibold duration-300 border rounded-lg text-primaryColor border-primaryColor hover:text-white hover:bg-hoverColor hover:border-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0"
+          @click="isShowModalEvidence = false">Batal</button>
+        <button
+          class="px-3 py-2 font-semibold text-white duration-300 border rounded-lg border-primaryColor bg-primaryColor hover:text-white hover:bg-hoverColor hover:border-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0"
+          @click="isShowFinalConfirmation = true">Simpan Kertas Kerja</button>
+      </div>
     </div>
   </ModalWrapper>
   <ModalWrapper
@@ -46,7 +110,7 @@
         </div>
         <div class="flex flex-col space-y-1">
           <div v-if="selectedFileSimulasi1">
-            <p>{{ selectedFileSimulasi1.name }} ({{ formatBytes(selectedFileSimulasi1.size) }})</p>
+            <p>{{ selectedFileSimulasi1.name }} ({{ globalFormat.formatBytes(selectedFileSimulasi1.size) }})</p>
           </div>
           <div
             class="w-full flex flex-col p-2 items-center bg-primaryColor bg-opacity-10 border border-primaryColor border-dashed rounded-lg space-y-1.5"
@@ -106,7 +170,7 @@
         </div>
         <div class="flex flex-col space-y-1">
           <div v-if="selectedFileSimulasi1">
-            <p>{{ selectedFileSimulasi1.name }} ({{ formatBytes(selectedFileSimulasi1.size) }})</p>
+            <p>{{ selectedFileSimulasi1.name }} ({{ globalFormat.formatBytes(selectedFileSimulasi1.size) }})</p>
           </div>
           <div
             class="w-full flex flex-col p-2 items-center bg-primaryColor bg-opacity-10 border border-primaryColor border-dashed rounded-lg space-y-1.5"
@@ -166,7 +230,7 @@
         </div>
         <div class="flex flex-col space-y-1">
           <div v-if="selectedFile">
-            <p>{{ selectedFile.name }} ({{ formatBytes(selectedFile.size) }})</p>
+            <p>{{ selectedFile.name }} ({{ globalFormat.formatBytes(selectedFile.size) }})</p>
           </div>
           <div
             class="w-full flex flex-col p-2 items-center bg-primaryColor bg-opacity-10 border border-primaryColor border-dashed rounded-lg space-y-1.5"
@@ -526,7 +590,7 @@
               </button> -->
               <button
                 class="px-3 py-2 font-semibold text-white duration-300 rounded-lg bg-primaryColor border-primaryColor hover:bg-hoverColor hover:border-hoverColor"
-                @click="isShowFinalConfirmation = true"
+                @click="isShowModalEvidence = true"
                 v-if="(hasilSimulasi1.trackAverageEaf !== 0 && hasilSimulasi1.trackAverageNcf !== 0 && hasilSimulasi1.trackIrrEquity !== 0 && hasilSimulasi1.trackIrrProject !== 0 && hasilSimulasi1.trackNpvEquity !== 0 && hasilSimulasi1.trackNpvProject !== 0) && (hasilSimulasi2.trackAverageEaf !== 0 && hasilSimulasi2.trackAverageNcf !== 0 && hasilSimulasi2.trackIrrEquity !== 0 && hasilSimulasi2.trackIrrProject !== 0 && hasilSimulasi2.trackNpvEquity !== 0 && hasilSimulasi2.trackNpvProject !== 0)">
                 Pilih & Simpan
               </button>
@@ -565,6 +629,8 @@ import UserService from "@/services/user-service";
 const userService = new UserService();
 import AuthService from "@/services/auth-service";
 const authService = new AuthService();
+import RekapService from "@/services/rekap-service";
+const rekapService = new RekapService();
 import TabAsumsiMakro from "@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabAsumsiMakro.vue";
 import TabParameterTeknis from "@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabParameterTeknis.vue";
 import TabDataTeknis from "@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabDataTeknis.vue";
@@ -582,6 +648,7 @@ import ModalNotification from '@/components/ui/ModalNotification.vue';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog.vue';
 import axios from "axios";
 import IconFolder from "@/components/icons/IconFolder.vue";
+import IconFolderBlue from "@/components/icons/IconFolderBlue.vue";
 import successJsonData from "@/assets/lottie/success.json";
 import TableDataTeknis from "@/components/RekapKertasKerja/TableDataTeknis.vue";
 import TableDataFinansial from "@/components/RekapKertasKerja/TableDataFinansial.vue";
@@ -612,6 +679,8 @@ const masaManfaat = ref<any>();
 const isFinalSubmitSuccess = ref<boolean>(false);
 const isSuccessSimulasi = ref<boolean>(false);
 const isSuccessPermanent = ref<boolean>(false);
+const isShowModalEvidence = ref<boolean>(false);
+const isSuccessEvidence = ref<boolean>(false);
 const idSentral = ref<string>('');
 const isShowFinalConfirmation = ref<boolean>(false);
 const isIntegrasi = ref<boolean>(false);
@@ -846,6 +915,7 @@ const selectedFileSimulasi1: any = ref(null);
 const isUnggahModalOpenSimulasi1 = ref<boolean>(false);
 const isUnggahModalOpen = ref(false);
 const selectedFile: any = ref(null);
+const selectedFileEvidence: any = ref(null);
 const error = ref<{
   asumsi: {
     interestRate: boolean,
@@ -1497,6 +1567,37 @@ const getTypePeriodic = (num: number) => {
   }
   return "-";
 }
+const handleFileChangeEvidence = (event: any) => {
+  if (event.target.files.length === 1) {
+    selectedFileEvidence.value = event.target.files[0];
+  } else {
+    selectedFileEvidence.value = null;
+  }
+};
+const uploadFileEvidence = async () => {
+  try {
+    isLoading.value = true
+    const formData = new FormData();
+    formData.append('file', selectedFileEvidence.value);
+    const headers = {
+      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+      'Content-Type': 'multipart/form-data',
+    };
+    const response: any = await axios.post('https://portalapp.iconpln.co.id:5080/valiant-be/v1/mutasiasset/s3-amazon-upload-file', formData, {
+      headers,
+    });
+    await rekapService.updateEvidencePath(idMesin, tahunBerjalan.toString(), response.data, 0, selectedFileEvidence.value.name);
+    isShowFinalConfirmation.value = false;
+    isShowModalEvidence.value = false;
+    isLoading.value = false;
+    isSuccessEvidence.value = true;
+    await wait(3000)
+    isSuccessEvidence.value = false;
+  } catch (error) {
+    isLoading.value = false;
+    console.error('Error upload file : ', error);
+  }
+};
 const handleFileChangeSimulasi1 = (event: any) => {
   if (event.target.files.length === 1) {
     selectedFileSimulasi1.value = event.target.files[0];
@@ -1598,13 +1699,6 @@ const uploadFile = async () => {
     isLoading.value = false;
     console.error('Error upload file : ', error);
   }
-};
-const formatBytes = (bytes: any) => {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const i = parseInt(Math.floor(Math.log(bytes) / Math.log(k)).toString());
-  return Math.round(100 * (bytes / Math.pow(k, i))) / 100 + ' ' + sizes[i];
 };
 function handleTambahBahanBakar() {
   bahanBakarGroup.value.bahanBakars.push({
@@ -2266,7 +2360,6 @@ const handleSubmit = async () => {
 }
 const handleFinalSubmit = async () => {
   try {
-    isLoading.value = true;
     console.log(dataTeknisSimulasi1.value)
     console.log(dataTeknisSimulasi2.value)
     if (selectedSimulasiTab.value === 'Simulasi 1') {
@@ -2281,13 +2374,22 @@ const handleFinalSubmit = async () => {
         });
       }
       formFinansialSimulasi1.value.cost_component_c_detail = finalCostComponentCDetail;
+      if (selectedFileEvidence.value) {
+        await uploadFileEvidence();
+      }
+      isLoading.value = true;
       await perbaruiDataService.updateDataTeknisPermanent(dataTeknisSimulasi1.value);
       await perbaruiDataService.updateDataFinansialPermanent(formFinansialSimulasi1.value);
     } else {
+      if (selectedFileEvidence.value) {
+        await uploadFileEvidence();
+      }
+      isLoading.value = true;
       await perbaruiDataService.updateDataTeknisPermanent(dataTeknisSimulasi2.value);
       await perbaruiDataService.updateDataFinansialPermanent(formFinansialSimulasi2.value);
     }
     isShowFinalConfirmation.value = false;
+    isShowModalEvidence.value = false;
     isLoading.value = false;
     isFinalSubmitSuccess.value = true;
     await wait(3000);
