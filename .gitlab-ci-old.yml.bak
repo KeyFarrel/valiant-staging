@@ -3,7 +3,7 @@ stages:
   - unit-test
   - sast
   - build-image
-  - update-tag-stag
+  - update-tag-stg
   - approval
   - update-tag-prod
 
@@ -26,13 +26,10 @@ build-app:
   stage: build-app
   script:
     - npm run build
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "dev" && $CI_COMMIT_TAG == null'
-      when: always
-    - if: '$CI_COMMIT_BRANCH == "staging" && $CI_COMMIT_TAG == null'
-      when: always
-    - if: '$CI_COMMIT_TAG != null'
-      when: always
+  only:
+    - merge_requests
+    - dev
+    - /^*-release$/
 
 unit-test:
   extends: .npm-cache
@@ -48,17 +45,13 @@ unit-test:
     reports:
       junit:
         - junit.xml
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "dev" && $CI_COMMIT_TAG == null'
-      when: always
-    - if: '$CI_COMMIT_BRANCH == "staging" && $CI_COMMIT_TAG == null'
-      when: always
-    - if: '$CI_COMMIT_TAG != null'
-      when: always
+  only:
+    - merge_requests
+    - dev
 
 sonarqube-check:
   stage: sast
-  image:
+  image: 
     name: harbor.pln.co.id/library/sonarqube-scanner:latest
     entrypoint: [""]
   variables:
@@ -68,7 +61,7 @@ sonarqube-check:
     key: "${CI_JOB_NAME}"
     paths:
       - .sonar/cache
-  script:
+  script: 
     - |
       if [ "$CI_COMMIT_BRANCH" == "dev" ]; then
         SONAR_BRANCH="dev"
@@ -79,15 +72,8 @@ sonarqube-check:
       fi
       sonar-scanner
   allow_failure: true
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "dev" && $CI_COMMIT_TAG == null'
-      when: always
-    - if: '$CI_COMMIT_BRANCH == "staging" && $CI_COMMIT_TAG == null'
-      when: always
-    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^feature\/.*$/ && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev" && $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: always
-    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^hotfix\/.*$/ && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging" && $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: always
+  only:
+    - dev
 
 build-image:
   image: 
@@ -106,17 +92,15 @@ build-image:
     - echo "Building Image $IMAGE_FULL"
     - docker build -t $IMAGE_FULL .
     - docker push $IMAGE_FULL
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "staging" && $CI_PIPELINE_SOURCE == "push"'
-      when: always
-    - if: '$CI_COMMIT_TAG != null'
-      when: always
+  only:
+    - dev
+    - /^*-release$/
 
-deploy-stag:
+deploy-dev:
   image:
     name : alpine/git
     entrypoint : [""]
-  stage: update-tag-stag
+  stage: update-tag-stg
   before_script:
     - git config --global user.name "Gitlab PLN CI/CD"
     - git config --global user.email "gitlab@pln.co.id"
@@ -126,17 +110,11 @@ deploy-stag:
     - git clone $DEPLOYMENT_REPOSITORY .manifest
     - cd .manifest/environments
     - |
-      frontend_tag=$(cat values-stag.yaml | grep -m 1 frontendTag: | awk '{print $2}')
-    - |
-      version=$(cat values-stag.yaml | grep -m 1 version: | awk '{print $2}')
-    - |
-      sed -i "s/frontendTag: $frontend_tag/frontendTag: $STAGING_VERSION/g" values-stag.yaml
-    - |
-      sed -i "s/version: $version/version: $STAGING_VERSION/g" values-stag.yaml
+      tag=$(cat values-dev.yaml | grep -m 1 frontendTag: | awk '{print $2}')
+    - sed -i "s/$tag/$STAGING_VERSION/g" values-dev.yaml
     - git commit -am "Update Deployment Image Version to version $STAGING_VERSION" && git push origin master
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "staging" && $CI_PIPELINE_SOURCE == "push"'
-      when: always
+  only:
+    - dev
 
 send-approval-notif:
   stage: approval
@@ -148,9 +126,8 @@ send-approval-notif:
     - python ./email_sender.py --template approval.html --from $MAIL_FROM_ADDRESS --to $APPROVAL_1_EMAIL --subject "CI/CD Deployment Need Approval"
     - python ./email_sender.py --template approval.html --from $MAIL_FROM_ADDRESS --to $APPROVAL_2_EMAIL --subject "CI/CD Deployment Need Approval"
     - python ./email_sender.py --template approval.html --from $MAIL_FROM_ADDRESS --to $APPROVAL_3_EMAIL --subject "CI/CD Deployment Need Approval"
-  rules:
-    - if: '$CI_COMMIT_TAG =~ /.*-release$/'
-      when: always
+  only:
+    - /^*-release$/
 
 approval_1:
   stage: approval
@@ -162,11 +139,10 @@ approval_1:
         echo "User does not have permission to run the job. Aborting...";
         exit 1;
       fi;
-  # when: manual
+  when: manual
   allow_failure: false
-  rules:
-    - if: '$CI_COMMIT_TAG =~ /.*-release$/'
-      when: manual
+  only: 
+    - /^*-release$/
 
 approval_2:
   stage: approval
@@ -178,11 +154,10 @@ approval_2:
         echo "User does not have permission to run the job. Aborting...";
         exit 1;
       fi;
-  # when: manual
+  when: manual
   allow_failure: false
-  rules:
-    - if: '$CI_COMMIT_TAG =~ /.*-release$/'
-      when: manual
+  only: 
+    - /^*-release$/
 
 approval_3:
   stage: approval
@@ -194,11 +169,10 @@ approval_3:
         echo "User does not have permission to run the job. Aborting...";
         exit 1;
       fi;
-  # when: manual
+  when: manual
   allow_failure: false
-  rules:
-    - if: '$CI_COMMIT_TAG =~ /.*-release$/'
-      when: manual
+  only: 
+    - /^*-release$/
 
 deploy-prod:
   image:
@@ -208,7 +182,7 @@ deploy-prod:
   needs:
    - approval_1
    - approval_2
-   - approval_3
+   - approval_3 
   dependencies: []
   before_script:
     - git config --global user.name "Gitlab Btech CI/CD"
@@ -218,16 +192,9 @@ deploy-prod:
     - echo "Updating Production Repository with tag $CI_COMMIT_TAG"
     - git clone $DEPLOYMENT_REPOSITORY .manifest
     - cd .manifest/environments
-    - git checkout production
     - |
-      frontend_tag=$(cat values-prod.yaml | grep -m 1 frontendTag: | awk '{print $2}')
-    - |
-      version=$(cat values-prod.yaml | grep -m 1 version: | awk '{print $2}')
-    - |
-      sed -i "s/frontendTag: $frontend_tag/frontendTag: $CI_COMMIT_TAG/g" values-prod.yaml
-    - |
-      sed -i "s/version: $version/version: $CI_COMMIT_TAG/g" values-prod.yaml
-    - git commit -am "Update Production Image Version to version $CI_COMMIT_TAG" && git push origin production
-  rules:
-    - if: '$CI_COMMIT_TAG =~ /.*-release$/'
-      when: always
+      tag=$(cat values-prod.yaml | grep -m 1 tag: | awk '{print $2}')
+    - sed -i "s/$tag/$CI_COMMIT_TAG/g" values-prod.yaml
+    - git commit -am "Update Production Image Version to version $CI_COMMIT_TAG" && git push origin master
+  only:
+    - /^*-release$/
