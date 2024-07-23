@@ -258,7 +258,7 @@ async function onSubmit() {
     try {
       const response: any = await loginService.login(param);
       const token = response.data.token;
-      const permission = await axios.get(`${url}permission`, {
+      const permission = await axios.get(`${url}v1/permission`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
