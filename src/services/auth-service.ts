@@ -11,7 +11,7 @@ export default class AuthService extends BaseService {
   }
   async login<T>(payload: any): Promise<T> {
     try {
-      const response: any = await this.post(`${url}auth/login`, payload);
+      const response: any = await this.post(`${url}v1/auth/login`, payload);
       const roleId = response.data.role_id;
       const token = response.data.token;
       const namaPegawai = response.data.nama_pegawai;
