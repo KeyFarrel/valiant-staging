@@ -57,7 +57,7 @@ const submitForm = async () => {
       })),
     };
     // Mengirim permintaan POST ke API
-    const response = await axios.post(`${url}/role`, dataToPost);
+    const response = await axios.post(`${url}role`, dataToPost);
     console.log("POST response:", response.data);
 
     // Reset formulir setelah berhasil
@@ -80,7 +80,7 @@ const submitForm = async () => {
 
 const fetchData = async () => {
   try {
-    const response = await axios.get(`${url}/role`);
+    const response = await axios.get(`${url}role`);
     console.log(response.data);
     return response.data.data;
   } catch (error) {
@@ -102,7 +102,7 @@ const comboSubmenu = ref<SubMenuItem[]>([]);
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`${url}/submenu/combo-submenu`);
+    const response = await axios.get(`${url}submenu/combo-submenu`);
     comboSubmenu.value = response.data.data; // Mengisi data comboSubmenu dengan hasil dari API
   } catch (error) {
     console.error("Error fetching combo submenu:", error);

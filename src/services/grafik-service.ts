@@ -193,7 +193,7 @@ export default class GrafikService extends BaseService {
     return this.get(`${url}filter/combo-jenis-kit`);
   }
   async getFilterDaya<T>(): Promise<T> {
-    return this.get(`${url}/grafik/filter/daya`)
+    return this.get(`${url}grafik/filter/daya`)
   }
   async getTahunTerakhirRealisasiAnalitik<T>(): Promise<T> {
     return this.get(`${url}filter/combo-tahun-max`)

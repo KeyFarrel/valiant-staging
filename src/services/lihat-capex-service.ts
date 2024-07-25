@@ -22,6 +22,6 @@ export default class LihatCAPEXService extends BaseService {
     return this.get(`${url}laman/data/anggaran/capex-replacement`, {tahun: tahun_realisasi, id_mesin: id_mesin});
   }
   async getTahunAnggaran<T>(): Promise<T> {
-    return this.get(`${url}/laman/data/anggaran/tahun`);
+    return this.get(`${url}laman/data/anggaran/tahun`);
   }
 }

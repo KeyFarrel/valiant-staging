@@ -15,27 +15,27 @@ interface ParamLine {
 
 export default class AnalyticService extends BaseService {
     async getFinancialEBITDA<T>(param: ParamBubble): Promise<T> {
-        return this.get(`${url}/dashboard/grafik/finansial-ebitda`, param)
+        return this.get(`${url}dashboard/grafik/finansial-ebitda`, param)
     }
     async getFinancialROIC<T>(param: ParamBubble): Promise<T> {
-        return this.get(`${url}/dashboard/grafik/finansial-roic`, param)
+        return this.get(`${url}dashboard/grafik/finansial-roic`, param)
     }
     async getFinancialKomponen<T>(param: ParamLine): Promise<T> {
-        return this.get(`${url}/grafik/laman/komponen`, param)
+        return this.get(`${url}grafik/laman/komponen`, param)
     }
     async getTeknisNcf<T>(param: ParamLine): Promise<T> {
-        return this.get(`${url}/grafik/laman/teknis/ncf`, param)
+        return this.get(`${url}grafik/laman/teknis/ncf`, param)
     }
     async getTeknisEaf<T>(param: ParamLine): Promise<T> {
-        return this.get(`${url}/grafik/laman/teknis/eaf`, param)
+        return this.get(`${url}grafik/laman/teknis/eaf`, param)
     }
     async getFilterPembangkit<T>(): Promise<T> {
-        return this.get(`${url}/grafik/filter/pembangkit`)
+        return this.get(`${url}grafik/filter/pembangkit`)
     }
     async getFilterDaya<T>(): Promise<T> {
-        return this.get(`${url}/grafik/filter/daya`)
+        return this.get(`${url}grafik/filter/daya`)
     }
     async getFilterTahun<T>(): Promise<T> {
-        return this.get(`${url}/grafik/filter/tahun`)
+        return this.get(`${url}grafik/filter/tahun`)
     }
 }
