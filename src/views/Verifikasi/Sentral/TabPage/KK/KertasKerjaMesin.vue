@@ -37,7 +37,7 @@
     <template v-slot:table-body v-else>
       <tr class="text-xs text-gray-900 border-b hover:bg-gray-100"
         v-for="(persetujuanKKItem, persetujuanKKIndex) in props.source" :key="persetujuanKKIndex">
-        <td scope="row" class="px-1 py-4 text-center whitespace-nowrap">{{persetujuanKKIndex + 1}}</td>
+        <td scope="row" class="px-1 py-4 text-center whitespace-nowrap">{{ persetujuanKKIndex + 1 }}</td>
         <td class="text-center">{{ persetujuanKKItem.tahun ? persetujuanKKItem.tahun : '-' }}</td>
         <td class="text-right">{{ globalFormat.formatRupiah(persetujuanKKItem.irr_on_equity) }}</td>
         <td class="text-right">{{ globalFormat.formatRupiah(persetujuanKKItem.npv_on_equity) }}</td>
@@ -76,7 +76,7 @@
         <td class="text-center">
           <div>
             <RouterLink
-              :to="{ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(persetujuanKKItem.id_mesin) : persetujuanKKItem.id_mesin}, query: {id_sentral: persetujuanKKItem.id_sentral, tahun: persetujuanKKItem.tahun} }">
+              :to="{ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(persetujuanKKItem.id_mesin) : persetujuanKKItem.id_mesin }, query: { id_sentral: persetujuanKKItem.id_sentral, tahun: persetujuanKKItem.tahun } }">
               <button>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" clip-rule="evenodd"
@@ -100,11 +100,13 @@
         <option value="40">40</option>
         <option value="50">50</option>
       </select>
-      <span>dari <span class="font-bold">5</span> data</span>
+      <span>dari <span class="font-bold">{{ props.source.length }}</span> data</span>
     </div>
     <ul class="flex items-center space-x-3">
       <li>
-        <div class="block cursor-pointer p-2">
+        <button @click="goToPrevious" :disabled="navigation.currentPage === 1"
+          :class="{ 'text-gray-500': navigation.currentPage === 1 }"
+          class="block px-2 py-2 ml-0 duration-300 bg-white disabled:hover:cursor-not-allowed text-primaryColor disabled:text-gray-500 hover:bg-blue-500 disabled:bg-white hover:text-white hover:rounded-md">
           <span class="sr-only">Previous</span>
           <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg">
@@ -112,11 +114,16 @@
               d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
               clip-rule="evenodd"></path>
           </svg>
-        </div>
+        </button>
       </li>
-      <li class="px-2 py-1 mr-2 text-white rounded-md bg-primaryColor">1</li>
+      <li id="pagination" v-for="( item, index ) in generatePageList " :key="index"
+        class="w-8 h-8 mr-2 text-sm leading-8 text-center duration-300 cursor-pointer text hover:bg-blue-500 hover:rounded-md hover:text-white"
+        :class="{ selected: item === navigation.currentPage, disabled: item === '...' }" @click="goToPage(item)">
+        {{ item }}
+      </li>
       <li>
-        <div class="block cursor-pointer p-2">
+        <button @click="goToNext" :disabled="navigation.currentPage === navigation.totalPages"
+          class="block px-2 py-2 ml-0 duration-300 bg-white disabled:hover:cursor-not-allowed text-primaryColor disabled:text-gray-500 hover:bg-blue-500 disabled:bg-white hover:text-white hover:rounded-md">
           <span class="sr-only">Next</span>
           <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg">
@@ -124,31 +131,100 @@
               d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
               clip-rule="evenodd"></path>
           </svg>
-        </div>
+        </button>
       </li>
     </ul>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from "vue";
 import { encryptStorage } from "@/utils/app-encrypt-storage";
 const nodeMode = import.meta.env.MODE;
-import TableComponent from "@/components/ui/Table.vue";
 import GlobalFormat from "@/services/format/global-format";
-
 const globalFormat = new GlobalFormat();
+import TableComponent from "@/components/ui/Table.vue";
+
 interface Props {
   source: PersetujuanKKItem[],
 }
 
 interface PersetujuanKKItem {
-  tahun: string,
-  irr_on_project: number,
-  irr_on_equity: number,
-  npv_on_project: number,
-  npv_on_equity: number,
+  tahun: string
+  irr_on_project: number
+  irr_on_equity: number
+  npv_on_project: number
+  npv_on_equity: number
   status: string
+  id_mesin: any
+  id_sentral: any
 }
+
+const navigation = ref<{
+  currentPage: number,
+  totalPages: number,
+  totalRecords: number,
+  limit: number
+}>({
+  currentPage: 1,
+  totalPages: 1,
+  totalRecords: 0,
+  limit: 10
+});
+
+const generatePageList = computed(() => {
+  const pageList = [];
+  const maxPages = 5;
+  if (navigation.value.totalPages <= maxPages) {
+    for (let i = 1; i <= navigation.value.totalPages; i++) {
+      pageList.push(i);
+    }
+  } else {
+    if (navigation.value.currentPage <= 3) {
+      for (let i = 1; i <= Math.min(navigation.value.totalPages, maxPages - 1); i++) {
+        pageList.push(i);
+      }
+      if (navigation.value.totalPages > maxPages) {
+        pageList.push('...');
+        pageList.push(navigation.value.totalPages);
+      }
+    } else if (navigation.value.currentPage >= navigation.value.totalPages - 2) {
+      pageList.push(1);
+      pageList.push('...');
+      for (let i = navigation.value.totalPages - (maxPages - 2); i <= navigation.value.totalPages; i++) {
+        pageList.push(i);
+      }
+    } else {
+      pageList.push(1);
+      pageList.push('...');
+      for (let i = navigation.value.currentPage - 1; i <= navigation.value.currentPage + 1; i++) {
+        pageList.push(i);
+      }
+      pageList.push('...');
+      pageList.push(navigation.value.totalPages);
+    }
+  }
+  return pageList;
+});
+
+const goToPage = async (page: any) => {
+  try {
+    // isLoading.value = true;
+    navigation.value.currentPage = page;
+    // await fetchSentralData();
+
+  } catch (error) {
+    console.error('Go To Page Error : ' + error);
+  } finally {
+    // isLoading.value = false;
+  }
+};
+const goToPrevious = () => {
+  goToPage(navigation.value.currentPage - 1);
+};
+const goToNext = () => {
+  goToPage(navigation.value.currentPage + 1);
+};
 
 const props = defineProps<Props>()
 
@@ -170,5 +246,18 @@ td {
   /* IE and Edge */
   scrollbar-width: none;
   /* Firefox */
+}
+
+ul li#pagination.selected {
+  background-color: #0099AD;
+  border-radius: 6px;
+  color: white;
+  transition: 300ms;
+}
+
+ul li.disabled {
+  pointer-events: none;
+  cursor: not-allowed;
+  color: #D1D1DB;
 }
 </style>

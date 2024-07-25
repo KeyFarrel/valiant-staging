@@ -303,10 +303,11 @@
             </h3>
           </div>
           <div class="flex flex-col space-y-1.5">
-            <label for="" class="text-sm font-semibold text-labelColor">Total Revenue <span
-                class="text-warningColor">*</span></label>
+            <label for="" class="text-sm font-semibold text-labelColor">Total Revenue <span class="text-warningColor">*
+              </span><span v-if="props.isIntegrasi" class="text-xs text-warningColor">Unaudited</span></label>
             <div class="flex items-center justify-start">
-              <TextField @on-input="handleInputDecimalRupiah('totalRevenue')" v-model="totalRevenue" class="pl-9" />
+              <TextField @on-input="handleInputDecimalRupiah('totalRevenue')" v-model="totalRevenue" class="pl-9"
+                :disabled="props.isIntegrasi" />
               <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
             </div>
             <div class="text-xs text-warningColor" v-if="props.error?.totalRevenue === true">Total Revenue wajib diisi
@@ -315,9 +316,11 @@
           <div class="grid grid-cols-4 gap-x-5">
             <div class="flex flex-col space-y-1.5">
               <label for="" class="text-sm font-semibold text-labelColor">Revenue Komp A <span
-                  class="text-warningColor">*</span></label>
+                  class="text-warningColor">* </span><span v-if="props.isIntegrasi"
+                  class="text-xs text-warningColor">Unaudited</span></label>
               <div class="flex items-center justify-start">
-                <TextField @on-input="handleInputDecimalRupiah('revenueKompA')" v-model="revenueKompA" class="pl-9" />
+                <TextField @on-input="handleInputDecimalRupiah('revenueKompA')" v-model="revenueKompA" class="pl-9"
+                  :disabled="props.isIntegrasi" />
                 <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
               </div>
               <div class="text-xs text-warningColor" v-if="props.error?.revenueKompA === true">
@@ -325,9 +328,11 @@
             </div>
             <div class="flex flex-col space-y-1.5">
               <label for="" class="text-sm font-semibold text-labelColor">Revenue Komp B <span
-                  class="text-warningColor">*</span></label>
+                  class="text-warningColor">* </span><span v-if="props.isIntegrasi"
+                  class="text-xs text-warningColor">Unaudited</span></label>
               <div class="flex items-center justify-start">
-                <TextField @on-input="handleInputDecimalRupiah('revenueKompB')" v-model="revenueKompB" class="pl-9" />
+                <TextField @on-input="handleInputDecimalRupiah('revenueKompB')" v-model="revenueKompB" class="pl-9"
+                  :disabled="props.isIntegrasi" />
                 <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
               </div>
               <div class="text-xs text-warningColor" v-if="props.error?.revenueKompB === true">
@@ -335,9 +340,11 @@
             </div>
             <div class="flex flex-col space-y-1.5">
               <label for="" class="text-sm font-semibold text-labelColor">Revenue Komp C <span
-                  class="text-warningColor">*</span></label>
+                  class="text-warningColor">* </span><span v-if="props.isIntegrasi"
+                  class="text-xs text-warningColor">Unaudited</span></label>
               <div class="flex items-center justify-start">
-                <TextField @on-input="handleInputDecimalRupiah('revenueKompC')" v-model="revenueKompC" class="pl-9" />
+                <TextField @on-input="handleInputDecimalRupiah('revenueKompC')" v-model="revenueKompC" class="pl-9"
+                  :disabled="props.isIntegrasi" />
                 <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
               </div>
               <div class="text-xs text-warningColor" v-if="props.error?.revenueKompC === true">
@@ -345,9 +352,11 @@
             </div>
             <div class="flex flex-col space-y-1.5">
               <label for="" class="text-sm font-semibold text-labelColor">Revenue Komp D <span
-                  class="text-warningColor">*</span></label>
+                  class="text-warningColor">* </span><span v-if="props.isIntegrasi"
+                  class="text-xs text-warningColor">Unaudited</span></label>
               <div class="flex items-center justify-start">
-                <TextField @on-input="handleInputDecimalRupiah('revenueKompD')" v-model="revenueKompD" class="pl-9" />
+                <TextField @on-input="handleInputDecimalRupiah('revenueKompD')" v-model="revenueKompD" class="pl-9"
+                  :disabled="props.isIntegrasi" />
                 <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
               </div>
               <div class="text-xs text-warningColor" v-if="props.error?.revenueKompD === true">

@@ -1,102 +1,99 @@
 <template>
   <nav
-    class="fixed top-0 z-50 w-full bg-gradient-to-r from-[#00A2B9] to-[#035B71] dark:bg-gray-800 dark:border-gray-700">
-    <div
-      class="bg-white rounded-lg absolute z-[35] p-3 flex flex-col space-y-3 w-[400px] shadow-md right-[200px] top-12"
-      v-show="isNotificationShow">
-      <div class="flex flex-row items-center justify-between">
-        <p class="text-base font-semibold text-primaryTextColor">Notifikasi</p>
-        <button class="text-xs text-primaryColor">Tandai semua telah dibaca</button>
+    class="fixed top-0 h-[55px] z-50 w-full items-center px-3 py-2 lg:px-5 lg:pl-3 justify-between bg-gradient-to-r flex from-[#00A2B9] to-[#035B71] dark:bg-gray-800 dark:border-gray-700">
+    <div class="flex items-center justify-start">
+      <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar"
+        type="button"
+        class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#0099AD] dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-[#0099AD]">
+        <span class="sr-only">Open sidebar</span>
+        <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg">
+          <path clip-rule="evenodd" fill-rule="evenodd"
+            d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z">
+          </path>
+        </svg>
+      </button>
+      <div class="flex items-center ml-2 md:mr-24">
+        <ValiantLogo />
+        <span v-show="isSidebarOpen"
+          class="self-center text-lg font-semibold text-white sm:text-2xl whitespace-nowrap dark:text-white">Valiant</span>
       </div>
-      <div class="space-y-5">
-        <CardNotification v-for="(notificationItem, notificationIndex) in 2" />
+      <div class="text-white -ml-[72px]" :class="isSidebarOpen ? 'ml-3' : ''">
+        <p class="text-lg font-semibold">{{ store.label }}</p>
+        <!-- <p class="text-xs font-semibold">
+              {{ store.label }}
+            </p> Dikomen dulu untuk nanti CR breadcrumbs -->
       </div>
     </div>
-    <div class="px-3 py-2 lg:px-5 lg:pl-3">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center justify-start">
-          <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar"
-            type="button"
-            class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#0099AD] dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-[#0099AD]">
-            <span class="sr-only">Open sidebar</span>
-            <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg">
-              <path clip-rule="evenodd" fill-rule="evenodd"
-                d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z">
-              </path>
-            </svg>
-          </button>
-          <div class="flex ml-2 md:mr-24">
-            <ValiantLogo />
-            <span v-show="isSidebarOpen"
-              class="self-center text-lg font-semibold text-white sm:text-2xl whitespace-nowrap dark:text-white">Valiant</span>
-          </div>
-          <div class="text-white -ml-[72px]" :class="isSidebarOpen ? 'ml-10' : ''">
-            <div class="text-lg font-bold">{{ store.label }}</div>
-            <p class="text-xs font-semibold">
-              {{ store.label }}
-            </p>
-          </div>
+    <div class="flex flex-row items-center space-x-3">
+      <!-- <button @click="isNotificationShow = !isNotificationShow">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M12 4C9.23859 4 7.00001 6.23858 7.00001 9L6.99982 9.75C6.99982 9.74991 6.99982 9.75009 6.99982 9.75C6.99976 11.79 6.38801 13.689 5.33877 15.2709C6.60342 15.6529 7.9142 15.929 9.26093 16.0887C10.1587 16.1952 11.0726 16.25 11.9998 16.25C12.9271 16.25 13.8412 16.1952 14.7391 16.0887C16.0857 15.9289 17.3963 15.6529 18.6609 15.2709C17.6116 13.6889 16.9998 11.7901 16.9998 9.75V9.04115L17 9C17 6.23858 14.7614 4 12 4ZM5.00002 8.99974C5.00016 5.13386 8.13411 2 12 2C15.866 2 19 5.13401 19 9L18.9998 9.04919V9.75C18.9998 11.809 19.7763 13.6842 21.0541 15.1025C21.2761 15.349 21.3615 15.6894 21.282 16.0114C21.2026 16.3335 20.9686 16.5951 20.6575 16.71C19.1663 17.2605 17.6084 17.6728 15.9994 17.9316C15.9998 17.9544 16 17.9772 16 18C16 20.2091 14.2092 22 12 22C9.79088 22 8.00001 20.2091 8.00001 18C8.00001 17.9772 8.00021 17.9544 8.00059 17.9317C6.39149 17.6729 4.83345 17.2605 3.34218 16.71C3.03102 16.5951 2.79707 16.3335 2.71761 16.0114C2.63815 15.6894 2.72353 15.349 2.94553 15.1025C4.2233 13.6842 4.99982 11.809 4.99982 9.75L5.00002 8.99974C5.00002 8.99982 5.00002 8.99965 5.00002 8.99974ZM10.0073 18.1717C10.0944 19.1959 10.9533 20 12 20C13.0468 20 13.9057 19.1959 13.9927 18.1717C13.3351 18.2236 12.6704 18.25 11.9998 18.25C11.3293 18.25 10.6648 18.2236 10.0073 18.1717Z"
+            fill="white" />
+        </svg>
+      </button>
+      <div
+        class="bg-white rounded-lg absolute z-[35] p-3 flex flex-col space-y-3 w-[400px] shadow-md right-[170px] top-7"
+        v-show="isNotificationShow">
+        <div class="flex flex-row items-center justify-between">
+          <p class="text-base font-semibold text-primaryTextColor">Notifikasi</p>
+          <button class="text-xs text-primaryColor">Tandai semua telah dibaca</button>
         </div>
-        <div class="flex flex-row items-center space-x-3">
-          <button @click="isNotificationShow = !isNotificationShow">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M12 4C9.23859 4 7.00001 6.23858 7.00001 9L6.99982 9.75C6.99982 9.74991 6.99982 9.75009 6.99982 9.75C6.99976 11.79 6.38801 13.689 5.33877 15.2709C6.60342 15.6529 7.9142 15.929 9.26093 16.0887C10.1587 16.1952 11.0726 16.25 11.9998 16.25C12.9271 16.25 13.8412 16.1952 14.7391 16.0887C16.0857 15.9289 17.3963 15.6529 18.6609 15.2709C17.6116 13.6889 16.9998 11.7901 16.9998 9.75V9.04115L17 9C17 6.23858 14.7614 4 12 4ZM5.00002 8.99974C5.00016 5.13386 8.13411 2 12 2C15.866 2 19 5.13401 19 9L18.9998 9.04919V9.75C18.9998 11.809 19.7763 13.6842 21.0541 15.1025C21.2761 15.349 21.3615 15.6894 21.282 16.0114C21.2026 16.3335 20.9686 16.5951 20.6575 16.71C19.1663 17.2605 17.6084 17.6728 15.9994 17.9316C15.9998 17.9544 16 17.9772 16 18C16 20.2091 14.2092 22 12 22C9.79088 22 8.00001 20.2091 8.00001 18C8.00001 17.9772 8.00021 17.9544 8.00059 17.9317C6.39149 17.6729 4.83345 17.2605 3.34218 16.71C3.03102 16.5951 2.79707 16.3335 2.71761 16.0114C2.63815 15.6894 2.72353 15.349 2.94553 15.1025C4.2233 13.6842 4.99982 11.809 4.99982 9.75L5.00002 8.99974C5.00002 8.99982 5.00002 8.99965 5.00002 8.99974ZM10.0073 18.1717C10.0944 19.1959 10.9533 20 12 20C13.0468 20 13.9057 19.1959 13.9927 18.1717C13.3351 18.2236 12.6704 18.25 11.9998 18.25C11.3293 18.25 10.6648 18.2236 10.0073 18.1717Z"
-                fill="white" />
-            </svg>
-          </button>
-          <div class="flex items-center justify-center w-6 h-6 rounded-full bg-warningColor">
-            <span class="text-sm font-semibold text-white uppercase">{{ namaPegawai?.split('')[0] }}</span>
-          </div>
-          <p class="text-white">
-            {{ namaPegawai }}
-          </p>
-          <div class="flex items-center mr-4">
-            <button type="button"
-              class="flex text-sm bg-gray-800 rounded-full active:ring active:ring-[#0099AD] dark:active:ring-[#0099AD]"
-              aria-expanded="false" data-dropdown-toggle="dropdown-user" data-dropdown-offset-distance="12">
-              <span class="sr-only">Open user menu</span>
-              <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="16" height="16" rx="8" fill="#E5E7E9" />
-                <path fill-rule="evenodd" clip-rule="evenodd"
-                  d="M8.13743 9.84159C7.92622 10.0528 7.58378 10.0528 7.37257 9.84159L4.66841 7.13743C4.4572 6.92622 4.4572 6.58378 4.66841 6.37257C4.87962 6.16136 5.22205 6.16136 5.43326 6.37257L7.755 8.69431L10.0767 6.37257C10.2879 6.16136 10.6304 6.16136 10.8416 6.37257C11.0528 6.58378 11.0528 6.92622 10.8416 7.13743L8.13743 9.84159Z"
-                  fill="#0099AD" />
-              </svg>
-            </button>
-            <div
-              class="max-w-64 border whitespace-nowrap z-[45] hidden text-base list-none bg-white divide-y divide-gray-100 rounded-md shadow dark:bg-gray-700 dark:divide-gray-600"
-              id="dropdown-user">
-              <div class="flex flex-row items-center p-5">
-                <div class="mr-3">
-                  <div class="flex flex-row items-center justify-center rounded-full w-14 h-14 bg-warningColor">
-                    <span class="text-xl font-semibold text-white uppercase">{{ namaPegawai?.split('')[0] }}</span>
-                  </div>
-                </div>
-                <div class="flex flex-col justify-center space-y-0.5">
-                  <p class="text-sm font-semibold truncate text-primaryTextColor max-w-36">{{ namaPegawai }}</p>
-                  <RouterLink to="/profile-user" class="text-[#2671D9] underline text-xs">Lihat Profil</RouterLink>
-                </div>
+        <div class="space-y-5">
+          <CardNotification v-for="(notificationItem, notificationIndex) in 2" />
+        </div>
+      </div> -->
+      <div class="flex items-center justify-center w-6 h-6 rounded-full bg-warningColor">
+        <span class="text-sm font-semibold text-white uppercase">{{ namaPegawai?.split('')[0] }}</span>
+      </div>
+      <p class="text-white">
+        {{ namaPegawai }}
+      </p>
+      <div class="flex items-center mr-4">
+        <button type="button"
+          class="flex text-sm bg-gray-800 rounded-full active:ring active:ring-[#0099AD] dark:active:ring-[#0099AD]"
+          aria-expanded="false" data-dropdown-toggle="dropdown-user" data-dropdown-offset-distance="-30"
+          data-dropdown-offset-skidding="90" data-dropdown-placement="left">
+          <span class="sr-only">Open user menu</span>
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="16" height="16" rx="8" fill="#E5E7E9" />
+            <path fill-rule="evenodd" clip-rule="evenodd"
+              d="M8.13743 9.84159C7.92622 10.0528 7.58378 10.0528 7.37257 9.84159L4.66841 7.13743C4.4572 6.92622 4.4572 6.58378 4.66841 6.37257C4.87962 6.16136 5.22205 6.16136 5.43326 6.37257L7.755 8.69431L10.0767 6.37257C10.2879 6.16136 10.6304 6.16136 10.8416 6.37257C11.0528 6.58378 11.0528 6.92622 10.8416 7.13743L8.13743 9.84159Z"
+              fill="#0099AD" />
+          </svg>
+        </button>
+        <div
+          class="max-w-64 border whitespace-nowrap z-[45] hidden text-base list-none bg-white divide-y divide-gray-100 rounded-md shadow dark:bg-gray-700 dark:divide-gray-600"
+          id="dropdown-user">
+          <div class="flex flex-row items-center p-5">
+            <div class="mr-3">
+              <div class="flex flex-row items-center justify-center rounded-full w-14 h-14 bg-warningColor">
+                <span class="text-xl font-semibold text-white uppercase">{{ namaPegawai?.split('')[0] }}</span>
               </div>
-              <hr />
-              <button @click="authService.logOut" class="flex px-10 py-2 cursor-pointer">
-                <svg width="14" height="18" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M8.76639 11.1772L9.19542 10.75H8.59H1C0.801088 10.75 0.610323 10.671 0.46967 10.5303C0.329018 10.3897 0.25 10.1989 0.25 10C0.25 9.80109 0.329018 9.61032 0.46967 9.46967C0.610323 9.32902 0.801088 9.25 1 9.25H8.59H9.19542L8.76639 8.82284L6.46678 6.53322C6.46676 6.5332 6.46674 6.53319 6.46672 6.53317C6.39672 6.46316 6.3412 6.38004 6.30331 6.28858C6.26541 6.19709 6.24591 6.09903 6.24591 6C6.24591 5.90097 6.26541 5.80291 6.30331 5.71142C6.34121 5.61993 6.39675 5.5368 6.46678 5.46678C6.5368 5.39675 6.61993 5.34121 6.71142 5.30331C6.80291 5.26541 6.90097 5.24591 7 5.24591C7.09903 5.24591 7.19709 5.26541 7.28858 5.30331C7.38007 5.34121 7.4632 5.39675 7.53322 5.46678L11.5312 9.46472C11.5986 9.53565 11.6515 9.61911 11.6869 9.71038L11.6869 9.71039L11.6888 9.715C11.7638 9.8976 11.7638 10.1024 11.6888 10.285L11.6887 10.285L11.6869 10.2896C11.6515 10.3809 11.5986 10.4643 11.5312 10.5353L7.53322 14.5332L7.5325 14.5339C7.46278 14.6042 7.37982 14.66 7.28843 14.6981C7.19704 14.7362 7.09901 14.7558 7 14.7558C6.90099 14.7558 6.80296 14.7362 6.71157 14.6981C6.62018 14.66 6.53722 14.6042 6.4675 14.5339L6.46605 14.5325C6.39575 14.4628 6.33996 14.3798 6.30188 14.2884C6.26381 14.197 6.2442 14.099 6.2442 14C6.2442 13.901 6.26381 13.803 6.30188 13.7116C6.33996 13.6202 6.39575 13.5372 6.46605 13.4675L6.46639 13.4672L8.76639 11.1772ZM3 0.25H13C13.7293 0.25 14.4288 0.539731 14.9445 1.05546C15.4603 1.57118 15.75 2.27065 15.75 3V17C15.75 17.7293 15.4603 18.4288 14.9445 18.9445C14.4288 19.4603 13.7293 19.75 13 19.75H3C2.27065 19.75 1.57118 19.4603 1.05546 18.9445C0.539732 18.4288 0.25 17.7293 0.25 17V14C0.25 13.8011 0.329018 13.6103 0.46967 13.4697C0.610323 13.329 0.801088 13.25 1 13.25C1.19891 13.25 1.38968 13.329 1.53033 13.4697C1.67098 13.6103 1.75 13.8011 1.75 14V17C1.75 17.3315 1.8817 17.6495 2.11612 17.8839C2.35054 18.1183 2.66848 18.25 3 18.25H13C13.3315 18.25 13.6495 18.1183 13.8839 17.8839C14.1183 17.6495 14.25 17.3315 14.25 17V3C14.25 2.66848 14.1183 2.35054 13.8839 2.11612C13.6495 1.8817 13.3315 1.75 13 1.75H3C2.66848 1.75 2.35054 1.8817 2.11612 2.11612C1.8817 2.35054 1.75 2.66848 1.75 3V6C1.75 6.19891 1.67098 6.38968 1.53033 6.53033C1.38968 6.67098 1.19891 6.75 1 6.75C0.801088 6.75 0.610323 6.67098 0.46967 6.53033C0.329018 6.38968 0.25 6.19891 0.25 6V3C0.25 2.27065 0.539731 1.57118 1.05546 1.05546C1.57118 0.539731 2.27065 0.25 3 0.25Z"
-                    fill="#333333" stroke="white" stroke-width="0.5" />
-                </svg>
-                <p class="ml-3 -mt-1 text-[14px] text-primaryTextColor">Logout</p>
-              </button>
+            </div>
+            <div class="flex flex-col justify-center space-y-0.5">
+              <p class="text-sm font-semibold truncate text-primaryTextColor max-w-36">{{ namaPegawai }}</p>
+              <RouterLink to="/profile-user" class="text-[#2671D9] underline text-xs">Lihat Profil</RouterLink>
             </div>
           </div>
+          <hr />
+          <button @click="authService.logOut" class="flex px-10 py-2 cursor-pointer">
+            <svg width="14" height="18" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M8.76639 11.1772L9.19542 10.75H8.59H1C0.801088 10.75 0.610323 10.671 0.46967 10.5303C0.329018 10.3897 0.25 10.1989 0.25 10C0.25 9.80109 0.329018 9.61032 0.46967 9.46967C0.610323 9.32902 0.801088 9.25 1 9.25H8.59H9.19542L8.76639 8.82284L6.46678 6.53322C6.46676 6.5332 6.46674 6.53319 6.46672 6.53317C6.39672 6.46316 6.3412 6.38004 6.30331 6.28858C6.26541 6.19709 6.24591 6.09903 6.24591 6C6.24591 5.90097 6.26541 5.80291 6.30331 5.71142C6.34121 5.61993 6.39675 5.5368 6.46678 5.46678C6.5368 5.39675 6.61993 5.34121 6.71142 5.30331C6.80291 5.26541 6.90097 5.24591 7 5.24591C7.09903 5.24591 7.19709 5.26541 7.28858 5.30331C7.38007 5.34121 7.4632 5.39675 7.53322 5.46678L11.5312 9.46472C11.5986 9.53565 11.6515 9.61911 11.6869 9.71038L11.6869 9.71039L11.6888 9.715C11.7638 9.8976 11.7638 10.1024 11.6888 10.285L11.6887 10.285L11.6869 10.2896C11.6515 10.3809 11.5986 10.4643 11.5312 10.5353L7.53322 14.5332L7.5325 14.5339C7.46278 14.6042 7.37982 14.66 7.28843 14.6981C7.19704 14.7362 7.09901 14.7558 7 14.7558C6.90099 14.7558 6.80296 14.7362 6.71157 14.6981C6.62018 14.66 6.53722 14.6042 6.4675 14.5339L6.46605 14.5325C6.39575 14.4628 6.33996 14.3798 6.30188 14.2884C6.26381 14.197 6.2442 14.099 6.2442 14C6.2442 13.901 6.26381 13.803 6.30188 13.7116C6.33996 13.6202 6.39575 13.5372 6.46605 13.4675L6.46639 13.4672L8.76639 11.1772ZM3 0.25H13C13.7293 0.25 14.4288 0.539731 14.9445 1.05546C15.4603 1.57118 15.75 2.27065 15.75 3V17C15.75 17.7293 15.4603 18.4288 14.9445 18.9445C14.4288 19.4603 13.7293 19.75 13 19.75H3C2.27065 19.75 1.57118 19.4603 1.05546 18.9445C0.539732 18.4288 0.25 17.7293 0.25 17V14C0.25 13.8011 0.329018 13.6103 0.46967 13.4697C0.610323 13.329 0.801088 13.25 1 13.25C1.19891 13.25 1.38968 13.329 1.53033 13.4697C1.67098 13.6103 1.75 13.8011 1.75 14V17C1.75 17.3315 1.8817 17.6495 2.11612 17.8839C2.35054 18.1183 2.66848 18.25 3 18.25H13C13.3315 18.25 13.6495 18.1183 13.8839 17.8839C14.1183 17.6495 14.25 17.3315 14.25 17V3C14.25 2.66848 14.1183 2.35054 13.8839 2.11612C13.6495 1.8817 13.3315 1.75 13 1.75H3C2.66848 1.75 2.35054 1.8817 2.11612 2.11612C1.8817 2.35054 1.75 2.66848 1.75 3V6C1.75 6.19891 1.67098 6.38968 1.53033 6.53033C1.38968 6.67098 1.19891 6.75 1 6.75C0.801088 6.75 0.610323 6.67098 0.46967 6.53033C0.329018 6.38968 0.25 6.19891 0.25 6V3C0.25 2.27065 0.539731 1.57118 1.05546 1.05546C1.57118 0.539731 2.27065 0.25 3 0.25Z"
+                fill="#333333" stroke="white" stroke-width="0.5" />
+            </svg>
+            <p class="ml-3 -mt-1 text-[14px] text-primaryTextColor">Logout</p>
+          </button>
         </div>
       </div>
     </div>
   </nav>
 
   <aside id="logo-sidebar"
-    class="fixed top-0 left-0 z-40 w-20 h-screen pt-14 border-r border-[#E5E7E9]  bg-[#0099AD] sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
-    :class="isSidebarOpen ? 'w-64' : ''" @mouseleave="toggleSidebar" aria-label="Sidebar">
+    class="fixed top-0 left-0 z-40 w-20 h-screen pt-14 border-r border-[#E5E7E9] sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
+    :class="isSidebarOpen ? 'w-[240px]' : ''" @mouseleave="toggleSidebar" aria-label="Sidebar">
     <div v-show="isSidebarOpen" class="h-full pb-4 overflow-y-auto bg-white dark:bg-gray-800">
       <ul class="space-y-2 font-medium">
         <li class="px-3">
@@ -264,7 +261,7 @@
                 d="M8.625 4C7.31332 4 6.25 5.06332 6.25 6.375C6.25 7.68668 7.31332 8.75 8.625 8.75C9.93668 8.75 11 7.68668 11 6.375C11 5.06332 9.93668 4 8.625 4ZM4.25 6.375C4.25 3.95875 6.20875 2 8.625 2C11.0412 2 13 3.95875 13 6.375C13 8.79125 11.0412 10.75 8.625 10.75C6.20875 10.75 4.25 8.79125 4.25 6.375ZM17.625 7C16.7275 7 16 7.72754 16 8.625C16 9.52246 16.7275 10.25 17.625 10.25C18.5225 10.25 19.25 9.52246 19.25 8.625C19.25 7.72754 18.5225 7 17.625 7ZM14 8.625C14 6.62297 15.623 5 17.625 5C19.627 5 21.25 6.62297 21.25 8.625C21.25 10.627 19.627 12.25 17.625 12.25C15.623 12.25 14 10.627 14 8.625ZM3.26956 18.6632C4.86476 19.5162 6.68714 20 8.625 20C10.5629 20 12.3853 19.5162 13.9805 18.6632C13.9154 17.8964 13.6897 17.1771 13.3375 16.5374C12.4217 14.8737 10.6539 13.75 8.625 13.75C5.81204 13.75 3.50377 15.9109 3.26956 18.6632ZM15.2745 20.2324C13.315 21.3571 11.0437 22 8.625 22C6.10673 22 3.74818 21.3031 1.73511 20.091C1.43978 19.9132 1.25686 19.5958 1.25106 19.2511C1.25036 19.2092 1.25 19.1672 1.25 19.125C1.25 15.0519 4.5519 11.75 8.625 11.75C10.9247 11.75 12.9776 12.8029 14.3293 14.4502C15.2197 13.7019 16.3695 13.25 17.625 13.25C20.4554 13.25 22.75 15.5445 22.75 18.375C22.75 18.4466 22.7485 18.518 22.7456 18.589C22.7304 18.9555 22.5159 19.2843 22.1866 19.4457C20.8087 20.1212 19.2596 20.5 17.625 20.5C16.8175 20.5 16.0305 20.4076 15.2745 20.2324ZM15.958 18.3343C16.4961 18.4429 17.0534 18.5 17.625 18.5C18.7181 18.5 19.7605 18.2911 20.7158 17.9115C20.4919 16.4054 19.1933 15.25 17.625 15.25C16.7508 15.25 15.9601 15.6084 15.392 16.1887C15.683 16.8585 15.8775 17.5798 15.958 18.3343Z"
                 fill="#7F7F80" />
             </svg>
-            <span class="mt-1 ml-3 text-sm font-semibold">Manajemen Pengguna</span>
+            <span class="mt-1 ml-3 text-sm font-semibold">Manajemen</span>
           </div>
         </li>
         <li v-if="authService.checkLevel() === 'Admin'">
@@ -366,7 +363,7 @@
     </div>
   </aside>
   <div class="bg-[#F6F7FD] min-h-screen pt-12 text-primaryTextColor">
-    <div class="px-2 py-6 sm:ml-20 ml-18">
+    <div class="px-2 py-5 sm:ml-20 ml-18">
       <RouterView></RouterView>
     </div>
   </div>

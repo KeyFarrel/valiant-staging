@@ -63,6 +63,26 @@ export default class BaseService {
       throw error;
     }
   }
+  async getFile<T>(path: string, params?: any, responseType?: any): Promise<T> {
+    const headers: any = {
+      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+    };
+
+    try {
+      const response: any = await axios({
+        method: "GET",
+        url: path,
+        headers,
+        timeout: TIME_OUT,
+        params: params,
+        responseType: responseType
+      });
+      return response;
+    } catch (error) {
+      console.error("Error:", error);
+      throw error;
+    }
+  }
 
   async post<T>(path: string, payload?: any, isMinio?: boolean): Promise<T> {
     let headers: any;

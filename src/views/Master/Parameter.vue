@@ -656,4 +656,17 @@ td {
   background-color: #F5F5F5;
   cursor: not-allowed;
 }
+
+ul li#pagination.selected {
+  background-color: #0099AD;
+  border-radius: 6px;
+  color: white;
+  transition: 300ms;
+}
+
+ul li.disabled {
+  pointer-events: none;
+  cursor: not-allowed;
+  color: #D1D1DB;
+}
 </style>

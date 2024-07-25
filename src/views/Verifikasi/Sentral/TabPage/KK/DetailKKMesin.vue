@@ -11,7 +11,7 @@
       <div v-if="approveMesinKK.status === 'Ditolak T1' || approveMesinKK.status === 'Ditolak T2'" class="flex">
         <!-- Revisi Data -->
         <RouterLink
-          :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data-approveKK', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(approveMesinKK.id_mesin) : approveMesinKK.id_mesin } }">
+          :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(approveMesinKK.id_mesin) : approveMesinKK.id_mesin }, query: { id_sentral: route.query.id_sentral } }">
           <button class="w-fit p-2 ml-1 flex items-center justify-center bg-[#0099AD] rounded-md text-white">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g clip-path="url(#clip0_8312_23311)">
@@ -35,7 +35,7 @@
       <div v-else-if="approveMesinKK.status === 'Draft'" class="flex">
         <!-- Edit Data -->
         <RouterLink
-          :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data-approveKK', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(approveMesinKK.id_mesin) : approveMesinKK.id_mesin } }">
+          :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(approveMesinKK.id_mesin) : approveMesinKK.id_mesin }, query: { id_sentral: route.query.id_sentral } }">
           <button
             class="w-fit p-2 mr-1 flex items-center justify-center border border-[#0099AD] rounded-md text-[#0099AD] duration-300 hover:text-white">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -636,13 +636,7 @@ const downloadEvidence = async () => {
     isLoading.value = true;
     const filePath: any = await rekapService.getEvidencePath(idGrafik, route.query.tahun?.toString() ?? '0', 0);
     const finalFileName: any = filePath.data[0].file_name;
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-    };
-    const response: any = await axios.get(`https://portalapp.iconpln.co.id:5080/valiant-be/v1/mutasiasset/s3-amazon-download/${filePath.data[0].dokumen_evidence}`, {
-      responseType: 'arraybuffer',
-      headers
-    });
+    const response: any = await rekapService.downloadEvidence(filePath.data[0].dokumen_evidence);
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `${finalFileName}`;

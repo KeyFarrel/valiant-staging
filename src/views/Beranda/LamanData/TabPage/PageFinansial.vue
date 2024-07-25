@@ -6,8 +6,8 @@
         @on-click="fetchDataFinansial()" @on-input="fetchDataFinansial()" v-model="searchQ" />
       <div class="flex items-center">
         <p class="mr-3 text-sm font-semibold text-labelColor">Periode</p>
-        <VueDatePicker class="mr-3 date-picker" v-model="yearPicked" :year-range="periodeTahun" :clearable="false"
-          year-picker @update:model-value="fetchDataFinansial()" />
+        <VueDatePicker class="mr-3 date-picker" v-model="yearPicked" teleport :year-range="periodeTahun"
+          :clearable="false" year-picker @update:model-value="fetchDataFinansial()" />
         <ButtonComponent @on-click="handleExport" :text="'Export'" :text-color="'text-white'"
           :hover-text-color="'text-hoverColor'" :bg-color="'bg-primaryColor'" :icon-position="'Left'"
           :hover-bg-color="'bg-hoverColor'" :border-color="'bg-primaryColor'" :hover-border-color="'bg-hoverColor'">
@@ -285,17 +285,7 @@ const isPembangkitOpen = (itemId: number) => {
 const handleExport = async () => {
   try {
     isLoading.value = true;
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-    };
-    const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/finansial/export-excel', {
-      responseType: 'arraybuffer',
-      headers,
-      params: {
-        tahun: yearPicked.value,
-        search: searchQ.value.toUpperCase()
-      }
-    });
+    const response: any = await lamanService.downloadExcelFinansial(yearPicked.value, searchQ.value.toUpperCase());
     const year = yearPicked.value;
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');

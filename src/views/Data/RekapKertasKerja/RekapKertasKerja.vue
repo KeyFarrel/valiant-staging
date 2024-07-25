@@ -9,7 +9,7 @@
       <ShimmerLoading class="h-8 w-80" v-else-if="!listSuggestionSentral" />
       <button
         class="flex items-center h-auto px-3 text-base text-gray-400 duration-300 border border-gray-300 rounded-lg hover:text-white hover:border-primaryColor hover:bg-primaryColor"
-        id="button-hover-putih" @click="showModal = !showModal">
+        id="hover-button" @click="showModal = !showModal">
         <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2">
           <path
             d="M12.6668 1.33325H3.3335C2.80306 1.33325 2.29436 1.54397 1.91928 1.91904C1.54421 2.29411 1.3335 2.80282 1.3335 3.33325V4.11325C1.3334 4.38855 1.39014 4.6609 1.50016 4.91325V4.95325C1.59435 5.16723 1.72776 5.36169 1.8935 5.52659L6.00016 9.60658V13.9999C5.99994 14.1132 6.02859 14.2247 6.08341 14.3238C6.13823 14.423 6.21742 14.5065 6.3135 14.5666C6.41959 14.6323 6.54201 14.667 6.66683 14.6666C6.77119 14.666 6.87395 14.6408 6.96683 14.5933L9.6335 13.2599C9.74344 13.2045 9.83589 13.1198 9.90061 13.015C9.96533 12.9103 9.99979 12.7897 10.0002 12.6666V9.60658L14.0802 5.52659C14.2459 5.36169 14.3793 5.16723 14.4735 4.95325V4.91325C14.5927 4.66287 14.6585 4.39044 14.6668 4.11325V3.33325C14.6668 2.80282 14.4561 2.29411 14.081 1.91904C13.706 1.54397 13.1973 1.33325 12.6668 1.33325ZM8.86016 8.85992C8.79838 8.92221 8.74949 8.99609 8.71632 9.07731C8.68314 9.15854 8.66632 9.24551 8.66683 9.33325V12.2533L7.3335 12.9199V9.33325C7.334 9.24551 7.31719 9.15854 7.28401 9.07731C7.25083 8.99609 7.20195 8.92221 7.14016 8.85992L3.60683 5.33325H12.3935L8.86016 8.85992ZM13.3335 3.99992H2.66683V3.33325C2.66683 3.15644 2.73707 2.98687 2.86209 2.86185C2.98712 2.73682 3.15669 2.66659 3.3335 2.66659H12.6668C12.8436 2.66659 13.0132 2.73682 13.1382 2.86185C13.2633 2.98687 13.3335 3.15644 13.3335 3.33325V3.99992Z"
@@ -274,7 +274,7 @@
                   <RouterLink :to="{ name: 'feasibility-study-sentral', params: { id: sentralItem.id_sentral } }">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
-                      id="button-hover-putih">
+                      id="hover-button">
                       <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                           d="M15 7.205C14.9922 7.1361 14.9771 7.06822 14.955 7.0025V6.935C14.9189 6.85788 14.8708 6.787 14.8125 6.725L10.3125 2.225C10.2505 2.16666 10.1796 2.11856 10.1025 2.0825H10.035C9.95881 2.03881 9.87467 2.01076 9.7875 2H5.25C4.65326 2 4.08097 2.23705 3.65901 2.65901C3.23705 3.08097 3 3.65326 3 4.25V14.75C3 15.3467 3.23705 15.919 3.65901 16.341C4.08097 16.7629 4.65326 17 5.25 17H12.75C13.3467 17 13.919 16.7629 14.341 16.341C14.7629 15.919 15 15.3467 15 14.75V7.25V7.205ZM10.5 4.5575L12.4425 6.5H11.25C11.0511 6.5 10.8603 6.42098 10.7197 6.28033C10.579 6.13968 10.5 5.94891 10.5 5.75V4.5575ZM13.5 14.75C13.5 14.9489 13.421 15.1397 13.2803 15.2803C13.1397 15.421 12.9489 15.5 12.75 15.5H5.25C5.05109 15.5 4.86032 15.421 4.71967 15.2803C4.57902 15.1397 4.5 14.9489 4.5 14.75V4.25C4.5 4.05109 4.57902 3.86032 4.71967 3.71967C4.86032 3.57902 5.05109 3.5 5.25 3.5H9V5.75C9 6.34674 9.23705 6.91903 9.65901 7.34099C10.081 7.76295 10.6533 8 11.25 8H13.5V14.75Z"
@@ -286,7 +286,7 @@
                   <RouterLink :to="{ name: 'detail-rekap-sentral', params: { id: sentralItem.id_sentral } }">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
-                      id="button-hover-putih">
+                      id="hover-button">
                       <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                           d="M15 7.205C14.9922 7.1361 14.9771 7.06822 14.955 7.0025V6.935C14.9189 6.85788 14.8708 6.787 14.8125 6.725L10.3125 2.225C10.2505 2.16666 10.1796 2.11856 10.1025 2.0825H10.035C9.95881 2.03881 9.87467 2.01076 9.7875 2H5.25C4.65326 2 4.08097 2.23705 3.65901 2.65901C3.23705 3.08097 3 3.65326 3 4.25V14.75C3 15.3467 3.23705 15.919 3.65901 16.341C4.08097 16.7629 4.65326 17 5.25 17H12.75C13.3467 17 13.919 16.7629 14.341 16.341C14.7629 15.919 15 15.3467 15 14.75V7.25V7.205ZM10.5 4.5575L12.4425 6.5H11.25C11.0511 6.5 10.8603 6.42098 10.7197 6.28033C10.579 6.13968 10.5 5.94891 10.5 5.75V4.5575ZM13.5 14.75C13.5 14.9489 13.421 15.1397 13.2803 15.2803C13.1397 15.421 12.9489 15.5 12.75 15.5H5.25C5.05109 15.5 4.86032 15.421 4.71967 15.2803C4.57902 15.1397 4.5 14.9489 4.5 14.75V4.25C4.5 4.05109 4.57902 3.86032 4.71967 3.71967C4.86032 3.57902 5.05109 3.5 5.25 3.5H9V5.75C9 6.34674 9.23705 6.91903 9.65901 7.34099C10.081 7.76295 10.6533 8 11.25 8H13.5V14.75Z"
@@ -445,7 +445,7 @@
                     v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral'">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
-                      id="button-hover-putih"
+                      id="hover-button"
                       @click="checkUnggahRequiredProp(mesinItem.nilai_asset_awal, mesinItem.tahun_nilai_perolehan, mesinItem.masa_manfaat) ? isRequiredPropsComplete = true : null; currentNamaMesin = mesinItem.mesin; currentIdSentral = sentralItem.id_sentral; currentKodePengelola = sentralItem.kode_pengelola">
                       <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -460,7 +460,7 @@
                   </RouterLink>
                   <button
                     class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
-                    id="button-hover-putih"
+                    id="hover-button"
                     v-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum terisi' && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral')"
                     @click="checkUnggahRequiredProp(mesinItem.nilai_asset_awal, mesinItem.tahun_nilai_perolehan, mesinItem.masa_manfaat) ? isRequiredPropsComplete = true : isFSDialogOpen = true; currentIdMesin = mesinItem.id_mesin; currentNamaMesin = mesinItem.mesin; currentIdSentral = sentralItem.id_sentral; currentKodeJenisPembangkit = mesinItem.kode_jenis_pembangkit; currentKodePengelola = sentralItem.kode_pengelola">
                     <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -477,7 +477,7 @@
                     v-else-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data sudah update' && authService.checkRole() !== 'Approver'">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
-                      id="button-hover-putih">
+                      id="hover-button">
                       <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                           d="M15 7.205C14.9922 7.1361 14.9771 7.06822 14.955 7.0025V6.935C14.9189 6.85788 14.8708 6.787 14.8125 6.725L10.3125 2.225C10.2505 2.16666 10.1796 2.11856 10.1025 2.0825H10.035C9.95881 2.03881 9.87467 2.01076 9.7875 2H5.25C4.65326 2 4.08097 2.23705 3.65901 2.65901C3.23705 3.08097 3 3.65326 3 4.25V14.75C3 15.3467 3.23705 15.919 3.65901 16.341C4.08097 16.7629 4.65326 17 5.25 17H12.75C13.3467 17 13.919 16.7629 14.341 16.341C14.7629 15.919 15 15.3467 15 14.75V7.25V7.205ZM10.5 4.5575L12.4425 6.5H11.25C11.0511 6.5 10.8603 6.42098 10.7197 6.28033C10.579 6.13968 10.5 5.94891 10.5 5.75V4.5575ZM13.5 14.75C13.5 14.9489 13.421 15.1397 13.2803 15.2803C13.1397 15.421 12.9489 15.5 12.75 15.5H5.25C5.05109 15.5 4.86032 15.421 4.71967 15.2803C4.57902 15.1397 4.5 14.9489 4.5 14.75V4.25C4.5 4.05109 4.57902 3.86032 4.71967 3.71967C4.86032 3.57902 5.05109 3.5 5.25 3.5H9V5.75C9 6.34674 9.23705 6.91903 9.65901 7.34099C10.081 7.76295 10.6533 8 11.25 8H13.5V14.75Z"
@@ -488,7 +488,7 @@
                   </RouterLink>
                   <button
                     class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
-                    id="button-hover-putih"
+                    id="hover-button"
                     v-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum terisi' && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral')"
                     @click="checkUnggahRequiredProp(mesinItem.nilai_asset_awal, mesinItem.tahun_nilai_perolehan, mesinItem.masa_manfaat) ? isRequiredPropsComplete = true : checkInputAsumsi(mesinItem.id_mesin) ? isRekapDialogOpen = true : isNotAlreadyInput = true; currentIdMesin = mesinItem.id_mesin; currentNamaMesin = mesinItem.mesin; currentIdSentral = sentralItem.id_sentral; currentKodePengelola = sentralItem.kode_pengelola">
                     <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -503,7 +503,7 @@
                     v-else-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum update' && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral')">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
-                      id="button-hover-putih">
+                      id="hover-button">
                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g clip-path="url(#clip0_3316_23230)">
                           <path fill-rule="evenodd" clip-rule="evenodd"
@@ -524,7 +524,7 @@
                     v-else-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data sudah update' && authService.checkRole() !== 'Approver'">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
-                      id="button-hover-putih">
+                      id="hover-button">
                       <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                           d="M15 7.205C14.9922 7.1361 14.9771 7.06822 14.955 7.0025V6.935C14.9189 6.85788 14.8708 6.787 14.8125 6.725L10.3125 2.225C10.2505 2.16666 10.1796 2.11856 10.1025 2.0825H10.035C9.95881 2.03881 9.87467 2.01076 9.7875 2H5.25C4.65326 2 4.08097 2.23705 3.65901 2.65901C3.23705 3.08097 3 3.65326 3 4.25V14.75C3 15.3467 3.23705 15.919 3.65901 16.341C4.08097 16.7629 4.65326 17 5.25 17H12.75C13.3467 17 13.919 16.7629 14.341 16.341C14.7629 15.919 15 15.3467 15 14.75V7.25V7.205ZM10.5 4.5575L12.4425 6.5H11.25C11.0511 6.5 10.8603 6.42098 10.7197 6.28033C10.579 6.13968 10.5 5.94891 10.5 5.75V4.5575ZM13.5 14.75C13.5 14.9489 13.421 15.1397 13.2803 15.2803C13.1397 15.421 12.9489 15.5 12.75 15.5H5.25C5.05109 15.5 4.86032 15.421 4.71967 15.2803C4.57902 15.1397 4.5 14.9489 4.5 14.75V4.25C4.5 4.05109 4.57902 3.86032 4.71967 3.71967C4.86032 3.57902 5.05109 3.5 5.25 3.5H9V5.75C9 6.34674 9.23705 6.91903 9.65901 7.34099C10.081 7.76295 10.6533 8 11.25 8H13.5V14.75Z"
@@ -871,7 +871,7 @@
           <li>
             <button @click="goToPrevious" :disabled="navigationStore.currentPage === 1"
               :class="{ 'text-gray-500': navigationStore.currentPage === 1 }"
-              class="block px-2 py-2 ml-0 duration-300 bg-white text-primaryColor disabled:text-gray-500 hover:bg-blue-500 disabled:bg-white hover:text-white hover:rounded-md">
+              class="block px-2 py-2 ml-0 duration-300 bg-white disabled:hover:cursor-not-allowed text-primaryColor disabled:text-gray-500 hover:bg-blue-500 disabled:bg-white hover:text-white hover:rounded-md">
               <span class="sr-only">Previous</span>
               <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg">
@@ -889,7 +889,7 @@
           </li>
           <li>
             <button @click="goToNext" :disabled="navigationStore.currentPage === totalPages"
-              class="block px-2 py-2 ml-0 duration-300 bg-white text-primaryColor disabled:text-gray-500 hover:bg-blue-500 disabled:bg-white hover:text-white hover:rounded-md">
+              class="block px-2 py-2 ml-0 duration-300 bg-white disabled:hover:cursor-not-allowed text-primaryColor disabled:text-gray-500 hover:bg-blue-500 disabled:bg-white hover:text-white hover:rounded-md">
               <span class="sr-only">Next</span>
               <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg">
@@ -971,7 +971,7 @@ const checkAllUmurMesin = ref(false);
 const comboKondisiMesin = ref<any[]>([]);
 const checkAllKondisiMesin = ref(false);
 const checkPembangkit = ref(false)
-const checkDmn = ref(true)
+const checkDmn = ref(false)
 const pengelola = ref<CheckboxValueType[]>([])
 const indeterminate = ref(false);
 const indeterminateDmn = ref(false);
@@ -1274,18 +1274,7 @@ const fetchCheckInputAsumsiMesin = async () => {
 const handleDownloadTemplateRekap = async () => {
   try {
     isLoading.value = true;
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-    };
-    const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/export-template-first', {
-      responseType: 'arraybuffer',
-      headers,
-      params: {
-        id_mesin: currentIdMesin.value,
-        tahun: tahunBerjalan.value,
-        tahun_realisasi: tahunBerjalan.value - 1
-      }
-    });
+    const response: any = await rekapService.downloadTemplateRekap(tahunBerjalan.value, tahunBerjalan.value - 1, currentIdMesin.value);
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `Kertas Kerja Actual - ${currentNamaMesin.value}_${tahunBerjalan.value}_${globalFormat.formatNumberFiveDigits(parseInt(currentIdMesin.value))}.xlsx`;
@@ -1307,17 +1296,7 @@ const handleDownloadTemplateRekap = async () => {
 const handleDownloadTemplateFS = async () => {
   try {
     isLoading.value = true;
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-    };
-    const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/export-template-fs', {
-      responseType: 'arraybuffer',
-      headers,
-      params: {
-        id_mesin: currentIdMesin.value,
-        kode_jenis_pembangkit: currentKodeJenisPembangkit.value
-      }
-    });
+    const response: any = await rekapService.downloadTemplateFS(tahunBerjalan.value, currentIdMesin.value, currentKodeJenisPembangkit.value);
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `Kertas Kerja FS - ${currentNamaMesin.value}_${globalFormat.formatNumberFiveDigits(parseInt(currentIdMesin.value))}.xlsx`;
@@ -1387,18 +1366,21 @@ const uploadFile = async () => {
       notifyError('Mohon pilih file excel terlebih dahulu', 3000);
       return;
     }
+    if (selectedFile.value.size > 2000000) {
+      notifyError('Ukuran file Kertas Kerja tidak boleh lebih dari 2MB', 5000);
+      return;
+    }
     const formData = new FormData();
     formData.append('file', selectedFile.value);
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-      'Content-Type': 'multipart/form-data',
-    };
-    await axios.post('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/import-template-awal', formData, {
-      headers,
-    });
     if (selectedFileEvidence.value) {
-      await uploadFileEvidence(0);
+      if (selectedFileEvidence.value.size > 10000000) {
+        notifyError('Ukuran file Evidence tidak boleh lebih dari 10MB', 5000);
+        return;
+      } else {
+        await uploadFileEvidence(0);
+      }
     }
+    await rekapService.uploadTemplateAwalKK(formData);
     isLoading.value = false;
     isRekapUploadSuccess.value = true;
     await wait(1500);
@@ -1407,7 +1389,7 @@ const uploadFile = async () => {
     await fetchStatusRealisasiSentral();
     await fetchStatusRealisasiMesin();
     selectedFileEvidence.value = null;
-    if (authService.checkLevel() === 'Sentral') {
+    if (authService.checkLevel() === 'Sentral' || authService.checkLevel() === 'Admin') {
       router.push({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { id_sentral: currentIdSentral.value, tahun: tahunBerjalan.value } });
     }
     else {
@@ -1426,18 +1408,21 @@ const uploadFileFS = async () => {
       notifyError('Mohon pilih file excel terlebih dahulu', 3000);
       return;
     }
+    if (selectedFileFS.value.size > 2000000) {
+      notifyError('Ukuran file Feasibility Study tidak boleh lebih dari 2MB', 5000);
+      return;
+    }
     const formData = new FormData();
     formData.append('file', selectedFileFS.value);
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-      'Content-Type': 'multipart/form-data',
-    };
-    await axios.post('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/import-template-fs', formData, {
-      headers,
-    });
     if (selectedFileEvidence.value) {
-      await uploadFileEvidence(1);
+      if (selectedFileEvidence.value.size > 10000000) {
+        notifyError('Ukuran file Evidence tidak boleh lebih dari 10MB', 5000);
+        return;
+      } else {
+        await uploadFileEvidence(1);
+      }
     }
+    await rekapService.uploadTemplateAwalFS(formData);
     isLoading.value = false;
     isFSUploadSuccess.value = true;
     await wait(1500)

@@ -14,11 +14,13 @@
       <div class="flex justify-between">
         <input ref="searchInput" type="search" name="" placeholder="Cari..."
           class="w-full text-sm rounded-md text-primaryTextColor" v-model="searchQuery"
-          @input="setSelected(searchResults[0].sentral, 0)" @keydown.down.prevent="selectNextItem"
-          @keydown.up.prevent="selectPreviousItem" @keyup.enter="searchQuery = selectedSentral; emit('onKeyEnter')" />
+          @input="setSelected(searchResults[0] ? searchResults[0].sentral : null, 0)"
+          @keydown.down.prevent="selectNextItem" @keydown.up.prevent="selectPreviousItem"
+          @keyup.enter="handleKeyEnter" />
       </div>
       <hr />
-      <ul class="space-y-2 overflow-auto max-h-48" ref="listContainer">
+      <EmptyData :subtitle="'Silahkan cari sentral yang lain'" v-if="searchResults.length === 0" />
+      <ul class="space-y-2 overflow-auto max-h-48" ref="listContainer" v-else>
         <li
           class="px-3 py-2.5 text-xs text-primaryTextColor duration-200 cursor-pointer rounded-[3px] hover:bg-primaryColor hover:text-white"
           v-for="(pembangkitItem, pembangkitIndex) in searchResults" :key="pembangkitIndex"
@@ -34,6 +36,8 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick, computed, watch } from 'vue';
 import ModalWrapper from './ui/ModalWrapper.vue';
+import EmptyData from './ui/EmptyData.vue';
+import { notifyError } from '@/services/helper/toast-notification';
 
 const searchInput = ref<HTMLInputElement | null>(null);
 const listContainer = ref<HTMLUListElement | null>(null);
@@ -67,15 +71,18 @@ const setAutofocus = () => {
 };
 
 const setSelected = (item: string, index: number) => {
-  selectedSentral.value = item;
-  const listRect = listContainer.value?.getBoundingClientRect();
-  const selectedRect = document.querySelector('.selected-item')?.getBoundingClientRect();
-  const inputRect = searchInput.value?.getBoundingClientRect();
-  if (listRect && selectedRect && inputRect) {
-    const offset = selectedRect.bottom - listRect.bottom + inputRect.height;
-    listContainer.value?.scrollBy(0, offset);
-  } else {
-    listContainer.value?.scrollBy(0, index * 35);
+  console.log(item, 'jelek')
+  if (item !== null) {
+    selectedSentral.value = item;
+    const listRect = listContainer.value?.getBoundingClientRect();
+    const selectedRect = document.querySelector('.selected-item')?.getBoundingClientRect();
+    const inputRect = searchInput.value?.getBoundingClientRect();
+    if (listRect && selectedRect && inputRect) {
+      const offset = selectedRect.bottom - listRect.bottom + inputRect.height;
+      listContainer.value?.scrollBy(0, offset);
+    } else {
+      listContainer.value?.scrollBy(0, index * 35);
+    }
   }
 };
 
@@ -94,6 +101,16 @@ const selectPreviousItem = () => {
     setSelected(searchResults.value[currentIndex - 1].sentral, currentIndex - 1);
   }
 };
+
+const handleKeyEnter = () => {
+  if (searchResults.value.length > 0) {
+    searchQuery.value = selectedSentral.value
+    emit('onKeyEnter')
+  }
+  else {
+    notifyError('Data tidak ditemukan, silahkan cari sentral yang lain', 5000);
+  }
+}
 
 onMounted(() => {
   nextTick(() => {

@@ -38,7 +38,7 @@
             <button
               class="flex items-center px-3 py-2 duration-300 border rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white border-primaryColor"
               @click="toggleEdit('Sentral')"
-              v-if="!isEditOpen('Sentral') && authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral'">
+              v-if="!isEditOpen('Sentral') && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral')">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"
                 class="mr-2">
                 <g clip-path="url(#clip0_1055_14765)">
@@ -65,10 +65,10 @@
                   class="flex flex-row items-center justify-center w-full py-[5px] text-sm duration-300 border rounded-md cursor-pointer active:ring active:ring-primaryColor text-primaryColor border-primaryColor hover:border-blue-600 hover:text-white hover:bg-blue-600">
                   <span>Pilih Foto</span>
                 </label>
-                <input type="file" id="fileInputSentral" ref="fileInputSentral" accept="image/*" class="hidden"
-                  @change="onFileChangeSentral">
+                <input type="file" id="fileInputSentral" ref="fileInputSentral" accept=".jpeg, .png, .jpg"
+                  class="hidden" @change="onFileChangeSentral">
                 <p class="mt-2 text-xxs">
-                  Besar file: maksimum 10.000.000 bytes (10 Megabytes). Ekstensi
+                  Besar file: maksimum 2MB. Ekstensi
                   file yang diperbolehkan: .JPG .JPEG .PNG
                 </p>
               </div>
@@ -166,7 +166,7 @@
             <button
               class="flex items-center px-3 py-2 duration-300 border rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white border-primaryColor"
               @click="toggleEdit(mesinItem.mesin)"
-              v-if="!isEditOpen(mesinItem.mesin) && authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral'">
+              v-if="!isEditOpen(mesinItem.mesin) && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral')">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"
                 class="mr-2">
                 <g clip-path="url(#clip0_1055_14765)">
@@ -196,10 +196,10 @@
                   class="flex flex-row items-center justify-center w-full py-[5px] text-sm duration-300 border rounded-md cursor-pointer active:ring active:ring-primaryColor text-primaryColor border-primaryColor hover:border-blue-600 hover:text-white hover:bg-blue-600">
                   <span>Pilih Foto</span>
                 </label>
-                <input type="file" id="fileInput" ref="fileInput" accept="image/*" class="hidden"
+                <input type="file" id="fileInput" ref="fileInput" accept=".jpeg, .png, .jpg" class="hidden"
                   @change="onFileChange($event, selectedMesin.mesinIndex)">
                 <p class="mt-2 text-xxs">
-                  Besar file: maksimum 10.000.000 bytes (10 Megabytes). Ekstensi
+                  Besar file: maksimum 2MB. Ekstensi
                   file yang diperbolehkan: .JPG .JPEG .PNG
                 </p>
               </div>
@@ -515,25 +515,35 @@ const getSentralById = async () => {
     console.error(error);
   }
 };
-const updateMesinById = async (id_mesin: number, index: number, mesin: string) => {
+const updateMesinById = async (id_mesin: number, index: number, mesinName: string) => {
   try {
+    if (mesinFormModel.value[index].photoToSubmit && mesinFormModel.value[index].photoToSubmit.size > 2000000) {
+      notifyError('Foto yang dipilih melebihi kapasitas maksimum yaitu 2MB', 5000);
+      isLoading.value = false;
+      return;
+    }
     isConfirmationOpen.value = false;
     isLoading.value = true;
-    const formData = new FormData();
-    formData.append("file", mesinFormModel.value[index].photoToSubmit);
-    console.log(formData);
-    const responseUpload: any = await detailSentralService.uploadPhoto(formData);
     const finalNilaiAsetAwal = mesinFormModel.value[index].nilaiAsetAwal.includes('.') ? mesinFormModel.value[index].nilaiAsetAwal.replace(/[.]/g, '') : mesinFormModel.value[index].nilaiAsetAwal;
     const deFormattedNilaiAsetAwal = finalNilaiAsetAwal.replace(/,/g, '.');
     const nilaiAsetAwal = deFormattedNilaiAsetAwal * 1000000;
     const masaManfaat = parseInt(mesinFormModel.value[index].masaManfaat);
     const tahunDataAwal = parseInt(mesinFormModel.value[index].tahunDataAwal);
-    await detailSentralService.updateMesinById(id_mesin, nilaiAsetAwal, masaManfaat, tahunDataAwal, mesinFormModel.value[index].latitude, mesinFormModel.value[index].longitude, responseUpload.data);
+    if (mesinFormModel.value[index].photoToSubmit) {
+      const formData = new FormData();
+      formData.append("file", mesinFormModel.value[index].photoToSubmit);
+      console.log(formData);
+      const responseUpload: any = await detailSentralService.uploadPhoto(formData);
+      await detailSentralService.updateMesinById(id_mesin, nilaiAsetAwal, masaManfaat, tahunDataAwal, mesinFormModel.value[index].latitude, mesinFormModel.value[index].longitude, responseUpload.data);
+    } else {
+      await detailSentralService.updateMesinById(id_mesin, nilaiAsetAwal, masaManfaat, tahunDataAwal, mesinFormModel.value[index].latitude, mesinFormModel.value[index].longitude, mesin.value[index].photo1);
+    }
     await getSentralById();
     isLoading.value = false;
     showModal.value = true;
     await wait(1500);
-    isEdit.value = isEdit.value.filter((id) => id !== mesin);
+    isEdit.value = isEdit.value.filter((id) => id !== mesinName);
+    mesinFormModel.value[index].photoToSubmit = null;
     showModal.value = false;
   } catch (error) {
     isLoading.value = false;
@@ -554,19 +564,24 @@ const fetchPhotoSentral = async () => {
 }
 const updateSentral = async () => {
   try {
-    isConfirmationOpenSentral.value = false;
-    isLoading.value = true;
-    const formData = new FormData();
-    formData.append("file", imageToUploadSentral.value);
-    const responseUpload: any = await detailSentralService.uploadPhoto(formData);
-    await detailSentralService.updateSentral(id, responseUpload.data);
-    // Function akan dijalankan jika sukses mengupdate data
-    await getSentralById();
-    isLoading.value = false;
-    showModalSentral.value = true;
-    await wait(1500);
-    isEdit.value = isEdit.value.filter((id) => id !== 'Sentral');
-    showModalSentral.value = false;
+    if (imageToUploadSentral.value && imageToUploadSentral.value.size <= 2000000) {
+      isConfirmationOpenSentral.value = false;
+      isLoading.value = true;
+      const formData = new FormData();
+      formData.append("file", imageToUploadSentral.value);
+      const responseUpload: any = await detailSentralService.uploadPhoto(formData);
+      await detailSentralService.updateSentral(id, responseUpload.data);
+      // Function akan dijalankan jika sukses mengupdate data
+      await getSentralById();
+      isLoading.value = false;
+      showModalSentral.value = true;
+      await wait(1500);
+      isEdit.value = isEdit.value.filter((id) => id !== 'Sentral');
+      imageToUploadSentral.value = null;
+      showModalSentral.value = false;
+    }
+    else if (imageToUploadSentral.value.size > 2000000) notifyError('Foto yang dipilih melebihi kapasitas maksimum yaitu 2MB', 5000);
+    else notifyError('Silahkan pilih foto terlebih dahulu, batalkan jika tidak ingin mengubah foto', 5000);
   } catch (error) {
     isLoading.value = false;
     notifyError('Update data sentral gagal, mohon coba lagi!', 3000);

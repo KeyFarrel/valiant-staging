@@ -7,7 +7,7 @@
       <div class="flex items-center space-x-3">
         <div class="flex flex-row items-center">
           <p class="mr-3 font-semibold text-labelColor">Tahun</p>
-          <VueDatePicker v-if="periodeTahun" class="date-picker" :model-value="yearRangePicked"
+          <VueDatePicker v-if="periodeTahun" class="date-picker" teleport :model-value="yearRangePicked"
             @update:model-value="handleYearRangePicked" :year-range="yearRange" :clearable="false" year-picker range />
           <ShimmerLoading class="w-36 h-11" v-else />
         </div>
@@ -354,18 +354,7 @@ const isPembangkitOpen = (itemId: number) => {
 const handleExport = async () => {
   try {
     isLoading.value = true;
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-    };
-    const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/teknis/export-excel', {
-      responseType: 'arraybuffer',
-      headers,
-      params: {
-        tahun_dari: yearRangePicked.value[0],
-        tahun_sampai: yearRangePicked.value[1],
-        search: searchQ.value.toUpperCase()
-      }
-    });
+    const response: any = await lamanService.downloadExcelTeknis(yearRangePicked.value[0], yearRangePicked.value[1], searchQ.value.toUpperCase());
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `Laman Data - Teknis - ${yearRangePicked.value[0]}_${yearRangePicked.value[1]}.xlsx`;

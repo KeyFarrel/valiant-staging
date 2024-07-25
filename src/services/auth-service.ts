@@ -77,7 +77,7 @@ export default class AuthService extends BaseService {
     router.push("/login");
   }
   async getPermission<T>(param: any): Promise<T> {
-    return this.get(`${url}permission`, param);
+    return this.get(`${url}v1/permission`, param);
   }
   async findAllMenu<T>(): Promise<T> {
     return this.get(`${url}rolepermission?limit=1000`);

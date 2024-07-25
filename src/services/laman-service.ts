@@ -21,20 +21,31 @@ export default class LamanService extends BaseService {
   async getPengelolaData<T>(): Promise<T> {
     return this.get(`${url}filter/combo-pengelola`);
   }
+  // Laman Data CAPEX OPEX
   async getDataAnggaran<T>(search: any, tahun_sampai: any, tahun_dari: any): Promise<T> {
     return this.get(`${url}laman/data/anggaran`, {search: search, tahun_sampai: tahun_sampai, tahun_dari: tahun_dari});
   }
   async getPeriodeTahun<T>(): Promise<T> {
     return this.get(`${url}filter/combo-tahun`);
   }
+  async downloadExcelCAPEXOPEX<T>(tahunDari: any, tahunSampai: any, search: any, type: any): Promise<T> {
+    return this.getFile(`${url}laman/capex-opex/export-excel`, { tahun_dari: tahunDari, tahun_sampai: tahunSampai, search: search, type: type }, 'arraybuffer');
+  }
   // Laman Data Finansial
   async getDataFinansial<T>(search: any, tahun: any, page:any, limit:any): Promise<T> {
     return this.get(`${url}laman/data/finansial?tahun=${tahun}`, {search: search, page: page, limit: limit});
+  }
+  async downloadExcelFinansial<T>(tahun: any, search: any): Promise<T> {
+    return this.getFile(`${url}laman/finansial/export-excel`, { tahun: tahun, search: search }, 'arraybuffer');
   }
   // Laman Data Teknis
   async getDataTeknis<T>(search: any, page: any, limit: any, tahun_dari: any, tahun_sampai: any): Promise<T> {
     return this.get(`${url}laman/data/teknis`, { search: search,page: page, limit: limit, tahun_dari: tahun_dari, tahun_sampai: tahun_sampai });
   }
+  async downloadExcelTeknis<T>(tahunDari: any, tahunSampai: any, search: any): Promise<T> {
+    return this.getFile(`${url}laman/teknis/export-excel`, { tahun_dari: tahunDari, tahun_sampai: tahunSampai, search: search }, 'arraybuffer');
+  }
+
   async getInfoSFC<T>(): Promise<T> {
     return this.get(
       `${url}laman/data/teknis/info-sfc`

@@ -115,11 +115,11 @@
               <span class="font-semibold">Cari berkas</span>
             </label>
             <input ref="fileInputEvidence" id="fileInputEvidence" type="file" class="hidden"
-              @change="handleFileChangeEvidence" accept=".xlsx" />
+              @change="handleFileChangeEvidence" accept=".xlsx, .zip" />
           </div>
           <div class="flex flex-row items-center justify-between">
-            <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .pdf, .zip, .xlsx</p>
-            <p class="text-xs text-textDisabledColor">Maximum upload file size : 2 MB</p>
+            <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx, .zip</p>
+            <p class="text-xs text-textDisabledColor">Maximum upload file size : 10 MB</p>
           </div>
         </div>
       </div>
@@ -331,7 +331,7 @@ function toggleButton() {
 
 const fetchPersetujuanKK = async () => {
   try {
-    const response: any = await persetujuanService.getPersetujuanKKSentral({ id_sentral: levelSentral.value, tahun: year });
+    const response: any = await persetujuanService.getPersetujuanKKSentral({ id_sentral: route.query.id_sentral, tahun: year });
     approveMesinKK.value = response.data.mesins.filter((val: any) => val.id_mesin == idMesin)[0];
   } catch (error) {
     console.error('Fetch Persetujuan KK Sentral Error : ' + error);
@@ -656,6 +656,8 @@ const uploadFileEvidence = async () => {
     isModalUnggahKertasKerjaOpen.value = false;
   } catch (error) {
     console.error('Error upload file : ', error);
+    await rekapService.updateEvidencePath(idMesin, tahunBerjalan.toString(), null, 0, '')
+    notifyError('Upload Evidence Gagal', 5000);
   } finally {
     isLoading.value = false;
   }
@@ -664,18 +666,7 @@ const uploadFileEvidence = async () => {
 const handleDownloadTemplateRekap = async () => {
   try {
     isLoading.value = true;
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-    };
-    const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/export-template-first', {
-      responseType: 'arraybuffer',
-      headers,
-      params: {
-        id_mesin: idMesin,
-        tahun: tahunBerjalan,
-        tahun_realisasi: tahunBerjalan - 1
-      }
-    });
+    const response: any = await rekapService.downloadTemplateRekap(tahunBerjalan, tahunBerjalan - 1, idMesin);
     isDownloaded.value = true;
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
@@ -711,18 +702,21 @@ const uploadFile = async () => {
       notifyError('Mohon pilih file excel terlebih dahulu', 3000);
       return;
     }
+    if (selectedFile.value.size > 2000000) {
+      notifyError('Ukuran file Kertas Kerja tidak boleh lebih dari 2MB', 5000);
+      return;
+    }
     const formData = new FormData();
     formData.append('file', selectedFile.value);
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-      'Content-Type': 'multipart/form-data',
-    };
-    const response = await axios.post('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/import-template-awal', formData, {
-      headers,
-    });
     if (selectedFileEvidence.value) {
-      await uploadFileEvidence();
+      if (selectedFileEvidence.value.size > 10000000) {
+        notifyError('Ukuran file Evidence tidak boleh lebih dari 10MB', 5000);
+        return;
+      } else {
+        await uploadFileEvidence();
+      }
     }
+    await rekapService.uploadTemplateAwalKK(formData);
     isLoading.value = false;
     isUploadSuccess.value = true;
     await wait(1500)

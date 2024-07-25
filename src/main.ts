@@ -8,12 +8,12 @@ import { createVfm } from "vue-final-modal";
 import { autoAnimatePlugin } from "@formkit/auto-animate/vue";
 import OpenLayersMap from "vue3-openlayers";
 import "vue3-openlayers/styles.css";
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
+import VueDatePicker from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
 import Vue3Lottie from "vue3-lottie";
 import "aos/dist/aos.css";
-import "./assets/main.css";
 import "./assets/style.css";
+import "./assets/main.css";
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 
@@ -28,4 +28,4 @@ const app = createApp(App)
   .use(ElementPlus)
   .component('VueDatePicker', VueDatePicker);
 
-app.mount("#app");
+app.mount('#app');

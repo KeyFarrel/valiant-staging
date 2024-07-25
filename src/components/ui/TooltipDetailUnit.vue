@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center" @mouseover="toggleButton" @mouseout="toggleButton">
+  <div class="flex flex-col items-center" @mouseenter="toggleButton" @mouseleave="toggleButton">
     <IconInfo class="cursor-pointer" />
     <Transition>
       <div v-if="isHover"

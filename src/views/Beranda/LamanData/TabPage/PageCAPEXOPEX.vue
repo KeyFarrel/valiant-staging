@@ -8,7 +8,8 @@
         <div class="flex flex-row items-center space-x-3">
           <label class="text-sm font-semibold text-labelColor" for="">Tahun</label>
           <VueDatePicker v-if="periodeTahun" class="date-picker" :model-value="yearRangePicked"
-            @update:model-value="handleYearRangePicked" :year-range="yearRange" :clearable="false" year-picker range />
+            @update:model-value="handleYearRangePicked" teleport :year-range="yearRange" :clearable="false" year-picker
+            range />
           <ShimmerLoading class="w-36 h-11" v-else />
         </div>
         <ButtonComponent @on-click="handleExport" :text="'Export'" :text-color="'text-white'"
@@ -190,7 +191,6 @@ import SearchBox from '@/components/ui/SearchBox.vue'
 import TooltipLamanData from "@/components/ui/TooltipLamanData.vue";
 import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
 import axios from "axios";
-import '@vuepic/vue-datepicker/dist/main.css';
 
 const tahunDari = ref<any>();
 const tahunSampai = ref<any>();
@@ -253,19 +253,7 @@ const fetchDataAnggaran = async () => {
 const handleExport = async () => {
   try {
     isLoading.value = true;
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-    };
-    const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/capex-opex/export-excel', {
-      responseType: 'arraybuffer',
-      headers,
-      params: {
-        tahun_dari: yearRangePicked.value[0],
-        tahun_sampai: yearRangePicked.value[1],
-        search: searchQ.value.toUpperCase(),
-        type: 'all'
-      }
-    });
+    const response: any = await lamanService.downloadExcelCAPEXOPEX(yearRangePicked.value[0], yearRangePicked.value[1], searchQ.value.toUpperCase(), 'all');
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `Laman Data - CAPEX OPEX - ${yearRangePicked.value[0]}_${yearRangePicked.value[1]}.xlsx`;

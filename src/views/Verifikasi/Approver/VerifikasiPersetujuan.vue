@@ -7,7 +7,7 @@
           <div class="flex flex-row space-x-4">
             <SearchBox class="w-60" @on-key-enter="changeDataKK" @on-click="changeDataKK" @on-input="changeDataKK"
               v-model="searchQKK" />
-            <button type="button"
+            <button type="button" id="hover-button"
               class="text-primaryColor bg-white border border-primaryColor hover:bg-primaryColor focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center duration-300 hover:text-white"
               @click="showModalKK = !showModalKK">
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
@@ -17,7 +17,7 @@
                   fill="#0099AD" />
               </svg>
               Filter
-              <div v-if="level_ID == '1' ? pengelola.length : pembina.length || persetujuan.length"
+              <div v-if="levelID == '1' ? pengelola.length : pembina.length || persetujuan.length"
                 class="absolute z-10 border-2 border-[#FFE5E6] w-2.5 h-2.5 rounded-full right-0.5 top-0.5  bg-warningColor">
               </div>
             </button>
@@ -40,7 +40,7 @@
                   </button>
                 </div>
               </div>
-              <div v-if="level_ID == '1'" class="mt-4">
+              <div v-if="levelID == '1'" class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pengelola</h3>
                 <el-select v-model="pengelola" multiple clearable collapse-tags placeholder="Pilih Unit Pengelola"
                   popper-class="custom-header" :max-collapse-tags="5" class="w-full text-primaryTextColor">
@@ -53,7 +53,7 @@
                   <el-option v-for="item in itemsPengelola" :key="item.id" :label="item.name" :value="item.id" />
                 </el-select>
               </div>
-              <div v-if="level_ID == '2'" class="mt-4">
+              <div v-if="levelID == '2'" class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pembina</h3>
                 <el-select v-model="pembina" multiple clearable collapse-tags placeholder="Pilih Unit Pembina"
                   popper-class="custom-header" :max-collapse-tags="5" class="w-full text-primaryTextColor">
@@ -104,12 +104,12 @@
           <template v-slot:table-header>
             <tr class="text-xs">
               <th class="text-center border-r">No</th>
-              <th v-if="level_ID == '1'" class="border-r">
+              <th v-if="levelID == '1'" class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Pengelola</h1>
                 </div>
               </th>
-              <th v-if="level_ID == '1' || level_ID == '2'" class="border-r">
+              <th v-if="levelID == '1' || levelID == '2'" class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Pembina</h1>
                 </div>
@@ -156,11 +156,11 @@
                 {{ index + 1 }}
               </td>
               <!-- <td v-if="props.pengelolaList.length" class="text-center">{{ props.pengelolaList.filter((pengelola: any) => pengelola.kode_pengelola === persetujuanKKItem.kode_pengelola)[0].pengelola ?? '' }}</td> -->
-              <td v-if="pengelolaList.length && level_ID == '1'" class="text-left">{{
+              <td v-if="pengelolaList.length && levelID == '1'" class="text-left">{{
                 pengelolaList.filter((pengelola: any) =>
                   pengelola.kode_pengelola === item.kode_pengelola)[0] ? pengelolaList.filter((pengelola: any) =>
                     pengelola.kode_pengelola === item.kode_pengelola)[0].pengelola : '-' }}</td>
-              <td class="text-left" v-if="level_ID == '1' || level_ID == '2'">{{ item.pembina }}</td>
+              <td class="text-left" v-if="levelID == '1' || levelID == '2'">{{ item.pembina }}</td>
               <td class="text-left">{{ item.sentral }}</td>
               <td class="text-left">{{ item.mesin }}</td>
               <td class="text-right">{{ globalFormat.formatRupiah(item.irr_on_equity) }}</td>
@@ -200,6 +200,17 @@
               <td class="text-center">
                 <div>
                   <RouterLink
+                    v-if="authService.checkLevel() === 'Admin' && (item.status_approval === 'Draft' || item.status_approval === 'Ditolak T1' || item.status_approval === 'Ditolak T2')"
+                    :to="{ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(item.id_mesin) : item.id_mesin }, query: { id_sentral: item.id_sentral, tahun: item.tahun } }">
+                    <button>
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                          d="M8.00051 3.66536C5.20279 3.66536 2.82714 5.47986 1.98946 7.99808C1.98897 7.99955 1.98897 8.00136 1.98946 8.00283C2.82818 10.5192 5.20293 12.332 7.99934 12.332C10.7971 12.332 13.1727 10.5175 14.0104 7.99932C14.0109 7.99785 14.0109 7.99604 14.0104 7.99457C13.1717 5.47817 10.7969 3.66536 8.00051 3.66536ZM0.72429 7.57722C1.73777 4.5305 4.61153 2.33203 8.00051 2.33203C11.3879 2.33203 14.2606 4.52846 15.2753 7.57297C15.3669 7.84785 15.367 8.14524 15.2756 8.42018C14.2621 11.4669 11.3883 13.6654 7.99934 13.6654C4.61194 13.6654 1.73927 11.4689 0.72454 8.42443C0.632921 8.14955 0.632834 7.85216 0.72429 7.57722ZM7.99997 6.66536C7.26359 6.66536 6.66663 7.26232 6.66663 7.9987C6.66663 8.73508 7.26359 9.33203 7.99997 9.33203C8.73635 9.33203 9.3333 8.73508 9.3333 7.9987C9.3333 7.26232 8.73635 6.66536 7.99997 6.66536ZM5.3333 7.9987C5.3333 6.52594 6.52721 5.33203 7.99997 5.33203C9.47273 5.33203 10.6666 6.52594 10.6666 7.9987C10.6666 9.47146 9.47273 10.6654 7.99997 10.6654C6.52721 10.6654 5.3333 9.47146 5.3333 7.9987Z"
+                          fill="#0099AD" />
+                      </svg>
+                    </button>
+                  </RouterLink>
+                  <RouterLink v-else
                     :to="{ name: 'app-kk-mesin', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(item.id_mesin) : item.id_mesin }, query: { id_sentral: item.id_sentral, tahun: item.tahun } }">
                     <button>
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -217,7 +228,7 @@
         <div class="flex items-center justify-between w-full mt-3 mb-6">
           <div class="flex items-center space-x-2 text-sm">
             <span>Menampilkan</span>
-            <select v-model="pageLimit" name="" id=""
+            <select v-model="navigationKK.limit" name="" id=""
               class="text-sm text-gray-500 border-gray-300 rounded-lg cursor-pointer" @change="changePageLimit($event)">
               <option value="10">10</option>
               <option value="20">20</option>
@@ -225,13 +236,13 @@
               <option value="40">40</option>
               <option value="50">50</option>
             </select>
-            <span>dari <span class="font-bold">{{ totalRecords }}</span> data</span>
+            <span>dari <span class="font-bold">{{ navigationKK.totalRecords }}</span> data</span>
           </div>
           <ul class="flex items-center space-x-3">
             <li>
-              <button @click="goToPrevious" :disabled="currentPage === 1"
-                :class="{ 'text-gray-500': currentPage === 1 }"
-                class="block px-2 py-2 ml-0 duration-300 bg-white text-primaryColor disabled:text-gray-500 hover:bg-blue-500 disabled:bg-white hover:text-white hover:rounded-md">
+              <button @click="goToPrevious" :disabled="navigationKK.currentPage === 1"
+                :class="{ 'text-gray-500': navigationKK.currentPage === 1 }"
+                class="block px-2 py-2 ml-0 duration-300 bg-white disabled:hover:cursor-not-allowed text-primaryColor disabled:text-gray-500 hover:bg-blue-500 disabled:bg-white hover:text-white hover:rounded-md">
                 <span class="sr-only">Previous</span>
                 <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
                   xmlns="http://www.w3.org/2000/svg">
@@ -242,14 +253,14 @@
               </button>
             </li>
             <li id="pagination" v-for="(item, index) in generatePageList" :key="index"
-              :class="{ selected: item === currentPage, disabled: item === '...' }"
+              :class="{ selected: item === navigationKK.currentPage, disabled: item === '...' }"
               class="w-8 h-8 mr-2 text-sm leading-8 text-center duration-300 cursor-pointer text hover:bg-blue-500 hover:rounded-md hover:text-white"
               @click="goToPage(item)">
               {{ item }}
             </li>
             <li>
-              <button @click="goToNext" :disabled="currentPage === totalPages"
-                class="block px-2 py-2 ml-0 duration-300 bg-white text-primaryColor disabled:text-gray-500 hover:bg-blue-500 disabled:bg-white hover:text-white hover:rounded-md">
+              <button @click="goToNext" :disabled="navigationKK.currentPage === navigationKK.totalPages"
+                class="block px-2 py-2 ml-0 duration-300 bg-white disabled:hover:cursor-not-allowed text-primaryColor disabled:text-gray-500 hover:bg-blue-500 disabled:bg-white hover:text-white hover:rounded-md">
                 <span class="sr-only">Next</span>
                 <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
                   xmlns="http://www.w3.org/2000/svg">
@@ -267,7 +278,7 @@
           <div class="flex flex-row space-x-4">
             <SearchBox class="w-60" @on-key-enter="changeFS" @on-click="changeFS" @on-input="changeFS"
               v-model="searchQFS" />
-            <button type="button"
+            <button type="button" id="hover-button"
               class="text-primaryColor bg-white border border-primaryColor hover:bg-primaryColor focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center duration-300 hover:text-white"
               @click="showModalFS = !showModalFS">
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
@@ -297,7 +308,7 @@
                   </button>
                 </div>
               </div>
-              <div v-if="level_ID == '1'" class="mt-4">
+              <div v-if="levelID == '1'" class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pengelola</h3>
                 <el-select v-model="pengelola" multiple clearable collapse-tags placeholder="Pilih Unit Pengelola"
                   popper-class="custom-header" :max-collapse-tags="5" class="w-full text-primaryTextColor">
@@ -310,7 +321,7 @@
                   <el-option v-for="item in itemsPengelola" :key="item.id" :label="item.name" :value="item.id" />
                 </el-select>
               </div>
-              <div v-if="level_ID == '2'" class="mt-4">
+              <div v-if="levelID == '2'" class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pembina</h3>
                 <el-select v-model="pembina" multiple clearable collapse-tags placeholder="Pilih Unit Pembina"
                   popper-class="custom-header" :max-collapse-tags="5" class="w-full text-primaryTextColor">
@@ -356,12 +367,12 @@
           <template v-slot:table-header>
             <tr class="text-xs">
               <th class="text-center border-r">No</th>
-              <th class="border-r" v-if="level_ID == '1'">
+              <th class="border-r" v-if="levelID == '1'">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Pengelola</h1>
                 </div>
               </th>
-              <th class="border-r" v-if="level_ID == '1' || level_ID == '2'">
+              <th class="border-r" v-if="levelID == '1' || levelID == '2'">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Pembina</h1>
                 </div>
@@ -407,11 +418,11 @@
               <td scope="row" class="text-center whitespace-nowrap">
                 {{ index + 1 }}
               </td>
-              <td v-if="pengelolaList.length && level_ID == '1'" class="text-left">{{
+              <td v-if="pengelolaList.length && levelID == '1'" class="text-left">{{
                 pengelolaList.filter((pengelola: any) =>
                   pengelola.kode_pengelola === item.kode_pengelola)[0] ? pengelolaList.filter((pengelola: any) =>
                     pengelola.kode_pengelola === item.kode_pengelola)[0].pengelola : '-' }}</td>
-              <td class="text-left" v-if="level_ID == '1' || level_ID == '2'">{{ item.pembina }}</td>
+              <td class="text-left" v-if="levelID == '1' || levelID == '2'">{{ item.pembina }}</td>
               <td class="text-left">{{ item.sentral }}</td>
               <td class="text-left">{{ item.mesin }}</td>
               <td class="text-right">{{ globalFormat.formatRupiah(item.irr_on_equity) }}</td>
@@ -449,7 +460,20 @@
                 </div>
               </td>
               <td class="text-center">
-                <div>
+                <div
+                  v-if="authService.checkLevel() === 'Admin' && (item.status_approval === 'Draft' || item.status_approval === 'Ditolak T1' || item.status_approval === 'Ditolak T2')">
+                  <RouterLink
+                    :to="{ name: 'persetujuan-fs', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(item.id_mesin) : item.id_mesin }, query: { id_sentral: item.id_sentral } }">
+                    <button>
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                          d="M8.00051 3.66536C5.20279 3.66536 2.82714 5.47986 1.98946 7.99808C1.98897 7.99955 1.98897 8.00136 1.98946 8.00283C2.82818 10.5192 5.20293 12.332 7.99934 12.332C10.7971 12.332 13.1727 10.5175 14.0104 7.99932C14.0109 7.99785 14.0109 7.99604 14.0104 7.99457C13.1717 5.47817 10.7969 3.66536 8.00051 3.66536ZM0.72429 7.57722C1.73777 4.5305 4.61153 2.33203 8.00051 2.33203C11.3879 2.33203 14.2606 4.52846 15.2753 7.57297C15.3669 7.84785 15.367 8.14524 15.2756 8.42018C14.2621 11.4669 11.3883 13.6654 7.99934 13.6654C4.61194 13.6654 1.73927 11.4689 0.72454 8.42443C0.632921 8.14955 0.632834 7.85216 0.72429 7.57722ZM7.99997 6.66536C7.26359 6.66536 6.66663 7.26232 6.66663 7.9987C6.66663 8.73508 7.26359 9.33203 7.99997 9.33203C8.73635 9.33203 9.3333 8.73508 9.3333 7.9987C9.3333 7.26232 8.73635 6.66536 7.99997 6.66536ZM5.3333 7.9987C5.3333 6.52594 6.52721 5.33203 7.99997 5.33203C9.47273 5.33203 10.6666 6.52594 10.6666 7.9987C10.6666 9.47146 9.47273 10.6654 7.99997 10.6654C6.52721 10.6654 5.3333 9.47146 5.3333 7.9987Z"
+                          fill="#0099AD" />
+                      </svg>
+                    </button>
+                  </RouterLink>
+                </div>
+                <div v-else>
                   <RouterLink
                     :to="{ name: 'app-fs-mesin', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(item.id_mesin) : item.id_mesin }, query: { id_sentral: item.id_sentral } }">
                     <button>
@@ -468,7 +492,7 @@
         <div class="flex items-center justify-between w-full mt-3 mb-6">
           <div class="flex items-center space-x-2 text-sm">
             <span>Menampilkan</span>
-            <select v-model="pageLimitFS" name="" id=""
+            <select v-model="navigationFS.limit" name="" id=""
               class="text-sm text-gray-500 border-gray-300 rounded-lg cursor-pointer" @change="changeLimit($event)">
               <option value="10">10</option>
               <option value="20">20</option>
@@ -476,12 +500,13 @@
               <option value="40">40</option>
               <option value="50">50</option>
             </select>
-            <span>dari <span class="font-bold">{{ totalRecordsFS }}</span> data</span>
+            <span>dari <span class="font-bold">{{ navigationFS.totalRecords }}</span> data</span>
           </div>
           <ul class="flex items-center space-x-3">
             <li>
-              <button @click="goPrevious" :disabled="currentPage === 1" :class="{ 'text-gray-500': currentPage === 1 }"
-                class="block px-2 py-2 ml-0 duration-300 bg-white text-primaryColor disabled:text-gray-500 hover:bg-blue-500 disabled:bg-white hover:text-white hover:rounded-md">
+              <button @click="goPrevious" :disabled="navigationFS.currentPage === 1"
+                :class="{ 'text-gray-500': navigationFS.currentPage === 1 }"
+                class="block px-2 py-2 ml-0 duration-300 bg-white disabled:hover:cursor-not-allowed text-primaryColor disabled:text-gray-500 hover:bg-blue-500 disabled:bg-white hover:text-white hover:rounded-md">
                 <span class="sr-only">Previous</span>
                 <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
                   xmlns="http://www.w3.org/2000/svg">
@@ -491,15 +516,14 @@
                 </svg>
               </button>
             </li>
-            <li id="pagination" v-for="(item, index) in generatePage" :key="index"
-              :class="{ selected: item === currentPage, disabled: item === '...' }"
+            <li id="pagination" v-for="( item, index ) in generatePage " :key="index"
               class="w-8 h-8 mr-2 text-sm leading-8 text-center duration-300 cursor-pointer text hover:bg-blue-500 hover:rounded-md hover:text-white"
-              @click="goTo(item)">
+              :class="{ selected: item === navigationFS.currentPage, disabled: item === '...' }" @click="goTo(item)">
               {{ item }}
             </li>
             <li>
-              <button @click="goNext" :disabled="currentPage === totalPagesFS"
-                class="block px-2 py-2 ml-0 duration-300 bg-white text-primaryColor disabled:text-gray-500 hover:bg-blue-500 disabled:bg-white hover:text-white hover:rounded-md">
+              <button @click="goNext" :disabled="navigationFS.currentPage === navigationFS.totalPages"
+                class="block px-2 py-2 ml-0 duration-300 bg-white disabled:hover:cursor-not-allowed text-primaryColor disabled:text-gray-500 hover:bg-blue-500 disabled:bg-white hover:text-white hover:rounded-md">
                 <span class="sr-only">Next</span>
                 <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
                   xmlns="http://www.w3.org/2000/svg">
@@ -522,6 +546,8 @@ import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
 import PersetujuanService from '@/services/persetujuan-service';
 import PetaService from "@/services/peta-service";
 import GlobalFormat from "@/services/format/global-format";
+import AuthService from "@/services/auth-service";
+const authService = new AuthService();
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import SearchBox from '@/components/ui/SearchBox.vue';
 import TabsWrapper from "@/components/ui/TabsWrapper.vue";
@@ -547,20 +573,10 @@ const searchQFS = ref<string>("");
 const title = ref('Kertas Kerja');
 
 const levelID = ref(nodeMode === 'production' ? encryptStorage.getItem('level_id') : localStorage.getItem("level_id"));
-const level_ID = ref(levelID.value);
 const pengelolaList = ref<any[]>([]);
 const pembinaList = ref<any[]>([]);
 const persetujuanKK = ref<any[]>([]);
 const persetujuanFS = ref<any[]>([]);
-
-const currentPage = ref(1);
-const totalPages = ref(0);
-const pageLimit = ref(10);
-const totalRecords = ref();
-
-const totalPagesFS = ref(0);
-const pageLimitFS = ref(10);
-const totalRecordsFS = ref();
 
 const indeterminatePengelola = ref(false);
 const indeterminatePembina = ref(false);
@@ -599,8 +615,28 @@ const itemsPersetujuan = ref([
     name: 'Menunggu Persetujuan Pengelola',
   },
 ])
-// const listStatus = ref(Math.min(itemsPersetujuan.value))
-// console.log(listStatus.value)
+const navigationKK = ref<{
+  currentPage: number,
+  totalPages: number,
+  totalRecords: number,
+  limit: number
+}>({
+  currentPage: 1,
+  totalPages: 1,
+  totalRecords: 0,
+  limit: 10
+});
+const navigationFS = ref<{
+  currentPage: number,
+  totalPages: number,
+  totalRecords: number,
+  limit: number
+}>({
+  currentPage: 1,
+  totalPages: 1,
+  totalRecords: 0,
+  limit: 10
+});
 
 async function getDataPengelola() {
   try {
@@ -648,15 +684,15 @@ const fetchPersetujuanKK = async () => {
       kode_pengelola: pengelola.value,
       id_pembina: [],
       status: persetujuan.value,
-      page: currentPage.value,
-      limit: pageLimit.value,
+      page: navigationKK.value.currentPage,
+      limit: navigationKK.value.limit,
       tahun: yearPicked.value.toString(),
       search: searchQKK.value.toUpperCase()
     });
     persetujuanKK.value = response.data;
-    totalPages.value = response.meta.totalPages;
-    totalRecords.value = response.meta.totalRecords;
-    pageLimit.value = response.meta.limit;
+    navigationKK.value.totalPages = response.meta.totalPages;
+    navigationKK.value.totalRecords = response.meta.totalRecords;
+    navigationKK.value.limit = response.meta.limit;
     showModalKK.value = false
   } catch (error) {
     console.error('Fetch Persetujuan KK Error : ' + error);
@@ -668,14 +704,14 @@ const fetchPersetujuanFS = async () => {
       kode_pengelola: pengelola.value,
       id_pembina: [],
       status: persetujuan.value,
-      page: currentPage.value,
-      limit: pageLimitFS.value,
+      page: navigationFS.value.currentPage,
+      limit: navigationFS.value.limit,
       search: searchQFS.value.toUpperCase()
     });
     persetujuanFS.value = response.data;
-    totalPagesFS.value = response.meta.totalPages;
-    totalRecordsFS.value = response.meta.totalRecords;
-    pageLimitFS.value = response.meta.limit;
+    navigationFS.value.totalPages = response.meta.totalPages;
+    navigationFS.value.totalRecords = response.meta.totalRecords;
+    navigationFS.value.limit = response.meta.limit;
     showModalFS.value = false
   } catch (error) {
     console.error('Fetch Persetujuan FS Error : ' + error);
@@ -771,33 +807,33 @@ const generatePageList = computed(() => {
   const pageList = [];
   const maxPages = 5;
 
-  if (totalPages.value <= maxPages) {
-    for (let i = 1; i <= totalPages.value; i++) {
+  if (navigationKK.value.totalPages <= maxPages) {
+    for (let i = 1; i <= navigationKK.value.totalPages; i++) {
       pageList.push(i);
     }
   } else {
-    if (currentPage.value <= 3) {
-      for (let i = 1; i <= Math.min(totalPages.value, maxPages - 1); i++) {
+    if (navigationKK.value.currentPage <= 3) {
+      for (let i = 1; i <= Math.min(navigationKK.value.totalPages, maxPages - 1); i++) {
         pageList.push(i);
       }
-      if (totalPages.value > maxPages) {
+      if (navigationKK.value.totalPages > maxPages) {
         pageList.push('...');
-        pageList.push(totalPages.value);
+        pageList.push(navigationKK.value.totalPages);
       }
-    } else if (currentPage.value >= totalPages.value - 2) {
+    } else if (navigationKK.value.currentPage >= navigationKK.value.totalPages - 2) {
       pageList.push(1);
       pageList.push('...');
-      for (let i = totalPages.value - (maxPages - 2); i <= totalPages.value; i++) {
+      for (let i = navigationKK.value.totalPages - (maxPages - 2); i <= navigationKK.value.totalPages; i++) {
         pageList.push(i);
       }
     } else {
       pageList.push(1);
       pageList.push('...');
-      for (let i = currentPage.value - 1; i <= currentPage.value + 1; i++) {
+      for (let i = navigationKK.value.currentPage - 1; i <= navigationKK.value.currentPage + 1; i++) {
         pageList.push(i);
       }
       pageList.push('...');
-      pageList.push(totalPages.value);
+      pageList.push(navigationKK.value.totalPages);
     }
   }
   return pageList;
@@ -805,25 +841,25 @@ const generatePageList = computed(() => {
 
 const changePageLimit = async (event: any) => {
   isLoading.value = true;
-  pageLimit.value = parseInt(event.target.value);
-  currentPage.value = 1;
+  navigationKK.value.limit = parseInt(event.target.value);
+  navigationKK.value.currentPage = 1;
   await fetchPersetujuanKK();
   isLoading.value = false;
 };
 const goToPage = async (page: any) => {
   isLoading.value = true;
-  currentPage.value = page;
+  navigationKK.value.currentPage = page;
   await fetchPersetujuanKK();
   isLoading.value = false
 };
 const goToPrevious = () => {
-  if (currentPage.value > 1) {
-    goToPage(currentPage.value - 1);
+  if (navigationKK.value.currentPage > 1) {
+    goToPage(navigationKK.value.currentPage - 1);
   }
 };
 const goToNext = () => {
-  if (currentPage.value < totalPages.value) {
-    goToPage(currentPage.value + 1);
+  if (navigationKK.value.currentPage < navigationKK.value.totalPages) {
+    goToPage(navigationKK.value.currentPage + 1);
   }
 };
 
@@ -832,33 +868,33 @@ const generatePage = computed(() => {
   const pageList = [];
   const maxPages = 5;
 
-  if (totalPagesFS.value <= maxPages) {
-    for (let i = 1; i <= totalPagesFS.value; i++) {
+  if (navigationFS.value.totalPages <= maxPages) {
+    for (let i = 1; i <= navigationFS.value.totalPages; i++) {
       pageList.push(i);
     }
   } else {
-    if (currentPage.value <= 3) {
-      for (let i = 1; i <= Math.min(totalPagesFS.value, maxPages - 1); i++) {
+    if (navigationFS.value.currentPage <= 3) {
+      for (let i = 1; i <= Math.min(navigationFS.value.totalPages, maxPages - 1); i++) {
         pageList.push(i);
       }
-      if (totalPagesFS.value > maxPages) {
+      if (navigationFS.value.totalPages > maxPages) {
         pageList.push('...');
-        pageList.push(totalPagesFS.value);
+        pageList.push(navigationFS.value.totalPages);
       }
-    } else if (currentPage.value >= totalPagesFS.value - 2) {
+    } else if (navigationFS.value.currentPage >= navigationFS.value.totalPages - 2) {
       pageList.push(1);
       pageList.push('...');
-      for (let i = totalPagesFS.value - (maxPages - 2); i <= totalPagesFS.value; i++) {
+      for (let i = navigationFS.value.totalPages - (maxPages - 2); i <= navigationFS.value.totalPages; i++) {
         pageList.push(i);
       }
     } else {
       pageList.push(1);
       pageList.push('...');
-      for (let i = currentPage.value - 1; i <= currentPage.value + 1; i++) {
+      for (let i = navigationFS.value.currentPage - 1; i <= navigationFS.value.currentPage + 1; i++) {
         pageList.push(i);
       }
       pageList.push('...');
-      pageList.push(totalPagesFS.value);
+      pageList.push(navigationFS.value.totalPages);
     }
   }
   return pageList;
@@ -866,25 +902,25 @@ const generatePage = computed(() => {
 
 const changeLimit = async (event: any) => {
   isLoading.value = true;
-  pageLimitFS.value = parseInt(event.target.value);
-  currentPage.value = 1;
+  navigationFS.value.limit = parseInt(event.target.value);
+  navigationFS.value.currentPage = 1;
   await fetchPersetujuanFS();
   isLoading.value = false;
 };
 const goTo = async (page: any) => {
   isLoading.value = true;
-  currentPage.value = page;
+  navigationFS.value.currentPage = page;
   await fetchPersetujuanFS();
   isLoading.value = false
 };
 const goPrevious = () => {
-  if (currentPage.value > 1) {
-    goTo(currentPage.value - 1);
+  if (navigationFS.value.currentPage > 1) {
+    goTo(navigationFS.value.currentPage - 1);
   }
 };
 const goNext = () => {
-  if (currentPage.value < totalPagesFS.value) {
-    goTo(currentPage.value + 1);
+  if (navigationFS.value.currentPage < navigationFS.value.totalPages) {
+    goTo(navigationFS.value.currentPage + 1);
   }
 };
 
@@ -918,7 +954,7 @@ onMounted(async () => {
   /* Firefox */
 }
 
-button:hover>svg * {
+#hover-button:hover>svg * {
   background-color: #0099ad;
   fill: #ffffff;
 }

@@ -44,7 +44,7 @@
             </p>
             <div class="flex flex-row items-center space-x-3">
               <label for="fileInputEvidence"
-                class="flex flex-row items-center px-3 py-2 space-x-2 text-primaryColor duration-300 rounded-lg cursor-pointer bg-[#F7FBFC] hover:ring-1 hover:ring-primaryColor active:ring active:ring-infoComponentBorderColor active:duration-0">
+                class="flex flex-row whitespace-nowrap items-center px-3 py-2 space-x-2 text-primaryColor duration-300 rounded-lg cursor-pointer bg-[#F7FBFC] hover:ring-1 hover:ring-primaryColor active:ring active:ring-infoComponentBorderColor active:duration-0">
                 <IconFolderBlue />
                 <span class="font-semibold">Ganti berkas</span>
               </label>
@@ -1579,13 +1579,7 @@ const uploadFileEvidence = async () => {
     isLoading.value = true
     const formData = new FormData();
     formData.append('file', selectedFileEvidence.value);
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-      'Content-Type': 'multipart/form-data',
-    };
-    const response: any = await axios.post('https://portalapp.iconpln.co.id:5080/valiant-be/v1/mutasiasset/s3-amazon-upload-file', formData, {
-      headers,
-    });
+    const response: any = await rekapService.uploadEvidence(formData);
     await rekapService.updateEvidencePath(idMesin, tahunBerjalan.toString(), response.data, 0, selectedFileEvidence.value.name);
     isShowFinalConfirmation.value = false;
     isShowModalEvidence.value = false;
@@ -1615,13 +1609,7 @@ const uploadFileSimulasi1 = async () => {
     }
     const formData = new FormData();
     formData.append('file', selectedFileSimulasi1.value);
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-      'Content-Type': 'multipart/form-data',
-    };
-    const response = await axios.post('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/import-template-simulasi1', formData, {
-      headers,
-    });
+    const response: any = await rekapService.uploadSimulasi1(formData);
     await fetchHasilSimulasi1();
     console.log('Sukses mengirim file : ', response.data);
     isUnggahModalOpenSimulasi1.value = false;
@@ -1666,13 +1654,7 @@ const uploadFile = async () => {
     }
     const formData = new FormData();
     formData.append('file', selectedFile.value);
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-      'Content-Type': 'multipart/form-data',
-    };
-    const response = await axios.post('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/import-template-simulasi', formData, {
-      headers,
-    });
+    const response: any = await rekapService.uploadSimulasi2(formData);
     await fetchHasilSimulasi2();
     console.log('Sukses mengirim file : ', response.data);
     isUnggahModalOpen.value = false;
@@ -2362,6 +2344,9 @@ const handleFinalSubmit = async () => {
   try {
     console.log(dataTeknisSimulasi1.value)
     console.log(dataTeknisSimulasi2.value)
+    isShowFinalConfirmation.value = false;
+    isShowModalEvidence.value = false;
+    isLoading.value = true;
     if (selectedSimulasiTab.value === 'Simulasi 1') {
       const finalCostComponentCDetail = [];
       for (const item of formFinansialSimulasi1.value.cost_component_c_detail) {
@@ -2401,6 +2386,7 @@ const handleFinalSubmit = async () => {
     }
   } catch (error) {
     console.error('Final Submit Error : ' + error);
+    isLoading.value = false;
   } finally {
     isLoading.value = false;
   }
@@ -2437,22 +2423,11 @@ const handleDownloadExcelSimulasi1 = async () => {
     isLoading.value = true;
     console.log('Form 1', formFinansialSimulasi1.value);
     console.log('Form 2', formFinansialSimulasi2.value);
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-    };
-    const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/export-template-simulasi1', {
-      responseType: 'arraybuffer',
-      headers,
-      params: {
-        tahun: tahunBerjalan,
-        tahun_realisasi: tahunBerjalan - 1,
-        id_mesin: idMesin
-      }
-    });
+    const response: any = await rekapService.downloadSimulasi1(tahunBerjalan, tahunBerjalan - 1, idMesin);
     console.log(response);
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
-    const fileName = fileNameMatch ? fileNameMatch[1] : `Simulasi 1 - ${idMesin}.xlsx`;
+    const fileName = fileNameMatch ? fileNameMatch[1] : `Simulasi 1 - Kertas Kerja Actual - ${mesinDataById.value?.mesin}_${tahunBerjalan}_${globalFormat.formatNumberFiveDigits(idMesin)}.xlsx`;
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -2471,22 +2446,10 @@ const handleDownloadExcelSimulasi1 = async () => {
 const handleDownloadExcelSimulasi2 = async () => {
   try {
     isLoading.value = true;
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-    };
-    const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail//export-template-simulasi2', {
-      responseType: 'arraybuffer',
-      headers,
-      params: {
-        tahun: tahunBerjalan,
-        tahun_realisasi: tahunBerjalan - 1,
-        id_mesin: idMesin
-      }
-    });
-    console.log(response);
+    const response: any = await rekapService.downloadSimulasi2(tahunBerjalan, tahunBerjalan - 1, idMesin);
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
-    const fileName = fileNameMatch ? fileNameMatch[1] : `Simulasi 2 - ${idMesin}.xlsx`;
+    const fileName = fileNameMatch ? fileNameMatch[1] : `Simulasi 2 - Kertas Kerja Actual - ${mesinDataById.value?.mesin}_${tahunBerjalan}_${globalFormat.formatNumberFiveDigits(idMesin)}.xlsx`;
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');

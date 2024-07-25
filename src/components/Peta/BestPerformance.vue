@@ -265,7 +265,7 @@ onMounted(async () => {
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 button:hover svg,
 button:hover svg path {
   fill: white;
@@ -273,9 +273,5 @@ button:hover svg path {
 
 .dp-custom-calendar {
   box-shadow: 0 0 6px #1976d2;
-}
-
-td {
-  padding: 0.8rem;
 }
 </style>

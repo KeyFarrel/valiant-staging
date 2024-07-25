@@ -117,11 +117,11 @@
                 <span class="font-semibold">Cari berkas</span>
               </label>
               <input ref="fileInputEvidenceFS" id="fileInputEvidenceFS" type="file" class="hidden"
-                @change="handleFileChangeEvidence" accept=".xlsx" />
+                @change="handleFileChangeEvidence" accept=".xlsx, .zip" />
             </div>
             <div class="flex flex-row items-center justify-between">
-              <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .pdf, .zip, .xlsx</p>
-              <p class="text-xs text-textDisabledColor">Maximum upload file size : 2 MB</p>
+              <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx, .zip</p>
+              <p class="text-xs text-textDisabledColor">Maximum upload file size : 10 MB</p>
             </div>
           </div>
         </div>
@@ -692,13 +692,7 @@ const downloadEvidence = async () => {
     isLoading.value = true;
     const filePath: any = await rekapService.getEvidencePath(idGrafik, tahunBerjalan.toString() ?? '0', 1);
     const finalFileName: any = filePath.data[0].file_name;
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-    };
-    const response: any = await axios.get(`https://portalapp.iconpln.co.id:5080/valiant-be/v1/mutasiasset/s3-amazon-download/${filePath.data[0].dokumen_evidence}`, {
-      responseType: 'arraybuffer',
-      headers
-    });
+    const response: any = await rekapService.downloadEvidence(filePath.data[0].dokumen_evidence);
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `${finalFileName}`;
@@ -814,13 +808,7 @@ const uploadFileFS = async () => {
     }
     const formData = new FormData();
     formData.append('file', selectedFileFS.value);
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-      'Content-Type': 'multipart/form-data',
-    };
-    const response = await axios.post('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/import-template-fs', formData, {
-      headers,
-    });
+    await rekapService.uploadTemplateAwalFS(formData);
     isModalUnggahFSOpen.value = false;
     isLoading.value = false;
     isFSUploadSuccess.value = true;
@@ -860,17 +848,7 @@ const uploadFileFS = async () => {
 const handleDownloadTemplateFS = async () => {
   try {
     isLoading.value = true;
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-    };
-    const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/export-template-fs', {
-      responseType: 'arraybuffer',
-      headers,
-      params: {
-        id_mesin: idGrafik,
-        tahun: tahunBerjalan
-      }
-    });
+    const response: any = await rekapService.downloadTemplateFS(tahunBerjalan, idGrafik, mesinDataById.value?.kode_jenis_pembangkit);
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `Kertas Kerja FS - ${mesinDataById.value?.mesin}_${globalFormat.formatNumberFiveDigits(parseInt(idGrafik))}.xlsx`;

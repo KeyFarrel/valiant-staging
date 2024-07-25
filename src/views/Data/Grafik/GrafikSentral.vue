@@ -400,7 +400,7 @@
               <th class="px-2 py-2"></th>
               <th class="px-8 py-2 text-left">Deskripsi</th>
               <th class="px-1 py-2 text-right">Realisasi - Proyeksi (Rp (Juta))</th>
-              <th class="px-1 py-2  text-right">Planning (Rp (Juta))</th>
+              <th class="px-1 py-2 text-right">Planning (Rp (Juta))</th>
             </tr>
           </thead>
           <tbody v-for="(item, i) in datatablePRP" :key="i" class="text-xs">
@@ -493,7 +493,6 @@ import { ref, onMounted, nextTick, computed, watch } from "vue";
 import AOS from 'aos'
 import { VueEcharts } from "vue3-echarts"
 import { useTagSentral } from "@/store/storeTagGrafik";
-import '@vuepic/vue-datepicker/dist/main.css';
 import Legend from "@/components/Grafik/LegendGrafik.vue";
 import GrafikService from "@/services/grafik-service";
 import GlobalFormat from "@/services/format/global-format";

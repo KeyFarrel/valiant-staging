@@ -10,7 +10,7 @@
           teleport :clearable="false" :yearRange="listYear"
           :filters="yearPickerService.filterYears(listYear[0], listYear[1])" />
         <button
-          class="flex items-center border border-[#0099AD] hover:border-hoverColor mr-3 px-3 py-2 rounded-lg text-[#0099AD] hover:text-white hover:bg-hoverColor duration-300">
+          class="flex items-center border border-[#0099AD] hover:border-hoverColor px-3 py-2 rounded-lg text-[#0099AD] hover:text-white hover:bg-hoverColor duration-300">
           <span class="mr-2 font-semibold"
             @click="currentNamaMesin = mesin.mesin; handleDownloadExcelMesin()">Export</span>
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -251,13 +251,7 @@ const downloadEvidence = async () => {
     isLoading.value = true;
     const filePath: any = await rekapService.getEvidencePath(idMesin.value, route.query.tahun?.toString() ?? '0', 0);
     const finalFileName: any = filePath.data[0].file_name;
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-    };
-    const response: any = await axios.get(`https://portalapp.iconpln.co.id:5080/valiant-be/v1/mutasiasset/s3-amazon-download/${filePath.data[0].dokumen_evidence}`, {
-      responseType: 'arraybuffer',
-      headers
-    });
+    const response: any = await rekapService.downloadEvidence(filePath.data[0].dokumen_evidence);
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `${finalFileName}`;
@@ -367,21 +361,10 @@ const fetchHasilSimulasi = async () => {
 const handleDownloadExcelMesin = async () => {
   try {
     isLoading.value = true;
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-    };
-    const response: any = await axios.get('https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/export-template-awal', {
-      responseType: 'arraybuffer',
-      headers,
-      params: {
-        id_mesin: idMesin.value,
-        tahun: parseInt(selectedYear.value),
-        tahun_realisasi: selectedYear.value - 1
-      }
-    });
+    const response: any = await rekapService.downloadExcelKK(parseInt(selectedYear.value), parseInt(selectedYear.value) - 1, idMesin.value);
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
-    const fileName = fileNameMatch ? fileNameMatch[1] : `Actual - ${currentNamaMesin.value}_${tahunTerakhirRealisasi.value}_${globalFormat.formatNumberFiveDigits(parseInt(idMesin.value))}.xlsx`;
+    const fileName = fileNameMatch ? fileNameMatch[1] : `Actual - ${currentNamaMesin.value}_${selectedYear.value}_${globalFormat.formatNumberFiveDigits(parseInt(idMesin.value))}.xlsx`;
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
