@@ -46,9 +46,9 @@
           </td>
           <td class="text-left">
             {{
-            user.pengelola && user.pengelola.length > 0
-            ? user.pengelola[0].pengelola
-            : "Tidak tersedia"
+              user.pengelola && user.pengelola.length > 0
+                ? user.pengelola[0].pengelola
+                : "Tidak tersedia"
             }}
           </td>
           <td class="text-left">
@@ -61,7 +61,7 @@
             {{ user.email }}
           </td>
           <td>
-            {{ userLevel(user.level_id)}}
+            {{ userLevel(user.level_id) }}
           </td>
           <td>
             <span v-for="(item, index) in user.role">{{ item.role }}</span>
@@ -115,7 +115,7 @@
         <li>
           <button @click="goToPrevious" :disabled="navigation.currentPage === 1"
             :class="{ 'text-gray-500': navigation.currentPage === 1 }"
-            class="block px-2 py-2 ml-0 duration-300 bg-white text-primaryColor disabled:text-gray-500 hover:bg-blue-500 disabled:bg-white hover:text-white hover:rounded-md">
+            class="block px-2 py-2 ml-0 duration-300 bg-white disabled:hover:cursor-not-allowed text-primaryColor disabled:text-gray-500 hover:bg-blue-500 disabled:bg-white hover:text-white hover:rounded-md">
             <span class="sr-only">Previous</span>
             <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg">
@@ -133,7 +133,7 @@
         </li>
         <li>
           <button @click="goToNext" :disabled="navigation.currentPage === navigation.totalPages"
-            class="block px-2 py-2 ml-0 duration-300 bg-white text-primaryColor disabled:text-gray-500 hover:bg-blue-500 disabled:bg-white hover:text-white hover:rounded-md">
+            class="block px-2 py-2 ml-0 duration-300 bg-white disabled:hover:cursor-not-allowed text-primaryColor disabled:text-gray-500 hover:bg-blue-500 disabled:bg-white hover:text-white hover:rounded-md">
             <span class="sr-only">Next</span>
             <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg">
@@ -514,7 +514,6 @@ const levelMappings = ref<{ [key: string]: string }>({});
 const comboMesin = ref<MesinItem[]>([]);
 const mesinMappings = ref<{ [key: string]: string }>({});
 const comboRole = ref<RoleItem[]>([]);
-const roleMappings = ref<{ [key: number]: number }>({});
 const comboInduk = ref<IndukItem[]>([]);
 const indukMappings = ref<{ [key: number]: number }>({});
 const listPembina = ref<any[]>([]);
@@ -565,63 +564,65 @@ const resetFormData = () => {
 };
 
 interface PenggunaItem {
-  data: any;
-  meta: any;
-  id: number;
-  nama_pegawai: string;
-  email: string;
-  status: boolean;
-  nip: string;
+  data: any
+  meta: any
+  id: number
+  nama_pegawai: string
+  email: string
+  status: boolean
+  nip: string
+  id_pembina: any
+  level_id: any
   role: [
     {
-      role: string;
+      role: string
     }
-  ];
+  ]
   pengelola: [
     {
-      pengelola: string;
+      pengelola: string
     }
-  ];
+  ]
   pembina: [
     {
-      pembina: string;
+      pembina: string
     }
-  ];
+  ]
   sentral: [
     {
-      sentral: string;
+      sentral: string
     }
-  ];
+  ]
 }
 interface SentralItem {
-  id_sentral: number;
-  sentral: string;
+  id_sentral: number
+  sentral: string
 }
 interface GroupedData {
-  [key: string]: PenggunaItem[];
+  [key: string]: PenggunaItem[]
 }
 interface MinimizedGroups {
-  [key: string]: boolean;
+  [key: string]: boolean
 }
 interface RoleItem {
-  id: number;
-  role: string;
+  id: number
+  role: string
 }
 interface MesinItem {
-  id_mesin: string;
-  mesin: string;
+  id_mesin: string
+  mesin: string
 }
 interface IndukItem {
-  id_pengelola: number;
-  pengelola: string;
+  id_pengelola: number
+  pengelola: string
 }
 interface LevelItem {
-  kode_level: string;
-  level: string;
+  kode_level: string
+  level: string
 }
 interface PengelolaItem {
-  id_pembina: number;
-  pembina: string;
+  id_pembina: number
+  pembina: string
 }
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -681,6 +682,24 @@ const closeModalEdit = () => {
   showEditConfirmPassword.value = false;
   resetFormData();
   errorsEdit.value = [];
+  comboRole.value = [
+    {
+      id: 138,
+      role: 'Staff'
+    },
+    {
+      id: 140,
+      role: 'Approver'
+    },
+    {
+      id: 141,
+      role: 'Super Admin'
+    },
+    {
+      id: 142,
+      role: 'Monitoring'
+    }
+  ];
 };
 
 const closeModal = () => {
@@ -689,6 +708,24 @@ const closeModal = () => {
   showConfirmPassword.value = false;
   resetFormData();
   errors.value = [];
+  comboRole.value = [
+    {
+      id: 138,
+      role: 'Staff'
+    },
+    {
+      id: 140,
+      role: 'Approver'
+    },
+    {
+      id: 141,
+      role: 'Super Admin'
+    },
+    {
+      id: 142,
+      role: 'Monitoring'
+    }
+  ];
 };
 const fetchData = async () => {
   try {
@@ -744,6 +781,7 @@ const openEditModals = async (id: number) => {
       parseInt(formData.value.id_pengelola),
       parseInt(formData.value.id_pembina)
     );
+    handleChangeLevel(response.data.level_id);
     comboSentral.value = responseSentral.data;
     comboSentral.value.forEach((item) => {
       sentralMappings.value[item.id_sentral] = item.sentral;
@@ -900,7 +938,7 @@ const editUserDataAndCloseModal = async () => {
         };
         isModalEdit.value = false;
         resetFormData();
-        fetchData();
+        await fetchData();
         isEditSuccess.value = true;
         await wait(3000);
         isEditSuccess.value = false;
@@ -985,7 +1023,7 @@ const saveUserDataAndCloseModal = async () => {
           status: false,
         };
         showModalCreate.value = false;
-        fetchData();
+        await fetchData();
         isLoading.value = false;
         isSuccess.value = true;
         await wait(3000);
@@ -1104,10 +1142,8 @@ onMounted(async () => {
 onMounted(async () => {
   try {
     const response: any = await userService.getRole();
+    console.log(response.data, 'role')
     comboRole.value = response.data;
-    comboRole.value.forEach((item) => {
-      roleMappings.value[item.id] = item.id;
-    });
   } catch (error) {
     console.error("Error fetching combo role:", error);
   }
@@ -1198,5 +1234,11 @@ ul li#pagination.selected {
 :disabled {
   background-color: #F5F5F5;
   cursor: not-allowed;
+}
+
+ul li.disabled {
+  pointer-events: none;
+  cursor: not-allowed;
+  color: #D1D1DB;
 }
 </style>

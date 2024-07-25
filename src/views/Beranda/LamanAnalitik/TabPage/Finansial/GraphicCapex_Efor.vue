@@ -273,7 +273,7 @@ onMounted(async () => {
   <div class="flex flex-col h-full px-6 pt-4 pb-4 space-y-1.5 mt-4 bg-white rounded-lg">
     <div class="flex">
       <h2 class="text-lg font-semibold text-primaryTextColor mt-2.5 pl-2">{{ props.title }}</h2>
-      <button type="button"
+      <button type="button" id="hover-button"
         class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#0099AD] hover:text-white duration-300 focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center"
         @click="showModal = !showModal">
         <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2">
@@ -318,21 +318,21 @@ onMounted(async () => {
           </div>
           <div v-show="value.includes('PLTU')" class="flex flex-col space-y-1">
             <label class="font-semibold text-labelColor">DMN</label>
-            <el-select v-model="dmn" multiple clearable collapse-tags
-              placeholder="Pilih DMN" popper-class="custom-header" :max-collapse-tags="15"
-              class="w-full text-primaryTextColor">
+            <el-select v-model="dmn" multiple clearable collapse-tags placeholder="Pilih DMN"
+              popper-class="custom-header" :max-collapse-tags="15" class="w-full text-primaryTextColor">
               <template #header>
                 <el-checkbox v-model="checkDmn" :indeterminateDmn="indeterminateDmn" @change="handleCheckDmn">
                   Select All Items
                 </el-checkbox>
               </template>
-              <el-option v-for="(dmnItem, dmnIndex) in props.itemsDayaMampu" :key="dmnIndex"
-                :label="dmnItem.name" :value="dmnItem.id" />
+              <el-option v-for="(dmnItem, dmnIndex) in props.itemsDayaMampu" :key="dmnIndex" :label="dmnItem.name"
+                :value="dmnItem.id" />
             </el-select>
-          <div class="flex -mb-2">
-            <p class="text-[#FF5656] text-lg mr-1 -mt-1">*</p>
-            <p class="text-[#333333] text-xs ml-1">DMN hanya akan muncul jika Anda memilih PLTU dari Kategori Pembangkit</p>
-          </div>
+            <div class="flex -mb-2">
+              <p class="text-[#FF5656] text-lg mr-1 -mt-1">*</p>
+              <p class="text-[#333333] text-xs ml-1">DMN hanya akan muncul jika Anda memilih PLTU dari Kategori
+                Pembangkit</p>
+            </div>
           </div>
           <div class="flex flex-col space-y-0.5">
             <label for="" class="text-sm font-semibold text-labelColor">Tahun</label>
@@ -379,39 +379,39 @@ onMounted(async () => {
         <div v-for="itemsDMN in dmn.join()">
           <div>
             <div v-show="itemsDMN == '1'" class="mr-1 text-xs font-semibold">PLTU < 100,</div>
-            <div v-show="itemsDMN == '2'" class="mr-1 text-xs font-semibold">PLTU 100 - 400,</div>
-            <div v-show="itemsDMN == '3'" class="text-xs font-semibold">PLTU > 400</div>
+                <div v-show="itemsDMN == '2'" class="mr-1 text-xs font-semibold">PLTU 100 - 400,</div>
+                <div v-show="itemsDMN == '3'" class="text-xs font-semibold">PLTU > 400</div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="badge m-1 font-bold text-xs badge-lg text-[#0099AD] border-[#0099AD] badge-outline bg-primaryColor bg-opacity-5">
+          <p class="mr-2 text-xs">Tahun : </p>
+          <div class="text-xs font-semibold tracking-wider">
+            {{ filter.tahun }}
           </div>
         </div>
       </div>
-      <div
-        class="badge m-1 font-bold text-xs badge-lg text-[#0099AD] border-[#0099AD] badge-outline bg-primaryColor bg-opacity-5">
-        <p class="mr-2 text-xs">Tahun : </p>
-        <div class="text-xs font-semibold tracking-wider">
-          {{ filter.tahun }}
+      <ShimmerLoading v-if="isLoading" class="w-full h-[460px] mt-3 mb-3" />
+      <div v-else>
+        <DynamicScatterPlot v-if="!graphData.isEmpty" :source="graphData.source" :series="graphData.series"
+          :legends="graphData.legends || []" :pln="graphData.pln" :ipp="graphData.ipp"
+          :xData="{ name: 'EFOR', satuan: '%' }" :yData="{ name: 'Capex', satuan: 'Rp (Juta)' }"
+          :data-zoom="graphData.dataZoom" />
+        <div v-if="graphData.isEmpty">
+          <div class="flex items-center justify-center mt-28">
+            <Empty />
+          </div>
+          <div class="py-6 text-center">
+            <h1 class="font-bold">Grafik Tidak Tersedia</h1>
+            <p class="mb-14">Data tidak tersedia, sistem tidak bisa menampilkan {{ props.title }}</p>
+          </div>
         </div>
       </div>
     </div>
-    <ShimmerLoading v-if="isLoading" class="w-full h-[460px] mt-3 mb-3" />
-    <div v-else>
-      <DynamicScatterPlot v-if="!graphData.isEmpty" :source="graphData.source" :series="graphData.series"
-        :legends="graphData.legends || []" :pln="graphData.pln" :ipp="graphData.ipp"
-        :xData="{ name: 'EFOR', satuan: '%' }" :yData="{ name: 'Capex', satuan: 'Rp (Juta)' }"
-        :data-zoom="graphData.dataZoom" />
-      <div v-if="graphData.isEmpty">
-        <div class="flex items-center justify-center mt-28">
-          <Empty />
-        </div>
-        <div class="py-6 text-center">
-          <h1 class="font-bold">Grafik Tidak Tersedia</h1>
-          <p class="mb-14">Data tidak tersedia, sistem tidak bisa menampilkan {{ props.title }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .custom-header {
   .el-checkbox {
     display: flex;

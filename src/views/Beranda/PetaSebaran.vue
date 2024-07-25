@@ -11,7 +11,7 @@
           @on-escape="isSearchModalOpen = false"
           @on-click="selectedSearchQuery = searchQuery; isSearchModalOpen = false; fetchPetaSentral()"
           @on-key-enter="selectedSearchQuery = searchQuery; isSearchModalOpen = false; fetchPetaSentral()" />
-        <button type="button"
+        <button type="button" id="hover-button"
           class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#0099AD] hover:text-white duration-300 focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center"
           @click="showModal = !showModal">
           <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2">
@@ -43,7 +43,7 @@
               </button>
             </div>
           </div>
-          <div class="mt-4">
+          <div class="mt-4" v-if="authService.checkLevel() === 'Admin'">
             <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Induk / Subholding / Anak Perusahaan</h3>
             <el-select v-model="pengelola" multiple clearable collapse-tags
               placeholder="Pilih Unit Induk / Subholding / Anak Perusahaan" popper-class="custom-header"
@@ -133,26 +133,24 @@
           <ol-source-osm />
         </ol-tile-layer>
         <ol-overlay v-for="( item, i ) in dataPeta " :key="i" :position="[item.lng, item.lat]">
-          <img v-if="item.kode_jenis_energi === 'EBT'" @mouseover="showByIndex = i"
+          <img v-if="item.kode_jenis_energi === 'EBT'" @mouseenter="showByIndex = i"
             @click="getDetailSentral(item.kode_sentral)" src="../../assets/img/ebt.png"
             class="rounded-full cursor-pointer" :class="zoom >= 15 ? 'w-5 h-5' : 'w-3 h-3'">
-          <img v-else @mouseover="showByIndex = i" @click="getDetailSentral(item.kode_sentral)"
+          <img v-else @mouseenter="showByIndex = i" @click="getDetailSentral(item.kode_sentral)"
             src="../../assets/img/Non-EBT.png" class="rounded-full cursor-pointer"
             :class="zoom >= 15 ? 'w-5 h-5' : 'w-3 h-3'">
         </ol-overlay>
         <ol-overlay v-for="( item, i ) in dataPeta " :position="[item.lng, item.lat]" :key="i">
           <template v-slot="">
-            <div v-if="showByIndex === i" @mouseover="showByIndex = i, showByIndexModal = i"
+            <div v-if="showByIndex === i" @mouseenter="showByIndex = i, showByIndexModal = i"
               @mouseleave="showByIndex = null, showByIndexModal = null"
               class="bg-white absolute z-50 w-[18rem] rounded-md right-0 bottom-0">
               <div class="flex justify-between px-2 py-2">
                 <div>
                   <div class="flex mb-1">
-                    <div class="h-3 w-3 rounded-full shadow-md mx-2 mt-1.5"
+                    <div class="h-3 w-3 rounded-full shadow-md mx-2 mt-1.5 flex-shrink-0"
                       :class="item.kode_warna === '#00FF00' ? 'bg-[#10A976]' : 'bg-[#FF6362]'"></div>
-                    <div>
-                      <h1 class="font-medium">{{ item.sentral }}</h1>
-                    </div>
+                    <h1 class="font-medium">{{ item.sentral }}</h1>
                   </div>
                   <p class="text-[11px] ml-7">
                     {{ item.kode_jenis_energi }}
@@ -621,18 +619,12 @@ async function changeDataNoDMN() {
 
 onMounted(async () => {
   const view: View | undefined = viewRef.value?.view;
-  try {
-    isLoading.value = true;
-    await fetchPetaSentral();
-    getDataPengelola()
-    getDataPembangkit()
-    getDataUmurMesin()
-  } catch (error) {
-    isLoading.value = false;
-    console.error('Fetch All API Error : ' + error);
-  } finally {
-    isLoading.value = false;
-  }
+  isLoading.value = true;
+  await fetchPetaSentral();
+  getDataPengelola()
+  getDataPembangkit()
+  getDataUmurMesin()
+  isLoading.value = false;
 });
 </script>
 

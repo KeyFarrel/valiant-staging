@@ -58,7 +58,7 @@
               <div class="flex flex-row mt-4">
                 <Chips :title="'Unit Pengelola'" :content="dataSentral.pengelola" />
                 <Chips :title="'Unit Pembina'" :content="dataSentral.pembina" class="block w-56 truncate"
-                  @mouseover="detailPembina" @mouseout="detailPembina">
+                  @mouseenter="detailPembina" @mouseleave="detailPembina">
                 </Chips>
                 <Chips :title="'Jumlah Unit'" :content="dataSentral.jumlah_mesin" />
                 <div class="flex items-center rounded-xl border border-[#007E8F] bg-blue-50 px-3 py-1 text-xs">
@@ -68,7 +68,7 @@
                   </div>
                   <div class="flex flex-col items-center ml-2">
                     <svg width="12" height="12" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"
-                      @mouseover="toggleDetail" @mouseout="toggleDetail">
+                      @mouseenter="toggleDetail" @mouseleave="toggleDetail">
                       <path
                         d="M5 10C2.2385 10 0 7.7615 0 5C0 2.2385 2.2385 0 5 0C7.7615 0 10 2.2385 10 5C10 7.7615 7.7615 10 5 10ZM4.5 4.5V7.5H5.5V4.5H4.5ZM4.5 2.5V3.5H5.5V2.5H4.5Z"
                         fill="#0099AD" />
@@ -219,13 +219,13 @@
               </p>
             </div>
             <div class="cursor-pointer" @click="toggleButton">
-              <svg v-if="isHover" width="20" height="20" viewBox="0 0 20 20" fill="none"
+              <svg v-if="!isHover" width="20" height="20" viewBox="0 0 20 20" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
                   d="M5.29289 7.29289C5.68342 6.90237 6.31658 6.90237 6.70711 7.29289L10 10.5858L13.2929 7.29289C13.6834 6.90237 14.3166 6.90237 14.7071 7.29289C15.0976 7.68342 15.0976 8.31658 14.7071 8.70711L10.7071 12.7071C10.3166 13.0976 9.68342 13.0976 9.29289 12.7071L5.29289 8.70711C4.90237 8.31658 4.90237 7.68342 5.29289 7.29289Z"
                   fill="#0099AD" />
               </svg>
-              <svg v-if="!isHover" width="20" height="20" viewBox="0 0 20 20" fill="none"
+              <svg v-else-if="isHover" width="20" height="20" viewBox="0 0 20 20" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
                   d="M14.7071 12.7071C14.3166 13.0976 13.6834 13.0976 13.2929 12.7071L10 9.41421L6.70711 12.7071C6.31658 13.0976 5.68342 13.0976 5.29289 12.7071C4.90237 12.3166 4.90237 11.6834 5.29289 11.2929L9.29289 7.29289C9.68342 6.90237 10.3166 6.90237 10.7071 7.29289L14.7071 11.2929C15.0976 11.6834 15.0976 12.3166 14.7071 12.7071Z"
@@ -244,7 +244,7 @@
                   <Chips :title="'Unit Pengelola'" :content="item.pengelola" class="block w-58" />
                   <Chips :title="'Unit Pembina'" :content="item.pembina ? item.pembina : '-'"
                     class="block truncate max-w-56 w-fit" :class="item.pembina.length >= 16 ? 'cursor-pointer' : ''"
-                    @mouseover="detailPembina" @mouseout="detailPembina">
+                    @mouseenter="detailPembina" @mouseleave="detailPembina">
                   </Chips>
                   <Chips :title="'Tahun COD'" :content="item.tahun" />
                 </div>
@@ -359,13 +359,13 @@
               </div>
             </div>
             <div class="cursor-pointer mt-1.5" @click="toggleButton">
-              <svg v-if="isHover" width="20" height="20" viewBox="0 0 20 20" fill="none"
+              <svg v-if="!isHover" width="20" height="20" viewBox="0 0 20 20" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
                   d="M5.29289 7.29289C5.68342 6.90237 6.31658 6.90237 6.70711 7.29289L10 10.5858L13.2929 7.29289C13.6834 6.90237 14.3166 6.90237 14.7071 7.29289C15.0976 7.68342 15.0976 8.31658 14.7071 8.70711L10.7071 12.7071C10.3166 13.0976 9.68342 13.0976 9.29289 12.7071L5.29289 8.70711C4.90237 8.31658 4.90237 7.68342 5.29289 7.29289Z"
                   fill="#0099AD" />
               </svg>
-              <svg v-if="!isHover" width="20" height="20" viewBox="0 0 20 20" fill="none"
+              <svg v-else-if="isHover" width="20" height="20" viewBox="0 0 20 20" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
                   d="M14.7071 12.7071C14.3166 13.0976 13.6834 13.0976 13.2929 12.7071L10 9.41421L6.70711 12.7071C6.31658 13.0976 5.68342 13.0976 5.29289 12.7071C4.90237 12.3166 4.90237 11.6834 5.29289 11.2929L9.29289 7.29289C9.68342 6.90237 10.3166 6.90237 10.7071 7.29289L14.7071 11.2929C15.0976 11.6834 15.0976 12.3166 14.7071 12.7071Z"
@@ -730,19 +730,6 @@ ul li.selected {
   width: 10rem;
   --dp-border-radius: 10px;
   --dp-icon-color: #0099AD;
-}
-
-/* For Webkit-based browsers (Chrome, Safari and Opera) */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-/* For IE, Edge and Firefox */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  /* IE and Edge */
-  scrollbar-width: none;
-  /* Firefox */
 }
 
 #tooltipContentPembina::after {

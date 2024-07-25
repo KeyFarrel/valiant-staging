@@ -31,7 +31,7 @@ export default class FeasibilityStudyService extends BaseService {
     return this.get(`${url}kertas-kerja-detail/type-periodic`, {kode_jenis_pembangkit: kode_jenis_pembangkit});
   }
   async getMesinById<T>(id:any): Promise<T> {
-    return this.get(`${url}/mesin/${id}`);
+    return this.get(`${url}mesin-realisasi/${id}`);
   }
   async getPembangkitByKode<T>(kode_sentral: string): Promise<T> {
     return this.get(`${url}pembangkit/by-kode`, {kode_sentral: kode_sentral});
@@ -41,5 +41,8 @@ export default class FeasibilityStudyService extends BaseService {
   }
   async getComboBahanBakar<T>(jenis_pembangkit:any): Promise<T> {
     return this.get(`${url}filter/combo-bahan-bakar`, {jenis_pembangkit: jenis_pembangkit});
+  }
+  async downloadExcelFS<T>(tahunBerjalan: any, tahunRealisasi: any, idMesin: any): Promise<T> {
+    return this.getFile(`${url}kertas-kerja-detail/export-template-fs-detail`, { tahun: tahunBerjalan, tahun_realisasi: tahunRealisasi, id_mesin: idMesin }, 'arraybuffer');
   }
 }

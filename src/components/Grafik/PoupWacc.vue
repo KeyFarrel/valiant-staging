@@ -1,27 +1,17 @@
 <template>
   <div class="flex flex-col items-center">
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      @mouseover="toggleButton"
-      @mouseout="toggleButton"
-    >
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
+      @mouseenter="toggleButton" @mouseleave="toggleButton">
       <g opacity="0.2">
         <path
           d="M7.99967 14.6666C4.31767 14.6666 1.33301 11.6819 1.33301 7.99992C1.33301 4.31792 4.31767 1.33325 7.99967 1.33325C11.6817 1.33325 14.6663 4.31792 14.6663 7.99992C14.6663 11.6819 11.6817 14.6666 7.99967 14.6666ZM7.33301 7.33325V11.3333H8.66634V7.33325H7.33301ZM7.33301 4.66658V5.99992H8.66634V4.66658H7.33301Z"
-          fill="black"
-        />
+          fill="black" />
       </g>
     </svg>
     <Transition>
-      <div
-        v-if="isHover"
+      <div v-if="isHover"
         class="flex flex-col bg-white absolute text-xs p-2 -mt-3 ml-48 z-10 rounded-lg whitespace-nowrap border space-y-1.5 duration-300"
-        id="tooltipContent"
-      >
+        id="tooltipContent">
         <div class="flex text-xs py-1">
           <p class="mr-1 text-slate-400">{{ props.title }} : </p>
           <p>{{ props.content }} %</p>

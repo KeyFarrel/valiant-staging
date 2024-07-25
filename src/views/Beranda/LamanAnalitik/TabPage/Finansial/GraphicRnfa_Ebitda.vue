@@ -81,7 +81,7 @@ async function getDataGraph() {
     // filterChips.value?.setValue()
     const response: BaseResponse<ResEbitda> = await grafikService.getGraphicRNFA({
       kode_jenis_pembangkit: value.value ? value.value : "",
-      id_daya: dmn.value ? dmn.value : "",
+      id_daya: value.value.includes('PLTU') ? dmn.value : [],
       periode: filter.value.tahun.toString()
     })
     if (response.success) {
@@ -90,50 +90,22 @@ async function getDataGraph() {
       graphData.value.series = []
       graphData.value.legends = []
       graphData.value.source = []
-      data.legend?.map((item, index) => {
-        graphData.value.legends?.push(item)
-        const scatterTemplate: {
-          name: string
-          type: string
-          data: any
-          color: string
-        } = {
-          name: item.label,
-          type: 'scatter',
-          data: [],
-          color: item.color,
-        }
-        data.grafik?.map(graph => {
-          if (graph.kode_jenis_kit === item.label) {
-            scatterTemplate.data.push([graph.data.ebitda_real, graph.data.rnfa_real, 5, graph.nama_mesin])
-            graphData.value.source?.push([graph.data.ebitda_real, graph.data.rnfa_real])
-          }
-        })
-        graphData.value.series.push(scatterTemplate)
-      })
-      isLoading.value = false
-    }
-  } catch (e) {
-    isLoading.value = false
-    console.log(e)
-  }
-}
+      //   const totalResponse = data.grafik?.length
+      let totalPLNEAF = 0
+      let totalEbitda = 0
+      for (const key in data.grafik) {
+        totalPLNEAF += data.grafik[key].data.rnfa_real;
+        totalEbitda += data.grafik[key].data.ebitda_real;
+        console.log(data.grafik[key].data.ebitda_real);
+      }
 
-async function getDataGraphNoDMN() {
-  try {
-    isLoading.value = true
-    // filterChips.value?.setValue()
-    const response: BaseResponse<ResEbitda> = await grafikService.getGraphicRNFA({
-      kode_jenis_pembangkit: value.value ? value.value : "",
-      id_daya: [],
-      periode: filter.value.tahun.toString()
-    })
-    if (response.success) {
-      const data = response.data
-      graphData.value.isEmpty = data.grafik === null
-      graphData.value.series = []
-      graphData.value.legends = []
-      graphData.value.source = []
+      let avgPLNEAF = totalPLNEAF / data.grafik?.length;
+      let avgEbitda = totalEbitda / data.grafik?.length;
+      console.log(totalPLNEAF, 'TOTAL PLN EAF');
+      console.log(totalEbitda, 'TOTAL PLN EBITDA');
+      console.log(avgPLNEAF, 'AVG PLN EAF');
+      console.log(avgEbitda, 'AVG PLN EBITDA');
+      graphData.value.pln = { x: avgEbitda, y: avgPLNEAF }
       data.legend?.map((item, index) => {
         graphData.value.legends?.push(item)
         const scatterTemplate: {
@@ -187,19 +159,6 @@ const closeModal = () => {
 const applyFilter = async () => {
   if (value.value.length) {
     getDataGraph();
-    showModal.value = false;
-  } else if (value.value.length === 0 && filter.value.tahun === null) {
-    notifyError('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000);
-  } else if (filter.value.tahun === null) {
-    notifyError('Mohon pilih 1 tahun!', 5000);
-  } else {
-    notifyError('Mohon pilih minimal 1 kategori pembangkit!', 5000);
-  }
-}
-
-const applyFilterNoDMN = async () => {
-  if (value.value.length) {
-    getDataGraphNoDMN();
     showModal.value = false;
   } else if (value.value.length === 0 && filter.value.tahun === null) {
     notifyError('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000);
@@ -265,8 +224,8 @@ onMounted(async () => {
   <div class="flex flex-col h-full px-6 pt-4 pb-4 mt-4 space-y-1.5 bg-white rounded-lg">
     <div class="flex">
       <h2 class="text-lg font-semibold text-primaryTextColor mt-2.5 pl-2">{{ props.title }}</h2>
-      <button type="button"
-        class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#0099AD] hover:text-white duration-300 focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center"
+      <button type="button" id="hover-button"
+        class="text-[#0099AD] relative bg-white border border-[#0099AD] hover:bg-[#0099AD] hover:text-white duration-300 focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center"
         @click="showModal = !showModal">
         <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2">
           <path
@@ -310,27 +269,27 @@ onMounted(async () => {
           </div>
           <div v-show="value.includes('PLTU')" class="flex flex-col space-y-1">
             <label class="font-semibold text-labelColor">DMN</label>
-            <el-select v-model="dmn" multiple clearable collapse-tags
-              placeholder="Pilih DMN" popper-class="custom-header" :max-collapse-tags="15"
-              class="w-full text-primaryTextColor">
+            <el-select v-model="dmn" multiple clearable collapse-tags placeholder="Pilih DMN"
+              popper-class="custom-header" :max-collapse-tags="15" class="w-full text-primaryTextColor">
               <template #header>
                 <el-checkbox v-model="checkDmn" :indeterminateDmn="indeterminateDmn" @change="handleCheckDmn">
                   Select All Items
                 </el-checkbox>
               </template>
-              <el-option v-for="(dmnItem, dmnIndex) in props.itemsDayaMampu" :key="dmnIndex"
-                :label="dmnItem.name" :value="dmnItem.id" />
+              <el-option v-for="(dmnItem, dmnIndex) in props.itemsDayaMampu" :key="dmnIndex" :label="dmnItem.name"
+                :value="dmnItem.id" />
             </el-select>
-          <div class="flex -mb-2">
-            <p class="text-[#FF5656] text-lg mr-1 -mt-1">*</p>
-            <p class="text-[#333333] text-xs ml-1">DMN hanya akan muncul jika Anda memilih PLTU dari Kategori Pembangkit</p>
-          </div>
+            <div class="flex -mb-2">
+              <p class="text-[#FF5656] text-lg mr-1 -mt-1">*</p>
+              <p class="text-[#333333] text-xs ml-1">DMN hanya akan muncul jika Anda memilih PLTU dari Kategori
+                Pembangkit</p>
+            </div>
           </div>
           <div class="flex flex-col space-y-0.5">
             <label for="" class="text-sm font-semibold text-labelColor">Tahun</label>
-            <VueDatePicker v-model="filter.tahun" placeholder="Pilih Periode" :format-locale="id"
-              :yearRange="props.yearRange" :enable-time-picker="false" :hideInputIcon="false" :clearable="false"
-              :showNowButton="true" :year-picker="true" :month-change-on-scroll="false" :teleport="true" auto-apply />
+            <VueDatePicker v-model="filter.tahun" placeholder="Pilih Periode" :yearRange="props.yearRange"
+              :enable-time-picker="false" :hideInputIcon="false" :clearable="false" :showNowButton="true"
+              :year-picker="true" :month-change-on-scroll="false" :teleport="true" auto-apply />
           </div>
           <div class="flex justify-end">
             <div class="flex items-start">
@@ -338,14 +297,8 @@ onMounted(async () => {
                 class="w-full text-[#0099AD] bg-white border-2 hover:text-white duration-300 border-primaryColor hover:border-hoverColor hover:bg-hoverColor active:ring-2 active:outline-none active:ring-[#0099AD] font-medium rounded-lg text-xs mr-2 px-5 py-2.5 text-center dark:bg-[#007E8F] dark:hover:bg-white dark:active:ring-bg-[#80C1CD]">
                 Reset
               </button>
-              <div v-if="value.includes('PLTU')">
+              <div>
                 <button type="submit" @click="applyFilter()"
-                  class="w-full text-white bg-[#0099AD] hover:bg-hoverColor duration-300 active:ring-2 active:outline-none active:ring-[#80C1CD] font-medium rounded-lg text-xs px-5 py-3 text-center dark:bg-[#007E8F] dark:hover:bg-[#0099AD] dark:active:ring-[#005A66]">
-                  Terapkan
-                </button>
-              </div>
-              <div v-else>
-                <button type="submit" @click="applyFilterNoDMN()"
                   class="w-full text-white bg-[#0099AD] hover:bg-hoverColor duration-300 active:ring-2 active:outline-none active:ring-[#80C1CD] font-medium rounded-lg text-xs px-5 py-3 text-center dark:bg-[#007E8F] dark:hover:bg-[#0099AD] dark:active:ring-[#005A66]">
                   Terapkan
                 </button>
@@ -371,38 +324,38 @@ onMounted(async () => {
         <div v-for="itemsDMN in dmn.join()">
           <div>
             <div v-show="itemsDMN == '1'" class="mr-1 text-xs font-semibold">PLTU < 100,</div>
-            <div v-show="itemsDMN == '2'" class="mr-1 text-xs font-semibold">PLTU 100 - 400,</div>
-            <div v-show="itemsDMN == '3'" class="text-xs font-semibold">PLTU > 400</div>
+                <div v-show="itemsDMN == '2'" class="mr-1 text-xs font-semibold">PLTU 100 - 400,</div>
+                <div v-show="itemsDMN == '3'" class="text-xs font-semibold">PLTU > 400</div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="badge m-1 font-bold text-xs badge-lg text-[#0099AD] border-[#0099AD] badge-outline bg-primaryColor bg-opacity-5">
+          <p class="mr-2 text-xs">Tahun : </p>
+          <div class="text-xs font-semibold tracking-wider">
+            {{ filter.tahun }}
           </div>
         </div>
       </div>
-      <div
-        class="badge m-1 font-bold text-xs badge-lg text-[#0099AD] border-[#0099AD] badge-outline bg-primaryColor bg-opacity-5">
-        <p class="mr-2 text-xs">Tahun : </p>
-        <div class="text-xs font-semibold tracking-wider">
-          {{ filter.tahun }}
+      <ShimmerLoading v-if="isLoading" class="w-full h-[460px] mt-3 mb-3" />
+      <div v-else>
+        <DynamicScatterPlot v-if="!graphData.isEmpty" :source="graphData.source" :series="graphData.series"
+          :legends="graphData.legends || []" :pln="graphData.pln" :xData="{ name: 'EBITDA MARGIN', satuan: '%' }"
+          :yData="{ name: 'RNFA', satuan: '%' }" :data-zoom="graphData.dataZoom" />
+        <div v-if="graphData.isEmpty">
+          <div class="flex items-center justify-center mt-28">
+            <Empty />
+          </div>
+          <div class="py-6 text-center">
+            <h1 class="font-bold">Grafik Tidak Tersedia</h1>
+            <p class="mb-14">Data tidak tersedia, sistem tidak bisa menampilkan {{ props.title }}</p>
+          </div>
         </div>
       </div>
     </div>
-    <ShimmerLoading v-if="isLoading" class="w-full h-[460px] mt-3 mb-3" />
-    <div v-else>
-      <DynamicScatterPlot v-if="!graphData.isEmpty" :source="graphData.source" :series="graphData.series"
-        :legends="graphData.legends || []" :xData="{ name: 'EBITDA MARGIN', satuan: '%' }"
-        :yData="{ name: 'RNFA', satuan: '%' }" :data-zoom="graphData.dataZoom" />
-      <div v-if="graphData.isEmpty">
-        <div class="flex items-center justify-center mt-28">
-          <Empty />
-        </div>
-        <div class="py-6 text-center">
-          <h1 class="font-bold">Grafik Tidak Tersedia</h1>
-          <p class="mb-14">Data tidak tersedia, sistem tidak bisa menampilkan {{ props.title }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .custom-header {
   .el-checkbox {
     display: flex;

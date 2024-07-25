@@ -27,8 +27,7 @@ import PersetujuanFSMesin from "@/views/Verifikasi/Sentral/TabPage/FS/DetailFSMe
 import PersetujuanKkMesin from "@/views/Verifikasi/Sentral/TabPage/KK/DetailKKMesin.vue";
 import InputAsumsiKKApprove from "@/views/Verifikasi/Sentral/TabPage/KK/InputAsumsiParameter.vue";
 // import InputAsumsiFSApprove from "@/views/Verifikasi/Sentral/TabPage/FS/InputAsumsiParameter.vue";
-import PerbaruiKKApprove from "@/views/Verifikasi/Sentral/TabPage/KK/PerbaruiDataApprove.vue";
-import PerbaruiFSApprove from "@/views/Verifikasi/Sentral/TabPage/FS/PerbaruiDataApprove.vue";
+// import PerbaruiKKApprove from "@/views/Verifikasi/Sentral/TabPage/KK/PerbaruiDataApprove.vue";
 import SentralAdmin from "@/views/Master/SentralAdmin.vue";
 import DetailUnit from "@/views/Master/DetailUnit.vue";
 import DetailRekap from "@/views/Data/RekapKertasKerja/DetailRekap/DetailRekap.vue";
@@ -322,33 +321,6 @@ const routes = [
         meta: {
           requiresAuth: true,
           label: 'Input Asumsi Parameter',
-        },
-      },
-      {
-        path: "/perbarui-data-approveKK/:id",
-        name: "perbarui-data-approveKK",
-        component: PerbaruiKKApprove,
-        meta: {
-          requiresAuth: true,
-          label: 'Perbarui Data',
-        },
-      },
-      // {
-      //   path: "/input-asumsi-parameter-approveFS/:id",
-      //   name: "input-asumsi-parameter-approveFS",
-      //   component: InputAsumsiFSApprove,
-      //   meta: {
-      //     requiresAuth: true,
-      //     label: 'Input Asumsi Parameter',
-      //   },
-      // },
-      {
-        path: "/perbarui-data-approveFS/:id",
-        name: "perbarui-data-approveFS",
-        component: PerbaruiFSApprove,
-        meta: {
-          requiresAuth: true,
-          label: 'Perbarui Data',
         },
       },
       {

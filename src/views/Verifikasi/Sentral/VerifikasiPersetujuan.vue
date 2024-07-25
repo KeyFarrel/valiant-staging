@@ -28,7 +28,7 @@
               </div>
             </div>
             <div v-if="isHover">
-              <div v-for="(item, i) in menuMesin" :key="i" :class="{ selected: item.mesin === selectedTitle }"
+              <div v-for="(item, i) in detailMesin" :key="i" :class="{ selected: item.mesin === selectedTitle }"
                 @click="changeTabMesin(item.mesin)" class="text-xs px-3 py-2 cursor-pointer hover:bg-[#F7FBFC]">
                 {{ item.mesin }}
               </div>
@@ -57,7 +57,7 @@
         <KertasKerja :source="approveSentralKK" />
       </div>
     </div>
-    <div v-for="(item, i) in menuMesin" :key="i" v-show="selectedTitle === item.mesin"
+    <div v-for="(item, i) in detailMesin" :key="i" v-show="selectedTitle === item.mesin"
       @click="selectedTitle = item.mesin" class="w-3/4 min-h-screen px-4 py-3 ml-2 bg-white border rounded-lg">
       <div class="flex flex-row items-center justify-between">
         <h1 class="text-base font-semibold">Data Persetujuan</h1>
@@ -93,14 +93,12 @@ import FeasibilityStudyMesin from "@/views/Verifikasi/Sentral/TabPage/FS/Feasibi
 const nodeMode = import.meta.env.MODE;
 const persetujuanService = new PersetujuanService();
 const levelSentral = ref(nodeMode === 'production' ? encryptStorage.getItem('level_sentral') : localStorage.getItem("level_sentral"));
-// const level_sentral = ref(levelSentral);
 const year = new Date().getFullYear();
 const approveSentralKK = ref<any[]>([]);
 const approveMesinKK = ref<any>();
 const detailMesin = ref<any>();
 const approveSentralFS = ref<any[]>([]);
 const approveMesinFS = ref<any>();
-const menuMesin = ref<any[]>([]);
 const mesinKk = ref<any[]>([]);
 const mesinFs = ref<any[]>([]);
 const namaMesin = ref<any>();
@@ -118,11 +116,6 @@ const fetchDetailMesin = async () => {
       namaSentral.value = response.data.sentral;
       namaMesin.value = response.data.mesins[0].mesin;
       changeTabMesin(selectedTitle.value);
-    }
-    for (var i = 0; i < response.data.mesins.length; i++) {
-      menuMesin.value.push({
-        mesin: response.data.mesins[i].mesin
-      })
     }
   } catch (error) {
     console.error('Fetch Detail Mesin Persetujuan Error : ' + error);

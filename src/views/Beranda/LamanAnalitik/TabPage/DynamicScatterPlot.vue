@@ -18,6 +18,7 @@ import {
 import { CanvasRenderer } from "echarts/renderers"
 import type { ComposeOption } from "echarts/core"
 import GlobalFormat from "@/services/format/global-format";
+import { onMounted, ref } from 'vue';
 
 use([
   TitleComponent,
@@ -44,6 +45,8 @@ const props = defineProps<{
 }>()
 
 provide(THEME_KEY, 'light');
+
+const chartRef = ref(null);
 
 echarts.registerTransform(ecStat.transform.regression);
 const option = computed({
@@ -145,7 +148,7 @@ const option = computed({
           smooth: false,
           data: [
             [0, props.pln?.y],
-            [props.xData.satuan === '%' ? 100 : props.xData.satuan === 'kcal/KWh' ? 10 : Math.max.apply(Math, props.source.map(item => item[0])) + Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10), props.pln?.y],
+            [props.xData.satuan === '%' ? 100 : Math.max.apply(Math, props.source.map(item => item[0])) == 0 ? 1 : Math.max.apply(Math, props.source.map(item => item[0])) + Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10), props.pln?.y],
           ],
           color: "#FF5656",
         },
@@ -155,7 +158,7 @@ const option = computed({
           name: "PLNY",
           smooth: false,
           data: [
-            [props.pln?.x, 0],
+            [props.pln?.x, props.yData.satuan === '%' ? Math.min.apply(Math, props.source.map(item => item[1])) < 0 ? Math.floor(Math.min.apply(Math, props.source.map(item => item[1])) / 10) * 10 : 0 : 0],
             [props.pln?.x, Math.max.apply(Math, props.source.map(item => item[1])) + Math.round((Math.max.apply(Math, props.source.map(item => item[1])) - Math.min.apply(Math, props.source.map(item => item[1]))) / 10)],
           ],
           color: "#FF5656",
@@ -190,6 +193,18 @@ const option = computed({
     emits('update:series', val)
   }
 })
+
+// onMounted(() => {
+//   const chart = echarts.init(chartRef.value);
+//   chart.setOption(option.value);
+
+//   // Mendapatkan opsi yang dihitung setelah grafik di-render
+//   setTimeout(() => {
+//     const computedOption = chart.getOption();
+//     // const yAxisMin = computedOption.yAxis[0].min;
+//     console.log('yAxis min:', computedOption);
+//   }, 100);
+// });
 </script>
 
 <template>

@@ -83,7 +83,6 @@ const globalFormat = new GlobalFormat();
 import InfoHeader from '@/components/ui/InfoHeader.vue';
 import SortingIcon from '@/components/icons/SortingIcon.vue';
 import Loading from '@/components/ui/LoadingSpinner.vue';
-import '@vuepic/vue-datepicker/dist/main.css';
 
 const detailCAPEX = ref<any>();
 const totalReplacement = ref<any>();

@@ -1,83 +1,78 @@
 <template>
   <Loading v-if="isLoading" />
-  <div class="min-h-screen">
-    <div class="bg-[url('@/assets/img/Frame.png')] min-w-full h-[352px] -mx-2 -mt-3">
-      <div class="flex">
-        <div class="w-[400px] bg-white mt-8 ml-10 rounded-[8px]">
-          <div class="flex justify-center my-5">
-            <div class="flex flex-row items-center justify-center rounded-full w-24 h-24 bg-warningColor">
-                <p class="text-xl text-white font-bold uppercase">{{ data.nama_pegawai?.split('')[0] }}</p>
-            </div>
-          </div>
-          <div class="text-center my-5">
-            <h1 class="font-bold text-lg capitalize mb-1.5">{{ data.nama_pegawai ? data.nama_pegawai : "-"}}</h1>
-            <p class="text-[12px] mt-1.5 text-[#4791F2] underline cursor-pointer hover:font-medium">{{ data.email ? data.email : "-"}}</p>
-            <hr class="bg-[#000] mt-5"/>
-          </div>
-          <div class="flex justify-between items-center px-5">
-            <p class="font-medium text-[12px] text-[#7B8DAD] pb-5">Id</p>
-            <p class="pb-5 text-[12px] font-medium">{{ data.id_user ? data.id_user : "-"}}</p>
-          </div>
-          <div class="flex justify-between items-center px-5">
-            <p class="font-medium text-[12px] text-[#7B8DAD] pb-5">Role</p>
-            <div class="grid grid-cols-2 gap-x-2">
-              <div v-if="data.roles === null">
-                <div class="bg-[#F7FBFC] mb-2 p-1.5 text-center text-[10px] text-[#0099AD] border border-[#0099AD] font-semibold rounded-md">
-                  -
-                </div>
-              </div>
-              <div v-else v-for="item in items">
-                <div class="bg-[#F7FBFC] mb-2 p-1.5 text-center text-[10px] text-[#0099AD] border border-[#0099AD] font-semibold rounded-md">
-                  {{ item }}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="flex justify-between items-center px-5">
-            <p class="font-medium text-[12px] text-[#7B8DAD] pb-5">Status</p>
-              <div v-if="data.status === true" class="bg-[#E0E0E0] mb-2 p-1.5 text-center text-[10px] text-[#7F7F80] font-semibold rounded-md">
-                Aktif
-              </div>
-              <div v-else class="bg-[#E0E0E0] mb-2 p-1.5 text-center text-[10px] text-[#7F7F80] font-semibold rounded-md">
-                Tidak Aktif
-              </div>
-          </div>
-          <div class="flex justify-between items-center px-5">
-            <p class="font-medium text-[12px] text-[#7B8DAD] pb-5">Aktif Sejak</p>
-            <p class="pb-5 text-[12px] font-medium">{{ activeDate ? activeDate : '-' }}</p>
+  <div class="flex flex-row items-center justify-center h-screen -mt-24 space-x-12">
+    <div
+      class="bg-white rounded-lg w-full max-w-[32%] items-center h-[60%] top-12 max-h-[600px] px-10 py-5 flex flex-col space-y-5">
+      <div class="flex flex-col items-center space-y-3.5">
+        <div
+          class="w-[150px] items-center flex flex-col font-semibold justify-center h-[150px] bg-warningColor rounded-full text-[42px] text-white uppercase">
+          {{ data.nama_pegawai.split('')[0] }}
+        </div>
+        <div class="flex flex-col items-center space-y-1">
+          <p class="text-base font-semibold">{{ data.nama_pegawai }}</p>
+          <p class="text-[#4791F2]">{{ data.email }}</p>
+        </div>
+      </div>
+      <hr class="w-full">
+      <div class="flex flex-col justify-between w-full h-full">
+        <div class="flex flex-row items-center justify-between w-full">
+          <p class="text-sm font-semibold text-labelColor">Level</p>
+          <p class="text-sm">{{ authService.checkLevel() }}</p>
+        </div>
+        <div class="flex flex-row items-center justify-between w-full">
+          <p class="text-sm font-semibold text-labelColor">Role</p>
+          <div
+            class="w-fit px-1.5 py-1 flex items-center justify-center text-xs font-semibold bg-[#F7FBFC] border border-primaryColor rounded-full text-primaryColor">
+            {{ authService.checkRole() }}
           </div>
         </div>
-        <div class="w-[832px] bg-white mt-8 p-5 mx-10 rounded-[8px]">
-          <h1 class="font-medium text-lg">Personal Data</h1>
-          <hr class="my-3"/>
-          <div class="my-4">
-            <h3 class="text-[13px] text-[#4D5E80] font-medium mb-2">Nama User</h3>
-            <div class="mt-2 p-2 text-xs font-medium ml-2 bg-[#E0E0E0] capitalize w-full rounded-md">{{ data.nama_pegawai ? data.nama_pegawai : "-"}}</div>
+        <div class="flex flex-row items-center justify-between w-full">
+          <p class="text-sm font-semibold text-labelColor">Status</p>
+          <div
+            class="w-fit px-1.5 py-1 flex items-center justify-center font-semibold text-xs bg-[#EDF7F2] border border-[#C7E5D7] rounded-full text-[#397E5D]"
+            v-if="data.status">
+            Aktif
           </div>
-          <div class="my-4">
-            <h3 class="text-[13px] text-[#4D5E80] font-medium mb-2">NIP</h3>
-            <div class="mt-2 p-2 text-xs font-medium ml-2 bg-[#E0E0E0] w-full rounded-md">{{ data.nip ? data.nip : "-"}}</div>
+          <div v-else-if="!data.status"
+            class="w-fit px-1.5 py-1 flex items-center justify-center font-semibold text-xs bg-[#FAEBEA] border border-[#EFC0BD] rounded-full text-[#C53830]">
+            Tidak Aktif
           </div>
-          <div class="my-4">
-            <h3 class="text-[13px] text-[#4D5E80] font-medium mb-2">Email User</h3>
-            <div class="mt-2 p-2 text-xs font-medium ml-2 bg-[#E0E0E0] w-full rounded-md">{{ data.email ? data.email : "-"}}</div>
-          </div>
-          <div class="my-4">
-            <h3 class="text-[13px] text-[#4D5E80] font-medium mb-2">Role</h3>
-            <div class="mt-2 p-2 text-xs font-medium ml-2 bg-[#E0E0E0] w-full rounded-md">{{ data.roles ? data.roles : "-"}}</div>
-          </div>
-          <div class="my-4">
-            <h3 class="text-[13px] text-[#4D5E80] font-medium mb-2">Unit Pengelola</h3>
-            <div class="mt-2 p-2 text-xs font-medium ml-2 bg-[#E0E0E0] w-full rounded-md">{{ data.pengelola ? data.pengelola : "-"}}</div>
-          </div>
-          <div class="my-4">
-            <h3 class="text-[13px] text-[#4D5E80] font-medium mb-2">Unit Pembina</h3>
-            <div class="mt-2 p-2 text-xs font-medium ml-2 bg-[#E0E0E0] w-full rounded-md">{{ data.pembina ? data.pembina : "-"}}</div>
-          </div>
-          <div class="my-4">
-            <h3 class="text-[13px] text-[#4D5E80] font-medium mb-2">Unit Sentral</h3>
-            <div class="mt-2 p-2 text-xs font-medium ml-2 bg-[#E0E0E0] w-full rounded-md">{{ data.sentral ? data.sentral : "-"}}</div>
-          </div>
+        </div>
+        <div class="flex flex-row items-center justify-between w-full">
+          <p class="text-sm font-semibold text-labelColor">Aktif Sejak</p>
+          <p class="text-sm">{{ activeDate }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="bg-white rounded-lg w-full max-w-[52%] top-12 h-[60%] max-h-[600px] p-5 space-y-5 flex flex-col">
+      <div class="space-y-3.5">
+        <p class="text-base font-semibold">Data Pribadi</p>
+        <hr>
+      </div>
+      <div class="flex flex-col justify-between w-full h-full">
+        <div class="space-y-1">
+          <p class="text-xs font-semibold text-labelColor">Nama Pengguna</p>
+          <p class="text-xs">{{ data.nama_pegawai }}</p>
+        </div>
+        <div class="space-y-1">
+          <p class="text-xs font-semibold text-labelColor">NIP</p>
+          <p class="text-xs">{{ data.nip }}</p>
+        </div>
+        <div class="space-y-1">
+          <p class="text-xs font-semibold text-labelColor">Email Pengguna</p>
+          <p class="text-xs">{{ data.email }}</p>
+        </div>
+        <div class="space-y-1">
+          <p class="text-xs font-semibold text-labelColor">Unit Pengelola</p>
+          <p class="text-xs">{{ data.pengelola === '' ? '-' : data.pengelola }}</p>
+        </div>
+        <div class="space-y-1">
+          <p class="text-xs font-semibold text-labelColor">Unit Pembina</p>
+          <p class="text-xs">{{ data.pembina === '' ? '-' : data.pembina }}</p>
+        </div>
+        <div class="space-y-1">
+          <p class="text-xs font-semibold text-labelColor">Unit Sentral</p>
+          <p class="text-xs">{{ data.sentral === '' ? '-' : data.sentral }}</p>
         </div>
       </div>
     </div>
@@ -88,50 +83,90 @@
 import { ref, onMounted } from "vue";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import LoginService from "@/services/auth-service";
-
 const loginService = new LoginService();
+import AuthService from "@/services/auth-service";
+const authService = new AuthService();
+
 const isLoading = ref(false);
 const items = ref(["Admin", "Staff Unit Sentral", "Admin Unit Mesin"])
 interface dataItem {
-  data: any;
-  id_user: string;
-  nip: string;
-  email: string;
-  username: string;
-  nama_pegawai: string;
-  status_pegawai: string;
-  atasan: string;
-  photo: string;
-  status: any;
-  no_tlpn: number;
-  pengelola: string;
-  pembina: string;
-  sentral: string;
+  data: any
+  id_user: string
+  nip: string
+  email: string
+  username: string
+  nama_pegawai: string
+  atasan: string
+  photo: string
+  status: boolean
+  no_tlpn: number
+  pengelola: string
+  pembina: string
+  sentral: string
   roles: any
+  created_at: any
 }
 
-const data = ref<dataItem>({});
+const data = ref<dataItem>({
+  data: {},
+  id_user: "",
+  nip: "",
+  email: "",
+  username: "",
+  nama_pegawai: "",
+  atasan: "",
+  photo: "",
+  status: true,
+  no_tlpn: 0,
+  pengelola: "",
+  pembina: "",
+  sentral: "",
+  roles: {},
+  created_at: ""
+});
+
 const activeDate = ref<any>('');
+const calculateTimeAgo = (createdAt: any) => {
+  const now: any = new Date();
+  const date: any = new Date(createdAt);
+  const diff = now - date;
+
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const months = Math.floor(days / 30);
+  const years = Math.floor(months / 12);
+
+  if (years > 0) {
+    return `${years} tahun yang lalu`;
+  } else if (months > 0) {
+    return `${months} bulan yang lalu`;
+  } else if (days > 0) {
+    return `${days} hari yang lalu`;
+  } else if (hours > 0) {
+    return `${hours} jam yang lalu`;
+  } else if (minutes > 0) {
+    return `${minutes} menit yang lalu`;
+  } else {
+    return `${seconds} detik yang lalu`;
+  }
+};
 const fetchDataProfile = async () => {
   try {
+    isLoading.value = true;
     const response: dataItem = await loginService.profile();
     data.value = response.data;
-    const date = new Date(data.value.created_at)
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    activeDate.value = date.toLocaleDateString("en-US", options) 
+    const createdAt = data.value.created_at;
+    activeDate.value = calculateTimeAgo(createdAt);
+    isLoading.value = false;
   } catch (error) {
     console.error("Error fetching data:", error);
+    isLoading.value = false;
   }
 };
 
 onMounted(async () => {
-  try {
-    isLoading.value = true;
-    await fetchDataProfile();
-  } catch (error) {
-    console.error("Error Fetch Me : ", error);
-  } finally {
-    isLoading.value = false;
-  }
+  await fetchDataProfile();
 });
 </script>

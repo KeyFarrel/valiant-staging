@@ -21,13 +21,13 @@
             </defs>
           </svg>
           <p class="text-warningColor">Anomali
-            <span class="text-primaryTextColor">{{ ': 14% > IRR < 9%' }}</span>
+            <span class="text-primaryTextColor">{{ ': 9% > IRR > 14%' }}</span>
           </p>
         </div>
         <div class="flex items-center space-x-1.5">
           <div class="w-3 h-3 bg-green-500 rounded-lg"></div>
           <p class="text-green-500">Normal
-            <span class="text-primaryTextColor">: IRR 9 - 14%</span>
+            <span class="text-primaryTextColor">: IRR 9% - 14%</span>
           </p>
         </div>
       </div>

@@ -1,16 +1,15 @@
 <template>
-    <ComponentUpdate v-if="props.statusGrafik === 'Data sudah update'"/>
-    <ComponentNoIsi v-else-if="props.statusGrafik === 'Data belum terisi'"/>
-    <ComponentDraft v-else-if="props.statusGrafik === 'Draft'"/>
-    <ComponentDisetujui v-else-if="props.statusGrafik === 'Disetujui'"/>
-    <ComponentWaitingT1 v-else-if="props.statusGrafik === 'Menunggu Persetujuan T1'"/>
-    <ComponentWaitingT2 v-else-if="props.statusGrafik === 'Menunggu Persetujuan T2'"/>
-    <ComponentDitolakT1 v-else-if="props.statusGrafik === 'Ditolak T1'"/>
-    <ComponentDitolakT2 v-else-if="props.statusGrafik === 'Ditolak T1'"/>
+  <ComponentUpdate v-if="props.statusGrafik === 'Data sudah update'" />
+  <ComponentNoIsi v-else-if="props.statusGrafik === 'Data belum terisi'" />
+  <ComponentDraft v-else-if="props.statusGrafik === 'Draft'" />
+  <ComponentDisetujui v-else-if="props.statusGrafik === 'Disetujui'" />
+  <ComponentWaitingT1 v-else-if="props.statusGrafik === 'Menunggu Persetujuan T1'" />
+  <ComponentWaitingT2 v-else-if="props.statusGrafik === 'Menunggu Persetujuan T2'" />
+  <ComponentDitolakT1 v-else-if="props.statusGrafik === 'Ditolak T1'" />
+  <ComponentDitolakT2 v-else-if="props.statusGrafik === 'Ditolak T2'" />
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import ComponentDraft from "@/components/Status/ComponentDraft.vue";
 import ComponentDisetujui from "@/components/Status/ComponentDisetujui.vue";
 import ComponentNoIsi from "@/components/Status/ComponentNoIsi.vue";

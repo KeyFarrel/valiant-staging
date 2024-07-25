@@ -8,15 +8,15 @@ export default class DetailSentralService extends BaseService {
   }
   
   async uploadPhoto<T>(file: any): Promise<T> {
-    return this.postFile(`${url}mutasiasset/upload-minio`, file);
+    return this.postFile(`${url}mutasiasset/s3-amazon-upload-file`, file);
   }
   async getPhoto<T>(file: string): Promise<T> {
-    return this.get(`${url}mutasiasset/view-dokumen`, {id_dokumen: file}, 'arraybuffer');
+    return this.get(`${url}mutasiasset/s3-amazon-download/${file}`, {}, 'arraybuffer');
   }
   async getMesinById<T>(id:any): Promise<T> {
     return this.get(`${url}mesin/${id}`);
   }
-  async updateMesinById<T>(id:any, nilai_asset_awal:number, masa_manfaat:number, tahun_nilai_perolehan:number,latitude: string, longitude: string, photo1: any): Promise<T> {
+  async updateMesinById<T>(id:any, nilai_asset_awal:number, masa_manfaat:number, tahun_nilai_perolehan:number,latitude: string, longitude: string, photo1?: any): Promise<T> {
     return this.put(`${url}mesin/${id}`, {nilai_asset_awal: nilai_asset_awal, masa_manfaat: masa_manfaat, tahun_nilai_perolehan: tahun_nilai_perolehan, latitude: latitude, longitude: longitude, photo1: photo1});
   }
   async updateSentral<T>(id:any, photo: any): Promise<T> {

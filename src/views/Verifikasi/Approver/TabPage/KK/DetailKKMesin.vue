@@ -731,13 +731,7 @@ const downloadEvidence = async () => {
     isLoading.value = true;
     const filePath: any = await rekapService.getEvidencePath(idGrafik, route.query.tahun?.toString() ?? '0', 0);
     const finalFileName: any = filePath.data[0].file_name;
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-    };
-    const response: any = await axios.get(`https://portalapp.iconpln.co.id:5080/valiant-be/v1/mutasiasset/s3-amazon-download/${filePath.data[0].dokumen_evidence}`, {
-      responseType: 'arraybuffer',
-      headers
-    });
+    const response: any = await rekapService.downloadEvidence(filePath.data[0].dokumen_evidence);
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `${finalFileName}`;

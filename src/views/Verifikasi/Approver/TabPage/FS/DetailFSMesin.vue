@@ -8,7 +8,9 @@
     :umur-teknis="approveSentralFS.umur_teknis ? approveSentralFS.umur_teknis : '-'" :nama-pembina="namaPembina"
     :kondisi-unit="mesinDataById.kondisi_unit">
 
-    <div v-if="approveMesinFS?.status === 'Menunggu Persetujuan T2' && level_ID == '2'" class="flex">
+    <div
+      v-if="approveMesinFS?.status === 'Menunggu Persetujuan T2' && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola')"
+      class="flex">
       <!-- Tolak Laporan -->
       <button
         class="border border-[#C53830] hover:border-[#C53830] mr-1.5 px-3 py-2 text-[#C53830] hover:text-white rounded-lg hover:bg-[#C53830] duration-300"
@@ -90,7 +92,9 @@
         </div>
       </ModalWrapper>
     </div>
-    <div v-else-if="approveMesinFS?.status === 'Menunggu Persetujuan T1' && level_ID == '4'" class="flex">
+    <div
+      v-else-if="approveMesinFS?.status === 'Menunggu Persetujuan T1' && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pembina')"
+      class="flex">
       <!-- Tolak Laporan -->
       <button
         class="border border-[#C53830] hover:border-[#C53830] mr-1.5 px-3 py-2 text-[#C53830] hover:text-white rounded-lg hover:bg-[#C53830] duration-300"
@@ -353,6 +357,8 @@ import DetailSentralService from "@/services/detail-sentral-service";
 const detailSentralService = new DetailSentralService();
 import GlobalFormat from "@/services/format/global-format";
 const globalFormat = new GlobalFormat();
+import AuthService from "@/services/auth-service";
+const authService = new AuthService();
 import TableDataTeknis from "@/components/RekapKertasKerja/TableDataTeknis.vue";
 import TableDataFinansial from "@/components/RekapKertasKerja/TableDataFinansial.vue";
 import PersetujuanService from '@/services/persetujuan-service';
@@ -374,7 +380,6 @@ import ComponentDitolakT2 from '@/components/Status/ComponentDitolakT2.vue';
 import ComponentWaitingT1 from '@/components/Status/ComponentWaitingT1.vue';
 import ComponentWaitingT2 from '@/components/Status/ComponentWaitingT2.vue';
 import ComponentDraft from '@/components/Status/ComponentDraft.vue';
-import axios from "axios";
 
 const nodeMode = import.meta.env.MODE;
 const route = useRoute();
@@ -678,13 +683,7 @@ const downloadEvidence = async () => {
     isLoading.value = true;
     const filePath: any = await rekapService.getEvidencePath(idGrafik, tahunBerjalan.toString() ?? '0', 1);
     const finalFileName: any = filePath.data[0].file_name;
-    const headers = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-    };
-    const response: any = await axios.get(`https://portalapp.iconpln.co.id:5080/valiant-be/v1/mutasiasset/s3-amazon-download/${filePath.data[0].dokumen_evidence}`, {
-      responseType: 'arraybuffer',
-      headers
-    });
+    const response: any = await rekapService.downloadEvidence(filePath.data[0].dokumen_evidence);
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `${finalFileName}`;

@@ -91,8 +91,8 @@
               <Chips :title="'Unit Pengelola'" :content="props.namaPengelola" class="block w-58" />
               <Chips :title="'Unit Pembina'" :content="props.namaPembina ? props.namaPembina : '-'"
                 class="block w-56 truncate cursor-pointer"
-                :class="props.namaPembina.length >= 16 ? 'cursor-pointer' : ''" @mouseover="detailPembina"
-                @mouseout="detailPembina">
+                :class="props.namaPembina.length >= 16 ? 'cursor-pointer' : ''" @mouseenter="detailPembina"
+                @mouseleave="detailPembina">
               </Chips>
               <Chips :title="'Tahun COD'" :content="props.tahunOperasi" />
             </div>
@@ -126,7 +126,8 @@
               <div class="flex justify-between py-1">
                 <div class="flex">
                   <div class="text-slate-500">IRR On Project</div>
-                  <PopUp class="ml-2" title="WACC On Project" :content="props.waccOnProject ? globalFormat.formatEnergy(props.waccOnProject) : '-'" />
+                  <PopUp class="ml-2" title="WACC On Project"
+                    :content="props.waccOnProject ? globalFormat.formatEnergy(props.waccOnProject) : '-'" />
                 </div>
                 <div class="flex">
                   <p class="mr-2 font-bold">
@@ -138,7 +139,8 @@
               <div class="flex justify-between py-1">
                 <div class="flex">
                   <div class="text-slate-500">IRR On Equity</div>
-                  <PopUp class="ml-2" title="WACC On Equity" :content="props.waccOnEquity ? globalFormat.formatEnergy(props.waccOnEquity) : '-'" />
+                  <PopUp class="ml-2" title="WACC On Equity"
+                    :content="props.waccOnEquity ? globalFormat.formatEnergy(props.waccOnEquity) : '-'" />
                 </div>
                 <div class="flex">
                   <p class="mr-2 font-bold">

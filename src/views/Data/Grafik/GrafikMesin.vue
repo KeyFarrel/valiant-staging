@@ -168,29 +168,13 @@
     </div>
   </div>
   <div v-else-if="stored.currentTabMesin === 'Planning & Realisasi + Proyeksi'">
-    <div v-if="statusApprove === 'Draft'" class="my-20 text-center">
-      <DraftGrafik />
-    </div>
-    <div v-else-if="statusApprove === 'Menunggu Persetujuan T1'" class="my-20 text-center">
-      <WaitingGraikT1 />
-    </div>
-    <div v-else-if="statusApprove === 'Menunggu Persetujuan T2'" class="my-20 text-center">
-      <WaitingGraikT2 />
-    </div>
-    <div v-else-if="statusApprove === 'Ditolak T1'" class="my-20 text-center">
-      <DitolakGrafikT1 />
-    </div>
-    <div v-else-if="statusApprove === 'Ditolak T2'" class="my-20 text-center">
-      <DitolakGrafikT2 />
-    </div>
-    <div v-else-if="statusApprove === ''" class="my-20 text-center">
+    <div v-if="statusApprove != 'Disetujui' && statusApprove != 'Data sudah update' && statusApprovePlanning != 'Disetujui' && statusApprovePlanning != 'Data sudah update'" class="my-20 text-center">
       <Empty />
     </div>
     <div v-else>
       <div class="flex justify-between">
         <div class="flex items-center justify-center">
           <h1 class="ml-6 text-lg font-bold"> Planning & Realisasi + Proyeksi</h1>
-          <StatusGrafik :status-grafik="statusApprove" class="ml-4 mt-1.5" />
         </div>
         <div class="flex items-center justify-center px-6">
           <RouterLink
@@ -219,8 +203,16 @@
           <vue-echarts :option="chartPRPMesin_Plan" style="height: 450px" @click="handleClickPRP" />
           <Legend />
         </div>
-        <div v-else>
+        <div v-else-if="statusApprovePlanning === 'Disetujui' || statusApprovePlanning === 'Data sudah update' && statusApprove === 'Disetujui' || statusApprove === 'Data sudah update'">
           <vue-echarts :option="chartPRPMesin" style="height: 450px" @click="handleClickPRP" />
+          <Legend />
+        </div>
+        <div v-else-if="statusApprovePlanning != 'Disetujui' || statusApprovePlanning != 'Data sudah update' && statusApprove === 'Disetujui' || statusApprove === 'Data sudah update'">
+          <vue-echarts :option="chartPRP_WLC" style="height: 450px" @click="handleClickPRP" />
+          <Legend />
+        </div>
+        <div v-else-if="statusApprove != 'Disetujui' || statusApprove != 'Data sudah update' && statusApprovePlanning === 'Disetujui' || statusApprovePlanning === 'Data sudah update'">
+          <vue-echarts :option="chartPRP_FS" style="height: 450px" @click="handleClickPRP" />
           <Legend />
         </div>
       </div>
@@ -228,29 +220,13 @@
   </div>
   <div v-else-if="stored.currentTabMesin === 'Planning vs Realisasi s/d Tahun Berjalan'
   ">
-    <div v-if="statusApprove === 'Draft'" class="my-20 text-center">
-      <DraftGrafik />
-    </div>
-    <div v-else-if="statusApprove === 'Menunggu Persetujuan T1'" class="my-20 text-center">
-      <WaitingGraikT1 />
-    </div>
-    <div v-else-if="statusApprove === 'Menunggu Persetujuan T2'" class="my-20 text-center">
-      <WaitingGraikT2 />
-    </div>
-    <div v-else-if="statusApprove === 'Ditolak T1'" class="my-20 text-center">
-      <DitolakGrafikT1 />
-    </div>
-    <div v-else-if="statusApprove === 'Ditolak T2'" class="my-20 text-center">
-      <DitolakGrafikT2 />
-    </div>
-    <div v-else-if="statusApprove === ''" class="my-20 text-center">
+   <div v-if="statusApprove != 'Disetujui' && statusApprove != 'Data sudah update' && statusApprovePlanning != 'Disetujui' && statusApprovePlanning != 'Data sudah update'" class="my-20 text-center">
       <Empty />
     </div>
     <div v-else>
       <div class="flex justify-between">
         <div class="flex items-center justify-center">
           <h1 class="ml-6 text-lg font-bold">Planning vs Realisasi s/d Tahun Berjalan</h1>
-          <StatusGrafik :status-grafik="statusApprove" class="ml-4 mt-1.5" />
         </div>
         <div class="flex items-center justify-center px-6">
           <RouterLink
@@ -271,8 +247,18 @@
         <Empty />
       </div>
       <div v-else>
-        <vue-echarts :option="chartLastYearMesin" style="height: 450px" @click="handleClickLastY" />
-        <Legend />
+        <div v-if="statusApprovePlanning === 'Disetujui' || statusApprovePlanning === 'Data sudah update' && statusApprove === 'Disetujui' || statusApprove === 'Data sudah update'">
+          <vue-echarts :option="chartLastYearMesin" style="height: 450px" @click="handleClickPRP" />
+          <Legend />
+        </div>
+        <div v-else-if="statusApprovePlanning != 'Disetujui' || statusApprovePlanning != 'Data sudah update' && statusApprove === 'Disetujui' || statusApprove === 'Data sudah update'">
+          <vue-echarts :option="chartPRPLY_WLC" style="height: 450px" @click="handleClickPRP" />
+          <Legend />
+        </div>
+        <div v-else-if="statusApprove != 'Disetujui' || statusApprove != 'Data sudah update' && statusApprovePlanning === 'Disetujui' || statusApprovePlanning === 'Data sudah update'">
+          <vue-echarts :option="chartPRPLY_FS" style="height: 450px" @click="handleClickPRP" />
+          <Legend />
+        </div>
       </div>
     </div>
   </div>
@@ -601,7 +587,6 @@ import { VueEcharts } from "vue3-echarts";
 import { useTagMesin } from "@/store/storeTagGrafik";
 import AuthService from "@/services/auth-service";
 const authService = new AuthService();
-import '@vuepic/vue-datepicker/dist/main.css';
 import Legend from "@/components/Grafik/LegendGrafik.vue";
 import GrafikService from "@/services/grafik-service";
 import GlobalFormat from "@/services/format/global-format";
@@ -690,7 +675,6 @@ interface table {
 }
 
 // chart WlC All Mesin
-const profitLoss = ref<any[]>([]);
 const chartWLCAllMesin = ref();
 const updateWLCAllMesin = ref(true);
 const tahunWLCAllMesin = ref<any>([]);
@@ -760,6 +744,8 @@ const planDetPlanKom = ref<any>([]);
 
 // chart Planning Realisasi Proyeksi
 const chartPRPMesin = ref();
+const chartPRP_FS = ref();
+const chartPRP_WLC = ref();
 const chartPRPMesin_NoPlan = ref();
 const chartPRPMesin_Plan = ref();
 const updatePRPMesin = ref(true);
@@ -801,6 +787,8 @@ const planDetPRP = ref<any>([]);
 
 // chart Last Year
 const chartLastYearMesin = ref();
+const chartPRPLY_FS = ref();
+const chartPRPLY_WLC = ref();
 const updateLastYearMesin = ref(true);
 const tahunLastYearMesin = ref<any>([]);
 const capexLastYearMesin = ref<any>([]);
@@ -1592,14 +1580,12 @@ const fetchGrafikWLCAllMesin = async () => {
     let indexOptimum;
     let tahunOptimum;
     let selisih = Infinity;
-    let selisihOpt = Infinity;
 
+    const profitLoss: any = [];
     dataWLCAllMesin.value = response.data;
-
     tahunWLCAllMesin.value = [];
     revWLCMesin.value = [];
     sumLccWLCMesin.value = [];
-    profitLoss.value = [];
     capexWLCMesin.value = [];
     comBDWLCMesin.value = [];
     fuelComWLCMesin.value = [];
@@ -1617,7 +1603,7 @@ const fetchGrafikWLCAllMesin = async () => {
         tahunWLCAllMesin.value.push(response.data[i].tahun);
         revWLCMesin.value.push(response.data[i].revenue_annualized);
         sumLccWLCMesin.value.push(response.data[i].total_wlcc_annualized);
-        profitLoss.value.push(response.data[i].profit_loss);
+        profitLoss.push(response.data[i].profit_loss);
         capexWLCMesin.value.push(response.data[i].capex_annualized);
         comBDWLCMesin.value.push(response.data[i].cost_component_bd);
         fuelComWLCMesin.value.push(response.data[i].cost_component_c_annualized);
@@ -1639,7 +1625,7 @@ const fetchGrafikWLCAllMesin = async () => {
           tahunBEP = response.data[i].tahun
         }
 
-        const finalOptimum = Math.max.apply(Math, profitLoss.value)
+        const finalOptimum = Math.max.apply(Math, profitLoss)
         if (finalOptimum == response.data[i].profit_loss) {
           indexOptimum = i
           indexOpt = i + 1
@@ -2010,10 +1996,10 @@ const fetchGrafikPlanMesin = async () => {
     let indexOptimum;
     let tahunOptimum;
     let selisih = Infinity;
-    let selisihOpt = Infinity;
 
     dataPlanMesin.value = response.data;
 
+    const profitLoss: any = [];
     tahunPlanningMesin.value = [];
     capexPlanMesin.value = [];
     comBDPlanMesin.value = [];
@@ -2035,7 +2021,7 @@ const fetchGrafikPlanMesin = async () => {
         capexPlanMesin.value.push(response.data[i].capex_annualized);
         comBDPlanMesin.value.push(response.data[i].cost_component_bd);
         revPlanMesin.value.push(response.data[i].revenue_annualized);
-        profitLoss.value.push(response.data[i].profit_loss);
+        profitLoss.push(response.data[i].profit_loss);
         fuelComPlanMesin.value.push(response.data[i].cost_component_c_annualized);
         sumLccPlanMesin.value.push(response.data[i].total_wlcc_annualized);
         yAxisPlan.value.push(response.data[i].capex_annualized + response.data[i].cost_component_bd + response.data[i].cost_component_c_annualized);
@@ -2063,13 +2049,14 @@ const fetchGrafikPlanMesin = async () => {
         //   selisihOpt = diffOpt;
         //   tahunOptimum = response.data[i].tahun
         // }
-        const finalOptimum = Math.max.apply(Math, profitLoss.value)
+        const finalOptimum = Math.max.apply(Math, profitLoss)
         if (finalOptimum == response.data[i].profit_loss) {
           indexOptimum = i
           indexOpt = i + 1
           tahunOptimum = response.data[i].tahun
         }
       }
+      console.log(tahunOptimum, 'Optimum');
       var maxWlc = Math.max.apply(Math, wlcAnnu);
       var maxRev = Math.max.apply(Math, revenAnnu);
       var maxCapex = Math.max.apply(Math, capexAnnu);
@@ -2428,6 +2415,7 @@ const fetchGrafikPRPMesin = async () => {
 
     dataPRPMesin.value = response.data[0].realisasi_proyeksi;
 
+    const profitLoss: any = [];
     tahunPRPMesin.value = [];
     capexPRPMesin.value = []
     comBDPRPMesin.value = [];
@@ -2439,7 +2427,6 @@ const fetchGrafikPRPMesin = async () => {
     revBPRPMesin.value = [];
     revCPRPMesin.value = [];
     revDPRPMesin.value = [];
-    profitLoss.value = [];
     yAxisPRP.value = [];
 
     if (response.data[0].realisasi_proyeksi != null) {
@@ -2472,7 +2459,7 @@ const fetchGrafikPRPMesin = async () => {
         revPRPMesin.value.push(
           response.data[0].realisasi_proyeksi[i].revenue_annualized
         );
-        profitLoss.value.push(response.data[0].realisasi_proyeksi[i].profit_loss);
+        profitLoss.push(response.data[0].realisasi_proyeksi[i].profit_loss);
         sumLccPRPMesin.value.push(response.data[0].realisasi_proyeksi[i].total_wlcc_annualized);
         revAPRPMesin.value.push(response.data[0].realisasi_proyeksi[i].revenue_komp_a);
         revBPRPMesin.value.push(response.data[0].realisasi_proyeksi[i].revenue_komp_b);
@@ -2501,7 +2488,7 @@ const fetchGrafikPRPMesin = async () => {
           tahunBEP = response.data[0].realisasi_proyeksi[i].tahun
         }
 
-        const finalOptimum = Math.max.apply(Math, profitLoss.value)
+        const finalOptimum = Math.max.apply(Math, profitLoss)
         if (finalOptimum == response.data[0].realisasi_proyeksi[i].profit_loss) {
           indexOptimum = i
           indexOpt = i + 1
@@ -2563,7 +2550,7 @@ const fetchGrafikPRPMesin = async () => {
         );
         revPRPPlanMesin.value.push(response.data[0].planning[j].revenue_annualized);
         sumLccPRPPlanMesin.value.push(response.data[0].planning[j].total_wlcc_annualized);
-        profitLoss.value.push(response.data[0].planning[j].profit_loss);
+        profitLoss.push(response.data[0].planning[j].profit_loss);
         sumRevPRPPlanMesin.value.push(response.data[0].planning[j].total_revenue);
         revAPRPPlanMesin.value.push(response.data[0].planning[j].revenue_komp_a);
         revBPRPPlanMesin.value.push(response.data[0].planning[j].revenue_komp_b);
@@ -2599,7 +2586,7 @@ const fetchGrafikPRPMesin = async () => {
         //   selisihOptPlan = diffOptPlan;
         //   tahunOptimumPlan = response.data[0].planning[j].tahun
         // }
-        const finalOptimum = Math.max.apply(Math, profitLoss.value)
+        const finalOptimum = Math.max.apply(Math, profitLoss)
         if (finalOptimum == response.data[0].planning[j].profit_loss) {
           indexOptimumPlan = j
           indexOptPlan = j + 1
@@ -2619,7 +2606,7 @@ const fetchGrafikPRPMesin = async () => {
 
       var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxsumRev, maxWlc, maxRev, maxRevA, maxRevB, maxRevC, maxRevD];
       finalMaxPlan = Math.max.apply(Math, listOfMax);
-      console.log(profitLoss.value)
+      console.log(profitLoss)
     } else {
       dataPRPPlanMesin == null;
     }
@@ -3059,6 +3046,533 @@ const fetchGrafikPRPMesin = async () => {
           showSymbol: false,
           data: revDPRPPlanMesin,
           color: "#FFF279",
+          areaStyle: {},
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+      ],
+    };
+
+    //Chart PRP FS
+    chartPRP_FS.value = {
+      title: {
+        show: false,
+      },
+      tooltip: {
+        trigger: "axis",
+        axisPointer: {
+          type: "shadow",
+        },
+      },
+      legend: {
+        bottom: "bottom",
+        data: [
+          "FS: Revenue Annualized",
+          "FS: Total LCC Annualized",
+          "FS: Cost Component A (Capex) Annualized",
+          "FS: Cost Component B + D Annualized",
+          "FS: Cost Component C Annualized",
+          "FS: Total Revenue",
+          "FS: Revenue A",
+          "FS: Revenue B",
+          "FS: Revenue C",
+          "FS: Revenue D",
+        ],
+        selected: {
+          "Total Revenue": false,
+          "FS: Revenue A": false,
+          "FS: Revenue B": false,
+          "FS: Revenue C": false,
+          "FS: Revenue D": false,
+          "FS: Total Revenue": false,
+        }
+      },
+      grid: {
+        top: "5%",
+        left: "3%",
+        right: "2%",
+        bottom: "18%",
+        containLabel: true,
+      },
+      xAxis: [
+        {
+          type: "category",
+          data: tahunPRPPlan,
+          axisLabel: {
+            fontSize: 10,
+            color: function (value: any, index: number) {
+              const filterTahun = tahunData.value.toString();
+              if (value < filterTahun) {
+                return '#FF5656';
+              } else if (value == filterTahun) {
+                return '#6C6C6C';
+              } else if (value > filterTahun) {
+                return '#37B1D5';
+              }
+            },
+            formatter: function (value: any, index: number) {
+              return index + 1 + `\n${value}`;
+            },
+          }
+        },
+      ],
+      yAxis: [
+        {
+          type: "value",
+          name: "Triliun Rupiah",
+          nameLocation: "center",
+          nameTextStyle: {
+            align: "left",
+            padding: [30, 20, 25, -25],
+            fontSize: 14,
+            color: "#4D5E80",
+            fontWeight: "bold",
+          },
+          axisLabel: {
+            fontSize: 10,
+            formatter: function (value: any) {
+              return globalFormat.formatRupiah((value * 1000000) / 1000000000000);
+            },
+          },
+          splitNumber: 20,
+          min: 0,
+          max: finalMaxPlan,
+          // max: function () {
+          //   if (finalMax > finalMaxPlan) {
+          //     return finalMax;
+          //   } else if (finalMax < finalMaxPlan) {
+          //     return finalMaxPlan;
+          //   }
+          // }
+        },
+      ],
+      series: [
+        {
+          name: "FS: Revenue Annualized",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          lineStyle: {
+            type: "dashed",
+          },
+          data: revPRPPlanMesin,
+          color: "#A6A6A6",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "FS: Total LCC Annualized",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          lineStyle: {
+            type: "dashed",
+          },
+          data: sumLccPRPPlanMesin,
+          color: "#7A7A7A",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "FS: Cost Component A (Capex) Annualized",
+          type: "bar",
+          stack: "Ab",
+          emphasis: {
+            focus: "series",
+          },
+          data: capexPRPPlanMesin,
+          markPoint: {
+            silent: true,
+            symbol: 'rect',
+            symbolSize: [95, 30],
+            itemStyle: { color: '#0D5A71' },
+            label: { fontSize: 10, fontWeight: 'bold' },
+            data: [{ name: 'Max', value: `BEP FS : ${tahunBEPPlan} (${indexBEPPlan})`, xAxis: indexTerdekatPlan, yAxis: finalMaxPlan }],
+            symbolOffset: [-10, 20]
+          },
+          markArea: {
+            silent: true,
+            itemStyle: {
+              color: '#E2EAF2'
+            },
+            label: { show: false },
+            data: [[{ name: 'BEP FS', xAxis: indexTerdekatPlan }, { xAxis: indexTerdekatPlan }]]
+          },
+          color: "#DDDDDD",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "FS: Cost Component B + D Annualized",
+          type: "bar",
+          stack: "Ab",
+          emphasis: {
+            focus: "series",
+          },
+          data: comBDPRPPlanMesin,
+          markPoint: {
+            silent: true,
+            symbol: 'rect',
+            symbolSize: [95, 30],
+            itemStyle: { color: '#0D5A71' },
+            label: { fontSize: 10, fontWeight: 'bold' },
+            data: [{ name: 'Min', value: `Optimum life FS : \n ${tahunOptimumPlan} (${indexOptPlan})`, xAxis: indexOptimumPlan, yAxis: finalMaxPlan }],
+            symbolOffset: [-10, 30]
+          },
+          markArea: {
+            silent: true,
+            itemStyle: { color: '#E2EAF2' },
+            label: { show: false },
+            data: [[{ name: 'Optimum Life FS', xAxis: indexOptimumPlan }, { xAxis: indexOptimumPlan }]]
+          },
+          color: "#BFBFBF",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "FS: Cost Component C Annualized",
+          type: "bar",
+          stack: "Ab",
+          emphasis: {
+            focus: "series",
+          },
+          itemStyle: {
+            borderRadius: [2, 2, 0, 0],
+          },
+          data: fuelComPRPPlanMesin,
+          color: "#7C7C7C",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "FS: Total Revenue",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: sumRevPRPPlanMesin,
+          color: "#3C0753",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "FS: Revenue A",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: revAPRPPlanMesin,
+          color: "#761A1A",
+          areaStyle: {},
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "FS: Revenue B",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: revBPRPPlanMesin,
+          color: "#C13131",
+          areaStyle: {},
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "FS: Revenue C",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: revCPRPPlanMesin,
+          color: "#A7CD78",
+          areaStyle: {},
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "FS: Revenue D",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: revDPRPPlanMesin,
+          color: "#FFF279",
+          areaStyle: {},
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+      ],
+    };
+
+    //Chart PRP WLC
+    chartPRP_WLC.value = {
+      title: {
+        show: false,
+      },
+      tooltip: {
+        trigger: "axis",
+        axisPointer: {
+          type: "shadow",
+        },
+      },
+      legend: {
+        bottom: "bottom",
+        data: [
+          "Revenue Annualized",
+          "Total LCC Annualized",
+          "Cost Component A (Capex) Annualized",
+          "Cost Component B + D Annualized",
+          "Cost Component C Annualized",
+          "Total Revenue",
+          "Revenue A",
+          "Revenue B",
+          "Revenue C",
+          "Revenue D",
+        ],
+        selected: {
+          "Revenue A": false,
+          "Revenue B": false,
+          "Revenue C": false,
+          "Revenue D": false,
+          "Total Revenue": false,
+        }
+      },
+      grid: {
+        top: "5%",
+        left: "3%",
+        right: "2%",
+        bottom: "18%",
+        containLabel: true,
+      },
+      xAxis: [
+        {
+          type: "category",
+          data: tahunPRPMesin,
+          axisLabel: {
+            fontSize: 10,
+            color: function (value: any, index: number) {
+              const filterTahun = tahunData.value.toString();
+              if (value < filterTahun) {
+                return '#FF5656';
+              } else if (value == filterTahun) {
+                return '#6C6C6C';
+              } else if (value > filterTahun) {
+                return '#37B1D5';
+              }
+            },
+            formatter: function (value: any, index: number) {
+              return index + 1 + `\n${value}`;
+            },
+          }
+        },
+      ],
+      yAxis: [
+        {
+          type: "value",
+          name: "Triliun Rupiah",
+          nameLocation: "center",
+          nameTextStyle: {
+            align: "left",
+            padding: [30, 20, 25, -25],
+            fontSize: 14,
+            color: "#4D5E80",
+            fontWeight: "bold",
+          },
+          axisLabel: {
+            fontSize: 10,
+            formatter: function (value: any) {
+              return globalFormat.formatRupiah((value * 1000000) / 1000000000000);
+            },
+          },
+          splitNumber: 20,
+          min: 0,
+          max: finalMax,
+          // max: function () {
+          //   if (finalMax > finalMaxPlan) {
+          //     return finalMax;
+          //   } else if (finalMax < finalMaxPlan) {
+          //     return finalMaxPlan;
+          //   }
+          // }
+        },
+      ],
+      series: [
+        {
+          name: "Revenue Annualized",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: revPRPMesin,
+          color: "#489FB7",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "Total LCC Annualized",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: sumLccPRPMesin,
+          color: "#1E1F4E",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "Cost Component A (Capex) Annualized",
+          type: "bar",
+          stack: "Ad",
+          emphasis: {
+            focus: "series",
+          },
+          data: capexPRPMesin,
+          markPoint: {
+            silent: true,
+            symbol: 'rect',
+            symbolSize: [80, 30],
+            itemStyle: { color: '#0D5A71' },
+            label: { fontSize: 10, fontWeight: 'bold' },
+            data: [{ name: 'Max', value: `BEP : ${tahunBEP} (${indexBEP})`, xAxis: indexTerdekat, yAxis: finalMax }],
+            symbolOffset: [10, 0]
+          },
+          markArea: {
+            silent: true,
+            itemStyle: { color: '#E2EAF2' },
+            label: { show: false },
+            data: [[{ name: 'BEP', xAxis: indexTerdekat }, { xAxis: indexTerdekat }]]
+          },
+          color: "#A8E2FC",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "Cost Component B + D Annualized",
+          type: "bar",
+          stack: "Ad",
+          emphasis: {
+            focus: "series",
+          },
+          data: comBDPRPMesin,
+          markPoint: {
+            silent: true,
+            symbol: 'rect',
+            symbolSize: [85, 30],
+            itemStyle: { color: '#0D5A71' },
+            label: { fontSize: 10, fontWeight: 'bold' },
+            data: [{ name: 'Min', value: `Optimum life : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: finalMax }],
+            symbolOffset: [10, 20]
+          },
+          markArea: {
+            silent: true,
+            itemStyle: { color: '#E2EAF2' },
+            label: { show: false },
+            data: [[{ name: 'Optimum Life', xAxis: indexOptimum }, { xAxis: indexOptimum }]]
+          },
+          color: "#212E7C",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "Cost Component C Annualized",
+          type: "bar",
+          stack: "Ad",
+          emphasis: {
+            focus: "series",
+          },
+          itemStyle: {
+            borderRadius: [2, 2, 0, 0],
+          },
+          data: fuelComPRPMesin,
+          color: "#4EB180",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "Total Revenue",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: sumRevPRPMesin,
+          color: "#5F6F52",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "Revenue A",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: revAPRPMesin,
+          color: "#191919",
+          areaStyle: {},
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "Revenue B",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: revBPRPMesin,
+          color: "#750E21",
+          areaStyle: {},
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "Revenue C",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: revCPRPMesin,
+          color: "#E3651D",
+          areaStyle: {},
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "Revenue D",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: revDPRPMesin,
+          color: "#BED754",
           areaStyle: {},
           tooltip: {
             valueFormatter: (value: any) =>
@@ -4508,6 +5022,476 @@ const fetchGrafikPRPLastYearMesin = async () => {
         },
       ],
     };
+
+    // Chart PRP Last Year WLC
+    chartPRPLY_WLC.value = {
+      title: {
+        show: false,
+      },
+      tooltip: {
+        trigger: "axis",
+        axisPointer: {
+          type: "shadow",
+        },
+      },
+      legend: {
+        bottom: "bottom",
+        data: [
+          "Revenue Annualized",
+          "Total LCC Annualized",
+          "Cost Component A (Capex) Annualized",
+          "Cost Component B + D Annualized",
+          "Cost Component C Annualized",
+          "Total Revenue",
+          "Revenue A",
+          "Revenue B",
+          "Revenue C",
+          "Revenue D",
+        ],
+        selected: {
+          "Revenue A": false,
+          "Revenue B": false,
+          "Revenue C": false,
+          "Revenue D": false,
+          "Total Revenue": false,
+        }
+      },
+      grid: {
+        top: "5%",
+        left: "3%",
+        right: "2%",
+        bottom: "18%",
+        containLabel: true,
+      },
+      xAxis: [
+        {
+          type: "category",
+          data: tahunLastYearMesin,
+          axisLabel: {
+            fontSize: 10,
+            color: function (value: any, index: number) {
+              const filterTahun = tahunData.value.toString();
+              if (value < filterTahun) {
+                return '#FF5656';
+              } else if (value == filterTahun) {
+                return '#6C6C6C';
+              } else if (value > filterTahun) {
+                return '#37B1D5';
+              }
+            },
+            formatter: function (value: any, index: number) {
+              return index + 1 + `\n${value}`;
+            },
+          }
+        },
+      ],
+      yAxis: [
+        {
+          type: "value",
+          name: "Triliun Rupiah",
+          nameLocation: "center",
+          nameTextStyle: {
+            align: "left",
+            padding: [30, 20, 25, -25],
+            fontSize: 14,
+            color: "#4D5E80",
+            fontWeight: "bold",
+          },
+          axisLabel: {
+            fontSize: 10,
+            formatter: function (value: any) {
+              return globalFormat.formatRupiah((value * 1000000) / 1000000000000);
+            },
+          },
+          splitNumber: 20,
+          min: 0,
+          // max: maxLastYearPlanBep
+          max: function () {
+            const nilaiLY = maxLastYearBep;
+            const nilaiLYPlan = maxLastYearPlanBep;
+            if (nilaiLY > nilaiLYPlan) {
+              return maxLastYearBep;
+            } else if (nilaiLY < nilaiLYPlan) {
+              return maxLastYearPlanBep;
+            }
+          }
+        },
+      ],
+      series: [
+        {
+          name: "Revenue Annualized",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: revLastYearMesin,
+          color: "#489FB7",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "Total LCC Annualized",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: sumLccLastYearMesin,
+          color: "#1E1F4E",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "Cost Component A (Capex) Annualized",
+          type: "bar",
+          stack: "Ad",
+          emphasis: {
+            focus: "series",
+          },
+          data: capexLastYearMesin,
+          color: "#A8E2FC",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "Cost Component B + D Annualized",
+          type: "bar",
+          stack: "Ad",
+          emphasis: {
+            focus: "series",
+          },
+          data: comBDLastYearMesin,
+          color: "#212E7C",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "Cost Component C Annualized",
+          type: "bar",
+          stack: "Ad",
+          emphasis: {
+            focus: "series",
+          },
+          itemStyle: {
+            borderRadius: [2, 2, 0, 0],
+          },
+          data: fuelComLastYearMesin,
+          color: "#4EB180",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "Total Revenue",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: sumRevLastYearMesin,
+          color: "#5F6F52",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "Revenue A",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: revALastYearMesin,
+          color: "#191919",
+          areaStyle: {},
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "Revenue B",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: revBLastYearMesin,
+          color: "#750E21",
+          areaStyle: {},
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "Revenue C",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: revCLastYearMesin,
+          color: "#E3651D",
+          areaStyle: {},
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "Revenue D",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: revDLastYearMesin,
+          color: "#BED754",
+          areaStyle: {},
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+      ],
+    };
+
+    // Chart PRP Last Year FS
+    chartPRPLY_FS.value = {
+      title: {
+        show: false,
+      },
+      tooltip: {
+        trigger: "axis",
+        axisPointer: {
+          type: "shadow",
+        },
+      },
+      legend: {
+        bottom: "bottom",
+        data: [
+          "FS: Revenue Annualized",
+          "FS: Total LCC Annualized",
+          "FS: Cost Component A (Capex) Annualized",
+          "FS: Cost Component B + D Annualized",
+          "FS: Cost Component C Annualized",
+          "FS: Total Revenue",
+          "FS: Revenue A",
+          "FS: Revenue B",
+          "FS: Revenue C",
+          "FS: Revenue D",
+        ],
+        selected: {
+          "Total Revenue": false,
+          "FS: Revenue A": false,
+          "FS: Revenue B": false,
+          "FS: Revenue C": false,
+          "FS: Revenue D": false,
+          "FS: Total Revenue": false,
+        }
+      },
+      grid: {
+        top: "5%",
+        left: "3%",
+        right: "2%",
+        bottom: "18%",
+        containLabel: true,
+      },
+      xAxis: [
+        {
+          type: "category",
+          data: tahunLastYearMesin,
+          axisLabel: {
+            fontSize: 10,
+            color: function (value: any, index: number) {
+              const filterTahun = tahunData.value.toString();
+              if (value < filterTahun) {
+                return '#FF5656';
+              } else if (value == filterTahun) {
+                return '#6C6C6C';
+              } else if (value > filterTahun) {
+                return '#37B1D5';
+              }
+            },
+            formatter: function (value: any, index: number) {
+              return index + 1 + `\n${value}`;
+            },
+          }
+        },
+      ],
+      yAxis: [
+        {
+          type: "value",
+          name: "Triliun Rupiah",
+          nameLocation: "center",
+          nameTextStyle: {
+            align: "left",
+            padding: [30, 20, 25, -25],
+            fontSize: 14,
+            color: "#4D5E80",
+            fontWeight: "bold",
+          },
+          axisLabel: {
+            fontSize: 10,
+            formatter: function (value: any) {
+              return globalFormat.formatRupiah((value * 1000000) / 1000000000000);
+            },
+          },
+          splitNumber: 20,
+          min: 0,
+          // max: maxLastYearPlanBep
+          max: function () {
+            const nilaiLY = maxLastYearBep;
+            const nilaiLYPlan = maxLastYearPlanBep;
+            if (nilaiLY > nilaiLYPlan) {
+              return maxLastYearBep;
+            } else if (nilaiLY < nilaiLYPlan) {
+              return maxLastYearPlanBep;
+            }
+          }
+        },
+      ],
+      series: [
+        {
+          name: "FS: Revenue Annualized",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          lineStyle: {
+            type: "dashed",
+          },
+          data: revLastYearPlanMesin,
+          color: "#A6A6A6",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "FS: Total LCC Annualized",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          lineStyle: {
+            type: "dashed",
+          },
+          data: sumLccLastYearPlanMesin,
+          color: "#7A7A7A",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "FS: Cost Component A (Capex) Annualized",
+          type: "bar",
+          stack: "Ab",
+          emphasis: {
+            focus: "series",
+          },
+          data: capexLastYearPlanMesin,
+          color: "#DDDDDD",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "FS: Cost Component B + D Annualized",
+          type: "bar",
+          stack: "Ab",
+          emphasis: {
+            focus: "series",
+          },
+          data: comBDLastYearPlanMesin,
+          color: "#BFBFBF",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "FS: Cost Component C Annualized",
+          type: "bar",
+          stack: "Ab",
+          emphasis: {
+            focus: "series",
+          },
+          itemStyle: {
+            borderRadius: [2, 2, 0, 0],
+          },
+          data: fuelComLastYearPlanMesin,
+          color: "#7C7C7C",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "FS: Total Revenue",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: sumRevLastYearPlanMesin,
+          color: "#3C0753",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "FS: Revenue A",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: revALastYearPlanMesin,
+          color: "#761A1A",
+          areaStyle: {},
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "FS: Revenue B",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: revBLastYearPlanMesin,
+          color: "#C13131",
+          areaStyle: {},
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "FS: Revenue C",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: revCLastYearPlanMesin,
+          color: "#A7CD78",
+          areaStyle: {},
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+        {
+          name: "FS: Revenue D",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: revDLastYearPlanMesin,
+          color: "#FFF279",
+          areaStyle: {},
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+        },
+      ],
+    };
+    
     forceRender4();
   } catch (error) {
     console.error('Fetch Grafik PRP Last Year Mesin', error)
