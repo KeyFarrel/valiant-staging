@@ -17,7 +17,8 @@
                   fill="#0099AD" />
               </svg>
               Filter
-              <div v-if="levelID == '1' ? pengelola.length : pembina.length || persetujuan.length"
+              <div
+                v-if="authService.checkLevel() === 'Admin' ? (filterKK.selectedPengelola.length || filterKK.selectedPersetujuan.length) : authService.checkLevel() === 'Pengelola' ? (filterKK.selectedPembina.length || filterKK.selectedPersetujuan.length) : filterKK.selectedPersetujuan.length"
                 class="absolute z-10 border-2 border-[#FFE5E6] w-2.5 h-2.5 rounded-full right-0.5 top-0.5  bg-warningColor">
               </div>
             </button>
@@ -40,26 +41,28 @@
                   </button>
                 </div>
               </div>
-              <div v-if="levelID == '1'" class="mt-4">
+              <div v-if="authService.checkLevel() === 'Admin'" class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pengelola</h3>
-                <el-select v-model="pengelola" multiple clearable collapse-tags placeholder="Pilih Unit Pengelola"
-                  popper-class="custom-header" :max-collapse-tags="5" class="w-full text-primaryTextColor">
+                <el-select v-model="filterKK.selectedPengelola" multiple clearable collapse-tags
+                  placeholder="Pilih Unit Pengelola" popper-class="custom-header" :max-collapse-tags="5"
+                  class="w-full text-primaryTextColor">
                   <template #header>
-                    <el-checkbox v-model="checkPengelola" :indeterminate="indeterminatePengelola"
-                      @change="handleCheckPengelola">
+                    <el-checkbox v-model="checkPengelolaKK" :indeterminate="indeterminatePengelola"
+                      @change="handleCheckPengelolaKK">
                       Select All Items
                     </el-checkbox>
                   </template>
                   <el-option v-for="item in itemsPengelola" :key="item.id" :label="item.name" :value="item.id" />
                 </el-select>
               </div>
-              <div v-if="levelID == '2'" class="mt-4">
+              <div v-if="authService.checkLevel() === 'Pengelola'" class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pembina</h3>
-                <el-select v-model="pembina" multiple clearable collapse-tags placeholder="Pilih Unit Pembina"
-                  popper-class="custom-header" :max-collapse-tags="5" class="w-full text-primaryTextColor">
+                <el-select v-model="filterKK.selectedPembina" multiple clearable collapse-tags
+                  placeholder="Pilih Unit Pembina" popper-class="custom-header" :max-collapse-tags="5"
+                  class="w-full text-primaryTextColor">
                   <template #header>
-                    <el-checkbox v-model="checkPembina" :indeterminate="indeterminatePembina"
-                      @change="handleCheckPembina">
+                    <el-checkbox v-model="checkPembinaKK" :indeterminate="indeterminatePembina"
+                      @change="handleCheckPembinaKK">
                       Select All Items
                     </el-checkbox>
                   </template>
@@ -68,11 +71,12 @@
               </div>
               <div class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Status Persetujuan</h3>
-                <el-select v-model="persetujuan" multiple clearable collapse-tags placeholder="Pilih Status Persetujuan"
-                  popper-class="custom-header" :max-collapse-tags="6" class="w-full text-primaryTextColor">
+                <el-select v-model="filterKK.selectedPersetujuan" multiple clearable collapse-tags
+                  placeholder="Pilih Status Persetujuan" popper-class="custom-header" :max-collapse-tags="6"
+                  class="w-full text-primaryTextColor">
                   <template #header>
-                    <el-checkbox v-model="checkPersetujuan" :indeterminate="indeterminateStatus"
-                      @change="handleCheckPersetujuan">
+                    <el-checkbox v-model="checkPersetujuanKK" :indeterminate="indeterminateStatus"
+                      @change="handleCheckPersetujuanKK">
                       Select All Items
                     </el-checkbox>
                   </template>
@@ -81,13 +85,14 @@
               </div>
               <hr class="w-full my-4" />
               <div class="flex justify-end">
-                <div class="flex items-start">
-                  <button type="submit" @click="pengelola = []; pembina = []; persetujuan = []"
-                    class="w-full text-primaryColor bg-white border-2 border-[#80C1CD] hover:bg-[#80C1CD] focus:ring-2 focus:outline-none focus:ring-primaryColor font-medium rounded-lg text-xs mr-2 px-5 py-2.5 text-center dark:bg-[#007E8F] dark:hover:bg-white dark:focus:ring-bg-[#80C1CD]">
+                <div class="flex items-start space-x-2">
+                  <button type="submit"
+                    @click="filterKK.selectedPengelola = []; filterKK.selectedPembina = []; filterKK.selectedPersetujuan = []"
+                    class="px-5 py-2 text-sm font-semibold duration-300 border rounded-lg text-primaryColor border-primaryColor hover:bg-hoverColor hover:border-hoverColor hover:text-white">
                     Reset
                   </button>
                   <button type="submit" @click="changeDataKK"
-                    class="w-full text-white bg-primaryColor hover:bg-[#005A66] focus:ring-2 focus:outline-none focus:ring-[#80C1CD] font-medium rounded-lg text-xs px-5 py-3 text-center dark:bg-[#007E8F] dark:hover:bg-primaryColor dark:focus:ring-[#005A66]">
+                    class="w-full text-white bg-[#0099AD] hover:bg-hoverColor duration-300 active:ring-2 active:outline-none active:ring-[#80C1CD] font-medium rounded-lg text-xs px-5 py-3 text-center dark:bg-[#007E8F] dark:hover:bg-[#0099AD] dark:active:ring-[#005A66]">
                     Terapkan
                   </button>
                 </div>
@@ -104,12 +109,12 @@
           <template v-slot:table-header>
             <tr class="text-xs">
               <th class="text-center border-r">No</th>
-              <th v-if="levelID == '1'" class="border-r">
+              <th class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Pengelola</h1>
                 </div>
               </th>
-              <th v-if="levelID == '1' || levelID == '2'" class="border-r">
+              <th class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Pembina</h1>
                 </div>
@@ -155,15 +160,15 @@
               <td scope="row" class="text-center whitespace-nowrap">
                 {{ index + 1 }}
               </td>
-              <!-- <td v-if="props.pengelolaList.length" class="text-center">{{ props.pengelolaList.filter((pengelola: any) => pengelola.kode_pengelola === persetujuanKKItem.kode_pengelola)[0].pengelola ?? '' }}</td> -->
-              <td v-if="pengelolaList.length && levelID == '1'" class="text-left">{{
+              <td v-if="pengelolaList.length" class="text-left">{{
                 pengelolaList.filter((pengelola: any) =>
                   pengelola.kode_pengelola === item.kode_pengelola)[0] ? pengelolaList.filter((pengelola: any) =>
                     pengelola.kode_pengelola === item.kode_pengelola)[0].pengelola : '-' }}</td>
-              <td class="text-left" v-if="levelID == '1' || levelID == '2'">{{ item.pembina }}</td>
+              <td class="text-left">{{ item.pembina }}</td>
               <td class="text-left">{{ item.sentral }}</td>
               <td class="text-left">{{ item.mesin }}</td>
-              <td class="text-right">{{ globalFormat.formatRupiah(item.irr_on_equity) }}</td>
+              <td class="text-right">{{ item.irr_on_equity === '' ? 'NUM' :
+                globalFormat.formatRupiah(item.irr_on_equity) }}</td>
               <td class="text-right">{{ globalFormat.formatRupiah(item.npv_on_equity) }}</td>
               <td class="flex items-center justify-center text-center">
                 <div
@@ -288,6 +293,10 @@
                   fill="#0099AD" />
               </svg>
               Filter
+              <div
+                v-if="authService.checkLevel() === 'Admin' ? (filterFS.selectedPengelola.length || filterFS.selectedPersetujuan.length) : authService.checkLevel() === 'Pengelola' ? (filterFS.selectedPembina.length || filterFS.selectedPersetujuan.length) : filterFS.selectedPersetujuan.length"
+                class="absolute z-10 border-2 border-[#FFE5E6] w-2.5 h-2.5 rounded-full right-0.5 top-0.5  bg-warningColor">
+              </div>
             </button>
             <ModalWrapper :showModal="showModalFS" :width="'w-[500px]'" :height="'h-auto'">
               <div class="flex flex-col space-y-5">
@@ -308,26 +317,28 @@
                   </button>
                 </div>
               </div>
-              <div v-if="levelID == '1'" class="mt-4">
+              <div v-if="authService.checkLevel() === 'Admin'" class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pengelola</h3>
-                <el-select v-model="pengelola" multiple clearable collapse-tags placeholder="Pilih Unit Pengelola"
-                  popper-class="custom-header" :max-collapse-tags="5" class="w-full text-primaryTextColor">
+                <el-select v-model="filterFS.selectedPengelola" multiple clearable collapse-tags
+                  placeholder="Pilih Unit Pengelola" popper-class="custom-header" :max-collapse-tags="5"
+                  class="w-full text-primaryTextColor">
                   <template #header>
-                    <el-checkbox v-model="checkPengelola" :indeterminate="indeterminatePengelola"
-                      @change="handleCheckPengelola">
+                    <el-checkbox v-model="checkPengelolaFS" :indeterminate="indeterminatePengelola"
+                      @change="handleCheckPengelolaFS">
                       Select All Items
                     </el-checkbox>
                   </template>
                   <el-option v-for="item in itemsPengelola" :key="item.id" :label="item.name" :value="item.id" />
                 </el-select>
               </div>
-              <div v-if="levelID == '2'" class="mt-4">
+              <div v-if="authService.checkLevel() === 'Pengelola'" class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pembina</h3>
-                <el-select v-model="pembina" multiple clearable collapse-tags placeholder="Pilih Unit Pembina"
-                  popper-class="custom-header" :max-collapse-tags="5" class="w-full text-primaryTextColor">
+                <el-select v-model="filterFS.selectedPembina" multiple clearable collapse-tags
+                  placeholder="Pilih Unit Pembina" popper-class="custom-header" :max-collapse-tags="5"
+                  class="w-full text-primaryTextColor">
                   <template #header>
-                    <el-checkbox v-model="checkPembina" :indeterminate="indeterminatePembina"
-                      @change="handleCheckPembina">
+                    <el-checkbox v-model="checkPembinaFS" :indeterminate="indeterminatePembina"
+                      @change="handleCheckPembinaFS">
                       Select All Items
                     </el-checkbox>
                   </template>
@@ -336,11 +347,12 @@
               </div>
               <div class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Status Persetujuan</h3>
-                <el-select v-model="persetujuan" multiple clearable collapse-tags placeholder="Pilih Status Persetujuan"
-                  popper-class="custom-header" :max-collapse-tags="6" class="w-full text-primaryTextColor">
+                <el-select v-model="filterFS.selectedPersetujuan" multiple clearable collapse-tags
+                  placeholder="Pilih Status Persetujuan" popper-class="custom-header" :max-collapse-tags="6"
+                  class="w-full text-primaryTextColor">
                   <template #header>
-                    <el-checkbox v-model="checkPersetujuan" :indeterminate="indeterminateStatus"
-                      @change="handleCheckPersetujuan">
+                    <el-checkbox v-model="checkPersetujuanFS" :indeterminate="indeterminateStatus"
+                      @change="handleCheckPersetujuanFS">
                       Select All Items
                     </el-checkbox>
                   </template>
@@ -349,13 +361,14 @@
               </div>
               <hr class="w-full my-4" />
               <div class="flex justify-end">
-                <div class="flex items-start">
-                  <button type="submit" @click="showModalFS = false"
-                    class="w-full text-primaryColor bg-white border-2 border-[#80C1CD] hover:bg-[#80C1CD] focus:ring-2 focus:outline-none focus:ring-primaryColor font-medium rounded-lg text-xs mr-2 px-5 py-2.5 text-center dark:bg-[#007E8F] dark:hover:bg-white dark:focus:ring-bg-[#80C1CD]">
-                    Batal
+                <div class="flex items-start space-x-2">
+                  <button type="submit"
+                    @click="filterFS.selectedPengelola = []; filterFS.selectedPembina = []; filterFS.selectedPersetujuan = []"
+                    class="px-5 py-2 text-sm font-semibold duration-300 border rounded-lg text-primaryColor border-primaryColor hover:bg-hoverColor hover:border-hoverColor hover:text-white">
+                    Reset
                   </button>
                   <button type="submit" @click="changeFS"
-                    class="w-full text-white bg-primaryColor hover:bg-[#005A66] focus:ring-2 focus:outline-none focus:ring-[#80C1CD] font-medium rounded-lg text-xs px-5 py-3 text-center dark:bg-[#007E8F] dark:hover:bg-primaryColor dark:focus:ring-[#005A66]">
+                    class="w-full text-white bg-[#0099AD] hover:bg-hoverColor duration-300 active:ring-2 active:outline-none active:ring-[#80C1CD] font-medium rounded-lg text-xs px-5 py-3 text-center dark:bg-[#007E8F] dark:hover:bg-[#0099AD] dark:active:ring-[#005A66]">
                     Terapkan
                   </button>
                 </div>
@@ -367,12 +380,12 @@
           <template v-slot:table-header>
             <tr class="text-xs">
               <th class="text-center border-r">No</th>
-              <th class="border-r" v-if="levelID == '1'">
+              <th class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Pengelola</h1>
                 </div>
               </th>
-              <th class="border-r" v-if="levelID == '1' || levelID == '2'">
+              <th class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Pembina</h1>
                 </div>
@@ -418,14 +431,15 @@
               <td scope="row" class="text-center whitespace-nowrap">
                 {{ index + 1 }}
               </td>
-              <td v-if="pengelolaList.length && levelID == '1'" class="text-left">{{
+              <td v-if="pengelolaList.length" class="text-left">{{
                 pengelolaList.filter((pengelola: any) =>
                   pengelola.kode_pengelola === item.kode_pengelola)[0] ? pengelolaList.filter((pengelola: any) =>
                     pengelola.kode_pengelola === item.kode_pengelola)[0].pengelola : '-' }}</td>
-              <td class="text-left" v-if="levelID == '1' || levelID == '2'">{{ item.pembina }}</td>
+              <td class="text-left">{{ item.pembina }}</td>
               <td class="text-left">{{ item.sentral }}</td>
               <td class="text-left">{{ item.mesin }}</td>
-              <td class="text-right">{{ globalFormat.formatRupiah(item.irr_on_equity) }}</td>
+              <td class="text-right">{{ item.irr_on_equity === '' ? 'NUM' :
+                globalFormat.formatRupiah(item.irr_on_equity) }}</td>
               <td class="text-right">{{ globalFormat.formatRupiah(item.npv_on_equity) }}</td>
               <td class="flex items-center justify-center text-center">
                 <div
@@ -572,7 +586,6 @@ const searchQKK = ref<string>("");
 const searchQFS = ref<string>("");
 const title = ref('Kertas Kerja');
 
-const levelID = ref(nodeMode === 'production' ? encryptStorage.getItem('level_id') : localStorage.getItem("level_id"));
 const pengelolaList = ref<any[]>([]);
 const pembinaList = ref<any[]>([]);
 const persetujuanKK = ref<any[]>([]);
@@ -581,9 +594,12 @@ const persetujuanFS = ref<any[]>([]);
 const indeterminatePengelola = ref(false);
 const indeterminatePembina = ref(false);
 const indeterminateStatus = ref(false);
-const checkPengelola = ref(false);
-const checkPembina = ref(false);
-const checkPersetujuan = ref(false);
+const checkPengelolaKK = ref<boolean>(false);
+const checkPembinaKK = ref<boolean>(false);
+const checkPersetujuanKK = ref<boolean>(false);
+const checkPengelolaFS = ref<boolean>(false);
+const checkPembinaFS = ref<boolean>(false);
+const checkPersetujuanFS = ref<boolean>(false);
 const pengelola = ref<CheckboxValueType[]>([]);
 const pembina = ref<CheckboxValueType[]>([]);
 const persetujuan = ref<CheckboxValueType[]>([]);
@@ -615,10 +631,28 @@ const itemsPersetujuan = ref([
     name: 'Menunggu Persetujuan Pengelola',
   },
 ])
+const filterKK = ref<{
+  selectedPengelola: any[]
+  selectedPembina: any[]
+  selectedPersetujuan: any[]
+}>({
+  selectedPengelola: [],
+  selectedPembina: [],
+  selectedPersetujuan: []
+});
+const filterFS = ref<{
+  selectedPengelola: any[]
+  selectedPembina: any[]
+  selectedPersetujuan: any[]
+}>({
+  selectedPengelola: [],
+  selectedPembina: [],
+  selectedPersetujuan: []
+});
 const navigationKK = ref<{
-  currentPage: number,
-  totalPages: number,
-  totalRecords: number,
+  currentPage: number
+  totalPages: number
+  totalRecords: number
   limit: number
 }>({
   currentPage: 1,
@@ -627,9 +661,9 @@ const navigationKK = ref<{
   limit: 10
 });
 const navigationFS = ref<{
-  currentPage: number,
-  totalPages: number,
-  totalRecords: number,
+  currentPage: number
+  totalPages: number
+  totalRecords: number
   limit: number
 }>({
   currentPage: 1,
@@ -681,14 +715,15 @@ async function getDataPembina() {
 const fetchPersetujuanKK = async () => {
   try {
     const response: any = await persetujuanService.getPersetujuanKertasKerja({
-      kode_pengelola: pengelola.value,
+      kode_pengelola: filterKK.value.selectedPengelola,
       id_pembina: [],
-      status: persetujuan.value,
-      page: navigationKK.value.currentPage,
+      status: filterKK.value.selectedPersetujuan,
+      page: searchQKK.value ? 1 : navigationKK.value.currentPage,
       limit: navigationKK.value.limit,
       tahun: yearPicked.value.toString(),
       search: searchQKK.value.toUpperCase()
     });
+    searchQKK.value ? navigationKK.value.currentPage = 1 : null;
     persetujuanKK.value = response.data;
     navigationKK.value.totalPages = response.meta.totalPages;
     navigationKK.value.totalRecords = response.meta.totalRecords;
@@ -701,13 +736,14 @@ const fetchPersetujuanKK = async () => {
 const fetchPersetujuanFS = async () => {
   try {
     const response: any = await persetujuanService.getPersetujuanFS({
-      kode_pengelola: pengelola.value,
+      kode_pengelola: filterFS.value.selectedPengelola,
       id_pembina: [],
-      status: persetujuan.value,
-      page: navigationFS.value.currentPage,
+      status: filterFS.value.selectedPersetujuan,
+      page: searchQFS.value ? 1 : navigationFS.value.currentPage,
       limit: navigationFS.value.limit,
       search: searchQFS.value.toUpperCase()
     });
+    searchQFS.value ? navigationFS.value.currentPage = 1 : null;
     persetujuanFS.value = response.data;
     navigationFS.value.totalPages = response.meta.totalPages;
     navigationFS.value.totalRecords = response.meta.totalRecords;
@@ -739,66 +775,123 @@ const changeFS = async () => {
   }
 }
 
-watch(pengelola, (val) => {
+watch(filterKK.value.selectedPengelola, (val) => {
   if (val.length === 0) {
-    checkPengelola.value = false
+    checkPengelolaKK.value = false
     indeterminatePengelola.value = false
   } else if (val.length === itemsPengelola.value.length) {
-    checkPengelola.value = true
+    checkPengelolaKK.value = true
+    indeterminatePengelola.value = false
+  } else {
+    indeterminatePengelola.value = true
+  }
+})
+watch(filterFS.value.selectedPengelola, (val) => {
+  if (val.length === 0) {
+    checkPengelolaFS.value = false
+    indeterminatePengelola.value = false
+  } else if (val.length === itemsPengelola.value.length) {
+    checkPengelolaFS.value = true
     indeterminatePengelola.value = false
   } else {
     indeterminatePengelola.value = true
   }
 })
 
-watch(pembina, (val) => {
+watch(filterKK.value.selectedPembina, (val) => {
   if (val.length === 0) {
-    checkPembina.value = false
+    checkPembinaKK.value = false
     indeterminatePembina.value = false
   } else if (val.length === itemsPembina.value.length) {
-    checkPembina.value = true
+    checkPembinaKK.value = true
+    indeterminatePembina.value = false
+  } else {
+    indeterminatePembina.value = true
+  }
+})
+watch(filterFS.value.selectedPembina, (val) => {
+  if (val.length === 0) {
+    checkPembinaFS.value = false
+    indeterminatePembina.value = false
+  } else if (val.length === itemsPembina.value.length) {
+    checkPembinaFS.value = true
     indeterminatePembina.value = false
   } else {
     indeterminatePembina.value = true
   }
 })
 
-watch(persetujuan, (val) => {
+watch(filterKK.value.selectedPersetujuan, (val) => {
   if (val.length === 0) {
-    checkPersetujuan.value = false
+    checkPersetujuanKK.value = false
     indeterminateStatus.value = false
   } else if (val.length === itemsPersetujuan.value.length) {
-    checkPersetujuan.value = true
+    checkPersetujuanKK.value = true
+    indeterminateStatus.value = false
+  } else {
+    indeterminateStatus.value = true
+  }
+})
+watch(filterFS.value.selectedPersetujuan, (val) => {
+  if (val.length === 0) {
+    checkPersetujuanFS.value = false
+    indeterminateStatus.value = false
+  } else if (val.length === itemsPersetujuan.value.length) {
+    checkPersetujuanFS.value = true
     indeterminateStatus.value = false
   } else {
     indeterminateStatus.value = true
   }
 })
 
-const handleCheckPengelola = (val: CheckboxValueType) => {
+const handleCheckPengelolaKK = (val: CheckboxValueType) => {
   indeterminatePengelola.value = false
   if (val) {
-    pengelola.value = itemsPengelola.value.map((_) => _.id)
+    filterKK.value.selectedPengelola = itemsPengelola.value.map((_) => _.id)
   } else {
-    pengelola.value = []
+    filterKK.value.selectedPengelola = []
+  }
+}
+const handleCheckPengelolaFS = (val: CheckboxValueType) => {
+  indeterminatePengelola.value = false
+  if (val) {
+    filterFS.value.selectedPengelola = itemsPengelola.value.map((_) => _.id)
+  } else {
+    filterFS.value.selectedPengelola = []
   }
 }
 
-const handleCheckPembina = (val: CheckboxValueType) => {
+const handleCheckPembinaKK = (val: CheckboxValueType) => {
   indeterminatePembina.value = false
   if (val) {
-    pembina.value = itemsPembina.value.map((_) => _.id)
+    filterKK.value.selectedPembina = itemsPembina.value.map((_) => _.id)
   } else {
-    pembina.value = []
+    filterKK.value.selectedPembina = []
+  }
+}
+const handleCheckPembinaFS = (val: CheckboxValueType) => {
+  indeterminatePembina.value = false
+  if (val) {
+    filterFS.value.selectedPembina = itemsPembina.value.map((_) => _.id)
+  } else {
+    filterFS.value.selectedPembina = []
   }
 }
 
-const handleCheckPersetujuan = (val: CheckboxValueType) => {
+const handleCheckPersetujuanKK = (val: CheckboxValueType) => {
   indeterminateStatus.value = false
   if (val) {
-    persetujuan.value = itemsPersetujuan.value.map((_) => _.id)
+    filterKK.value.selectedPersetujuan = itemsPersetujuan.value.map((_) => _.id)
   } else {
-    persetujuan.value = []
+    filterKK.value.selectedPersetujuan = []
+  }
+}
+const handleCheckPersetujuanFS = (val: CheckboxValueType) => {
+  indeterminateStatus.value = false
+  if (val) {
+    filterFS.value.selectedPersetujuan = itemsPersetujuan.value.map((_) => _.id)
+  } else {
+    filterFS.value.selectedPersetujuan = []
   }
 }
 

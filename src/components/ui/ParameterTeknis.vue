@@ -215,11 +215,13 @@ const labelSFC = (kodeBahanBakar: any) => {
   return '';
 }
 const bahanBakarsFinal = () => {
-  const utamaIndex = props.bahanBakars.findIndex((e: any) => e.flag_bahan_bakar === 1);
-  if (utamaIndex !== 0) {
-    const utama = props.bahanBakars[utamaIndex];
-    props.bahanBakars.splice(utamaIndex, 1);
-    props.bahanBakars.unshift(utama);
+  if (props.bahanBakars.some((e: any) => e.flag_bahan_bakar === 1)) {
+    const utamaIndex = props.bahanBakars.findIndex((e: any) => e.flag_bahan_bakar === 1);
+    if (utamaIndex !== 0) {
+      const utama = props.bahanBakars[utamaIndex];
+      props.bahanBakars.splice(utamaIndex, 1);
+      props.bahanBakars.unshift(utama);
+    }
   }
   return props.bahanBakars;
 }

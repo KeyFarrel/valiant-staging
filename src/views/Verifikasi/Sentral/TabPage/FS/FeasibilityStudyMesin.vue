@@ -39,7 +39,8 @@
         v-for="(persetujuanFSItem, persetujuanFSIndex) in props.source" :key="persetujuanFSIndex">
         <td scope="row" class="px-1 py-4 text-center whitespace-nowrap">{{ persetujuanFSIndex + 1 }}</td>
         <td class="text-center">{{ persetujuanFSItem.tahun ? persetujuanFSItem.tahun : '-' }}</td>
-        <td class="text-right">{{ persetujuanFSItem.irr_on_equity }}</td>
+        <td class="text-right">{{ persetujuanFSItem.irr_on_equity === '' ? 'NUM' :
+          globalFormat.formatRupiah(persetujuanFSItem.irr_on_equity) }}</td>
         <td class="text-right">{{ globalFormat.formatRupiah(persetujuanFSItem.npv_on_equity) }}</td>
         <td class="flex items-center justify-center text-center">
           <div
@@ -151,8 +152,8 @@ interface Props {
 
 interface PersetujuanFSItem {
   tahun: string
-  irr_on_project: number
-  irr_on_equity: number
+  irr_on_project: number | string
+  irr_on_equity: number | string
   npv_on_project: number
   npv_on_equity: number
   status: string

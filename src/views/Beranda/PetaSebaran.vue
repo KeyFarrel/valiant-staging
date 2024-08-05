@@ -143,8 +143,8 @@
         <ol-overlay v-for="( item, i ) in dataPeta " :position="[item.lng, item.lat]" :key="i">
           <template v-slot="">
             <div v-if="showByIndex === i" @mouseenter="showByIndex = i, showByIndexModal = i"
-              @mouseleave="showByIndex = null, showByIndexModal = null"
-              class="bg-white absolute z-50 w-[18rem] rounded-md right-0 bottom-0">
+              @mouseleave="showByIndex = null, showByIndexModal = null" :class=" parseFloat(item.lat) < 0 ||parseFloat(item.lng) > 138 ? 'bottom-0 right-0': 'top-0 left-0'"
+              class="bg-white absolute z-50 w-[18rem] rounded-md">
               <div class="flex justify-between px-2 py-2">
                 <div>
                   <div class="flex mb-1">

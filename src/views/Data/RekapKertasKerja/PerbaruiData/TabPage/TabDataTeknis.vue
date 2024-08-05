@@ -142,7 +142,7 @@ interface Props {
   comboTypePeriodic: any
   comboBahanBakar: any
   initValue: {
-    typePeriodic: string
+    typePeriodic: string | number
     ncf: string
     eaf: string
     productionBrutto: string

@@ -1,5 +1,5 @@
 import { EncryptStorage } from 'encrypt-storage';
-const secretKey = "V4L1anT-s3CreT-k3Y";
+const secretKey = import.meta.env.VITE_ENCRYPT_SECRET_KEY
 export const encryptStorage = new EncryptStorage(secretKey);
 
 export const encryptedUserInfo = {
