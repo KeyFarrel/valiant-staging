@@ -6,7 +6,7 @@
         <div class="flex">
           <div class="text-slate-500">IRR On Project</div>
           <PopUp class="ml-2" :title="'WACC On Project'" :content="dataRealisasiMesin.wacc_on_project
-            ? globalFormat.formatEnergy(dataRealisasiMesin.wacc_on_project)
+            ? globalFormat.formatRupiah(dataRealisasiMesin.wacc_on_project)
             : '-'" />
         </div>
         <div class="flex">
@@ -22,9 +22,7 @@
           </div>
           <p class="mr-2 font-bold">
             {{
-              dataRealisasiMesin.irr_project
-                ? globalFormat.formatEnergy(dataRealisasiMesin.irr_project)
-                : "-"
+              dataRealisasiMesin.irr_project === '' ? 'NUM' : globalFormat.formatRupiah(dataRealisasiMesin.irr_project)
             }}
           </p>
           <p class="text-slate-500">%</p>
@@ -42,7 +40,7 @@
         <div class="flex">
           <div class="text-slate-500">IRR On Equity</div>
           <PopUp class="ml-2" :title="'WACC On Equity'" :content="dataRealisasiMesin.wacc_on_equity
-            ? globalFormat.formatEnergy(dataRealisasiMesin.wacc_on_equity)
+            ? globalFormat.formatRupiah(dataRealisasiMesin.wacc_on_equity)
             : '-'" />
         </div>
         <div class="flex">
@@ -58,9 +56,7 @@
           </div>
           <p class="mr-2 font-bold">
             {{
-              dataRealisasiMesin.irr_equity
-                ? globalFormat.formatEnergy(dataRealisasiMesin.irr_equity)
-                : "-"
+              dataRealisasiMesin.irr_equity === '' ? 'NUM' : globalFormat.formatRupiah(dataRealisasiMesin.irr_equity)
             }}
           </p>
           <p class="text-slate-500">%</p>
@@ -152,7 +148,7 @@
           <p class="mr-2 font-bold">
             {{
               dataRealisasiMesin.average_cf
-                ? globalFormat.formatEnergy(dataRealisasiMesin.average_cf)
+                ? globalFormat.formatRupiah(dataRealisasiMesin.average_cf)
                 : "-"
             }}
           </p>
@@ -183,7 +179,7 @@
           <p class="mr-2 font-bold">
             {{
               dataRealisasiMesin.average_eaf
-                ? globalFormat.formatEnergy(dataRealisasiMesin.average_eaf)
+                ? globalFormat.formatRupiah(dataRealisasiMesin.average_eaf)
                 : "-"
             }}
           </p>
@@ -206,14 +202,14 @@
         <div class="flex">
           <div class="text-slate-500">IRR On Project</div>
           <PopUp class="ml-2" :title="'WACC On Project'" :content="dataPlanningMesin.fs_wacc_on_project
-            ? globalFormat.formatEnergy(dataPlanningMesin.fs_wacc_on_project)
+            ? globalFormat.formatRupiah(dataPlanningMesin.fs_wacc_on_project)
             : '-'" />
         </div>
         <div class="flex">
           <p class="mr-2 font-bold">
             {{
               dataPlanningMesin.fs_irr_project
-                ? globalFormat.formatEnergy(dataPlanningMesin.fs_irr_project)
+                ? globalFormat.formatRupiah(dataPlanningMesin.fs_irr_project)
                 : "-"
             }}
           </p>
@@ -224,14 +220,14 @@
         <div class="flex">
           <div class="text-slate-500">IRR On Equity</div>
           <PopUp class="ml-2" :title="'WACC On Equity'" :content="dataPlanningMesin.fs_wacc_on_equity
-            ? globalFormat.formatEnergy(dataPlanningMesin.fs_wacc_on_equity)
+            ? globalFormat.formatRupiah(dataPlanningMesin.fs_wacc_on_equity)
             : '-'" />
         </div>
         <div class="flex">
           <p class="mr-2 font-bold">
             {{
               dataPlanningMesin.fs_irr_equity
-                ? globalFormat.formatEnergy(dataPlanningMesin.fs_irr_equity)
+                ? globalFormat.formatRupiah(dataPlanningMesin.fs_irr_equity)
                 : "-"
             }}
           </p>
@@ -270,7 +266,7 @@
           <p class="mr-2 font-bold">
             {{
               dataPlanningMesin.fs_average_cf
-                ? globalFormat.formatEnergy(dataPlanningMesin.fs_average_cf)
+                ? globalFormat.formatRupiah(dataPlanningMesin.fs_average_cf)
                 : "-"
             }}
           </p>
@@ -283,7 +279,7 @@
           <p class="mr-2 font-bold">
             {{
               dataPlanningMesin.fs_average_eaf
-                ? globalFormat.formatEnergy(dataPlanningMesin.fs_average_eaf)
+                ? globalFormat.formatRupiah(dataPlanningMesin.fs_average_eaf)
                 : "-"
             }}
           </p>
@@ -298,15 +294,13 @@
         <div class="flex">
           <div class="text-slate-500">IRR On Project</div>
           <PopUp class="ml-2" :title="'WACC On Project'" :content="dataRealisasiMesin.wacc_on_project
-            ? globalFormat.formatEnergy(dataRealisasiMesin.wacc_on_project)
+            ? globalFormat.formatRupiah(dataRealisasiMesin.wacc_on_project)
             : '-'" />
         </div>
         <div class="flex">
           <p class="mr-2 font-bold">
             {{
-              dataRealisasiMesin.irr_project
-                ? globalFormat.formatEnergy(dataRealisasiMesin.irr_project)
-                : "-"
+              dataRealisasiMesin.irr_project === '' ? 'NUM' : globalFormat.formatRupiah(dataRealisasiMesin.irr_project)
             }}
           </p>
           <p class="text-slate-500">%</p>
@@ -316,15 +310,13 @@
         <div class="flex">
           <div class="text-slate-500">IRR On Equity</div>
           <PopUp class="ml-2" :title="'WACC On Equity'" :content="dataRealisasiMesin.wacc_on_equity
-            ? globalFormat.formatEnergy(dataRealisasiMesin.wacc_on_equity)
+            ? globalFormat.formatRupiah(dataRealisasiMesin.wacc_on_equity)
             : '-'" />
         </div>
         <div class="flex">
           <p class="mr-2 font-bold">
             {{
-              dataRealisasiMesin.irr_equity
-                ? globalFormat.formatEnergy(dataRealisasiMesin.irr_equity)
-                : "-"
+              dataRealisasiMesin.irr_equity === '' ? 'NUM' : globalFormat.formatRupiah(dataRealisasiMesin.irr_equity)
             }}
           </p>
           <p class="text-slate-500">%</p>
@@ -362,7 +354,7 @@
           <p class="mr-2 font-bold">
             {{
               dataRealisasiMesin.average_cf
-                ? globalFormat.formatEnergy(dataRealisasiMesin.average_cf)
+                ? globalFormat.formatRupiah(dataRealisasiMesin.average_cf)
                 : "-"
             }}
           </p>
@@ -375,7 +367,7 @@
           <p class="mr-2 font-bold">
             {{
               dataRealisasiMesin.average_eaf
-                ? globalFormat.formatEnergy(dataRealisasiMesin.average_eaf)
+                ? globalFormat.formatRupiah(dataRealisasiMesin.average_eaf)
                 : "-"
             }}
           </p>
@@ -393,9 +385,8 @@
         <div class="flex">
           <p class="mr-2 font-bold">
             {{
-              dataRealisasiMesin.irr_project_now
-                ? globalFormat.formatEnergy(dataRealisasiMesin.irr_project_now)
-                : "-"
+              dataRealisasiMesin.irr_project_now === '' ? 'NUM' :
+                globalFormat.formatRupiah(dataRealisasiMesin.irr_project_now)
             }}
           </p>
           <p class="text-slate-500">%</p>
@@ -408,9 +399,8 @@
         <div class="flex">
           <p class="mr-2 font-bold">
             {{
-              dataRealisasiMesin.irr_equity_now
-                ? globalFormat.formatEnergy(dataRealisasiMesin.irr_equity_now)
-                : "-"
+              dataRealisasiMesin.irr_equity_now === '' ? 'NUM' :
+                globalFormat.formatRupiah(dataRealisasiMesin.irr_equity_now)
             }}
           </p>
           <p class="text-slate-500">%</p>
@@ -448,7 +438,7 @@
           <p class="mr-2 font-bold">
             {{
               dataRealisasiMesin.average_cf_now
-                ? globalFormat.formatEnergy(dataRealisasiMesin.average_cf_now)
+                ? globalFormat.formatRupiah(dataRealisasiMesin.average_cf_now)
                 : "-"
             }}
           </p>
@@ -461,7 +451,7 @@
           <p class="mr-2 font-bold">
             {{
               dataRealisasiMesin.average_eaf_now
-                ? globalFormat.formatEnergy(dataRealisasiMesin.average_eaf_now)
+                ? globalFormat.formatRupiah(dataRealisasiMesin.average_eaf_now)
                 : "-"
             }}
           </p>

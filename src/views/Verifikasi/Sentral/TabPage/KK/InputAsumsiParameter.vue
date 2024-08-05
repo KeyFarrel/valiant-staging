@@ -82,7 +82,7 @@
           </div>
           <div class="flex flex-row items-center justify-between">
             <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx</p>
-            <p class="text-xs text-textDisabledColor">Maximum upload file size : 2 MB</p>
+            <p class="text-xs text-textDisabledColor">Ukuran maksimal dokumen : 2 MB</p>
           </div>
         </div>
       </div>
@@ -119,7 +119,7 @@
           </div>
           <div class="flex flex-row items-center justify-between">
             <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx, .zip</p>
-            <p class="text-xs text-textDisabledColor">Maximum upload file size : 10 MB</p>
+            <p class="text-xs text-textDisabledColor">Ukuran maksimal dokumen : 5 MB</p>
           </div>
         </div>
       </div>
@@ -196,7 +196,7 @@
           v-model:electricity-price-c="electricityPriceC" v-model:electricity-price-d="electricityPriceD"
           @on-checked="handleChecked" @on-hapus-bahan-bakar="handleHapusBahanBakar"
           @on-tambah-bahan-bakar="handleTambahBahanBakar" @on-submit="isShowModalConfirmation = true"
-          :error="error.parameter" />
+          :error="error.parameter" :is-integrasi="isIntegrasi" />
       </TabItem>
     </TabsWrapper>
   </div>
@@ -212,7 +212,8 @@ import RekapService from '@/services/rekap-service';
 const rekapService = new RekapService();
 import GlobalFormat from '@/services/format/global-format';
 const globalFormat = new GlobalFormat();
-import axios from "axios";
+import PerbaruiDataService from '@/services/perbarui-data';
+const perbaruiDataService = new PerbaruiDataService();
 import router from '@/router';
 import Loading from '@/components/ui/LoadingSpinner.vue';
 import InputAsumsiParameterService from '@/services/input-asumsi-parameter-service';
@@ -253,6 +254,7 @@ const namaPengelola = ref<string>('');
 const namaPembina = ref<string>('');
 const kodeMesin = ref();
 const tahunBerjalan = new Date().getFullYear();
+const isIntegrasi = ref<boolean>(false);
 const interestRate = ref<string>('');
 const umurTeknis = ref<string>('');
 const loanTenor = ref<string>('');
@@ -353,6 +355,16 @@ const fetchMesinById = async () => {
     console.error(error);
   }
 };
+
+const fetchCheckIntegrasi = async () => {
+  try {
+    const response: any = await perbaruiDataService.getCheckIntegrasi(tahunBerjalan - 1, idMesin);
+    isIntegrasi.value = response.data[0].status_data_integrasi === "0" ? false : true;
+    console.log(isIntegrasi.value, 'dds');
+  } catch (error) {
+    console.error('Fetch Check Integrasi Error : ' + error)
+  }
+}
 
 const fetchAsumsiParameter = async (isCreate: boolean) => {
   try {
@@ -709,8 +721,8 @@ const uploadFile = async () => {
     const formData = new FormData();
     formData.append('file', selectedFile.value);
     if (selectedFileEvidence.value) {
-      if (selectedFileEvidence.value.size > 10000000) {
-        notifyError('Ukuran file Evidence tidak boleh lebih dari 10MB', 5000);
+      if (selectedFileEvidence.value.size > 5000000) {
+        notifyError('Ukuran file Evidence tidak boleh lebih dari 5MB', 5000);
         return;
       } else {
         await uploadFileEvidence();
@@ -747,6 +759,7 @@ const handleCancelUpload = async () => {
 onMounted(async () => {
   isLoading.value = true;
   await fetchMesinById();
+  await fetchCheckIntegrasi();
   await fetchAsumsiParameter(false);
   await fetchUnitPengelola();
   await fetchComboBahanBakar();

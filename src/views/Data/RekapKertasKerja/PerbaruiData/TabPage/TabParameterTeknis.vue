@@ -283,11 +283,13 @@ const props = withDefaults(defineProps<Props>(), {
   isIntegrasi: false
 });
 const bahanBakarsFinal = () => {
-  const utamaIndex = bahanBakars.value.findIndex((e: any) => e.flag_bahan_bakar === 1);
-  if (utamaIndex !== 0) {
-    const utama = bahanBakars.value[utamaIndex];
-    bahanBakars.value.splice(utamaIndex, 1);
-    bahanBakars.value.unshift(utama);
+  if (bahanBakars.value.some((e: any) => e.flag_bahan_bakar === 1)) {
+    const utamaIndex = bahanBakars.value.findIndex((e: any) => e.flag_bahan_bakar === 1);
+    if (utamaIndex !== 0) {
+      const utama = bahanBakars.value[utamaIndex];
+      bahanBakars.value.splice(utamaIndex, 1);
+      bahanBakars.value.unshift(utama);
+    }
   }
   return bahanBakars.value;
 }

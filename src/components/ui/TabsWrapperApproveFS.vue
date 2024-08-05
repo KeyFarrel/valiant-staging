@@ -131,7 +131,7 @@
                 </div>
                 <div class="flex">
                   <p class="mr-2 font-bold">
-                    {{ globalFormat.formatRupiah(props.irrOnProject) }}
+                    {{ props.irrOnProject === '' ? 'NUM' : globalFormat.formatRupiah(props.irrOnProject) }}
                   </p>
                   <p class="text-slate-500">%</p>
                 </div>
@@ -144,7 +144,7 @@
                 </div>
                 <div class="flex">
                   <p class="mr-2 font-bold">
-                    {{ globalFormat.formatRupiah(props.irrOnEquity) }}
+                    {{ props.irrOnEquity === '' ? 'NUM' : globalFormat.formatRupiah(props.irrOnEquity) }}
                   </p>
                   <p class="text-slate-500">%</p>
                 </div>
@@ -434,8 +434,8 @@ interface Props {
   // kodeSentral?: string
   idMesin: number | string
   tahunGrafik: number
-  irrOnProject: number
-  irrOnEquity: number
+  irrOnProject: number | string
+  irrOnEquity: number | string
   waccOnProject: number
   waccOnEquity: number
   npvOnEquity: number

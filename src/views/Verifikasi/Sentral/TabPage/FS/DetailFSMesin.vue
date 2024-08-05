@@ -85,7 +85,7 @@
             </div>
             <div class="flex flex-row items-center justify-between">
               <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx</p>
-              <p class="text-xs text-textDisabledColor">Maximum upload file size : 2 MB</p>
+              <p class="text-xs text-textDisabledColor">Ukuran maksimal dokumen : 2 MB</p>
             </div>
           </div>
         </div>
@@ -121,7 +121,7 @@
             </div>
             <div class="flex flex-row items-center justify-between">
               <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx, .zip</p>
-              <p class="text-xs text-textDisabledColor">Maximum upload file size : 10 MB</p>
+              <p class="text-xs text-textDisabledColor">Ukuran maksimal dokumen : 5 MB</p>
             </div>
           </div>
         </div>

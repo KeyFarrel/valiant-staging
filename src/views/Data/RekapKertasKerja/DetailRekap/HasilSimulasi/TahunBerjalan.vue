@@ -17,12 +17,14 @@
       <div class="grid grid-cols-2 mt-5">
         <div>
           <p class="text-gray-500">IRR on Project</p>
-          <p class="font-bold">{{ globalFormat.formatRupiah(props.irrOnProject) }} <span class="text-gray-400">%</span>
+          <p class="font-bold">{{ props.irrOnProject === '' ? 'NUM' : globalFormat.formatRupiah(props.irrOnProject) }}
+            <span class="text-gray-400">%</span>
           </p>
         </div>
         <div>
           <p class="text-gray-500">IRR on Equity</p>
-          <p class="font-bold">{{ globalFormat.formatRupiah(props.irrOnEquity) }} <span class="text-gray-400">%</span>
+          <p class="font-bold">{{ props.irrOnEquity === '' ? 'NUM' : globalFormat.formatRupiah(props.irrOnEquity) }}
+            <span class="text-gray-400">%</span>
           </p>
         </div>
       </div>
@@ -100,8 +102,8 @@ const globalFormat = new GlobalFormat();
 const props = defineProps<Props>()
 
 interface Props {
-  irrOnProject: number
-  irrOnEquity: number
+  irrOnProject: number | string
+  irrOnEquity: number | string
   npvOnEquity: number
   npvOnProject: number
   averageNcf: number

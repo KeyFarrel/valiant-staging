@@ -90,8 +90,9 @@
           </div>
           <div class="flex flex-col space-y-1.5">
             <label for="" class="text-sm font-semibold text-labelColor">Total Cost Component B <span
-                class="text-warningColor">* </span><span v-if="props.isIntegrasi"
-                class="text-xs text-warningColor">Unaudited</span></label>
+                class="text-warningColor">* </span><span v-if="props.isIntegrasi" class="text-xs"
+                :class="props.isAudited ? 'text-greenColor' : 'text-warningColor'">{{ props.isAudited ? 'Audited' :
+                  'Unaudited' }}</span></label>
             <div class="flex items-center justify-start">
               <TextField @on-input="handleInputDecimalRupiah('costComponentB')" v-model="costComponentB" class="pl-9"
                 :disabled="props.isIntegrasi" />
@@ -104,8 +105,9 @@
           <div class="grid grid-cols-4 gap-3">
             <div class="flex flex-col space-y-1.5">
               <label for="" class="text-sm font-semibold text-labelColor">Biaya Kepegawaian <span
-                  class="text-warningColor">* </span><span v-if="props.isIntegrasi"
-                  class="text-xs text-warningColor">Unaudited</span></label>
+                  class="text-warningColor">* </span><span v-if="props.isIntegrasi" class="text-xs"
+                  :class="props.isAudited ? 'text-greenColor' : 'text-warningColor'">{{ props.isAudited ? 'Audited' :
+                    'Unaudited' }}</span></label>
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('biayaKepegawaian')" v-model="biayaKepegawaian"
                   class="pl-9" :disabled="props.isIntegrasi" />
@@ -116,8 +118,9 @@
             </div>
             <div class="flex flex-col space-y-1.5">
               <label for="" class="text-sm font-semibold text-labelColor">Biaya Pemeliharaan Rutin <span
-                  class="text-warningColor">* </span><span v-if="props.isIntegrasi"
-                  class="text-xs text-warningColor">Unaudited</span></label>
+                  class="text-warningColor">* </span><span v-if="props.isIntegrasi" class="text-xs"
+                  :class="props.isAudited ? 'text-greenColor' : 'text-warningColor'">{{ props.isAudited ? 'Audited' :
+                    'Unaudited' }}</span></label>
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('biayaPemeliharaanRutin')"
                   v-model="biayaPemeliharaanRutin" class="pl-9" :disabled="props.isIntegrasi" />
@@ -128,8 +131,9 @@
             </div>
             <div class="flex flex-col space-y-1.5">
               <label for="" class="text-sm font-semibold text-labelColor">Biaya Administrasi dan Umum <span
-                  class="text-warningColor">* </span><span v-if="props.isIntegrasi"
-                  class="text-xs text-warningColor">Unaudited</span></label>
+                  class="text-warningColor">* </span><span v-if="props.isIntegrasi" class="text-xs"
+                  :class="props.isAudited ? 'text-greenColor' : 'text-warningColor'">{{ props.isAudited ? 'Audited' :
+                    'Unaudited' }}</span></label>
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('biayaAdministrasiUmum')" v-model="biayaAdministrasiUmum"
                   class="pl-9" :disabled="props.isIntegrasi" />
@@ -140,8 +144,9 @@
             </div>
             <div class="flex flex-col space-y-1.5">
               <label for="" class="text-sm font-semibold text-labelColor">Biaya Pembelian Tenaga Listrik <span
-                  class="text-warningColor">* </span><span v-if="props.isIntegrasi"
-                  class="text-xs text-warningColor">Unaudited</span></label>
+                  class="text-warningColor">* </span><span v-if="props.isIntegrasi" class="text-xs"
+                  :class="props.isAudited ? 'text-greenColor' : 'text-warningColor'">{{ props.isAudited ? 'Audited' :
+                    'Unaudited' }}</span></label>
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('biayaPembelianTenagaListrik')"
                   v-model="biayaPembelianTenagaListrik" class="pl-9" :disabled="props.isIntegrasi" />
@@ -152,8 +157,9 @@
             </div>
             <div class="flex flex-col space-y-1.5">
               <label for="" class="text-sm font-semibold text-labelColor">Biaya Lain Lain <span
-                  class="text-warningColor">* </span><span v-if="props.isIntegrasi"
-                  class="text-xs text-warningColor">Unaudited</span></label>
+                  class="text-warningColor">* </span><span v-if="props.isIntegrasi" class="text-xs"
+                  :class="props.isAudited ? 'text-greenColor' : 'text-warningColor'">{{ props.isAudited ? 'Audited' :
+                    'Unaudited' }}</span></label>
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('biayaLainLain')" v-model="biayaLainLain" class="pl-9"
                   :disabled="props.isIntegrasi" />
@@ -174,8 +180,9 @@
           </div>
           <div class="flex flex-col space-y-1.5">
             <label for="" class="text-sm font-semibold text-labelColor">Total Cost Component B dan D <span
-                class="text-warningColor">* </span><span v-if="props.isIntegrasi"
-                class="text-xs text-warningColor">Unaudited</span></label>
+                class="text-warningColor">* </span><span v-if="props.isIntegrasi" class="text-xs"
+                :class="props.isAudited ? 'text-greenColor' : 'text-warningColor'">{{ props.isAudited ? 'Audited' :
+                  'Unaudited' }}</span></label>
             <div class="flex items-center justify-start">
               <TextField @on-input="handleInputDecimalRupiah('costComponentB')" v-model="costComponentB" class="pl-9"
                 :disabled="props.isIntegrasi" />
@@ -187,7 +194,9 @@
           <div class="grid grid-cols-2 gap-6">
             <div class="flex flex-col space-y-1.5">
               <label for="" class="text-sm font-semibold text-labelColor">O&M Cost <span class="text-warningColor">*
-                </span><span v-if="props.isIntegrasi" class="text-xs text-warningColor">Unaudited</span></label>
+                </span><span v-if="props.isIntegrasi" class="text-xs"
+                  :class="props.isAudited ? 'text-greenColor' : 'text-warningColor'">{{ props.isAudited ? 'Audited' :
+                    'Unaudited' }}</span></label>
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('oMCost')" v-model="oMCost" class="pl-9"
                   :disabled="props.isIntegrasi" />
@@ -198,8 +207,9 @@
             </div>
             <div class="flex flex-col space-y-1.5">
               <label for="" class="text-sm font-semibold text-labelColor">Periodic Maintenance Cost (Non MI)
-                <span class="text-warningColor">* </span><span v-if="props.isIntegrasi"
-                  class="text-xs text-warningColor">Unaudited</span></label>
+                <span class="text-warningColor">* </span><span v-if="props.isIntegrasi" class="text-xs"
+                  :class="props.isAudited ? 'text-greenColor' : 'text-warningColor'">{{ props.isAudited ? 'Audited' :
+                    'Unaudited' }}</span></label>
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('periodicMaintenanceCost')"
                   v-model="periodicMaintenanceCost" class="pl-9" :disabled="props.isIntegrasi" />
@@ -220,8 +230,9 @@
           </div>
           <div class="flex flex-col space-y-1.5">
             <label for="" class="text-sm font-semibold text-labelColor">Total Cost Component C <span
-                class="text-warningColor">* </span><span v-if="props.isIntegrasi"
-                class="text-xs text-warningColor">Unaudited</span></label>
+                class="text-warningColor">* </span><span v-if="props.isIntegrasi" class="text-xs"
+                :class="props.isAudited ? 'text-greenColor' : 'text-warningColor'">{{ props.isAudited ? 'Audited' :
+                  'Unaudited' }}</span></label>
             <div class="flex items-center justify-start">
               <TextField @on-input="handleInputDecimalRupiah('costComponentC')" v-model="costComponentC" class="pl-9"
                 :disabled="props.isIntegrasi" />
@@ -235,7 +246,9 @@
             <div class="flex flex-col space-y-1.5" v-for="(componentCItem, componentCIndex) in costComponentCDetail">
               <label for="" class="text-sm font-semibold text-labelColor">{{
                 labelBahanBakar(componentCItem.kode_bahan_bakar) }}<span class="text-warningColor"> * </span><span
-                  v-if="props.isIntegrasi" class="text-xs text-warningColor">Unaudited</span></label>
+                  v-if="props.isIntegrasi" class="text-xs"
+                  :class="props.isAudited ? 'text-greenColor' : 'text-warningColor'">{{ props.isAudited ? 'Audited' :
+                    'Unaudited' }}</span></label>
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('componentCDetail', componentCIndex)" class="pl-9"
                   v-model="componentCItem.fuel_cost" :disabled="props.isIntegrasi" />
@@ -256,8 +269,9 @@
           </div>
           <div class="flex flex-col space-y-1.5">
             <label for="" class="text-sm font-semibold text-labelColor">Total Cost Component D <span
-                class="text-warningColor">* </span><span v-if="props.isIntegrasi"
-                class="text-xs text-warningColor">Unaudited</span></label>
+                class="text-warningColor">* </span><span v-if="props.isIntegrasi" class="text-xs"
+                :class="props.isAudited ? 'text-greenColor' : 'text-warningColor'">{{ props.isAudited ? 'Audited' :
+                  'Unaudited' }}</span></label>
             <div class="flex items-center justify-start">
               <TextField @on-input="handleInputDecimalRupiah('costComponentD')" v-model="costComponentD" class="pl-9"
                 :disabled="props.isIntegrasi" />
@@ -270,8 +284,9 @@
           <div class="grid grid-cols-4 gap-x-5">
             <div class="flex flex-col space-y-1.5">
               <label for="" class="text-sm font-semibold text-labelColor">Biaya Minyak Pelumas <span
-                  class="text-warningColor">* </span><span v-if="props.isIntegrasi"
-                  class="text-xs text-warningColor">Unaudited</span></label>
+                  class="text-warningColor">* </span><span v-if="props.isIntegrasi" class="text-xs"
+                  :class="props.isAudited ? 'text-greenColor' : 'text-warningColor'">{{ props.isAudited ? 'Audited' :
+                    'Unaudited' }}</span></label>
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('biayaMinyakPelumas')" v-model="biayaMinyakPelumas"
                   class="pl-9" :disabled="props.isIntegrasi" />
@@ -282,8 +297,9 @@
             </div>
             <div class="flex flex-col space-y-1.5">
               <label for="" class="text-sm font-semibold text-labelColor">Biaya Bahan Kimia <span
-                  class="text-warningColor">* </span><span v-if="props.isIntegrasi"
-                  class="text-xs text-warningColor">Unaudited</span></label>
+                  class="text-warningColor">* </span><span v-if="props.isIntegrasi" class="text-xs"
+                  :class="props.isAudited ? 'text-greenColor' : 'text-warningColor'">{{ props.isAudited ? 'Audited' :
+                    'Unaudited' }}</span></label>
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('bahanKimia')" v-model="bahanKimia" class="pl-9"
                   :disabled="props.isIntegrasi" />
@@ -304,7 +320,9 @@
           </div>
           <div class="flex flex-col space-y-1.5">
             <label for="" class="text-sm font-semibold text-labelColor">Total Revenue <span class="text-warningColor">*
-              </span><span v-if="props.isIntegrasi" class="text-xs text-warningColor">Unaudited</span></label>
+              </span><span v-if="props.isIntegrasi" class="text-xs"
+                :class="props.isAudited ? 'text-greenColor' : 'text-warningColor'">{{ props.isAudited ? 'Audited' :
+                  'Unaudited' }}</span></label>
             <div class="flex items-center justify-start">
               <TextField @on-input="handleInputDecimalRupiah('totalRevenue')" v-model="totalRevenue" class="pl-9"
                 :disabled="props.isIntegrasi" />
@@ -316,8 +334,9 @@
           <div class="grid grid-cols-4 gap-x-5">
             <div class="flex flex-col space-y-1.5">
               <label for="" class="text-sm font-semibold text-labelColor">Revenue Komp A <span
-                  class="text-warningColor">* </span><span v-if="props.isIntegrasi"
-                  class="text-xs text-warningColor">Unaudited</span></label>
+                  class="text-warningColor">* </span><span v-if="props.isIntegrasi" class="text-xs"
+                  :class="props.isAudited ? 'text-greenColor' : 'text-warningColor'">{{ props.isAudited ? 'Audited' :
+                    'Unaudited' }}</span></label>
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('revenueKompA')" v-model="revenueKompA" class="pl-9"
                   :disabled="props.isIntegrasi" />
@@ -328,8 +347,9 @@
             </div>
             <div class="flex flex-col space-y-1.5">
               <label for="" class="text-sm font-semibold text-labelColor">Revenue Komp B <span
-                  class="text-warningColor">* </span><span v-if="props.isIntegrasi"
-                  class="text-xs text-warningColor">Unaudited</span></label>
+                  class="text-warningColor">* </span><span v-if="props.isIntegrasi" class="text-xs"
+                  :class="props.isAudited ? 'text-greenColor' : 'text-warningColor'">{{ props.isAudited ? 'Audited' :
+                    'Unaudited' }}</span></label>
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('revenueKompB')" v-model="revenueKompB" class="pl-9"
                   :disabled="props.isIntegrasi" />
@@ -340,8 +360,9 @@
             </div>
             <div class="flex flex-col space-y-1.5">
               <label for="" class="text-sm font-semibold text-labelColor">Revenue Komp C <span
-                  class="text-warningColor">* </span><span v-if="props.isIntegrasi"
-                  class="text-xs text-warningColor">Unaudited</span></label>
+                  class="text-warningColor">* </span><span v-if="props.isIntegrasi" class="text-xs"
+                  :class="props.isAudited ? 'text-greenColor' : 'text-warningColor'">{{ props.isAudited ? 'Audited' :
+                    'Unaudited' }}</span></label>
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('revenueKompC')" v-model="revenueKompC" class="pl-9"
                   :disabled="props.isIntegrasi" />
@@ -352,8 +373,9 @@
             </div>
             <div class="flex flex-col space-y-1.5">
               <label for="" class="text-sm font-semibold text-labelColor">Revenue Komp D <span
-                  class="text-warningColor">* </span><span v-if="props.isIntegrasi"
-                  class="text-xs text-warningColor">Unaudited</span></label>
+                  class="text-warningColor">* </span><span v-if="props.isIntegrasi" class="text-xs"
+                  :class="props.isAudited ? 'text-greenColor' : 'text-warningColor'">{{ props.isAudited ? 'Audited' :
+                    'Unaudited' }}</span></label>
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('revenueKompD')" v-model="revenueKompD" class="pl-9"
                   :disabled="props.isIntegrasi" />
@@ -414,6 +436,7 @@ interface Props {
   comboBahanBakar: any
   dataFinansialInit: any
   isIntegrasi: boolean
+  isAudited: boolean
   error?: {
     costComponentA: boolean
     biayaInvestasiTambahan: boolean

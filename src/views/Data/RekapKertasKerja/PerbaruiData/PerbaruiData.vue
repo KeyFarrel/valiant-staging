@@ -74,7 +74,7 @@
           </div>
           <div class="flex flex-row items-center justify-between">
             <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx, .zip</p>
-            <p class="text-xs text-textDisabledColor">Maximum upload file size : 10 MB</p>
+            <p class="text-xs text-textDisabledColor">Ukuran maksimal dokumen : 5 MB</p>
           </div>
         </div>
       </div>
@@ -132,7 +132,7 @@
           </div>
           <div class="flex flex-row items-center justify-between">
             <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx</p>
-            <p class="text-xs text-textDisabledColor">Maximum upload file size : 200 MB</p>
+            <p class="text-xs text-textDisabledColor">Ukuran maksimal dokumen : 2 MB</p>
           </div>
         </div>
       </div>
@@ -192,7 +192,7 @@
           </div>
           <div class="flex flex-row items-center justify-between">
             <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx</p>
-            <p class="text-xs text-textDisabledColor">Maximum upload file size : 2 MB</p>
+            <p class="text-xs text-textDisabledColor">Ukuran maksimal dokumen : 2 MB</p>
           </div>
         </div>
       </div>
@@ -252,7 +252,7 @@
           </div>
           <div class="flex flex-row items-center justify-between">
             <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx</p>
-            <p class="text-xs text-textDisabledColor">Maximum upload file size : 2 MB</p>
+            <p class="text-xs text-textDisabledColor">Ukuran maksimal dokumen : 2 MB</p>
           </div>
         </div>
       </div>
@@ -334,8 +334,9 @@
           <TabDataFinansial :is-integrasi="isIntegrasi" :tahun="(tahunBerjalan).toString()"
             :combo-bahan-bakar="comboBahanBakar" :mesin="mesinDataById.mesin" :is-permanent="isPermanent"
             :kode-pengelola="kodePengelola" :data-finansial-init="dataFinansialInit" :error="error.finansial"
-            v-model:picked="picked" v-model:cost-component-a="costComponentA" v-model:cost-component-b="costComponentB"
-            v-model:biaya-kepegawaian="biayaKepegawaian" v-model:biaya-pemeliharaan-rutin="biayaPemeliharaanRutin"
+            :is-audited="isAudited" v-model:picked="picked" v-model:cost-component-a="costComponentA"
+            v-model:cost-component-b="costComponentB" v-model:biaya-kepegawaian="biayaKepegawaian"
+            v-model:biaya-pemeliharaan-rutin="biayaPemeliharaanRutin"
             v-model:biaya-administrasi-umum="biayaAdministrasiUmum"
             v-model:biaya-pembelian-tenaga-listrik="biayaPembelianTenagaListrik" v-model:biaya-lain-lain="biayaLainLain"
             v-model:o-m-cost="oMCost" v-model:periodic-maintenance-cost="periodicMaintenanceCost"
@@ -548,9 +549,8 @@
                         </li>
                       </ul>
                     </nav>
-                    <AkhirMasaManfaat :irr-on-project="hasilSimulasi1.trackIrrProject ?? 0"
-                      :irr-on-equity="hasilSimulasi1.trackIrrEquity ?? 0"
-                      :npv-on-equity="hasilSimulasi1.trackNpvEquity ?? 0"
+                    <AkhirMasaManfaat :irr-on-project="hasilSimulasi1.trackIrrProject"
+                      :irr-on-equity="hasilSimulasi1.trackIrrEquity" :npv-on-equity="hasilSimulasi1.trackNpvEquity ?? 0"
                       :npv-on-project="hasilSimulasi1.trackNpvProject ?? 0"
                       :average-ncf="hasilSimulasi1.trackAverageNcf ?? 0"
                       :average-eaf="hasilSimulasi1.trackAverageEaf ?? 0" />
@@ -573,9 +573,8 @@
                         </li>
                       </ul>
                     </nav>
-                    <AkhirMasaManfaat :irr-on-project="hasilSimulasi2.trackIrrProject ?? 0"
-                      :irr-on-equity="hasilSimulasi2.trackIrrEquity ?? 0"
-                      :npv-on-equity="hasilSimulasi2.trackNpvEquity ?? 0"
+                    <AkhirMasaManfaat :irr-on-project="hasilSimulasi2.trackIrrProject"
+                      :irr-on-equity="hasilSimulasi2.trackIrrEquity" :npv-on-equity="hasilSimulasi2.trackNpvEquity ?? 0"
                       :npv-on-project="hasilSimulasi2.trackNpvProject ?? 0"
                       :average-ncf="hasilSimulasi2.trackAverageNcf ?? 0"
                       :average-eaf="hasilSimulasi2.trackAverageEaf ?? 0" />
@@ -591,7 +590,7 @@
               <button
                 class="px-3 py-2 font-semibold text-white duration-300 rounded-lg bg-primaryColor border-primaryColor hover:bg-hoverColor hover:border-hoverColor"
                 @click="isShowModalEvidence = true"
-                v-if="(hasilSimulasi1.trackAverageEaf !== 0 && hasilSimulasi1.trackAverageNcf !== 0 && hasilSimulasi1.trackIrrEquity !== 0 && hasilSimulasi1.trackIrrProject !== 0 && hasilSimulasi1.trackNpvEquity !== 0 && hasilSimulasi1.trackNpvProject !== 0) && (hasilSimulasi2.trackAverageEaf !== 0 && hasilSimulasi2.trackAverageNcf !== 0 && hasilSimulasi2.trackIrrEquity !== 0 && hasilSimulasi2.trackIrrProject !== 0 && hasilSimulasi2.trackNpvEquity !== 0 && hasilSimulasi2.trackNpvProject !== 0)">
+                v-if="(hasilSimulasi1.trackNpvEquity !== 0 && hasilSimulasi1.trackNpvProject !== 0) && (hasilSimulasi2.trackNpvEquity !== 0 && hasilSimulasi2.trackNpvProject !== 0)">
                 Pilih & Simpan
               </button>
             </nav>
@@ -775,7 +774,7 @@ const bahanBakarGroup = ref<{
 const comboBahanBakar = ref<any[]>([]);
 const checkedBahanBakar = ref<number[]>([]);
 // Tab Data Teknis
-const typePeriodic = ref('');
+const typePeriodic = ref<string | number>('');
 const listTypePeriodic = ref<any[]>([]);
 const ncf = ref();
 const eaf = ref();
@@ -789,7 +788,7 @@ const statusDataTeknis = ref<string>('');
 const dataTeknisSimulasi1 = ref();
 const dataTeknisSimulasi2 = ref();
 const dataTeknisInit = ref<{
-  typePeriodic: string,
+  typePeriodic: string | number,
   ncf: string,
   eaf: string,
   productionBrutto: string,
@@ -827,6 +826,7 @@ const revenueKompA = ref<string>('');
 const revenueKompB = ref<string>('');
 const revenueKompC = ref<string>('');
 const revenueKompD = ref<string>('');
+const isAudited = ref<boolean>(false);
 // const totalRevenue = computed(() => {
 //   const valueToFormat = parseFloat(revenueKompA.value.replace(/[.]/g, '')) + parseFloat(revenueKompB.value.replace(/[.]/g, '')) + parseFloat(revenueKompC.value.replace(/[.]/g, '')) + parseFloat(revenueKompD.value.replace(/[.]/g, ''));
 //   return globalFormat.formatCurrencyNotFixed(valueToFormat);
@@ -879,16 +879,16 @@ const isRowTabOpenSimulasi1 = ref<number[]>([]);
 const isRowTabOpenSimulasi2 = ref<number[]>([]);
 const hasilSimulasi1 = ref<{
   idMesin: number | null
-  trackIrrProject: number | null
-  trackIrrEquity: number | null
+  trackIrrProject: number | string
+  trackIrrEquity: number | string
   trackNpvProject: number | null
   trackNpvEquity: number | null
   trackAverageEaf: number | null
   trackAverageNcf: number | null
 }>({
   idMesin: 0,
-  trackIrrProject: null,
-  trackIrrEquity: null,
+  trackIrrProject: '',
+  trackIrrEquity: '',
   trackNpvProject: null,
   trackNpvEquity: null,
   trackAverageEaf: null,
@@ -896,16 +896,16 @@ const hasilSimulasi1 = ref<{
 });
 const hasilSimulasi2 = ref<{
   idMesin: number | null
-  trackIrrProject: number | null
-  trackIrrEquity: number | null
+  trackIrrProject: number | string
+  trackIrrEquity: number | string
   trackNpvProject: number | null
   trackNpvEquity: number | null
   trackAverageEaf: number | null
   trackAverageNcf: number | null
 }>({
   idMesin: 0,
-  trackIrrProject: null,
-  trackIrrEquity: null,
+  trackIrrProject: '',
+  trackIrrEquity: '',
   trackNpvProject: null,
   trackNpvEquity: null,
   trackAverageEaf: null,
@@ -1232,6 +1232,10 @@ const fetchDataTeknisByPeriode = async () => {
         typePeriodic.value = fetchTypePeriodicResult[0].id_type_periodic;
         dataTeknisInit.value.typePeriodic = fetchTypePeriodicResult[0].id_type_periodic;
       }
+      else if (tempTypePeriodic === 0) {
+        typePeriodic.value = 0;
+        dataTeknisInit.value.typePeriodic = 0;
+      }
       ncf.value = globalFormat.formatCurrencyNotFixed(ncfItem[0].value.toString());
       eaf.value = globalFormat.formatCurrencyNotFixed(eafItem[0].value.toString());
       productionBrutto.value = globalFormat.formatCurrencyNotFixed(prodBruttoItem[0].value.toString());
@@ -1267,6 +1271,9 @@ const fetchDataTeknisByPeriode = async () => {
       if (tempTypePeriodic1 !== '' && tempTypePeriodic1 !== 0) {
         const fetchTypePeriodicResult = await fetchTypePeriodic(tempTypePeriodic1);
         typePeriodic.value = fetchTypePeriodicResult[0].id_type_periodic;
+      }
+      else if (tempTypePeriodic1 === 0) {
+        typePeriodic.value = 0;
       }
       ncf.value = globalFormat.formatCurrencyNotFixed(ncfItem1[0].value.toString());
       eaf.value = globalFormat.formatCurrencyNotFixed(eafItem1[0].value.toString());
@@ -1304,7 +1311,7 @@ const fetchDataTeknisByPeriode = async () => {
         energy_sales: energySalesItem1[0].value,
         fuel_consumption: fuelConsumptionFinal
       }
-      var typePeriodic2 = '';
+      var typePeriodic2 = 0;
       const fuelConsumptionFinal2: any = [];
       const periodicItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('Periodic'));
       const ncfItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('NCF'));
@@ -1317,6 +1324,8 @@ const fetchDataTeknisByPeriode = async () => {
       if (tempTypePeriodic2 !== '' && tempTypePeriodic2 !== 0) {
         const fetchTypePeriodicResult = await fetchTypePeriodic(tempTypePeriodic2);
         typePeriodic2 = fetchTypePeriodicResult[0].id_type_periodic;
+      } else if (tempTypePeriodic2 === 0) {
+        typePeriodic2 = 0;
       }
       for (const item of fuelConsItem2) {
         fuelConsumptionFinal2.push({
@@ -1348,7 +1357,7 @@ const fetchComboTypePeriodic = async () => {
         jenisPembangkit.value
       );
     const newValue: any = {
-      id_type_periodic: null,
+      id_type_periodic: 0,
       kode_type_periodic: '-',
     }
     comboTypePeriodic.value = response.data;
@@ -1367,12 +1376,9 @@ const fetchDataFinansialDetail = async () => {
       tahunBerjalan - 1,
       idMesin
     );
+    const response: ComboTypePeriodicItem = await perbaruiDataService.getDataFinansialDetail(tahunTerakhirRealisasi.value, idMesin);
+    isAudited.value = response.data.is_audited;
     if (responseSimulasi1.data.id_mesin === 0 || responseSimulasi2.data.id_mesin === 0) {
-      const response: ComboTypePeriodicItem =
-        await perbaruiDataService.getDataFinansialDetail(
-          tahunTerakhirRealisasi.value,
-          idMesin
-        );
       statusDataFinansial.value = 'Permanent';
       dataFinansialDetail.value = response.data;
       costComponentA.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_a);

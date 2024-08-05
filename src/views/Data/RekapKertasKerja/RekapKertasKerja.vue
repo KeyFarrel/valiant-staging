@@ -101,8 +101,8 @@
           <div class="flex justify-end space-x-2">
             <button
               class="px-5 py-2 text-sm font-semibold duration-300 border rounded-lg text-primaryColor border-primaryColor hover:bg-hoverColor hover:border-hoverColor hover:text-white"
-              @click="showModal = false">
-              Batal
+              @click="selectedKategoriPembangkit = []; dmn = []; selectedUmurMesin = []; selectedKondisiMesin = []">
+              Reset
             </button>
             <div>
               <button type="submit" @click="changeSentralData()"
@@ -376,7 +376,7 @@
                           :class="{ 'text-warningColor': irrItem.irr_on_equity < 9 || irrItem.irr_on_equity > 14, 'text-green-500': irrItem.irr_on_equity > 9 && irrItem.irr_on_equity < 14 }"
                           v-for="( irrItem, irrIndex ) in mesinSisaIRRNPV.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin) "
                           :key="irrIndex" v-else>
-                          {{ globalFormat.formatRupiah(irrItem.irr_on_equity) }}
+                          {{ irrItem.irr_on_equity === '' ? 'NUM' : globalFormat.formatRupiah(irrItem.irr_on_equity) }}
                           <span class="ml-1 mr-0.5">%</span>
                           <KeteranganAnomali :value="irrItem.irr_on_equity" />
                         </p>
@@ -602,7 +602,7 @@
               </div>
               <div class="flex flex-row items-center justify-between">
                 <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx</p>
-                <p class="text-xs text-textDisabledColor">Maximum upload file size : 2 MB</p>
+                <p class="text-xs text-textDisabledColor">Ukuran maksimal dokumen : 2 MB</p>
               </div>
             </div>
           </div>
@@ -638,7 +638,7 @@
               </div>
               <div class="flex flex-row items-center justify-between">
                 <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx, .zip</p>
-                <p class="text-xs text-textDisabledColor">Maximum upload file size : 10 MB</p>
+                <p class="text-xs text-textDisabledColor">Ukuran maksimal dokumen : 5 MB</p>
               </div>
             </div>
           </div>
@@ -709,7 +709,7 @@
               </div>
               <div class="flex flex-row items-center justify-between">
                 <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx</p>
-                <p class="text-xs text-textDisabledColor">Maximum upload file size : 2 MB</p>
+                <p class="text-xs text-textDisabledColor">Ukuran maksimal dokumen : 2 MB</p>
               </div>
             </div>
           </div>
@@ -745,7 +745,7 @@
               </div>
               <div class="flex flex-row items-center justify-between">
                 <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx, .zip</p>
-                <p class="text-xs text-textDisabledColor">Maximum upload file size : 10 MB</p>
+                <p class="text-xs text-textDisabledColor">Ukuran maksimal dokumen : 5 MB</p>
               </div>
             </div>
           </div>
@@ -1373,8 +1373,8 @@ const uploadFile = async () => {
     const formData = new FormData();
     formData.append('file', selectedFile.value);
     if (selectedFileEvidence.value) {
-      if (selectedFileEvidence.value.size > 10000000) {
-        notifyError('Ukuran file Evidence tidak boleh lebih dari 10MB', 5000);
+      if (selectedFileEvidence.value.size > 5000000) {
+        notifyError('Ukuran file Evidence tidak boleh lebih dari 5MB', 5000);
         return;
       } else {
         await uploadFileEvidence(0);
@@ -1415,8 +1415,8 @@ const uploadFileFS = async () => {
     const formData = new FormData();
     formData.append('file', selectedFileFS.value);
     if (selectedFileEvidence.value) {
-      if (selectedFileEvidence.value.size > 10000000) {
-        notifyError('Ukuran file Evidence tidak boleh lebih dari 10MB', 5000);
+      if (selectedFileEvidence.value.size > 5000000) {
+        notifyError('Ukuran file Evidence tidak boleh lebih dari 5MB', 5000);
         return;
       } else {
         await uploadFileEvidence(1);

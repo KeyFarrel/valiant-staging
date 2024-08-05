@@ -38,7 +38,8 @@
           v-model:electricity-price-b="electricityPriceB" v-model:electricity-price-c="electricityPriceC"
           v-model:electricity-price-d="electricityPriceD" @on-checked="handleChecked"
           @on-hapus-bahan-bakar="handleHapusBahanBakar" @on-tambah-bahan-bakar="handleTambahBahanBakar"
-          @on-submit="isShowModalConfirmation = true" :error="error.parameter" :is-perbarui-data="false" />
+          @on-submit="isShowModalConfirmation = true" :error="error.parameter" :is-perbarui-data="false"
+          :is-integrasi="isIntegrasi" />
       </TabItem>
     </TabsWrapper>
   </div>
@@ -55,6 +56,8 @@ import InputAsumsiParameterService from '@/services/input-asumsi-parameter-servi
 const inputAsumsiParameterService = new InputAsumsiParameterService();
 import UserService from "@/services/user-service";
 const userService = new UserService();
+import PerbaruiDataService from '@/services/perbarui-data';
+const perbaruiDataService = new PerbaruiDataService();
 import TabAsumsiMakro from './PerbaruiData/TabPage/TabAsumsiMakro.vue';
 import successJsonData from "@/assets/lottie/success.json";
 import errorJsonData from '@/assets/lottie/error.json';
@@ -90,6 +93,7 @@ const tahunBerjalan = new Date().getFullYear();
 const interestRate = ref<string>('');
 const umurTeknis = ref<string>('');
 const loanTenor = ref<string>('');
+const isIntegrasi = ref<boolean>(false);
 const loanPortion = ref<string>('');
 const nphr = ref<string>('');
 const auxiliary = ref<string>('');
@@ -201,6 +205,15 @@ const fetchMesinById = async () => {
     console.error(error);
   }
 };
+const fetchCheckIntegrasi = async () => {
+  try {
+    const response: any = await perbaruiDataService.getCheckIntegrasi(tahunBerjalan - 1, idMesin);
+    isIntegrasi.value = response.data[0].status_data_integrasi === "0" ? false : true;
+    console.log(isIntegrasi.value, 'dds');
+  } catch (error) {
+    console.error('Fetch Check Integrasi Error : ' + error)
+  }
+}
 const fetchStatusRealisasiById = async () => {
   try {
     const response: any = await inputAsumsiParameterService.getStatusRealisasiById(idMesin);
@@ -531,6 +544,7 @@ onMounted(async () => {
   isLoading.value = true;
   await fetchStatusRealisasiById();
   await fetchMesinById();
+  await fetchCheckIntegrasi();
   await fetchAsumsiParameter(false);
   await fetchUnitPengelola();
   await fetchComboBahanBakar();

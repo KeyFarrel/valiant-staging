@@ -39,7 +39,8 @@
         v-for="(persetujuanKKItem, persetujuanKKIndex) in props.source" :key="persetujuanKKIndex">
         <td scope="row" class="px-1 py-4 text-center whitespace-nowrap">{{ persetujuanKKIndex + 1 }}</td>
         <td class="text-center">{{ persetujuanKKItem.tahun ? persetujuanKKItem.tahun : '-' }}</td>
-        <td class="text-right">{{ globalFormat.formatRupiah(persetujuanKKItem.irr_on_equity) }}</td>
+        <td class="text-right">{{ persetujuanKKItem.irr_on_equity === '' ? 'NUM' :
+          globalFormat.formatRupiah(persetujuanKKItem.irr_on_equity) }}</td>
         <td class="text-right">{{ globalFormat.formatRupiah(persetujuanKKItem.npv_on_equity) }}</td>
         <td class="flex items-center justify-center text-center">
           <div
@@ -151,8 +152,8 @@ interface Props {
 
 interface PersetujuanKKItem {
   tahun: string
-  irr_on_project: number
-  irr_on_equity: number
+  irr_on_project: number | string
+  irr_on_equity: number | string
   npv_on_project: number
   npv_on_equity: number
   status: string
