@@ -191,7 +191,7 @@
           </RouterLink>
         </li>
         <li class="px-3"
-          v-if="authService.checkRole() == 'Approver' || authService.checkRole() == 'Staff' || authService.checkRole() == 'Super Admin'">
+          v-if="authService.checkRole() == 'Approver' || authService.checkRole() == 'Staff' || authService.checkRole() == 'Super Admin' || authService.checkRole() == 'Monitoring'">
           <div class="flex items-center px-2 text-[#7F7F80] dark:text-white">
             <svg
               class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -204,7 +204,7 @@
           </div>
         </li>
         <li
-          v-if="(authService.checkLevel() == 'Pembina' || authService.checkLevel() == 'Pengelola' || authService.checkLevel() == 'Admin') && authService.checkRole() !== 'Monitoring'">
+          v-if="authService.checkLevel() == 'Pembina' || authService.checkLevel() == 'Pengelola' || authService.checkLevel() == 'Admin'">
           <RouterLink id="sidebar-button" @click="store.label = 'Persetujuan'" to="/persetujuan-by-approve"
             class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
             :class="{ selected: store.label === 'Persetujuan' }">
@@ -399,6 +399,7 @@ const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
 }
 
+console.log(authService.checkLevel())
 const fetchPersetujuanKK = async () => {
   try {
     if (levelID == '3') {
