@@ -168,7 +168,9 @@
     </div>
   </div>
   <div v-else-if="stored.currentTabMesin === 'Planning & Realisasi + Proyeksi'">
-    <div v-if="statusApprove != 'Disetujui' && statusApprove != 'Data sudah update' && statusApprovePlanning != 'Disetujui' && statusApprovePlanning != 'Data sudah update'" class="my-20 text-center">
+    <div
+      v-if="statusApprove != 'Disetujui' && statusApprove != 'Data sudah update' && statusApprovePlanning != 'Disetujui' && statusApprovePlanning != 'Data sudah update'"
+      class="my-20 text-center">
       <Empty />
     </div>
     <div v-else>
@@ -203,15 +205,18 @@
           <vue-echarts :option="chartPRPMesin_Plan" style="height: 450px" @click="handleClickPRP" />
           <Legend />
         </div> -->
-        <div v-if="statusApprovePlanning === 'Disetujui' || statusApprovePlanning === 'Data sudah update' && statusApprove === 'Disetujui' || statusApprove === 'Data sudah update'">
+        <div
+          v-if="statusApprovePlanning === 'Disetujui' || statusApprovePlanning === 'Data sudah update' && statusApprove === 'Disetujui' || statusApprove === 'Data sudah update'">
           <vue-echarts :option="chartPRPMesin" style="height: 450px" @click="handleClickPRP" />
           <Legend />
         </div>
-        <div v-else-if="statusApprovePlanning != 'Disetujui' || statusApprovePlanning != 'Data sudah update' && statusApprove === 'Disetujui' || statusApprove === 'Data sudah update'">
+        <div
+          v-else-if="statusApprovePlanning != 'Disetujui' || statusApprovePlanning != 'Data sudah update' && statusApprove === 'Disetujui' || statusApprove === 'Data sudah update'">
           <vue-echarts :option="chartPRP_WLC" style="height: 450px" @click="handleClickPRP" />
           <Legend />
         </div>
-        <div v-else-if="statusApprove != 'Disetujui' || statusApprove != 'Data sudah update' && statusApprovePlanning === 'Disetujui' || statusApprovePlanning === 'Data sudah update'">
+        <div
+          v-else-if="statusApprove != 'Disetujui' || statusApprove != 'Data sudah update' && statusApprovePlanning === 'Disetujui' || statusApprovePlanning === 'Data sudah update'">
           <vue-echarts :option="chartPRP_FS" style="height: 450px" @click="handleClickPRP" />
           <Legend />
         </div>
@@ -220,7 +225,9 @@
   </div>
   <div v-else-if="stored.currentTabMesin === 'Planning vs Realisasi s/d Tahun Berjalan'
   ">
-   <div v-if="statusApprove != 'Disetujui' && statusApprove != 'Data sudah update' && statusApprovePlanning != 'Disetujui' && statusApprovePlanning != 'Data sudah update'" class="my-20 text-center">
+    <div
+      v-if="statusApprove != 'Disetujui' && statusApprove != 'Data sudah update' && statusApprovePlanning != 'Disetujui' && statusApprovePlanning != 'Data sudah update'"
+      class="my-20 text-center">
       <Empty />
     </div>
     <div v-else>
@@ -247,15 +254,18 @@
         <Empty />
       </div>
       <div v-else>
-        <div v-if="statusApprovePlanning === 'Disetujui' || statusApprovePlanning === 'Data sudah update' && statusApprove === 'Disetujui' || statusApprove === 'Data sudah update'">
+        <div
+          v-if="statusApprovePlanning === 'Disetujui' || statusApprovePlanning === 'Data sudah update' && statusApprove === 'Disetujui' || statusApprove === 'Data sudah update'">
           <vue-echarts :option="chartLastYearMesin" style="height: 450px" @click="handleClickLastY" />
           <Legend />
         </div>
-        <div v-else-if="statusApprovePlanning != 'Disetujui' || statusApprovePlanning != 'Data sudah update' && statusApprove === 'Disetujui' || statusApprove === 'Data sudah update'">
+        <div
+          v-else-if="statusApprovePlanning != 'Disetujui' || statusApprovePlanning != 'Data sudah update' && statusApprove === 'Disetujui' || statusApprove === 'Data sudah update'">
           <vue-echarts :option="chartPRPLY_WLC" style="height: 450px" @click="handleClickLastY" />
           <Legend />
         </div>
-        <div v-else-if="statusApprove != 'Disetujui' || statusApprove != 'Data sudah update' && statusApprovePlanning === 'Disetujui' || statusApprovePlanning === 'Data sudah update'">
+        <div
+          v-else-if="statusApprove != 'Disetujui' || statusApprove != 'Data sudah update' && statusApprovePlanning === 'Disetujui' || statusApprovePlanning === 'Data sudah update'">
           <vue-echarts :option="chartPRPLY_FS" style="height: 450px" @click="handleClickLastY" />
           <Legend />
         </div>
@@ -5491,7 +5501,7 @@ const fetchGrafikPRPLastYearMesin = async () => {
         },
       ],
     };
-    
+
     forceRender4();
   } catch (error) {
     console.error('Fetch Grafik PRP Last Year Mesin', error)

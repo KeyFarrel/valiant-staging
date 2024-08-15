@@ -9,7 +9,7 @@
     :kondisi-unit="mesinDataById.kondisi_unit">
 
     <div
-      v-if="approveMesinFS?.status === 'Menunggu Persetujuan T2' && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola')"
+      v-if="approveMesinFS?.status === 'Menunggu Persetujuan T2' && (authService.checkLevel() === 'Admin' || (authService.checkLevel() == 'Pengelola' || authService.checkRole() == 'Approver'))"
       class="flex">
       <!-- Tolak Laporan -->
       <button
@@ -93,7 +93,7 @@
       </ModalWrapper>
     </div>
     <div
-      v-else-if="approveMesinFS?.status === 'Menunggu Persetujuan T1' && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pembina')"
+      v-else-if="approveMesinFS?.status === 'Menunggu Persetujuan T1' && (authService.checkLevel() === 'Admin' || (authService.checkLevel() == 'Pembina' || authService.checkRole() == 'Approver'))"
       class="flex">
       <!-- Tolak Laporan -->
       <button
