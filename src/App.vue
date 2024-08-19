@@ -14,7 +14,6 @@ import { watch } from 'vue';
 import { RouterView } from 'vue-router';
 import { useConnectionStatusStore } from './store/storeGlobal';
 import { useIdle } from '@vueuse/core'
-import { useRecaptchaProvider } from 'vue-recaptcha'
 const { idle, lastActive } = useIdle(10 * 60 * 1000); // 10 menit, ini dalam Milisecond
 import ModalWrapper from './components/ui/ModalWrapper.vue';
 import NoConnectionLottie from '@/assets/lottie/no-connection.json';
