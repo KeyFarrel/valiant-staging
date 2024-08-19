@@ -4,7 +4,7 @@
     <div class="w-full p-6 text-lg font-medium bg-white rounded-lg">
       <h2 class="pb-2 text-lg font-bold">Total Pembangkit Terinput</h2>
       <div class="grid grid-cols-3 gap-4 my-4">
-        <div class="flex justify-center px-5 overflow-hidden rounded-lg card card-bordered border-strokeColor">
+        <div class="relative flex justify-center px-5 overflow-hidden rounded-lg card card-bordered border-strokeColor">
           <div class="absolute bottom-0 right-0">
             <svg width="126" height="61" viewBox="0 0 126 61" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle opacity="0.15" cx="88.5" cy="88.5" r="88.5" fill="#80C1CD" />
@@ -52,7 +52,7 @@
             </div>
           </div>
         </div>
-        <div class="flex justify-center px-5 overflow-hidden rounded-lg card card-bordered border-strokeColor">
+        <div class="relative flex justify-center px-5 overflow-hidden rounded-lg card card-bordered border-strokeColor">
           <div class="absolute bottom-0 right-0">
             <svg width="126" height="61" viewBox="0 0 126 61" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle opacity="0.15" cx="88.5" cy="88.5" r="88.5" fill="#80C1CD" />
@@ -171,7 +171,7 @@
       <div class="flex flex-row p-5 space-x-5 h-[62%]  border rounded-lg">
         <div class="w-3/12 overflow-y-auto border-r-2">
           <ul class="flex-col -mb-px text-sm font-medium text-[#7F7F80] overflow-y-auto space-y-3">
-            <li class="cursor-pointer hover:bg-primaryColor hover:bg-opacity-5"
+            <li class="relative cursor-pointer hover:bg-primaryColor hover:bg-opacity-5"
               v-for="(item, index) in kategoriPembangkit" :key="index"
               @click="changePage(item.kode_jenis_pembangkit, item.id_daya)">
               <p class="inline-flex p-2.5 text-sm text-left" :class="[

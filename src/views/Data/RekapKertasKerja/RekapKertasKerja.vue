@@ -8,7 +8,7 @@
         @on-click="store.selectedRekapSearchQuery = store.searchRekapQuery; handleSearch()" />
       <ShimmerLoading class="h-8 w-80" v-else-if="!listSuggestionSentral" />
       <button
-        class="flex items-center h-auto px-3 text-base text-gray-400 duration-300 border border-gray-300 rounded-lg hover:text-white hover:border-primaryColor hover:bg-primaryColor"
+        class="relative flex items-center h-auto px-3 text-base text-gray-400 duration-300 border border-gray-300 rounded-lg hover:text-white hover:border-primaryColor hover:bg-primaryColor"
         id="hover-button" @click="showModal = !showModal">
         <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2">
           <path
@@ -117,7 +117,7 @@
     <div class="whitespace-nowrap" v-if="authService.checkLevel() === 'Admin'">
       <ul class="flex flex-row w-full overflow-x-auto" v-if="pengelolaData.length !== 0">
         <li v-for="( pengelola, pengelolaIndex ) in pengelolaData " :key="pengelolaIndex"
-          class="p-2 ml-3 overflow-hidden text-xs font-bold text-gray-400 border border-gray-300 rounded-lg cursor-pointer w-fit hover:text-primaryColor first:ml-0 hover:border-primaryColor active:bg-primaryColor active:bg-opacity-20"
+          class="relative p-2 ml-3 overflow-hidden text-xs font-bold text-gray-400 border border-gray-300 rounded-lg cursor-pointer w-fit hover:text-primaryColor first:ml-0 hover:border-primaryColor active:bg-primaryColor active:bg-opacity-20"
           :class="{ selected: selectedPengelola.includes(pengelola.kode_pengelola) || kodePengelola === pengelola.kode_pengelola }"
           @click="changeSelectedPengelola(pengelola.kode_pengelola)">
           {{ pengelola.pengelola }}

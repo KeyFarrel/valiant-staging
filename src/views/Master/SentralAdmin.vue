@@ -12,7 +12,7 @@
         <div class="whitespace-nowrap" v-if="authService.checkLevel() === 'Admin'">
           <ul class="flex w-full overflow-x-auto" v-if="pengelolaData.length !== 0">
             <li
-              class="p-2 ml-3 text-xs font-bold text-gray-400 border border-gray-300 rounded-lg cursor-pointer w-fit hover:text-primaryColor first:ml-0 hover:border-primaryColor hover:border-"
+              class="relative p-2 ml-3 text-xs font-bold text-gray-400 border border-gray-300 rounded-lg cursor-pointer w-fit hover:text-primaryColor first:ml-0 hover:border-primaryColor hover:border-"
               v-for="pengelola in pengelolaData" :key="pengelola.id_pengelola"
               :class="{ selected: selectedPengelola.includes(pengelola.kode_pengelola) || selectedAll.includes(pengelola.kode_pengelola) }"
               @click="changeSelectedPengelola(pengelola.kode_pengelola)">

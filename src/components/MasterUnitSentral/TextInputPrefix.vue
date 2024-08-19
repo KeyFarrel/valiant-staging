@@ -5,7 +5,7 @@
     <label for="" class="text-[#0099AD] text-sm pl-3 absolute">Rp (Juta)</label>
   </div>
 </template>
-  
+
 <script setup lang="ts">
 import { ref } from 'vue';
 import GlobalFormat from '@/services/format/global-format';
@@ -28,6 +28,5 @@ const handleInput = () => {
   emit('update:modelValue', inputValue.value);
 };
 </script>
-  
+
 <style scoped></style>
-  

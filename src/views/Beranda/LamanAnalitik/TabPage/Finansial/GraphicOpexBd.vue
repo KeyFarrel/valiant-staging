@@ -271,7 +271,7 @@ onMounted(async () => {
     <div class="flex">
       <h2 class="text-lg font-semibold text-primaryTextColor mt-2.5 pl-2">{{ props.title }}</h2>
       <button type="button" id="hover-button"
-        class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#0099AD] hover:text-white duration-300 focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center"
+        class="text-[#0099AD] bg-white border relative border-[#0099AD] hover:bg-[#0099AD] hover:text-white duration-300 focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center"
         @click="showModal = !showModal">
         <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2">
           <path

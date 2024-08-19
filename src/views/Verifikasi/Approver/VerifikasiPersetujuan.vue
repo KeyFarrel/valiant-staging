@@ -8,7 +8,7 @@
             <SearchBox class="w-60" @on-key-enter="changeDataKK" @on-click="changeDataKK" @on-input="changeDataKK"
               v-model="searchQKK" />
             <button type="button" id="hover-button"
-              class="text-primaryColor bg-white border border-primaryColor hover:bg-primaryColor focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center duration-300 hover:text-white"
+              class="text-primaryColor relative bg-white border border-primaryColor hover:bg-primaryColor focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center duration-300 hover:text-white"
               @click="showModalKK = !showModalKK">
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
                 class="mr-2">
@@ -284,7 +284,7 @@
             <SearchBox class="w-60" @on-key-enter="changeFS" @on-click="changeFS" @on-input="changeFS"
               v-model="searchQFS" />
             <button type="button" id="hover-button"
-              class="text-primaryColor bg-white border border-primaryColor hover:bg-primaryColor focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center duration-300 hover:text-white"
+              class="text-primaryColor relative bg-white border border-primaryColor hover:bg-primaryColor focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center duration-300 hover:text-white"
               @click="showModalFS = !showModalFS">
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
                 class="mr-2">

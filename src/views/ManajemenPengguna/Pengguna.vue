@@ -193,7 +193,7 @@
         <TextField id="email" placeholder="Masukkan Email" class="text-xs" v-model="formData.email" />
       </div>
       <div class="grid grid-cols-2 gap-4">
-        <div>
+        <div class="relative">
           <label for="password" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Password <span
               class="text-warningColor">*</span></label>
           <input id="password" :type="showPassword ? 'text' : 'password'" v-model="formData.password"
@@ -216,7 +216,7 @@
             </svg>
           </button>
         </div>
-        <div>
+        <div class="relative">
           <label for="konfirmasiPassword"
             class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Konfirmasi Password <span
               class="text-warningColor">*</span></label>
