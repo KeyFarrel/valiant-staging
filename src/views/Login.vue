@@ -1,10 +1,10 @@
 <template>
   <div class="h-screen md:flex">
-    <div class="hidden w-8/12 max-h-screen md:flex">
+    <div class="relative hidden w-8/12 max-h-screen md:flex">
       <div id="default-carousel" class="relative w-full" data-carousel="slide">
         <!-- Carousel wrapper -->
         <div class="relative h-screen overflow-hidden md:h-screen">
-          <div class="z-50 p-10">
+          <div class="relative z-50 p-10">
             <img src="../assets/img/LogoPLN.png" class="w-26" alt="logo-pln" />
           </div>
           <!-- Item 1 -->

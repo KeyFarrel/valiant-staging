@@ -1,9 +1,6 @@
 @import './base.css';
 @import './google-material.css';
 
-.dp__input_icon {
-    margin-top: -23px;
-}
 .dp__input {
     min-height: 46px;
 }

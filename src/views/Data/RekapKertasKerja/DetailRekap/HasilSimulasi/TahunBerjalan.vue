@@ -1,6 +1,6 @@
 <template>
   <div class="grid grid-cols-2 mt-5 gap-x-10 gap-y-5" v-bind="$attrs">
-    <div class="overflow-hidden flex flex-col px-5 py-4 border-l-8 border-l-[#0099AD] rounded-lg border">
+    <div class="overflow-hidden relative flex flex-col px-5 py-4 border-l-8 border-l-[#0099AD] rounded-lg border">
       <div class="absolute bottom-0 right-0">
         <svg width="126" height="61" viewBox="0 0 126 61" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle opacity="0.15" cx="88.5" cy="88.5" r="88.5" fill="#80C1CD" />
@@ -29,7 +29,7 @@
         </div>
       </div>
     </div>
-    <div class="overflow-hidden flex flex-col px-5 py-4 border-l-8 border-l-[#0099AD] rounded-lg border">
+    <div class="overflow-hidden relative flex flex-col px-5 py-4 border-l-8 border-l-[#0099AD] rounded-lg border">
       <div class="absolute bottom-0 right-0">
         <svg width="126" height="61" viewBox="0 0 126 61" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle opacity="0.15" cx="88.5" cy="88.5" r="88.5" fill="#80C1CD" />
@@ -58,7 +58,8 @@
         </div>
       </div>
     </div>
-    <div class="overflow-hidden flex flex-col px-5 py-4 border-l-8 border-l-[#0099AD] rounded-lg border space-y-3">
+    <div
+      class="overflow-hidden relative flex flex-col px-5 py-4 border-l-8 border-l-[#0099AD] rounded-lg border space-y-3">
       <div class="absolute bottom-0 right-0">
         <svg width="126" height="61" viewBox="0 0 126 61" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle opacity="0.15" cx="88.5" cy="88.5" r="88.5" fill="#80C1CD" />
@@ -75,7 +76,8 @@
       <p class="font-semibold">{{ globalFormat.formatRupiah(props.averageNcf) }} <span
           class="text-textDisabledColor">%</span></p>
     </div>
-    <div class="overflow-hidden flex flex-col px-5 py-4 border-l-8 border-l-[#0099AD] rounded-lg border space-y-3">
+    <div
+      class="overflow-hidden relative flex flex-col px-5 py-4 border-l-8 border-l-[#0099AD] rounded-lg border space-y-3">
       <div class="absolute bottom-0 right-0">
         <svg width="126" height="61" viewBox="0 0 126 61" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle opacity="0.15" cx="88.5" cy="88.5" r="88.5" fill="#80C1CD" />

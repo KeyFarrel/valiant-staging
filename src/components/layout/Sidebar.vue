@@ -320,7 +320,7 @@
         </li>
         <li class="flex items-center justify-center h-12 rounded-lg"
           :class="{ selected: store.label === 'Persetujuan' }">
-          <div>
+          <div class="relative">
             <div v-if="totalPersetujuanKK + totalPersetujuanFS > 0"
               class="absolute z-10 border-2 border-[#FFE5E6] w-2.5 h-2.5 rounded-full bottom-4 right-4 bg-warningColor">
             </div>

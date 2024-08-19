@@ -6,7 +6,7 @@
     <div class="whitespace-nowrap">
       <ul class="flex w-full overflow-x-auto">
         <li v-for="(pengelola, pengelolaIndex) in pengelolaData" :key="pengelolaIndex"
-          class="p-2 ml-5 text-xs font-bold text-gray-400 border border-gray-300 rounded-lg cursor-pointer w-fit hover:text-primaryColor first:ml-0 hover:border-primaryColor active:bg-primaryColor active:bg-opacity-20"
+          class="relative p-2 ml-5 text-xs font-bold text-gray-400 border border-gray-300 rounded-lg cursor-pointer w-fit hover:text-primaryColor first:ml-0 hover:border-primaryColor active:bg-primaryColor active:bg-opacity-20"
           :class="{ selected: selectedPengelola.includes(pengelola.kode_pengelola) || kodePengelola === pengelola.kode_pengelola }"
           @click="changeSelectedPengelola(pengelola.kode_pengelola)">
           {{ pengelola.pengelola }}

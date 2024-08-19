@@ -12,7 +12,7 @@
           @on-click="selectedSearchQuery = searchQuery; isSearchModalOpen = false; fetchPetaSentral()"
           @on-key-enter="selectedSearchQuery = searchQuery; isSearchModalOpen = false; fetchPetaSentral()" />
         <button type="button" id="hover-button"
-          class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#0099AD] hover:text-white duration-300 focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center"
+          class="text-[#0099AD] bg-white relative border border-[#0099AD] hover:bg-[#0099AD] hover:text-white duration-300 focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center"
           @click="showModal = !showModal">
           <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2">
             <path
@@ -143,7 +143,8 @@
         <ol-overlay v-for="( item, i ) in dataPeta " :position="[item.lng, item.lat]" :key="i">
           <template v-slot="">
             <div v-if="showByIndex === i" @mouseenter="showByIndex = i, showByIndexModal = i"
-              @mouseleave="showByIndex = null, showByIndexModal = null" :class=" parseFloat(item.lat) < 0 ||parseFloat(item.lng) > 138 ? 'bottom-0 right-0': 'top-0 left-0'"
+              @mouseleave="showByIndex = null, showByIndexModal = null"
+              :class="parseFloat(item.lat) < 0 || parseFloat(item.lng) > 138 ? 'bottom-0 right-0' : 'top-0 left-0'"
               class="bg-white absolute z-50 w-[18rem] rounded-md">
               <div class="flex justify-between px-2 py-2">
                 <div>
