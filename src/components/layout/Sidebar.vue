@@ -19,7 +19,7 @@
           class="self-center text-lg font-semibold text-white sm:text-2xl whitespace-nowrap dark:text-white">Valiant</span>
       </div>
       <div class="text-white -ml-[72px]" :class="isSidebarOpen ? 'ml-3' : ''">
-        <p class="text-lg font-semibold">{{ store.label }}</p>
+        <p class="text-lg font-semibold">{{ nodeMode }}</p>
         <!-- <p class="text-xs font-semibold">
               {{ store.label }}
             </p> Dikomen dulu untuk nanti CR breadcrumbs -->

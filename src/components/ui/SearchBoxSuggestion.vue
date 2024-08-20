@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col" ref="container">
+  <div class="relative flex flex-col" ref="container">
     <div class="flex flex-row items-center">
       <input ref="searchInput"
         class="block px-3 py-2 w-80 text-sm text-gray-900 rounded-l-lg border border-[#0099AD] focus:ring-[#80C1CD] focus:border-[#80C1CD]"
