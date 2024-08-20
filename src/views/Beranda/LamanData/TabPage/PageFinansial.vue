@@ -143,16 +143,16 @@
                 v-for="(item, i) in mesinItem.trans_realisasi_proyeksis.length !== 0 ? mesinItem.trans_realisasi_proyeksis : 1"
                 :key="i">
                 <td class="text-end">
-                  {{ item.track_irr_equity ? globalFormat.formatRupiah(item.track_irr_equity) : '-' }}
+                  {{ item.track_irr_equity ? globalFormat.formatRupiah(item.track_irr_equity) : 'NUM' }}
                 </td>
                 <td class="text-end">
-                  {{ item.track_npv_equity ? globalFormat.formatRupiah(item.track_npv_equity) : '-' }}
+                  {{ item.track_npv_equity ? globalFormat.formatRupiah(item.track_npv_equity) : 'NUM' }}
                 </td>
                 <td class="text-end">
-                  {{ item.track_irr_project ? globalFormat.formatRupiah(item.track_irr_project) : '-' }}
+                  {{ item.track_irr_project ? globalFormat.formatRupiah(item.track_irr_project) : 'NUM' }}
                 </td>
                 <td class="text-end">
-                  {{ item.track_npv_project ? globalFormat.formatRupiah(item.track_npv_project) : '-' }}
+                  {{ item.track_npv_project ? globalFormat.formatRupiah(item.track_npv_project) : 'NUM' }}
                 </td>
               </template>
               <td class="text-end">

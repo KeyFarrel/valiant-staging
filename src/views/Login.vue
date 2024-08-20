@@ -1,4 +1,6 @@
 <template>
+  <ModalNotification :show-modal="isShowLocked" :animation-data="errorJsonData" :title="'Akun Terkunci'"
+    :subtitle="'Silahkan hubungi admin untuk membuka akun anda'" />
   <div class="h-screen md:flex">
     <div class="relative hidden w-8/12 max-h-screen md:flex">
       <div id="default-carousel" class="relative w-full" data-carousel="slide">
@@ -62,6 +64,31 @@
         <p class="mb-4 text-xs font-normal text-gray-600">
           Silahkan login terlebih dahulu untuk masuk aplikasi.
         </p>
+        <div v-if="isShowCounter"
+          class="flex flex-col w-full space-y-1.5 px-3 pb-3 pt-1 rounded-lg border border-warningColor bg-warningColor bg-opacity-15 mb-2 overflow-clip relative">
+          <div class="absolute top-0 left-0">
+            <svg width="68" height="68" viewBox="0 0 68 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g opacity="0.4">
+                <circle cx="26" cy="26" r="42" fill="#FD8A8A" />
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M28.5259 10.5493C27.4034 8.60375 24.5955 8.60375 23.4731 10.5493L6.31302 40.2934C5.19122 42.2379 6.59455 44.6676 8.83939 44.6676H43.1596C45.4044 44.6676 46.8078 42.2379 45.686 40.2934L28.5259 10.5493ZM19.4309 8.21723C22.3492 3.15887 29.6498 3.15887 32.5681 8.21723L49.7282 37.9614C52.6448 43.017 48.9962 49.3343 43.1596 49.3343H8.83939C3.00282 49.3343 -0.64585 43.017 2.27082 37.9614L19.4309 8.21723ZM25.9995 20.1676C27.2882 20.1676 28.3328 21.2123 28.3328 22.501V31.251C28.3328 32.5396 27.2882 33.5843 25.9995 33.5843C24.7108 33.5843 23.6662 32.5396 23.6662 31.251V22.501C23.6662 21.2123 24.7108 20.1676 25.9995 20.1676ZM23.6662 38.251C23.6662 36.9623 24.7108 35.9176 25.9995 35.9176H26.017C27.3057 35.9176 28.3503 36.9623 28.3503 38.251V38.2685C28.3503 39.5571 27.3057 40.6018 26.017 40.6018H25.9995C24.7108 40.6018 23.6662 39.5571 23.6662 38.2685V38.251Z"
+                  fill="white" />
+              </g>
+            </svg>
+          </div>
+          <div class="flex justify-between">
+            <p class="font-semibold text-primaryTextColor">Informasi</p>
+            <button type="button" @click="isShowCounter = false">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M2.29289 2.29289C2.68342 1.90237 3.31658 1.90237 3.70711 2.29289L8 6.58579L12.2929 2.29289C12.6834 1.90237 13.3166 1.90237 13.7071 2.29289C14.0976 2.68342 14.0976 3.31658 13.7071 3.70711L9.41421 8L13.7071 12.2929C14.0976 12.6834 14.0976 13.3166 13.7071 13.7071C13.3166 14.0976 12.6834 14.0976 12.2929 13.7071L8 9.41421L3.70711 13.7071C3.31658 14.0976 2.68342 14.0976 2.29289 13.7071C1.90237 13.3166 1.90237 12.6834 2.29289 12.2929L6.58579 8L2.29289 3.70711C1.90237 3.31658 1.90237 2.68342 2.29289 2.29289Z"
+                  fill="#FF5656" />
+              </svg>
+            </button>
+          </div>
+          <p class="text-sm text-primaryTextColor">Sisa {{ remainingAttempt }} kali percobaan lagi sebelum akun terkunci
+          </p>
+        </div>
         <div>
           <label for="emailAddress" class="text-xs text-[#5979A6] mb-1">Email</label>
           <input v-model="valEmail" id="emailAddress" type="email" autocomplete="new-email"
@@ -101,7 +128,10 @@
           <div class="mb-2 text-sm font-bold tracking-wide text-gray-700">
             Captcha
           </div>
-          <div
+          <RecaptchaV2 class="flex items-center justify-center" @widget-id="handleWidgetId"
+            @error-callback="handleErrorCalback" @expired-callback="handleExpiredCallback"
+            @load-callback="handleLoadCallback" />
+          <!-- <div
             class="bg-gray-200 text-primaryTextColor h-[80px] w-[350px] px-4 border-2 border-gray-200 flex items-center justify-between rounded-md">
             <label for="check">
               <input type="checkbox" id="check" class="cursor-pointer" v-model="checkbox" @click="checkboxChange" />
@@ -148,16 +178,11 @@
                 Verify
               </button>
             </div>
-          </div>
+          </div> -->
         </div>
-        <button
-          class="text-primaryTextColor uppercase  bg-slate-300 w-[350px] cursor-not-allowed focus:ring-4 focus:ring-slate-700 rounded-lg text-xs p-3 my-4 dark:bg-slate-700 dark:hover:bg-slate-300 focus:outline-none dark:focus:ring-slate-400"
-          v-if="valEmail.length === 0 && valPassword.length === 0" disabled>
-          <p class="font-medium">Masuk Ke Aplikasi</p>
-        </button>
         <button @click="onSubmit" type="button"
           class="text-white uppercase  bg-[#0099AD] w-[350px] hover:bg-[#0099AD] hover:text-white active:ring active:ring-[#005A66] rounded-lg text-xs p-3 my-4 dark:bg-[#005A66] dark:hover:bg-slate-300 focus:outline-none dark:focus:ring-[#0099AD]"
-          v-else>
+          v-if="isVerified && (valEmail.length !== 0 && valPassword.length !== 0)">
           <p v-show="!isLoading" class="font-semibold">Masuk Ke Aplikasi</p>
           <div v-show="isLoading" class="flex flex-row items-center justify-center space-x-2">
             <svg aria-hidden="true" class="inline w-5 h-5 text-gray-200 animate-spin fill-[#0099AD]"
@@ -171,6 +196,11 @@
             </svg>
             <span class="font-medium">Loading...</span>
           </div>
+        </button>
+        <button
+          class="text-primaryTextColor uppercase  bg-slate-300 w-[350px] cursor-not-allowed focus:ring-4 focus:ring-slate-700 rounded-lg text-xs p-3 my-4 dark:bg-slate-700 dark:hover:bg-slate-300 focus:outline-none dark:focus:ring-slate-400"
+          v-else disabled>
+          <p class="font-medium">Masuk Ke Aplikasi</p>
         </button>
         <div class="flex flex-row items-center justify-center mb-4 space-x-3">
           <div class="w-16 h-[1px] bg-slate-300"></div>
@@ -188,37 +218,58 @@
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
+import { Checkbox } from 'vue-recaptcha'
 import { ref, onMounted } from "vue";
 import LoginService from "../services/auth-service";
 import { initFlowbite } from "flowbite";
 import axios from "axios";
 import { store } from "../store";
 import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { RecaptchaV2, useRecaptcha } from "vue3-recaptcha-v2";
+import ModalNotification from "@/components/ui/ModalNotification.vue";
+import errorJsonData from '@/assets/lottie/error.json';
 
 const router = useRouter();
-const isLoading = ref(false);
-const valEmail = ref("");
-const valPassword = ref("");
-const valCaptcha = ref("");
-const valEmailErr = ref("");
-const valPasswordErr = ref("");
-const showPassword = ref(false);
+const isLoading = ref<boolean>(false);
+const valEmail = ref<string>("");
+const valPassword = ref<string>("");
+const valEmailErr = ref<string>("");
+const valPasswordErr = ref<string>("");
+const showPassword = ref<boolean>(false);
 const loginService = new LoginService();
-const checkbox = ref(false);
-const ceklistCaptcha = ref();
-const box = ref(false);
-const verify = ref(false);
-
-function checkboxChange() {
-  box.value = true;
-}
+const isVerified = ref<boolean>(false)
+const isShowCounter = ref<boolean>(false);
+const remainingAttempt = ref<number>(0);
+const isShowLocked = ref<boolean>(false);
 
 function visiblePassword() {
   showPassword.value = !showPassword.value;
 }
 
-const captcha: any = ref([]);
+const { handleGetResponse } = useRecaptcha();
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+const handleWidgetId = (widgetId: number) => {
+  console.log("Widget ID: ", widgetId);
+  const widget = handleGetResponse(widgetId);
+  console.log('oo', widget);
+};
+const handleErrorCalback = () => {
+  isVerified.value = false;
+  console.log("Error callback");
+};
+const handleExpiredCallback = () => {
+  isVerified.value = false;
+  console.log("Expired callback");
+};
+const handleLoadCallback = (response: unknown) => {
+  isVerified.value = true;
+  console.log("Load callback", response);
+
+};
+
 async function onSubmit() {
+  const maxAttempt = 5;
   if (valEmail.value === "") {
     valEmailErr.value = "Email kosong mohon diisi";
   } else if (valPassword.value === "") {
@@ -242,18 +293,6 @@ async function onSubmit() {
         password: valPassword.value,
       };
     }
-    if (verify.value !== true && box.value !== true) {
-      valPasswordErr.value = "Anda belum melakukan 'Verifikasi Captcha'";
-      isLoading.value = false;
-      return;
-    } else {
-      valPasswordErr.value = "";
-    }
-    if (ceklistCaptcha.value !== true) {
-      valPasswordErr.value = "Captcha belum diverifikasi";
-      isLoading.value = false;
-      return;
-    }
     const url = import.meta.env.VITE_API_URL;
     try {
       const response: any = await loginService.login(param);
@@ -267,11 +306,18 @@ async function onSubmit() {
       setTimeout(() => {
         router.push({ name: "dashboard" });
       }, 500);
-    } catch (e) {
-      isLoading.value = false;
-      console.log(e);
+    } catch (error: any) {
+      isShowCounter.value = true;
+      remainingAttempt.value = maxAttempt - error.response.data.data.temp_loc;
       valEmailErr.value = "Email atau Password salah";
       valPasswordErr.value = "Email atau Password salah";
+      if (error.response.data.data.is_locked) {
+        isShowCounter.value = false;
+        isShowLocked.value = true;
+        await wait(5000);
+        isShowLocked.value = false;
+      }
+      isLoading.value = false;
     }
   }
 }
@@ -294,38 +340,7 @@ async function onCopy(e: any) {
   e.preventDefault();
 }
 
-async function generateCaptcha() {
-  const chars =
-    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  let captchaChars = [];
-  for (let i = 0; i < 6; i++) {
-    let char = chars[Math.floor(Math.random() * chars.length)];
-    let fontSize = Math.floor(Math.random() * 10) + 20; // random font size between 20 and 30
-    let rotation = Math.floor(Math.random() * 21) - 10; // random rotation between -10 and 10 degrees
-    captchaChars.push({ char, fontSize, rotation });
-  }
-  captcha.value = captchaChars;
-}
-
-function checkCaptcha() {
-  if (valCaptcha.value !== captcha.value.map((c: any) => c.char).join("")) {
-    console.log("masuk1");
-    valPasswordErr.value = "Captcha yang anda masukkan tidak sesuai";
-    isLoading.value = false;
-  } else if (valCaptcha.value === captcha.value.map((c: any) => c.char).join("")) {
-    console.log('masuk2')
-    valPasswordErr.value = "";
-    verify.value = true;
-    ceklistCaptcha.value = true;
-    box.value = false;
-  } else {
-    valPasswordErr.value = "";
-    box.value = false;
-    ceklistCaptcha.value = false;
-  }
-}
 onMounted(() => {
-  generateCaptcha();
   initFlowbite();
 });
 </script>
