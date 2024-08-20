@@ -54,7 +54,7 @@
         <div v-if="isHover">
           <div class="flex my-3">
             <div class="bg-[url('../assets/img/img-cik.png')] bg-cover bg-center w-40 h-42 rounded-md mr-2"></div>
-            <div>
+            <div class="relative">
               <div class="flex flex-row mt-4">
                 <Chips :title="'Unit Pengelola'" :content="dataSentral.pengelola" />
                 <Chips :title="'Unit Pembina'" :content="dataSentral.pembina" class="block w-56 truncate"
@@ -66,7 +66,7 @@
                   <div class="font-bold text-[#007E8F] ml-1">
                     {{ dataSentral.tahun }}
                   </div>
-                  <div class="flex flex-col items-center ml-2">
+                  <div class="relative flex flex-col items-center ml-2">
                     <svg width="12" height="12" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"
                       @mouseenter="toggleDetail" @mouseleave="toggleDetail">
                       <path
@@ -119,12 +119,11 @@
             <p class="mt-1 mr-2 text-sm font-semibold text-primaryTextColor">
               {{ tabs }}
             </p>
-            <div class=" text-[#0099AD] font-semibold mt-1.5 text-xs cursor-pointer z-20" @click="showElement">
+            <div class=" text-[#0099AD] font-semibold mt-1.5 text-xs cursor-pointer z-20 relative" @click="showElement">
               Ubah Grafik
               <Transition>
                 <div v-if="message"
-                  class="flex flex-col bg-white text-xs px-2 py-1 mt-0.5 left-12 rounded-lg whitespace-nowrap border space-y-1.5 duration-300"
-                  id="FilterContent">
+                  class="flex flex-col bg-white text-xs px-2 py-1 mt-0.5 left-12 rounded-lg whitespace-nowrap border space-y-1.5 duration-300 absolute -ml-[220px] top-full">
                   <div class="flex justify-between">
                     <div class="flex">
                       <svg width="12" height="11" viewBox="0 0 12 11" class="mt-2" fill="none"
@@ -201,14 +200,14 @@
   <!-- Mesin -->
   <template v-if="selectedYear.length !== 0">
     <div v-for="(item, i) in dataUnit" :key="i" v-show="selectedTitle === item.mesin"
-      @click="selectedTitle = item.mesin">
+      @click="selectedTitle = item.mesin" class="relative">
       <div class="absolute z-20 flex flex-row items-center ml-4 space-x-3 right-5"
         :class="authService.checkLevel() === 'Sentral' ? '-top-[120px]' : '-top-[118px]'"
         v-if="selectedYear[i].tahun !== null || (selectedYear[i].range[0] !== null && selectedYear[i].range[1] !== null)">
         <label class="text-sm font-semibold text-labelColor" for="">Periode</label>
         <VueDatePicker class="mr-3 text-xs date-picker" v-model="selectedYear[i].tahun"
           :year-range="selectedYear[i].range" :clearable="false" year-picker :teleport="true"
-          :filters="yearPickerService.filterYears(selectedYear[i].range[0], selectedYear[i].range[1])" />
+          :filters="yearPickerService.filterYears(responseLimitTahun.data, parseInt(selectedYear[i].range[0]), parseInt(selectedYear[i].range[1]))" />
       </div>
       <div class="flex mt-2">
         <div v-auto-animate="{ duration: 300 }" class="w-full px-4 py-2 mr-2 bg-white border rounded-md">
@@ -239,7 +238,7 @@
                 <img :src="item.photo2" alt="Preview" class="object-cover rounded-lg h-44"></img>
               </div>
               <div v-else class="w-40 mr-5 bg-red-500 rounded-lg h-44"></div>
-              <div>
+              <div class="relative">
                 <div class="flex flex-row mt-4">
                   <Chips :title="'Unit Pengelola'" :content="item.pengelola" class="block w-58" />
                   <Chips :title="'Unit Pembina'" :content="item.pembina ? item.pembina : '-'"
@@ -308,12 +307,12 @@
               <p class="mt-1 mr-2 text-sm font-semibold text-primaryTextColor">
                 {{ tabs }}
               </p>
-              <div class=" text-[#0099AD] font-semibold mt-1.5 text-xs cursor-pointer z-10" @click="showElement">
+              <div class=" text-[#0099AD] font-semibold mt-1.5 text-xs cursor-pointer z-10 relative"
+                @click="showElement">
                 Ubah Grafik
                 <Transition>
                   <div v-if="message"
-                    class="flex flex-col bg-white text-xs px-2 py-1 mt-0.5 left-12 rounded-lg whitespace-nowrap border space-y-1.5 duration-300"
-                    id="FilterContent">
+                    class="flex flex-col bg-white text-xs px-2 py-1 mt-0.5 left-12 rounded-lg whitespace-nowrap border space-y-1.5 duration-300 absolute -ml-[220px] top-full">
                     <div class="flex justify-between">
                       <div class="flex">
                         <svg width="12" height="11" viewBox="0 0 12 11" class="mt-2" fill="none"
@@ -447,6 +446,7 @@ const yearPickedSentral = ref<any>();
 const periodeTahunMesin = ref<any>();
 const selectedYear = ref<any[]>([]);
 const yearResponseMesin = ref<any>();
+const responseLimitTahun = ref<any>();
 
 const levelID = ref(nodeMode === 'production' ? encryptStorage.getItem('level_id') : localStorage.getItem("level_id"));
 const level_ID = ref(levelID.value);
@@ -613,18 +613,18 @@ const fetchPeriodeTahunSentral = async () => {
     periodeTahunSentral.value = [response.data[0].tahun, response.data[response.data.length - 1].tahun];
     yearPickedSentral.value = response.data[response.data.length - 1].tahun;
     for (let i = 0; i < dataUnit.value.length; i++) {
-      const responseLimitTahun: any = await grafikService.getYearMesin({
+      responseLimitTahun.value = await grafikService.getYearMesin({
         id_mesin: dataUnit.value[i].id_mesin
       });
-      console.log('resp', responseLimitTahun.data)
-      if (responseLimitTahun.data !== null) {
-        selectedYear.value.push({ tahun: responseLimitTahun.data[responseLimitTahun.data.length - 1].tahun, range: [responseLimitTahun.data[0].tahun, responseLimitTahun.data[responseLimitTahun.data.length - 1].tahun] })
-        console.log('year', responseLimitTahun.data, selectedYear.value)
+      console.log('resp', responseLimitTahun.value.data)
+      if (responseLimitTahun.value.data !== null) {
+        selectedYear.value.push({ tahun: responseLimitTahun.value.data[responseLimitTahun.value.data.length - 1].tahun, range: [responseLimitTahun.value.data[0].tahun, responseLimitTahun.value.data[responseLimitTahun.value.data.length - 1].tahun] })
+        console.log('year', responseLimitTahun.value.data, selectedYear.value)
       } else {
         selectedYear.value.push({ tahun: null, range: [null, null] })
       }
     }
-    console.log(selectedYear.value, '23')
+    console.log(yearPickerService.filterYears(responseLimitTahun.value.data, parseInt(selectedYear.value[0].range[0]), parseInt(selectedYear.value[0].range[1])))
     // console.log('year', yearPickedSentral.value)
   } catch (error) {
     console.error('Fetch Tahun Grafik Sentral Error : ' + error);
@@ -705,15 +705,6 @@ ul li.selected {
   border-width: 5px;
   border-style: solid;
   border-color: transparent transparent gray transparent;
-}
-
-#FilterContent {
-  position: absolute;
-  z-index: 1;
-  top: 100%;
-  /* left: 50%; */
-  /* margin-top: -8px; */
-  margin-left: -220px;
 }
 
 .v-enter-active,
