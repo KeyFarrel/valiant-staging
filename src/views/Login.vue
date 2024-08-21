@@ -128,10 +128,10 @@
           <div class="mb-2 text-sm font-bold tracking-wide text-gray-700">
             Captcha
           </div>
-          <RecaptchaV2 class="flex items-center justify-center" @widget-id="handleWidgetId"
+          <!-- <RecaptchaV2 class="flex items-center justify-center" @widget-id="handleWidgetId"
             @error-callback="handleErrorCalback" @expired-callback="handleExpiredCallback"
-            @load-callback="handleLoadCallback" />
-          <!-- <div
+            @load-callback="handleLoadCallback" /> -->
+          <div
             class="bg-gray-200 text-primaryTextColor h-[80px] w-[350px] px-4 border-2 border-gray-200 flex items-center justify-between rounded-md">
             <label for="check">
               <input type="checkbox" id="check" class="cursor-pointer" v-model="checkbox" @click="checkboxChange" />
@@ -178,11 +178,11 @@
                 Verify
               </button>
             </div>
-          </div> -->
+          </div>
         </div>
         <button @click="onSubmit" type="button"
           class="text-white uppercase  bg-[#0099AD] w-[350px] hover:bg-[#0099AD] hover:text-white active:ring active:ring-[#005A66] rounded-lg text-xs p-3 my-4 dark:bg-[#005A66] dark:hover:bg-slate-300 focus:outline-none dark:focus:ring-[#0099AD]"
-          v-if="isVerified && (valEmail.length !== 0 && valPassword.length !== 0)">
+          v-if="verify && (valEmail.length !== 0 && valPassword.length !== 0)">
           <p v-show="!isLoading" class="font-semibold">Masuk Ke Aplikasi</p>
           <div v-show="isLoading" class="flex flex-row items-center justify-center space-x-2">
             <svg aria-hidden="true" class="inline w-5 h-5 text-gray-200 animate-spin fill-[#0099AD]"
@@ -241,6 +241,12 @@ const isVerified = ref<boolean>(false)
 const isShowCounter = ref<boolean>(false);
 const remainingAttempt = ref<number>(0);
 const isShowLocked = ref<boolean>(false);
+const checkbox = ref(false);
+const ceklistCaptcha = ref();
+const box = ref(false);
+const verify = ref(false);
+const captcha: any = ref([]);
+const valCaptcha = ref("");
 
 function visiblePassword() {
   showPassword.value = !showPassword.value;
@@ -267,6 +273,9 @@ const handleLoadCallback = (response: unknown) => {
   console.log("Load callback", response);
 
 };
+function checkboxChange() {
+  box.value = true;
+}
 
 async function onSubmit() {
   const maxAttempt = 5;
@@ -340,9 +349,41 @@ async function onCopy(e: any) {
   e.preventDefault();
 }
 
+async function generateCaptcha() {
+  const chars =
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let captchaChars = [];
+  for (let i = 0; i < 6; i++) {
+    let char = chars[Math.floor(Math.random() * chars.length)];
+    let fontSize = Math.floor(Math.random() * 10) + 20; // random font size between 20 and 30
+    let rotation = Math.floor(Math.random() * 21) - 10; // random rotation between -10 and 10 degrees
+    captchaChars.push({ char, fontSize, rotation });
+  }
+  captcha.value = captchaChars;
+}
+
+function checkCaptcha() {
+  if (valCaptcha.value !== captcha.value.map((c: any) => c.char).join("")) {
+    console.log("masuk1");
+    valPasswordErr.value = "Captcha yang anda masukkan tidak sesuai";
+    isLoading.value = false;
+  } else if (valCaptcha.value === captcha.value.map((c: any) => c.char).join("")) {
+    console.log('masuk2')
+    valPasswordErr.value = "";
+    verify.value = true;
+    ceklistCaptcha.value = true;
+    box.value = false;
+  } else {
+    valPasswordErr.value = "";
+    box.value = false;
+    ceklistCaptcha.value = false;
+  }
+}
 onMounted(() => {
+  generateCaptcha();
   initFlowbite();
 });
+
 </script>
 
 <style lang="scss" scoped></style>
