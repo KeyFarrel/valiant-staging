@@ -5,7 +5,7 @@
   "compilerOptions": {
     "composite": true,
     "lib": [],
-    "types": ["node","vitest/globals"],
+    "types": ["jest", "node"],
     "target": "ESNext",
     "useDefineForClassFields": true,
     "module": "ESNext",

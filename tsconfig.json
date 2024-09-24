@@ -1,13 +1,14 @@
 {
   "files": [],     
   "compilerOptions": {
-    "types": ["vitest/globals"],
+    "types": ["jest", "node"],
     "module": "CommonJS",
     "target": "ES5",
     "sourceMap": true,
     "baseUrl": "./",
     "paths": {
-      "actions" :["src/service/peta-service"]
+      "actions" :["src/service/peta-service"],
+      "@/*": ["./src"]
     },
     "forceConsistentCasingInFileNames": true, //tambahan acep
     //"moduleResolution": "node",//tambahan acep
@@ -18,8 +19,7 @@
       "ESNext"
     ]
   },  
-  // "include": ["src/**/*"],
-  "exclude": ["node_modules", "src/**/*.spec.ts"], 
+  "exclude": ["node_modules"], 
   "references": [
     {
       "path": "./tsconfig.node.json"
@@ -27,8 +27,5 @@
     {
       "path": "./tsconfig.app.json"
     },
-    {
-      "path": "./tsconfig.vitest.json"
-    }
   ]
 }

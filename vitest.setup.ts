@@ -1,9 +1,9 @@
-import { vi } from "vitest";
+// import { vi } from "vitest";
 
-/* @ts-ignore */
-HTMLCanvasElement.prototype.getContext = () => {
-  return {
-    fillStyle: '',
-    fillRect: vi.fn()
-  }
-}
+// /* @ts-ignore */
+// HTMLCanvasElement.prototype.getContext = () => {
+//   return {
+//     fillStyle: '',
+//     fillRect: vi.fn()
+//   }
+// }
