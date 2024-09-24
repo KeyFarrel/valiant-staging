@@ -31,8 +31,7 @@ build-app:
       when: always
     - if: '$CI_COMMIT_BRANCH == "staging" && $CI_COMMIT_TAG == null'
       when: always
-    - if: '$CI_COMMIT_TAG != null'
-      when: always
+
 
 unit-test:
   extends: .npm-cache
@@ -52,8 +51,6 @@ unit-test:
     - if: '$CI_COMMIT_BRANCH == "dev" && $CI_COMMIT_TAG == null'
       when: always
     - if: '$CI_COMMIT_BRANCH == "staging" && $CI_COMMIT_TAG == null'
-      when: always
-    - if: '$CI_COMMIT_TAG != null'
       when: always
 
 sonarqube-check:
@@ -152,7 +149,7 @@ send-approval-notif:
     - if: '$CI_COMMIT_TAG =~ /.*-release$/'
       when: always
 
-approval_1:
+approval_project_manager:
   stage: approval
   dependencies: []
   script:
@@ -168,7 +165,7 @@ approval_1:
     - if: '$CI_COMMIT_TAG =~ /.*-release$/'
       when: manual
 
-approval_2:
+approval_security_engineer:
   stage: approval
   dependencies: []
   script:
@@ -184,7 +181,7 @@ approval_2:
     - if: '$CI_COMMIT_TAG =~ /.*-release$/'
       when: manual
 
-approval_3:
+approval_sre:
   stage: approval
   dependencies: []
   script:
@@ -206,9 +203,9 @@ deploy-prod:
     entrypoint : [""]
   stage: update-tag-prod
   needs:
-   - approval_1
-   - approval_2
-   - approval_3
+   - approval_project_manager
+   - approval_security_engineer
+   - approval_sre
   dependencies: []
   before_script:
     - git config --global user.name "Gitlab Btech CI/CD"
