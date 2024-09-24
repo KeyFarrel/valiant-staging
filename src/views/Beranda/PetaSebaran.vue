@@ -2,7 +2,7 @@
   <Loading v-if="isLoading" />
   <div class="p-4 space-y-4 bg-white border rounded-md min-h-[75dvh]">
     <div class="flex justify-between"
-      v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina'">
+      v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pusat' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina'">
       <div class="flex items-center">
         <SearchBox @on-focus="handleFocus" v-model="selectedSearchQuery" class="w-72" />
         <ModalSearch v-if="isSearchModalOpen" v-model="searchQuery" :show-modal="isSearchModalOpen"
@@ -43,7 +43,7 @@
               </button>
             </div>
           </div>
-          <div class="mt-4" v-if="authService.checkLevel() === 'Admin'">
+          <div class="mt-4" v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pusat'">
             <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Induk / Subholding / Anak Perusahaan</h3>
             <el-select v-model="pengelola" multiple clearable collapse-tags
               placeholder="Pilih Unit Induk / Subholding / Anak Perusahaan" popper-class="custom-header"

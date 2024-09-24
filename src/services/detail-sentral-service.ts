@@ -17,10 +17,10 @@ export default class DetailSentralService extends BaseService {
     return this.get(`${url}mesin/${id}`);
   }
   async updateMesinById<T>(id:any, nilai_asset_awal:number, masa_manfaat:number, tahun_nilai_perolehan:number,latitude: string, longitude: string, photo1?: any): Promise<T> {
-    return this.put(`${url}mesin/${id}`, {nilai_asset_awal: nilai_asset_awal, masa_manfaat: masa_manfaat, tahun_nilai_perolehan: tahun_nilai_perolehan, latitude: latitude, longitude: longitude, photo1: photo1});
+    return this.patch(`${url}mesin/${id}`, {nilai_asset_awal: nilai_asset_awal, masa_manfaat: masa_manfaat, tahun_nilai_perolehan: tahun_nilai_perolehan, latitude: latitude, longitude: longitude, photo1: photo1});
   }
   async updateSentral<T>(id:any, photo: any): Promise<T> {
-    return this.put(`${url}pembangkit/${id}`, {photo: photo});
+    return this.patch(`${url}pembangkit/${id}`, {photo: photo});
   }
   async getPengelolaData<T>(): Promise<T> {
     return this.get(`${url}filter/combo-pengelola`);

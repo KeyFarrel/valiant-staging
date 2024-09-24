@@ -17,9 +17,17 @@
                   fill="#0099AD" />
               </svg>
               Filter
-              <div
-                v-if="authService.checkLevel() === 'Admin' ? (filterKK.selectedPengelola.length || filterKK.selectedPersetujuan.length) : authService.checkLevel() === 'Pengelola' ? (filterKK.selectedPembina.length || filterKK.selectedPersetujuan.length) : filterKK.selectedPersetujuan.length"
-                class="absolute z-10 border-2 border-[#FFE5E6] w-2.5 h-2.5 rounded-full right-0.5 top-0.5  bg-warningColor">
+              <div v-if="
+                authService.checkLevel() === 'Admin' ||
+                  authService.checkLevel() === 'Pusat'
+                  ? filterKK.selectedPengelola.length ||
+                  filterKK.selectedPersetujuan.length || filterKK.selectedPembina.length
+                  : authService.checkLevel() === 'Pengelola'
+                    ? filterKK.selectedPembina.length ||
+                    filterKK.selectedPersetujuan.length
+                    : filterKK.selectedPersetujuan.length
+              "
+                class="absolute z-10 border-2 border-[#FFE5E6] w-2.5 h-2.5 rounded-full right-0.5 top-0.5 bg-warningColor">
               </div>
             </button>
             <ModalWrapper :showModal="showModalKK" :width="'w-[500px]'" :height="'h-auto'">
@@ -41,8 +49,13 @@
                   </button>
                 </div>
               </div>
-              <div v-if="authService.checkLevel() === 'Admin'" class="mt-4">
-                <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pengelola</h3>
+              <div v-if="
+                authService.checkLevel() === 'Admin' ||
+                authService.checkLevel() === 'Pusat'
+              " class="mt-4">
+                <h3 class="mb-2 text-[#4D5E80] font-semibold">
+                  Unit Pengelola
+                </h3>
                 <el-select v-model="filterKK.selectedPengelola" multiple clearable collapse-tags
                   placeholder="Pilih Unit Pengelola" popper-class="custom-header" :max-collapse-tags="5"
                   class="w-full text-primaryTextColor">
@@ -55,7 +68,11 @@
                   <el-option v-for="item in itemsPengelola" :key="item.id" :label="item.name" :value="item.id" />
                 </el-select>
               </div>
-              <div v-if="authService.checkLevel() === 'Pengelola'" class="mt-4">
+              <div v-if="
+                authService.checkLevel() === 'Admin' ||
+                authService.checkLevel() === 'Pusat' ||
+                authService.checkLevel() === 'Pengelola'
+              " class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pembina</h3>
                 <el-select v-model="filterKK.selectedPembina" multiple clearable collapse-tags
                   placeholder="Pilih Unit Pembina" popper-class="custom-header" :max-collapse-tags="5"
@@ -70,7 +87,9 @@
                 </el-select>
               </div>
               <div class="mt-4">
-                <h3 class="mb-2 text-[#4D5E80] font-semibold">Status Persetujuan</h3>
+                <h3 class="mb-2 text-[#4D5E80] font-semibold">
+                  Status Persetujuan
+                </h3>
                 <el-select v-model="filterKK.selectedPersetujuan" multiple clearable collapse-tags
                   placeholder="Pilih Status Persetujuan" popper-class="custom-header" :max-collapse-tags="6"
                   class="w-full text-primaryTextColor">
@@ -86,8 +105,11 @@
               <hr class="w-full my-4" />
               <div class="flex justify-end">
                 <div class="flex items-start space-x-2">
-                  <button type="submit"
-                    @click="filterKK.selectedPengelola = []; filterKK.selectedPembina = []; filterKK.selectedPersetujuan = []"
+                  <button type="submit" @click="
+                    filterKK.selectedPengelola = [];
+                  filterKK.selectedPembina = [];
+                  filterKK.selectedPersetujuan = [];
+                  "
                     class="px-5 py-2 text-sm font-semibold duration-300 border rounded-lg text-primaryColor border-primaryColor hover:bg-hoverColor hover:border-hoverColor hover:text-white">
                     Reset
                   </button>
@@ -160,16 +182,32 @@
               <td scope="row" class="text-center whitespace-nowrap">
                 {{ index + 1 }}
               </td>
-              <td v-if="pengelolaList.length" class="text-left">{{
-                pengelolaList.filter((pengelola: any) =>
-                  pengelola.kode_pengelola === item.kode_pengelola)[0] ? pengelolaList.filter((pengelola: any) =>
-                    pengelola.kode_pengelola === item.kode_pengelola)[0].pengelola : '-' }}</td>
+              <td v-if="pengelolaList.length" class="text-left">
+                {{
+                  pengelolaList.filter(
+                    (pengelola: any) =>
+                      pengelola.kode_pengelola === item.kode_pengelola
+                  )[0]
+                    ? pengelolaList.filter(
+                      (pengelola: any) =>
+                        pengelola.kode_pengelola === item.kode_pengelola
+                    )[0].pengelola
+                    : "-"
+                }}
+              </td>
               <td class="text-left">{{ item.pembina }}</td>
               <td class="text-left">{{ item.sentral }}</td>
               <td class="text-left">{{ item.mesin }}</td>
-              <td class="text-right">{{ item.irr_on_equity === '' ? 'NUM' :
-                globalFormat.formatRupiah(item.irr_on_equity) }}</td>
-              <td class="text-right">{{ globalFormat.formatRupiah(item.npv_on_equity) }}</td>
+              <td class="text-right">
+                {{
+                  item.irr_on_equity === ""
+                    ? "NUM"
+                    : globalFormat.formatRupiah(item.irr_on_equity)
+                }}
+              </td>
+              <td class="text-right">
+                {{ globalFormat.formatRupiah(item.npv_on_equity) }}
+              </td>
               <td class="flex items-center justify-center text-center">
                 <div
                   class="w-fit p-1 flex items-center justify-center bg-[#FAEBEA] border border-[#EFC0BD] rounded-md text-[#C53830]"
@@ -204,9 +242,21 @@
               </td>
               <td class="text-center">
                 <div>
-                  <RouterLink
-                    v-if="authService.checkLevel() === 'Admin' && (item.status_approval === 'Draft' || item.status_approval === 'Ditolak T1' || item.status_approval === 'Ditolak T2')"
-                    :to="{ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(item.id_mesin) : item.id_mesin }, query: { id_sentral: item.id_sentral, tahun: item.tahun } }">
+                  <RouterLink v-if="
+                    (authService.checkLevel() === 'Admin' || (authService.checkLevel() === 'Pembina' && authService.checkRole() === 'Input')) &&
+                    (item.status_approval === 'Draft' ||
+                      item.status_approval === 'Ditolak T1' ||
+                      item.status_approval === 'Ditolak T2')
+                  " :to="{
+                    name: 'persetujuan-kk',
+                    params: {
+                      id:
+                        nodeMode === 'production'
+                          ? encryptStorage.encryptValue(item.id_mesin)
+                          : item.id_mesin,
+                    },
+                    query: { id_sentral: item.id_sentral, tahun: item.tahun },
+                  }">
                     <button>
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -215,8 +265,16 @@
                       </svg>
                     </button>
                   </RouterLink>
-                  <RouterLink v-else
-                    :to="{ name: 'app-kk-mesin', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(item.id_mesin) : item.id_mesin }, query: { id_sentral: item.id_sentral, tahun: item.tahun } }">
+                  <RouterLink v-else :to="{
+                    name: 'app-kk-mesin',
+                    params: {
+                      id:
+                        nodeMode === 'production'
+                          ? encryptStorage.encryptValue(item.id_mesin)
+                          : item.id_mesin,
+                    },
+                    query: { id_sentral: item.id_sentral, tahun: item.tahun },
+                  }">
                     <button>
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -241,7 +299,9 @@
               <option value="40">40</option>
               <option value="50">50</option>
             </select>
-            <span>dari <span class="font-bold">{{ navigationKK.totalRecords }}</span> data</span>
+            <span>dari
+              <span class="font-bold">{{ navigationKK.totalRecords }}</span>
+              data</span>
           </div>
           <ul class="flex items-center space-x-3">
             <li>
@@ -257,8 +317,10 @@
                 </svg>
               </button>
             </li>
-            <li id="pagination" v-for="(item, index) in generatePageList" :key="index"
-              :class="{ selected: item === navigationKK.currentPage, disabled: item === '...' }"
+            <li id="pagination" v-for="(item, index) in generatePageList" :key="index" :class="{
+              selected: item === navigationKK.currentPage,
+              disabled: item === '...',
+            }"
               class="w-8 h-8 mr-2 text-sm leading-8 text-center duration-300 cursor-pointer text hover:bg-blue-500 hover:rounded-md hover:text-white"
               @click="goToPage(item)">
               {{ item }}
@@ -293,9 +355,17 @@
                   fill="#0099AD" />
               </svg>
               Filter
-              <div
-                v-if="authService.checkLevel() === 'Admin' ? (filterFS.selectedPengelola.length || filterFS.selectedPersetujuan.length) : authService.checkLevel() === 'Pengelola' ? (filterFS.selectedPembina.length || filterFS.selectedPersetujuan.length) : filterFS.selectedPersetujuan.length"
-                class="absolute z-10 border-2 border-[#FFE5E6] w-2.5 h-2.5 rounded-full right-0.5 top-0.5  bg-warningColor">
+              <div v-if="
+                authService.checkLevel() === 'Admin' ||
+                  authService.checkLevel() === 'Pusat'
+                  ? filterFS.selectedPengelola.length ||
+                  filterFS.selectedPersetujuan.length || filterFS.selectedPembina.length
+                  : authService.checkLevel() === 'Pengelola'
+                    ? filterFS.selectedPembina.length ||
+                    filterFS.selectedPersetujuan.length
+                    : filterFS.selectedPersetujuan.length
+              "
+                class="absolute z-10 border-2 border-[#FFE5E6] w-2.5 h-2.5 rounded-full right-0.5 top-0.5 bg-warningColor">
               </div>
             </button>
             <ModalWrapper :showModal="showModalFS" :width="'w-[500px]'" :height="'h-auto'">
@@ -317,8 +387,13 @@
                   </button>
                 </div>
               </div>
-              <div v-if="authService.checkLevel() === 'Admin'" class="mt-4">
-                <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pengelola</h3>
+              <div v-if="
+                authService.checkLevel() === 'Admin' ||
+                authService.checkLevel() === 'Pusat'
+              " class="mt-4">
+                <h3 class="mb-2 text-[#4D5E80] font-semibold">
+                  Unit Pengelola
+                </h3>
                 <el-select v-model="filterFS.selectedPengelola" multiple clearable collapse-tags
                   placeholder="Pilih Unit Pengelola" popper-class="custom-header" :max-collapse-tags="5"
                   class="w-full text-primaryTextColor">
@@ -331,7 +406,11 @@
                   <el-option v-for="item in itemsPengelola" :key="item.id" :label="item.name" :value="item.id" />
                 </el-select>
               </div>
-              <div v-if="authService.checkLevel() === 'Pengelola'" class="mt-4">
+              <div v-if="
+                authService.checkLevel() === 'Admin' ||
+                authService.checkLevel() === 'Pusat' ||
+                authService.checkLevel() === 'Pengelola'
+              " class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pembina</h3>
                 <el-select v-model="filterFS.selectedPembina" multiple clearable collapse-tags
                   placeholder="Pilih Unit Pembina" popper-class="custom-header" :max-collapse-tags="5"
@@ -346,7 +425,9 @@
                 </el-select>
               </div>
               <div class="mt-4">
-                <h3 class="mb-2 text-[#4D5E80] font-semibold">Status Persetujuan</h3>
+                <h3 class="mb-2 text-[#4D5E80] font-semibold">
+                  Status Persetujuan
+                </h3>
                 <el-select v-model="filterFS.selectedPersetujuan" multiple clearable collapse-tags
                   placeholder="Pilih Status Persetujuan" popper-class="custom-header" :max-collapse-tags="6"
                   class="w-full text-primaryTextColor">
@@ -362,8 +443,11 @@
               <hr class="w-full my-4" />
               <div class="flex justify-end">
                 <div class="flex items-start space-x-2">
-                  <button type="submit"
-                    @click="filterFS.selectedPengelola = []; filterFS.selectedPembina = []; filterFS.selectedPersetujuan = []"
+                  <button type="submit" @click="
+                    filterFS.selectedPengelola = [];
+                  filterFS.selectedPembina = [];
+                  filterFS.selectedPersetujuan = [];
+                  "
                     class="px-5 py-2 text-sm font-semibold duration-300 border rounded-lg text-primaryColor border-primaryColor hover:bg-hoverColor hover:border-hoverColor hover:text-white">
                     Reset
                   </button>
@@ -431,16 +515,32 @@
               <td scope="row" class="text-center whitespace-nowrap">
                 {{ index + 1 }}
               </td>
-              <td v-if="pengelolaList.length" class="text-left">{{
-                pengelolaList.filter((pengelola: any) =>
-                  pengelola.kode_pengelola === item.kode_pengelola)[0] ? pengelolaList.filter((pengelola: any) =>
-                    pengelola.kode_pengelola === item.kode_pengelola)[0].pengelola : '-' }}</td>
+              <td v-if="pengelolaList.length" class="text-left">
+                {{
+                  pengelolaList.filter(
+                    (pengelola: any) =>
+                      pengelola.kode_pengelola === item.kode_pengelola
+                  )[0]
+                    ? pengelolaList.filter(
+                      (pengelola: any) =>
+                        pengelola.kode_pengelola === item.kode_pengelola
+                    )[0].pengelola
+                    : "-"
+                }}
+              </td>
               <td class="text-left">{{ item.pembina }}</td>
               <td class="text-left">{{ item.sentral }}</td>
               <td class="text-left">{{ item.mesin }}</td>
-              <td class="text-right">{{ item.irr_on_equity === '' ? 'NUM' :
-                globalFormat.formatRupiah(item.irr_on_equity) }}</td>
-              <td class="text-right">{{ globalFormat.formatRupiah(item.npv_on_equity) }}</td>
+              <td class="text-right">
+                {{
+                  item.irr_on_equity === ""
+                    ? "NUM"
+                    : globalFormat.formatRupiah(item.irr_on_equity)
+                }}
+              </td>
+              <td class="text-right">
+                {{ globalFormat.formatRupiah(item.npv_on_equity) }}
+              </td>
               <td class="flex items-center justify-center text-center">
                 <div
                   class="w-fit p-1 flex items-center justify-center bg-[#FAEBEA] border border-[#EFC0BD] rounded-md text-[#C53830]"
@@ -474,10 +574,22 @@
                 </div>
               </td>
               <td class="text-center">
-                <div
-                  v-if="authService.checkLevel() === 'Admin' && (item.status_approval === 'Draft' || item.status_approval === 'Ditolak T1' || item.status_approval === 'Ditolak T2')">
-                  <RouterLink
-                    :to="{ name: 'persetujuan-fs', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(item.id_mesin) : item.id_mesin }, query: { id_sentral: item.id_sentral } }">
+                <div v-if="
+                  (authService.checkLevel() === 'Admin' || (authService.checkLevel() === 'Pembina' && authService.checkRole() === 'Input')) &&
+                  (item.status_approval === 'Draft' ||
+                    item.status_approval === 'Ditolak T1' ||
+                    item.status_approval === 'Ditolak T2')
+                ">
+                  <RouterLink :to="{
+                    name: 'persetujuan-fs',
+                    params: {
+                      id:
+                        nodeMode === 'production'
+                          ? encryptStorage.encryptValue(item.id_mesin)
+                          : item.id_mesin,
+                    },
+                    query: { id_sentral: item.id_sentral },
+                  }">
                     <button>
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -488,8 +600,16 @@
                   </RouterLink>
                 </div>
                 <div v-else>
-                  <RouterLink
-                    :to="{ name: 'app-fs-mesin', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(item.id_mesin) : item.id_mesin }, query: { id_sentral: item.id_sentral } }">
+                  <RouterLink :to="{
+                    name: 'app-fs-mesin',
+                    params: {
+                      id:
+                        nodeMode === 'production'
+                          ? encryptStorage.encryptValue(item.id_mesin)
+                          : item.id_mesin,
+                    },
+                    query: { id_sentral: item.id_sentral },
+                  }">
                     <button>
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -514,7 +634,9 @@
               <option value="40">40</option>
               <option value="50">50</option>
             </select>
-            <span>dari <span class="font-bold">{{ navigationFS.totalRecords }}</span> data</span>
+            <span>dari
+              <span class="font-bold">{{ navigationFS.totalRecords }}</span>
+              data</span>
           </div>
           <ul class="flex items-center space-x-3">
             <li>
@@ -530,9 +652,12 @@
                 </svg>
               </button>
             </li>
-            <li id="pagination" v-for="( item, index ) in generatePage " :key="index"
+            <li id="pagination" v-for="(item, index) in generatePage" :key="index"
               class="w-8 h-8 mr-2 text-sm leading-8 text-center duration-300 cursor-pointer text hover:bg-blue-500 hover:rounded-md hover:text-white"
-              :class="{ selected: item === navigationFS.currentPage, disabled: item === '...' }" @click="goTo(item)">
+              :class="{
+                selected: item === navigationFS.currentPage,
+                disabled: item === '...',
+              }" @click="goTo(item)">
               {{ item }}
             </li>
             <li>
@@ -557,17 +682,17 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from "vue";
 import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
-import PersetujuanService from '@/services/persetujuan-service';
+import PersetujuanService from "@/services/persetujuan-service";
 import PetaService from "@/services/peta-service";
 import GlobalFormat from "@/services/format/global-format";
 import AuthService from "@/services/auth-service";
 const authService = new AuthService();
 import Loading from "@/components/ui/LoadingSpinner.vue";
-import SearchBox from '@/components/ui/SearchBox.vue';
+import SearchBox from "@/components/ui/SearchBox.vue";
 import TabsWrapper from "@/components/ui/TabsWrapper.vue";
 import TabItem from "@/components/ui/TabItem.vue";
 import ModalWrapper from "@/components/ui/ModalWrapper.vue";
-import type { CheckboxValueType } from 'element-plus';
+import type { CheckboxValueType } from "element-plus";
 import TableComponent from "@/components/ui/Table.vue";
 import { notifyError } from "@/services/helper/toast-notification";
 import Empty from "@/components/ui/EmptyData.vue";
@@ -584,7 +709,7 @@ const showModalKK = ref<boolean>(false);
 const showModalFS = ref<boolean>(false);
 const searchQKK = ref<string>("");
 const searchQFS = ref<string>("");
-const title = ref('Kertas Kerja');
+const title = ref("Kertas Kerja");
 
 const pengelolaList = ref<any[]>([]);
 const pembinaList = ref<any[]>([]);
@@ -600,300 +725,297 @@ const checkPersetujuanKK = ref<boolean>(false);
 const checkPengelolaFS = ref<boolean>(false);
 const checkPembinaFS = ref<boolean>(false);
 const checkPersetujuanFS = ref<boolean>(false);
-const pengelola = ref<CheckboxValueType[]>([]);
-const pembina = ref<CheckboxValueType[]>([]);
-const persetujuan = ref<CheckboxValueType[]>([]);
-const itemsPengelola = ref<{ id: string; name: string; }[]>([]);
-const itemsPembina = ref<{ id: number; name: string; }[]>([]);
+const itemsPengelola = ref<{ id: string; name: string }[]>([]);
+const itemsPembina = ref<{ id: number; name: string }[]>([]);
 const itemsPersetujuan = ref([
   {
     id: 3,
-    name: 'Draft',
+    name: "Draft",
   },
   {
     id: 4,
-    name: 'Disetujui',
+    name: "Disetujui",
   },
   {
     id: 2,
-    name: 'Ditolak oleh Pembina',
+    name: "Ditolak oleh Pembina",
   },
   {
     id: 5,
-    name: 'Ditolak oleh Pengelola',
+    name: "Ditolak oleh Pengelola",
   },
   {
     id: 0,
-    name: 'Menunggu Persetujuan Pembina',
+    name: "Menunggu Persetujuan Pembina",
   },
   {
     id: 1,
-    name: 'Menunggu Persetujuan Pengelola',
+    name: "Menunggu Persetujuan Pengelola",
   },
-])
+]);
 const filterKK = ref<{
-  selectedPengelola: any[]
-  selectedPembina: any[]
-  selectedPersetujuan: any[]
+  selectedPengelola: any[];
+  selectedPembina: any[];
+  selectedPersetujuan: any[];
 }>({
   selectedPengelola: [],
   selectedPembina: [],
-  selectedPersetujuan: []
+  selectedPersetujuan: [],
 });
 const filterFS = ref<{
-  selectedPengelola: any[]
-  selectedPembina: any[]
-  selectedPersetujuan: any[]
+  selectedPengelola: any[];
+  selectedPembina: any[];
+  selectedPersetujuan: any[];
 }>({
   selectedPengelola: [],
   selectedPembina: [],
-  selectedPersetujuan: []
+  selectedPersetujuan: [],
 });
 const navigationKK = ref<{
-  currentPage: number
-  totalPages: number
-  totalRecords: number
-  limit: number
+  currentPage: number;
+  totalPages: number;
+  totalRecords: number;
+  limit: number;
 }>({
   currentPage: 1,
   totalPages: 1,
   totalRecords: 0,
-  limit: 10
+  limit: 10,
 });
 const navigationFS = ref<{
-  currentPage: number
-  totalPages: number
-  totalRecords: number
-  limit: number
+  currentPage: number;
+  totalPages: number;
+  totalRecords: number;
+  limit: number;
 }>({
   currentPage: 1,
   totalPages: 1,
   totalRecords: 0,
-  limit: 10
+  limit: 10,
 });
+var debounceTimeout: any = null;
 
 async function getDataPengelola() {
   try {
-    const response: any = await petaService.getPengelola()
+    const response: any = await petaService.getPengelola();
     if (response.success) {
       pengelolaList.value = response.data;
-      itemsPengelola.value = []
+      itemsPengelola.value = [];
       if (response.data.length > 0) {
         response.data.map((item: any) => {
           itemsPengelola.value.push({
             id: item.kode_pengelola,
-            name: item.pengelola
-          })
-        })
+            name: item.pengelola,
+          });
+        });
       }
     }
   } catch (e) {
-    console.log("Fetch items filter Pengelola Error : " + e)
+    console.log("Fetch items filter Pengelola Error : " + e);
   }
 }
 
 async function getDataPembina() {
   try {
-    const response: any = await petaService.getPembina({})
+    const response: any = await petaService.getPembina({});
     if (response.success) {
       pembinaList.value = response.data;
-      itemsPembina.value = []
+      itemsPembina.value = [];
       if (response.data.length > 0) {
         response.data.map((item: any) => {
           itemsPembina.value.push({
             id: item.id_pembina,
-            name: item.pembina
-          })
-        })
+            name: item.pembina,
+          });
+        });
       }
     }
   } catch (e) {
-    console.log("Fetch items filter Pembina Error : " + e)
+    console.log("Fetch items filter Pembina Error : " + e);
   }
 }
 
-const fetchPersetujuanKK = async () => {
+const fetchPersetujuanKK = async (page?: number) => {
   try {
     const response: any = await persetujuanService.getPersetujuanKertasKerja({
       kode_pengelola: filterKK.value.selectedPengelola,
-      id_pembina: [],
+      id_pembina: filterKK.value.selectedPembina,
       status: filterKK.value.selectedPersetujuan,
-      page: searchQKK.value ? 1 : navigationKK.value.currentPage,
+      page: page ? page : navigationKK.value.currentPage,
       limit: navigationKK.value.limit,
       tahun: yearPicked.value.toString(),
-      search: searchQKK.value.toUpperCase()
+      search: searchQKK.value.toUpperCase(),
     });
-    searchQKK.value ? navigationKK.value.currentPage = 1 : null;
+    page ? (navigationKK.value.currentPage = 1) : null;
     persetujuanKK.value = response.data;
     navigationKK.value.totalPages = response.meta.totalPages;
     navigationKK.value.totalRecords = response.meta.totalRecords;
     navigationKK.value.limit = response.meta.limit;
-    showModalKK.value = false
+    showModalKK.value = false;
+    isLoading.value = false;
   } catch (error) {
-    console.error('Fetch Persetujuan KK Error : ' + error);
+    console.error("Fetch Persetujuan KK Error : " + error);
   }
-}
-const fetchPersetujuanFS = async () => {
+};
+const fetchPersetujuanFS = async (page?: number) => {
   try {
     const response: any = await persetujuanService.getPersetujuanFS({
       kode_pengelola: filterFS.value.selectedPengelola,
-      id_pembina: [],
+      id_pembina: filterFS.value.selectedPembina,
       status: filterFS.value.selectedPersetujuan,
-      page: searchQFS.value ? 1 : navigationFS.value.currentPage,
+      page: page ? page : navigationFS.value.currentPage,
       limit: navigationFS.value.limit,
-      search: searchQFS.value.toUpperCase()
+      search: searchQFS.value.toUpperCase(),
     });
-    searchQFS.value ? navigationFS.value.currentPage = 1 : null;
+    page ? (navigationFS.value.currentPage = 1) : null;
     persetujuanFS.value = response.data;
     navigationFS.value.totalPages = response.meta.totalPages;
     navigationFS.value.totalRecords = response.meta.totalRecords;
     navigationFS.value.limit = response.meta.limit;
-    showModalFS.value = false
+    showModalFS.value = false;
   } catch (error) {
-    console.error('Fetch Persetujuan FS Error : ' + error);
+    console.error("Fetch Persetujuan FS Error : " + error);
   }
-}
-const changeDataKK = async () => {
-  try {
+};
+const changeDataKK = () => {
+  clearTimeout(debounceTimeout);
+  debounceTimeout = setTimeout(() => {
     isLoading.value = true;
-    await fetchPersetujuanKK();
-  } catch (error) {
-    notifyError("Data Persetujuan Gagal Dimuat, Mohon Coba Lagi", false);
-  } finally {
-    isLoading.value = false;
-  }
-}
+    fetchPersetujuanKK(1);
+  }, 500);
+};
 
-const changeFS = async () => {
-  try {
+const changeFS = () => {
+  clearTimeout(debounceTimeout);
+  debounceTimeout = setTimeout(() => {
     isLoading.value = true;
-    await fetchPersetujuanFS();
-  } catch (error) {
-    notifyError("Data Persetujuan Gagal Dimuat, Mohon Coba Lagi", false);
-  } finally {
-    isLoading.value = false;
-  }
-}
+    fetchPersetujuanFS(1);
+  }, 500);
+};
 
 watch(filterKK.value.selectedPengelola, (val) => {
   if (val.length === 0) {
-    checkPengelolaKK.value = false
-    indeterminatePengelola.value = false
+    checkPengelolaKK.value = false;
+    indeterminatePengelola.value = false;
   } else if (val.length === itemsPengelola.value.length) {
-    checkPengelolaKK.value = true
-    indeterminatePengelola.value = false
+    checkPengelolaKK.value = true;
+    indeterminatePengelola.value = false;
   } else {
-    indeterminatePengelola.value = true
+    indeterminatePengelola.value = true;
   }
-})
+});
 watch(filterFS.value.selectedPengelola, (val) => {
   if (val.length === 0) {
-    checkPengelolaFS.value = false
-    indeterminatePengelola.value = false
+    checkPengelolaFS.value = false;
+    indeterminatePengelola.value = false;
   } else if (val.length === itemsPengelola.value.length) {
-    checkPengelolaFS.value = true
-    indeterminatePengelola.value = false
+    checkPengelolaFS.value = true;
+    indeterminatePengelola.value = false;
   } else {
-    indeterminatePengelola.value = true
+    indeterminatePengelola.value = true;
   }
-})
+});
 
 watch(filterKK.value.selectedPembina, (val) => {
   if (val.length === 0) {
-    checkPembinaKK.value = false
-    indeterminatePembina.value = false
+    checkPembinaKK.value = false;
+    indeterminatePembina.value = false;
   } else if (val.length === itemsPembina.value.length) {
-    checkPembinaKK.value = true
-    indeterminatePembina.value = false
+    checkPembinaKK.value = true;
+    indeterminatePembina.value = false;
   } else {
-    indeterminatePembina.value = true
+    indeterminatePembina.value = true;
   }
-})
+});
 watch(filterFS.value.selectedPembina, (val) => {
   if (val.length === 0) {
-    checkPembinaFS.value = false
-    indeterminatePembina.value = false
+    checkPembinaFS.value = false;
+    indeterminatePembina.value = false;
   } else if (val.length === itemsPembina.value.length) {
-    checkPembinaFS.value = true
-    indeterminatePembina.value = false
+    checkPembinaFS.value = true;
+    indeterminatePembina.value = false;
   } else {
-    indeterminatePembina.value = true
+    indeterminatePembina.value = true;
   }
-})
+});
 
 watch(filterKK.value.selectedPersetujuan, (val) => {
   if (val.length === 0) {
-    checkPersetujuanKK.value = false
-    indeterminateStatus.value = false
+    checkPersetujuanKK.value = false;
+    indeterminateStatus.value = false;
   } else if (val.length === itemsPersetujuan.value.length) {
-    checkPersetujuanKK.value = true
-    indeterminateStatus.value = false
+    checkPersetujuanKK.value = true;
+    indeterminateStatus.value = false;
   } else {
-    indeterminateStatus.value = true
+    indeterminateStatus.value = true;
   }
-})
+});
 watch(filterFS.value.selectedPersetujuan, (val) => {
   if (val.length === 0) {
-    checkPersetujuanFS.value = false
-    indeterminateStatus.value = false
+    checkPersetujuanFS.value = false;
+    indeterminateStatus.value = false;
   } else if (val.length === itemsPersetujuan.value.length) {
-    checkPersetujuanFS.value = true
-    indeterminateStatus.value = false
+    checkPersetujuanFS.value = true;
+    indeterminateStatus.value = false;
   } else {
-    indeterminateStatus.value = true
+    indeterminateStatus.value = true;
   }
-})
+});
 
 const handleCheckPengelolaKK = (val: CheckboxValueType) => {
-  indeterminatePengelola.value = false
+  indeterminatePengelola.value = false;
   if (val) {
-    filterKK.value.selectedPengelola = itemsPengelola.value.map((_) => _.id)
+    filterKK.value.selectedPengelola = itemsPengelola.value.map((_) => _.id);
   } else {
-    filterKK.value.selectedPengelola = []
+    filterKK.value.selectedPengelola = [];
   }
-}
+};
 const handleCheckPengelolaFS = (val: CheckboxValueType) => {
-  indeterminatePengelola.value = false
+  indeterminatePengelola.value = false;
   if (val) {
-    filterFS.value.selectedPengelola = itemsPengelola.value.map((_) => _.id)
+    filterFS.value.selectedPengelola = itemsPengelola.value.map((_) => _.id);
   } else {
-    filterFS.value.selectedPengelola = []
+    filterFS.value.selectedPengelola = [];
   }
-}
+};
 
 const handleCheckPembinaKK = (val: CheckboxValueType) => {
-  indeterminatePembina.value = false
+  indeterminatePembina.value = false;
   if (val) {
-    filterKK.value.selectedPembina = itemsPembina.value.map((_) => _.id)
+    filterKK.value.selectedPembina = itemsPembina.value.map((_) => _.id);
   } else {
-    filterKK.value.selectedPembina = []
+    filterKK.value.selectedPembina = [];
   }
-}
+};
 const handleCheckPembinaFS = (val: CheckboxValueType) => {
-  indeterminatePembina.value = false
+  indeterminatePembina.value = false;
   if (val) {
-    filterFS.value.selectedPembina = itemsPembina.value.map((_) => _.id)
+    filterFS.value.selectedPembina = itemsPembina.value.map((_) => _.id);
   } else {
-    filterFS.value.selectedPembina = []
+    filterFS.value.selectedPembina = [];
   }
-}
+};
 
 const handleCheckPersetujuanKK = (val: CheckboxValueType) => {
-  indeterminateStatus.value = false
+  indeterminateStatus.value = false;
   if (val) {
-    filterKK.value.selectedPersetujuan = itemsPersetujuan.value.map((_) => _.id)
+    filterKK.value.selectedPersetujuan = itemsPersetujuan.value.map(
+      (_) => _.id
+    );
   } else {
-    filterKK.value.selectedPersetujuan = []
+    filterKK.value.selectedPersetujuan = [];
   }
-}
+};
 const handleCheckPersetujuanFS = (val: CheckboxValueType) => {
-  indeterminateStatus.value = false
+  indeterminateStatus.value = false;
   if (val) {
-    filterFS.value.selectedPersetujuan = itemsPersetujuan.value.map((_) => _.id)
+    filterFS.value.selectedPersetujuan = itemsPersetujuan.value.map(
+      (_) => _.id
+    );
   } else {
-    filterFS.value.selectedPersetujuan = []
+    filterFS.value.selectedPersetujuan = [];
   }
-}
+};
 
 // Pages Persetujuan KK
 const generatePageList = computed(() => {
@@ -906,26 +1028,41 @@ const generatePageList = computed(() => {
     }
   } else {
     if (navigationKK.value.currentPage <= 3) {
-      for (let i = 1; i <= Math.min(navigationKK.value.totalPages, maxPages - 1); i++) {
+      for (
+        let i = 1;
+        i <= Math.min(navigationKK.value.totalPages, maxPages - 1);
+        i++
+      ) {
         pageList.push(i);
       }
       if (navigationKK.value.totalPages > maxPages) {
-        pageList.push('...');
+        pageList.push("...");
         pageList.push(navigationKK.value.totalPages);
       }
-    } else if (navigationKK.value.currentPage >= navigationKK.value.totalPages - 2) {
+    } else if (
+      navigationKK.value.currentPage >=
+      navigationKK.value.totalPages - 2
+    ) {
       pageList.push(1);
-      pageList.push('...');
-      for (let i = navigationKK.value.totalPages - (maxPages - 2); i <= navigationKK.value.totalPages; i++) {
+      pageList.push("...");
+      for (
+        let i = navigationKK.value.totalPages - (maxPages - 2);
+        i <= navigationKK.value.totalPages;
+        i++
+      ) {
         pageList.push(i);
       }
     } else {
       pageList.push(1);
-      pageList.push('...');
-      for (let i = navigationKK.value.currentPage - 1; i <= navigationKK.value.currentPage + 1; i++) {
+      pageList.push("...");
+      for (
+        let i = navigationKK.value.currentPage - 1;
+        i <= navigationKK.value.currentPage + 1;
+        i++
+      ) {
         pageList.push(i);
       }
-      pageList.push('...');
+      pageList.push("...");
       pageList.push(navigationKK.value.totalPages);
     }
   }
@@ -943,7 +1080,7 @@ const goToPage = async (page: any) => {
   isLoading.value = true;
   navigationKK.value.currentPage = page;
   await fetchPersetujuanKK();
-  isLoading.value = false
+  isLoading.value = false;
 };
 const goToPrevious = () => {
   if (navigationKK.value.currentPage > 1) {
@@ -967,26 +1104,41 @@ const generatePage = computed(() => {
     }
   } else {
     if (navigationFS.value.currentPage <= 3) {
-      for (let i = 1; i <= Math.min(navigationFS.value.totalPages, maxPages - 1); i++) {
+      for (
+        let i = 1;
+        i <= Math.min(navigationFS.value.totalPages, maxPages - 1);
+        i++
+      ) {
         pageList.push(i);
       }
       if (navigationFS.value.totalPages > maxPages) {
-        pageList.push('...');
+        pageList.push("...");
         pageList.push(navigationFS.value.totalPages);
       }
-    } else if (navigationFS.value.currentPage >= navigationFS.value.totalPages - 2) {
+    } else if (
+      navigationFS.value.currentPage >=
+      navigationFS.value.totalPages - 2
+    ) {
       pageList.push(1);
-      pageList.push('...');
-      for (let i = navigationFS.value.totalPages - (maxPages - 2); i <= navigationFS.value.totalPages; i++) {
+      pageList.push("...");
+      for (
+        let i = navigationFS.value.totalPages - (maxPages - 2);
+        i <= navigationFS.value.totalPages;
+        i++
+      ) {
         pageList.push(i);
       }
     } else {
       pageList.push(1);
-      pageList.push('...');
-      for (let i = navigationFS.value.currentPage - 1; i <= navigationFS.value.currentPage + 1; i++) {
+      pageList.push("...");
+      for (
+        let i = navigationFS.value.currentPage - 1;
+        i <= navigationFS.value.currentPage + 1;
+        i++
+      ) {
         pageList.push(i);
       }
-      pageList.push('...');
+      pageList.push("...");
       pageList.push(navigationFS.value.totalPages);
     }
   }
@@ -1004,7 +1156,7 @@ const goTo = async (page: any) => {
   isLoading.value = true;
   navigationFS.value.currentPage = page;
   await fetchPersetujuanFS();
-  isLoading.value = false
+  isLoading.value = false;
 };
 const goPrevious = () => {
   if (navigationFS.value.currentPage > 1) {
@@ -1024,14 +1176,14 @@ onMounted(async () => {
   await getDataPengelola();
   await getDataPembina();
   isLoading.value = false;
-})
+});
 </script>
 
 <style lang="scss" scoped>
 .date-picker {
   width: 7rem;
   --dp-border-radius: 10px;
-  --dp-icon-color: #0099AD;
+  --dp-icon-color: #0099ad;
 }
 
 /* For Webkit-based browsers (Chrome, Safari and Opera) */
@@ -1060,13 +1212,13 @@ ul li#pagination.selected {
 }
 
 ul li.selected {
-  color: #0099AD;
-  border-color: #0099AD;
+  color: #0099ad;
+  border-color: #0099ad;
 }
 
 ul li.disabled {
   pointer-events: none;
   cursor: not-allowed;
-  color: #D1D1DB;
+  color: #d1d1db;
 }
 </style>

@@ -1,18 +1,30 @@
-import { mergeConfig } from 'vite'
-import { configDefaults, defineConfig } from 'vitest/config'
-import viteConfig from './vite.config'
-import vue from '@vitejs/plugin-vue'
-export default mergeConfig(
-  viteConfig,
-  defineConfig({
+import { defineConfig } from "vitest/config";
+import vue from "@vitejs/plugin-vue";
+import path from "path";
+
+export default defineConfig(() => {
+  return {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          silenceDeprecations: ["legacy-js-api"],
+        },
+      },
+    },
     plugins: [vue()],
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
+    },
     test: {
-      globals: true,
-      environment: 'happy-dom',
-      include: ['**/*.test.ts', '**/*.spec.ts'],
-      setupFiles: ['src/vitestSetup.ts'],
-      includeSource: ['src/**/*.spec.ts', 'src/**/*.test.ts', '**/*.vue'],
-      exclude: [...configDefaults.exclude, 'src/e2e/*']
-    }
-  })
-)
+      coverage: {
+        exclude: ["node_modules/**", "**/*.test.ts"],
+        reporter: ["text", "json", "html", "lcov"],
+        reportsDirectory: "./coverage",
+      },
+      setupFiles: ['./vitest.setup.ts'],
+      environment: "happy-dom",
+    },
+  };
+});

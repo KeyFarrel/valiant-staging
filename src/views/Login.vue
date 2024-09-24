@@ -1,6 +1,164 @@
 <template>
+  <Loading v-if="isLoadingSpinner" />
+  <ModalNotification :show-modal="isChangePasswordSuccess" :animation-data="LottieSuccess"
+    :title="'Password Berhasil Diubah'" :subtitle="'Silahkan login kembali dengan password yang baru'" />
   <ModalNotification :show-modal="isShowLocked" :animation-data="errorJsonData" :title="'Akun Terkunci'"
     :subtitle="'Silahkan hubungi admin untuk membuka akun anda'" />
+  <ModalWrapper :showModal="isShowCompletePassword" :width="'w-80'" :height="'h-auto'">
+    <div class="flex flex-col items-center space-y-5">
+      <Vue3Lottie :animationData="LottieInfo" :width="200" :height="200" :loop="true" :speed="0.8" />
+      <div class="flex flex-col items-center">
+        <h1 class="mb-3 text-lg font-semibold text-center text-gray-700">
+          Lengkapi Password Anda
+        </h1>
+        <p class="text-sm text-center text-textDisabledColor">
+          Silakan ganti password Anda yang baru yang telah dikirim ke email Anda
+        </p>
+      </div>
+      <button @click="handleClickChangePassword" :disabled="isLoadingButton"
+        class="w-full px-3 py-2 text-sm font-semibold text-white rounded-lg bg-primaryColor active:ring active:ring-primaryColor active:ring-opacity-50">Ganti
+        Password</button>
+    </div>
+  </ModalWrapper>
+  <ModalWrapper :showModal="isModalChangePasswordShow" :width="'w-[850px]'" :height="'h-auto'">
+    <div class="flex flex-col space-y-5">
+      <div class="flex items-center justify-between">
+        <p class="text-lg font-semibold text-primaryTextColor">Ganti Password</p>
+        <button @click="isModalChangePasswordShow = false">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4.5 19.5L19.5 4.5M4.5 4.5L19.5 19.5" stroke="#333333" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </button>
+      </div>
+      <hr>
+      <div class="flex items-center space-x-3">
+        <div
+          class="w-[65px] items-center flex flex-col font-semibold justify-center h-[65px] bg-warningColor rounded-full text-[24px] text-white uppercase">
+          {{ userData.nama_pegawai.split('')[0] }}
+        </div>
+        <div class="flex flex-col space-y-1">
+          <p class="text-base font-medium text-primaryTextColor">{{ userData.nama_pegawai }}</p>
+          <p class="text-sm text-textDisabledColor">{{ userData.email }}</p>
+          <Chips :title="'Role'" :content="authService.checkRole()" class="w-fit" />
+        </div>
+      </div>
+      <div class="flex w-full space-x-5">
+        <div class="flex flex-col space-y-5 w-[60%]">
+          <div class="relative flex flex-col space-y-1">
+            <label for="oldPassword" class="text-sm font-medium text-labelColor">Password Lama <span
+                class="text-warningColor">*</span>
+              <span v-if="isOldPasswordWrong" class="text-sm text-warningColor">Password Lama Salah</span>
+            </label>
+            <TextField id="oldPassword" :type="showOldPassword ? 'text' : 'password'"
+              placeholder="Masukkan password lama anda" class="text-sm" v-model="oldPassword" />
+            <button @click="showOldPassword = !showOldPassword"
+              class="absolute inset-y-0 right-0 flex items-center pt-5 pr-3">
+              <svg v-if="!showOldPassword" width="16" height="12" viewBox="0 0 16 12" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M8.00051 1.66536C5.20279 1.66536 2.82714 3.47986 1.98946 5.99808C1.98897 5.99955 1.98897 6.00136 1.98946 6.00283C2.82818 8.51923 5.20293 10.332 7.99934 10.332C10.7971 10.332 13.1727 8.51754 14.0104 5.99932C14.0109 5.99785 14.0109 5.99604 14.0104 5.99457C13.1717 3.47817 10.7969 1.66536 8.00051 1.66536ZM0.72429 5.57722C1.73777 2.5305 4.61153 0.332031 8.00051 0.332031C11.3879 0.332031 14.2606 2.52846 15.2753 5.57297C15.3669 5.84785 15.367 6.14524 15.2756 6.42018C14.2621 9.46689 11.3883 11.6654 7.99934 11.6654C4.61194 11.6654 1.73927 9.46894 0.72454 6.42443C0.632921 6.14955 0.632834 5.85216 0.72429 5.57722ZM7.99997 4.66536C7.26359 4.66536 6.66663 5.26232 6.66663 5.9987C6.66663 6.73508 7.26359 7.33203 7.99997 7.33203C8.73635 7.33203 9.3333 6.73508 9.3333 5.9987C9.3333 5.26232 8.73635 4.66536 7.99997 4.66536ZM5.3333 5.9987C5.3333 4.52594 6.52721 3.33203 7.99997 3.33203C9.47273 3.33203 10.6666 4.52594 10.6666 5.9987C10.6666 7.47146 9.47273 8.66536 7.99997 8.66536C6.52721 8.66536 5.3333 7.47146 5.3333 5.9987Z"
+                  fill="#0F172A" />
+              </svg>
+              <svg v-if="showOldPassword" width="16" height="12" viewBox="0 0 16 12" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M8.00051 1.66536C5.20279 1.66536 2.82714 3.47986 1.98946 5.99808C1.98897 5.99955 1.98897 6.00136 1.98946 6.00283C2.82818 8.51923 5.20293 10.332 7.99934 10.332C10.7971 10.332 13.1727 8.51754 14.0104 5.99932C14.0109 5.99785 14.0109 5.99604 14.0104 5.99457C13.1717 3.47817 10.7969 1.66536 8.00051 1.66536ZM0.72429 5.57722C1.73777 2.5305 4.61153 0.332031 8.00051 0.332031C11.3879 0.332031 14.2606 2.52846 15.2753 5.57297C15.3669 5.84785 15.367 6.14524 15.2756 6.42018C14.2621 9.46689 11.3883 11.6654 7.99934 11.6654C4.61194 11.6654 1.73927 9.46894 0.72454 6.42443C0.632921 6.14955 0.632834 5.85216 0.72429 5.57722ZM7.99997 4.66536C7.26359 4.66536 6.66663 5.26232 6.66663 5.9987C6.66663 6.73508 7.26359 7.33203 7.99997 7.33203C8.73635 7.33203 9.3333 6.73508 9.3333 5.9987C9.3333 5.26232 8.73635 4.66536 7.99997 4.66536ZM5.3333 5.9987C5.3333 4.52594 6.52721 3.33203 7.99997 3.33203C9.47273 3.33203 10.6666 4.52594 10.6666 5.9987C10.6666 7.47146 9.47273 8.66536 7.99997 8.66536C6.52721 8.66536 5.3333 7.47146 5.3333 5.9987Z"
+                  fill="#0F172A" />
+                <rect width="1.51154" height="18.1385" rx="0.75"
+                  transform="matrix(0.701707 0.712466 -0.701707 0.712466 13.5835 0.105713)" fill="#0F172A" />
+              </svg>
+            </button>
+          </div>
+          <div class="relative flex flex-col space-y-1">
+            <label for="newPassword" class="text-sm font-medium text-labelColor">Password Baru <span
+                class="text-warningColor">*</span></label>
+            <TextField @on-input="verifyRequirementPassword" id="newPassword"
+              :type="showNewPassword ? 'text' : 'password'" placeholder="Masukkan password baru anda" class="text-sm"
+              v-model="newPassword" />
+            <button @click="showNewPassword = !showNewPassword"
+              class="absolute inset-y-0 right-0 flex items-center pt-5 pr-3">
+              <svg v-if="!showNewPassword" width="16" height="12" viewBox="0 0 16 12" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M8.00051 1.66536C5.20279 1.66536 2.82714 3.47986 1.98946 5.99808C1.98897 5.99955 1.98897 6.00136 1.98946 6.00283C2.82818 8.51923 5.20293 10.332 7.99934 10.332C10.7971 10.332 13.1727 8.51754 14.0104 5.99932C14.0109 5.99785 14.0109 5.99604 14.0104 5.99457C13.1717 3.47817 10.7969 1.66536 8.00051 1.66536ZM0.72429 5.57722C1.73777 2.5305 4.61153 0.332031 8.00051 0.332031C11.3879 0.332031 14.2606 2.52846 15.2753 5.57297C15.3669 5.84785 15.367 6.14524 15.2756 6.42018C14.2621 9.46689 11.3883 11.6654 7.99934 11.6654C4.61194 11.6654 1.73927 9.46894 0.72454 6.42443C0.632921 6.14955 0.632834 5.85216 0.72429 5.57722ZM7.99997 4.66536C7.26359 4.66536 6.66663 5.26232 6.66663 5.9987C6.66663 6.73508 7.26359 7.33203 7.99997 7.33203C8.73635 7.33203 9.3333 6.73508 9.3333 5.9987C9.3333 5.26232 8.73635 4.66536 7.99997 4.66536ZM5.3333 5.9987C5.3333 4.52594 6.52721 3.33203 7.99997 3.33203C9.47273 3.33203 10.6666 4.52594 10.6666 5.9987C10.6666 7.47146 9.47273 8.66536 7.99997 8.66536C6.52721 8.66536 5.3333 7.47146 5.3333 5.9987Z"
+                  fill="#0F172A" />
+              </svg>
+              <svg v-if="showNewPassword" width="16" height="12" viewBox="0 0 16 12" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M8.00051 1.66536C5.20279 1.66536 2.82714 3.47986 1.98946 5.99808C1.98897 5.99955 1.98897 6.00136 1.98946 6.00283C2.82818 8.51923 5.20293 10.332 7.99934 10.332C10.7971 10.332 13.1727 8.51754 14.0104 5.99932C14.0109 5.99785 14.0109 5.99604 14.0104 5.99457C13.1717 3.47817 10.7969 1.66536 8.00051 1.66536ZM0.72429 5.57722C1.73777 2.5305 4.61153 0.332031 8.00051 0.332031C11.3879 0.332031 14.2606 2.52846 15.2753 5.57297C15.3669 5.84785 15.367 6.14524 15.2756 6.42018C14.2621 9.46689 11.3883 11.6654 7.99934 11.6654C4.61194 11.6654 1.73927 9.46894 0.72454 6.42443C0.632921 6.14955 0.632834 5.85216 0.72429 5.57722ZM7.99997 4.66536C7.26359 4.66536 6.66663 5.26232 6.66663 5.9987C6.66663 6.73508 7.26359 7.33203 7.99997 7.33203C8.73635 7.33203 9.3333 6.73508 9.3333 5.9987C9.3333 5.26232 8.73635 4.66536 7.99997 4.66536ZM5.3333 5.9987C5.3333 4.52594 6.52721 3.33203 7.99997 3.33203C9.47273 3.33203 10.6666 4.52594 10.6666 5.9987C10.6666 7.47146 9.47273 8.66536 7.99997 8.66536C6.52721 8.66536 5.3333 7.47146 5.3333 5.9987Z"
+                  fill="#0F172A" />
+                <rect width="1.51154" height="18.1385" rx="0.75"
+                  transform="matrix(0.701707 0.712466 -0.701707 0.712466 13.5835 0.105713)" fill="#0F172A" />
+              </svg>
+            </button>
+          </div>
+          <div class="relative flex flex-col space-y-1">
+            <label for="confirmNewPassword" class="text-sm font-medium text-labelColor">Konfirmasi Password Baru <span
+                class="text-warningColor">*</span><span v-if="!isPasswordMatched && confirmNewPassword"
+                class="ml-1.5 text-sm text-warningColor">Password Tidak Sesuai</span></label>
+            <TextField @on-input="verifyMatchPassword" id="confirmNewPassword"
+              :type="showConfirmNewPassword ? 'text' : 'password'" placeholder="Masukkan konfirmasi password baru anda"
+              class="text-sm" v-model="confirmNewPassword" />
+            <button @click="showConfirmNewPassword = !showConfirmNewPassword"
+              class="absolute inset-y-0 right-0 flex items-center pt-5 pr-3">
+              <svg v-if="!showConfirmNewPassword" width="16" height="12" viewBox="0 0 16 12" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M8.00051 1.66536C5.20279 1.66536 2.82714 3.47986 1.98946 5.99808C1.98897 5.99955 1.98897 6.00136 1.98946 6.00283C2.82818 8.51923 5.20293 10.332 7.99934 10.332C10.7971 10.332 13.1727 8.51754 14.0104 5.99932C14.0109 5.99785 14.0109 5.99604 14.0104 5.99457C13.1717 3.47817 10.7969 1.66536 8.00051 1.66536ZM0.72429 5.57722C1.73777 2.5305 4.61153 0.332031 8.00051 0.332031C11.3879 0.332031 14.2606 2.52846 15.2753 5.57297C15.3669 5.84785 15.367 6.14524 15.2756 6.42018C14.2621 9.46689 11.3883 11.6654 7.99934 11.6654C4.61194 11.6654 1.73927 9.46894 0.72454 6.42443C0.632921 6.14955 0.632834 5.85216 0.72429 5.57722ZM7.99997 4.66536C7.26359 4.66536 6.66663 5.26232 6.66663 5.9987C6.66663 6.73508 7.26359 7.33203 7.99997 7.33203C8.73635 7.33203 9.3333 6.73508 9.3333 5.9987C9.3333 5.26232 8.73635 4.66536 7.99997 4.66536ZM5.3333 5.9987C5.3333 4.52594 6.52721 3.33203 7.99997 3.33203C9.47273 3.33203 10.6666 4.52594 10.6666 5.9987C10.6666 7.47146 9.47273 8.66536 7.99997 8.66536C6.52721 8.66536 5.3333 7.47146 5.3333 5.9987Z"
+                  fill="#0F172A" />
+              </svg>
+              <svg v-if="showConfirmNewPassword" width="16" height="12" viewBox="0 0 16 12" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M8.00051 1.66536C5.20279 1.66536 2.82714 3.47986 1.98946 5.99808C1.98897 5.99955 1.98897 6.00136 1.98946 6.00283C2.82818 8.51923 5.20293 10.332 7.99934 10.332C10.7971 10.332 13.1727 8.51754 14.0104 5.99932C14.0109 5.99785 14.0109 5.99604 14.0104 5.99457C13.1717 3.47817 10.7969 1.66536 8.00051 1.66536ZM0.72429 5.57722C1.73777 2.5305 4.61153 0.332031 8.00051 0.332031C11.3879 0.332031 14.2606 2.52846 15.2753 5.57297C15.3669 5.84785 15.367 6.14524 15.2756 6.42018C14.2621 9.46689 11.3883 11.6654 7.99934 11.6654C4.61194 11.6654 1.73927 9.46894 0.72454 6.42443C0.632921 6.14955 0.632834 5.85216 0.72429 5.57722ZM7.99997 4.66536C7.26359 4.66536 6.66663 5.26232 6.66663 5.9987C6.66663 6.73508 7.26359 7.33203 7.99997 7.33203C8.73635 7.33203 9.3333 6.73508 9.3333 5.9987C9.3333 5.26232 8.73635 4.66536 7.99997 4.66536ZM5.3333 5.9987C5.3333 4.52594 6.52721 3.33203 7.99997 3.33203C9.47273 3.33203 10.6666 4.52594 10.6666 5.9987C10.6666 7.47146 9.47273 8.66536 7.99997 8.66536C6.52721 8.66536 5.3333 7.47146 5.3333 5.9987Z"
+                  fill="#0F172A" />
+                <rect width="1.51154" height="18.1385" rx="0.75"
+                  transform="matrix(0.701707 0.712466 -0.701707 0.712466 13.5835 0.105713)" fill="#0F172A" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="w-[40%] rounded-lg bg-opacity-30 h-fit px-4 py-3 space-y-2"
+          :class="hasMinLength && hasNumber && hasUppercase && hasLowercase && hasSymbol ? 'bg-greenColor' : 'bg-warningColor'">
+          <p class="text-base font-semibold text-primaryTextColor">Persyaratan Minimal</p>
+          <div class="flex flex-col space-y-2">
+            <div class="flex items-center space-x-1.5">
+              <IconRoundedChecked v-if="hasMinLength" />
+              <IconRoundedClose v-else />
+              <p class="text-sm text-primaryTextColor">Minimal 8 karakter</p>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <IconRoundedChecked v-if="hasNumber" />
+              <IconRoundedClose v-else />
+              <p class="text-sm text-primaryTextColor">Mengandung angka</p>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <IconRoundedChecked v-if="hasUppercase" />
+              <IconRoundedClose v-else />
+              <p class="text-sm text-primaryTextColor">Mengandung huruf kapital</p>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <IconRoundedChecked v-if="hasLowercase" />
+              <IconRoundedClose v-else />
+              <p class="text-sm text-primaryTextColor">Mengandung huruf kecil</p>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <IconRoundedChecked v-if="hasSymbol" />
+              <IconRoundedClose v-else />
+              <p class="text-sm text-primaryTextColor">Mengandung simbol (unicode)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-end w-full">
+        <button @click="changePassword"
+          class="px-3 py-2 text-sm font-semibold text-white rounded-lg active:ring active:ring-primaryColor active:ring-opacity-50 bg-primaryColor">Ganti
+          Password</button>
+      </div>
+    </div>
+  </ModalWrapper>
   <div class="h-screen md:flex">
     <div class="relative hidden w-8/12 max-h-screen md:flex">
       <div id="default-carousel" class="relative w-full" data-carousel="slide">
@@ -102,7 +260,7 @@
             <input v-model="valPassword" autocomplete="new-password"
               class="block bg-white py-3 w-[350px] text-xs mb-6 text-gray-900 rounded-md border border-gray-300 focus:ring-[#0099AD] focus:border-[#0099AD]"
               :type="showPassword ? 'text' : 'password'" id="password1" placeholder="Masukkan Kata Sandi"
-              @keyup.enter="onSubmit" @paste="onPaste" @copy="onCopy" />
+              @keyup.enter="onSubmitLogin" />
             <button @click="visiblePassword" class="absolute transform -translate-y-1/2 top-1/2 right-3" type="button">
               <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" width="16" class="mr-4" height="12"
                 viewBox="0 0 16 12" fill="none">
@@ -128,10 +286,10 @@
           <div class="mb-2 text-sm font-bold tracking-wide text-gray-700">
             Captcha
           </div>
-          <!-- <RecaptchaV2 class="flex items-center justify-center" @widget-id="handleWidgetId"
+          <RecaptchaV2 class="flex items-center justify-center" @widget-id="handleWidgetId"
             @error-callback="handleErrorCalback" @expired-callback="handleExpiredCallback"
-            @load-callback="handleLoadCallback" /> -->
-          <div
+            @load-callback="handleLoadCallback" />
+          <!-- <div
             class="bg-gray-200 text-primaryTextColor h-[80px] w-[350px] px-4 border-2 border-gray-200 flex items-center justify-between rounded-md">
             <label for="check">
               <input type="checkbox" id="check" class="cursor-pointer" v-model="checkbox" @click="checkboxChange" />
@@ -178,13 +336,13 @@
                 Verify
               </button>
             </div>
-          </div>
+          </div> -->
         </div>
-        <button @click="onSubmit" type="button"
+        <button @click="onSubmitLogin" type="button"
           class="text-white uppercase  bg-[#0099AD] w-[350px] hover:bg-[#0099AD] hover:text-white active:ring active:ring-[#005A66] rounded-lg text-xs p-3 my-4 dark:bg-[#005A66] dark:hover:bg-slate-300 focus:outline-none dark:focus:ring-[#0099AD]"
-          v-if="verify && (valEmail.length !== 0 && valPassword.length !== 0)">
-          <p v-show="!isLoading" class="font-semibold">Masuk Ke Aplikasi</p>
-          <div v-show="isLoading" class="flex flex-row items-center justify-center space-x-2">
+          v-if="isVerified && (valEmail && valPassword)">
+          <p v-show="!isLoadingButton" class="font-semibold">Masuk Ke Aplikasi</p>
+          <div v-show="isLoadingButton" class="flex flex-row items-center justify-center space-x-2">
             <svg aria-hidden="true" class="inline w-5 h-5 text-gray-200 animate-spin fill-[#0099AD]"
               viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -218,35 +376,93 @@
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-import { Checkbox } from 'vue-recaptcha'
-import { ref, onMounted } from "vue";
-import LoginService from "../services/auth-service";
+import { ref, onMounted, onUnmounted } from "vue";
+import LoginService from "@/services/auth-service";
+const loginService = new LoginService();
 import { initFlowbite } from "flowbite";
 import axios from "axios";
 import { store } from "../store";
 import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { notifyError } from "@/services/helper/toast-notification";
 import { RecaptchaV2, useRecaptcha } from "vue3-recaptcha-v2";
+import AuthService from "@/services/auth-service";
+const authService = new AuthService();
+import ModalWrapper from "@/components/ui/ModalWrapper.vue";
+import TextField from "@/components/ui/TextField.vue";
+import IconRoundedChecked from "@/components/icons/IconRoundedChecked.vue";
+import IconRoundedClose from "@/components/icons/IconRoundedClose.vue";
 import ModalNotification from "@/components/ui/ModalNotification.vue";
 import errorJsonData from '@/assets/lottie/error.json';
+import LottieInfo from "@/assets/lottie/info.json";
+import Loading from "@/components/ui/LoadingSpinner.vue";
+import LottieSuccess from "@/assets/lottie/success.json";
 
+const nodeMode = import.meta.env.MODE;
 const router = useRouter();
-const isLoading = ref<boolean>(false);
+const isLoadingButton = ref<boolean>(false);
+const isLoadingSpinner = ref<boolean>(false);
 const valEmail = ref<string>("");
 const valPassword = ref<string>("");
 const valEmailErr = ref<string>("");
 const valPasswordErr = ref<string>("");
 const showPassword = ref<boolean>(false);
-const loginService = new LoginService();
 const isVerified = ref<boolean>(false)
 const isShowCounter = ref<boolean>(false);
 const remainingAttempt = ref<number>(0);
 const isShowLocked = ref<boolean>(false);
-const checkbox = ref(false);
-const ceklistCaptcha = ref();
-const box = ref(false);
-const verify = ref(false);
-const captcha: any = ref([]);
-const valCaptcha = ref("");
+const isModalChangePasswordShow = ref<boolean>(false);
+const showOldPassword = ref<boolean>(false);
+const showNewPassword = ref<boolean>(false);
+const showConfirmNewPassword = ref<boolean>(false);
+const oldPassword = ref<string>("");
+const newPassword = ref<string>("");
+const confirmNewPassword = ref<string>("");
+const hasMinLength = ref<boolean>(false);
+const hasNumber = ref<boolean>(false);
+const hasUppercase = ref<boolean>(false);
+const hasLowercase = ref<boolean>(false);
+const hasSymbol = ref<boolean>(false);
+const isNewPasswordSameAsOld = ref<boolean>(false);
+const isPasswordMatched = ref<boolean>(false);
+const isOldPasswordWrong = ref<boolean>(false);
+const isShowCompletePassword = ref<boolean>(false);
+const url = import.meta.env.VITE_API_URL;
+const isChangePasswordSuccess = ref<boolean>(false);
+const userData = ref<DataItem>({
+  data: {},
+  id_user: "",
+  nip: "",
+  email: "",
+  username: "",
+  nama_pegawai: "",
+  atasan: "",
+  photo: "",
+  status: true,
+  no_tlpn: 0,
+  pengelola: "",
+  pembina: "",
+  sentral: "",
+  roles: {},
+  created_at: ""
+});
+
+interface DataItem {
+  data: any
+  id_user: string
+  nip: string
+  email: string
+  username: string
+  nama_pegawai: string
+  atasan: string
+  photo: string
+  status: boolean
+  no_tlpn: number
+  pengelola: string
+  pembina: string
+  sentral: string
+  roles: any
+  created_at: any
+}
 
 function visiblePassword() {
   showPassword.value = !showPassword.value;
@@ -273,11 +489,104 @@ const handleLoadCallback = (response: unknown) => {
   console.log("Load callback", response);
 
 };
-function checkboxChange() {
-  box.value = true;
-}
+const fetchDataProfile = async () => {
+  try {
+    isLoadingSpinner.value = true;
+    const response: DataItem = await axios.get(`${url}user/me`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+      }
+    });
+    userData.value = response.data.data;
+    isLoadingSpinner.value = false;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    isLoadingSpinner.value = false;
+  }
+};
 
-async function onSubmit() {
+// const preventCopyPaste = (event: ClipboardEvent) => {
+//   event.preventDefault();
+// };
+
+const verifyRequirementPassword = () => {
+  const password = newPassword.value;
+  hasMinLength.value = password.length >= 8;
+  hasNumber.value = /\d/.test(password);
+  hasUppercase.value = /[A-Z]/.test(password);
+  hasLowercase.value = /[a-z]/.test(password);
+  hasSymbol.value = /[\p{P}\p{S}]/u.test(password);
+  isNewPasswordSameAsOld.value = newPassword.value === oldPassword.value;
+  verifyMatchPassword();
+};
+
+const verifyMatchPassword = () => {
+  if (newPassword.value !== confirmNewPassword.value) {
+    isPasswordMatched.value = false;
+    console.log("Password tidak sama");
+  } else {
+    isPasswordMatched.value = true;
+    console.log("Password sama");
+  }
+}
+const resetInputAndAttribute = () => {
+  oldPassword.value = "";
+  newPassword.value = "";
+  confirmNewPassword.value = "";
+  hasMinLength.value = false;
+  hasNumber.value = false;
+  hasUppercase.value = false;
+  hasLowercase.value = false;
+  hasSymbol.value = false;
+  isNewPasswordSameAsOld.value = false;
+  isPasswordMatched.value = false;
+  showOldPassword.value = false;
+  showNewPassword.value = false;
+  showConfirmNewPassword.value = false;
+};
+const changePassword = async () => {
+  if (!isPasswordMatched.value || !hasMinLength.value || !hasNumber.value || !hasUppercase.value || !hasLowercase.value || !hasSymbol.value) {
+    notifyError("Password tidak memenuhi persyaratan, mohon lengkapi persyaratan tersebut!", 7000);
+  } else if (isNewPasswordSameAsOld.value) {
+    notifyError("Password baru tidak boleh sama dengan password lama yang anda masukkan!", 7000);
+  } else {
+    try {
+      isLoadingSpinner.value = true;
+      await axios.post(`${url}user/change-password`, {
+        email: userData.value.email,
+        password_old: oldPassword.value,
+        password_new: newPassword.value,
+      }, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+        }
+      });
+      isOldPasswordWrong.value = false;
+      isLoadingSpinner.value = false;
+      isModalChangePasswordShow.value = false;
+      resetInputAndAttribute();
+      isChangePasswordSuccess.value = true;
+      await wait(3000);
+      isChangePasswordSuccess.value = false;
+      nodeMode === 'production' ? encryptStorage.clear() : localStorage.clear();
+    } catch (error: any) {
+      console.error("Error changing password:", error);
+      if (error.response.data.message === 'Password Lama tidak sesuai') {
+        isOldPasswordWrong.value = true;
+        notifyError("Password lama anda salah, mohon periksa kembali password lama anda!", 7000);
+      }
+      isLoadingSpinner.value = false;
+    }
+  }
+};
+const handleClickChangePassword = async () => {
+  await fetchDataProfile();
+  isShowCompletePassword.value = false;
+  isModalChangePasswordShow.value = true;
+}
+const onSubmitLogin = async () => {
+  if (isLoadingButton.value) return;
+
   const maxAttempt = 5;
   if (valEmail.value === "") {
     valEmailErr.value = "Email kosong mohon diisi";
@@ -285,52 +594,63 @@ async function onSubmit() {
     valPasswordErr.value = "Password kosong mohon diisi";
     valEmailErr.value = "";
   } else {
-    valEmailErr.value = "";
-    valPasswordErr.value = "";
-    isLoading.value = true;
-    let param;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (isVerified.value) {
+      isLoadingButton.value = true;
+      valEmailErr.value = "";
+      valPasswordErr.value = "";
+      let param;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      valEmail.value = valEmail.value.replace(/\s+/g, '');
+      valPassword.value = valPassword.value.replace(/\s+/g, '');
 
-    if (emailRegex.test(valEmail.value)) {
-      param = {
-        email: valEmail.value,
-        password: valPassword.value,
-      };
-    } else {
-      param = {
-        email: valEmail.value,
-        password: valPassword.value,
-      };
-    }
-    const url = import.meta.env.VITE_API_URL;
-    try {
-      const response: any = await loginService.login(param);
-      const token = response.data.token;
-      const permission = await axios.get(`${url}permission`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      store.setMenus(permission.data.data);
-      setTimeout(() => {
-        router.push({ name: "dashboard" });
-      }, 500);
-    } catch (error: any) {
-      isShowCounter.value = true;
-      remainingAttempt.value = maxAttempt - error.response.data.data.temp_loc;
-      valEmailErr.value = "Email atau Password salah";
-      valPasswordErr.value = "Email atau Password salah";
-      if (error.response.data.data.is_locked) {
-        isShowCounter.value = false;
-        isShowLocked.value = true;
-        await wait(5000);
-        isShowLocked.value = false;
+      if (emailRegex.test(valEmail.value)) {
+        param = {
+          email: valEmail.value,
+          password: valPassword.value,
+        };
+      } else {
+        param = {
+          email: valEmail.value,
+          password: valPassword.value,
+        };
       }
-      isLoading.value = false;
+      try {
+        const response: any = await loginService.login(param);
+        const token = response.data.token;
+        const permission = await axios.get(`${url}permission`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        store.setMenus(permission.data.data);
+        if (response.data.is_reset) {
+          try {
+            isShowCompletePassword.value = true;
+            isLoadingButton.value = false;
+          } catch (error) {
+            console.error(error);
+          }
+        } else {
+          setTimeout(() => {
+            router.push({ name: "dashboard" });
+          }, 500);
+        }
+      } catch (error: any) {
+        isShowCounter.value = true;
+        remainingAttempt.value = maxAttempt - error.response.data.data.temp_loc;
+        valEmailErr.value = "Email atau Password salah";
+        valPasswordErr.value = "Email atau Password salah";
+        if (error.response.data.data.is_locked) {
+          isShowCounter.value = false;
+          isShowLocked.value = true;
+          await wait(5000);
+          isShowLocked.value = false;
+        }
+        isLoadingButton.value = false;
+      }
     }
   }
 }
-
 const loginSSO = async () => {
   try {
     const response: any = await loginService.loginSSO();
@@ -341,49 +661,19 @@ const loginSSO = async () => {
   }
 }
 
-async function onPaste(e: any) {
-  e.preventDefault();
-}
-
-async function onCopy(e: any) {
-  e.preventDefault();
-}
-
-async function generateCaptcha() {
-  const chars =
-    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  let captchaChars = [];
-  for (let i = 0; i < 6; i++) {
-    let char = chars[Math.floor(Math.random() * chars.length)];
-    let fontSize = Math.floor(Math.random() * 10) + 20; // random font size between 20 and 30
-    let rotation = Math.floor(Math.random() * 21) - 10; // random rotation between -10 and 10 degrees
-    captchaChars.push({ char, fontSize, rotation });
-  }
-  captcha.value = captchaChars;
-}
-
-function checkCaptcha() {
-  if (valCaptcha.value !== captcha.value.map((c: any) => c.char).join("")) {
-    console.log("masuk1");
-    valPasswordErr.value = "Captcha yang anda masukkan tidak sesuai";
-    isLoading.value = false;
-  } else if (valCaptcha.value === captcha.value.map((c: any) => c.char).join("")) {
-    console.log('masuk2')
-    valPasswordErr.value = "";
-    verify.value = true;
-    ceklistCaptcha.value = true;
-    box.value = false;
-  } else {
-    valPasswordErr.value = "";
-    box.value = false;
-    ceklistCaptcha.value = false;
-  }
-}
 onMounted(() => {
-  generateCaptcha();
   initFlowbite();
+  const hasRefreshed = sessionStorage.getItem('hasRefreshed');
+  if (!hasRefreshed) {
+    sessionStorage.setItem('hasRefreshed', 'true');
+    window.location.reload(true);
+  } else {
+    sessionStorage.removeItem('hasRefreshed');
+  }
 });
-
+onUnmounted(() => {
+  sessionStorage.clear();
+})
 </script>
 
 <style lang="scss" scoped></style>

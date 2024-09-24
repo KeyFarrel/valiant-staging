@@ -1,14 +1,15 @@
 <template>
   <Loading v-if="isLoading" />
-  <div class="flex flex-col space-y-4" v-if="mesin">
+  <div class="flex flex-col space-y-4">
     <InfoHeader v-if="mesin" :nama-mesin="mesin.mesin" :nama-pengelola="namaPengelola ? namaPengelola : '-'"
       :kondisi-unit="mesin.kondisi_unit" :kode-jenis-pembangkit="mesin.kode_jenis_pembangkit"
       :daya-terpasang="mesin.daya_terpasang.toString()" :daya-mampu="mesin.daya_mampu.toString()"
-      :tahun-operasi="mesin.tahun_operasi.toString()" :umur-teknis="mesin.masa_manfaat" :nama-pembina="namaPembina">
+      :tahun-operasi="mesin.tahun_operasi.toString()" :umur-teknis="mesin.masa_manfaat"
+      :nama-pembina="namaPembina ? namaPembina : '-'">
       <div class="flex flex-row items-center space-x-3">
         <VueDatePicker class="date-picker" v-model="selectedYear" @update:model-value="handleYearChange" year-picker
           teleport :clearable="false" :yearRange="listYear"
-          :filters="yearPickerService.filterYears(listYear[0], listYear[1])" />
+          :filters="yearPickerService.filterYears(listtahunRealisasi, listYear[0], listYear[1])" />
         <button
           class="flex items-center border border-[#0099AD] hover:border-hoverColor px-3 py-2 rounded-lg text-[#0099AD] hover:text-white hover:bg-hoverColor duration-300">
           <span class="mr-2 font-semibold"
@@ -21,7 +22,8 @@
         </button>
       </div>
     </InfoHeader>
-    <div class="flex justify-between p-4 my-4 bg-white rounded-lg">
+    <ShimmerLoading v-else class="w-full h-28" />
+    <div class="flex justify-between p-4 bg-white rounded-lg">
       <div class="flex items-center">
         <div class="flex">
           <div class="w-1 h-7 mr-2 bg-[#0099AD]"></div>
@@ -39,47 +41,40 @@
         <span class="ml-2 text-sm font-semibold">Download Evidence</span>
       </button>
     </div>
-    <div class="items-start p-6 bg-white rounded-lg">
+    <div class="items-start p-6 bg-white rounded-lg" v-if="mesin">
       <TabsWrapper :kode-sentral="mesin.kode_sentral" :isLihatGrafik="true" :laman-data="false">
         <TabItem title="Asumsi Makro">
-          <AsumsiMakro v-if="asumsiParameter" @on-change="fetchAsumsiParameterData" :list-tahun-asumsi="listTahunAsumsi"
-            :corporate-tax-rate="asumsiParameter
-              ? asumsiParameter.corporate_tax_rate
-              : '-'
-              " :discount-rate="asumsiParameter ? asumsiParameter.discount_rate : '-'
-                " :interest-rate="asumsiParameter ? asumsiParameter.interest_rate : '-'
-                  " :loan-tenor="asumsiParameter ? asumsiParameter.loan_tenor : '-'
-                    " :loan-portion="asumsiParameter ? asumsiParameter.loan_portion : '-'
-                      " :equity-portion="asumsiParameter ? asumsiParameter.equity_portion : '-'
-                        " :selected-year="selectedYear" />
-          <AsumsiMakro v-else :selected-year="selectedYear" :list-tahun-asumsi="listTahunAsumsi"
-            :corporate-tax-rate="'-'" :discount-rate="'-'" :interest-rate="'-'" :loan-tenor="'-'" :loan-portion="'-'"
-            :equity-portion="'-'" />
+          <AsumsiMakro @on-click="reloadAsumsiParameter" @on-change="fetchAsumsiParameter"
+            :list-tahun-asumsi="listTahunAsumsi" :corporate-tax-rate="asumsiParameter.corporate_tax_rate"
+            :discount-rate="asumsiParameter.discount_rate" :interest-rate="asumsiParameter.interest_rate"
+            :loan-tenor="asumsiParameter.loan_tenor" :loan-portion="asumsiParameter.loan_portion"
+            :equity-portion="asumsiParameter.equity_portion" :selected-year="selectedYear"
+            :is-fetching-error="asumsiParameter.isFetchingError" />
         </TabItem>
         <TabItem title="Parameter Teknis & Finansial">
-          <ParameterTeknis v-if="comboBahanBakar.length !== 0" @on-change="fetchAsumsiParameterData"
+          <ParameterTeknis @on-click="reloadAsumsiParameter" @on-change="fetchAsumsiParameter"
             v-model:selected-tahun="tahunTerakhirRealisasi" :selected-year="selectedYear"
-            :list-tahun-asumsi="listTahunAsumsi" :daya-terpasang="parameterTeknisFinansial?.daya_terpasang ?? '-'"
-            :daya-mampu-netto="parameterTeknisFinansial?.daya_mampu_netto_mw ?? '-'"
-            :auxiliary="parameterTeknisFinansial?.auxiliary ?? '-'"
-            :susut-trafo="parameterTeknisFinansial?.susut_trafo ?? '-'"
-            :pemakaian-sendiri="parameterTeknisFinansial?.ps ?? '-'"
-            :net-plant-heat-rate="parameterTeknisFinansial?.nphr"
-            :total-project-cost="parameterTeknisFinansial?.total_project_cost" :loan="parameterTeknisFinansial?.loan"
-            :equity="parameterTeknisFinansial?.equity"
-            :electricity-price-a="parameterTeknisFinansial?.electricity_price_a_rp_per_kwbln"
-            :electricity-price-b="parameterTeknisFinansial?.electricity_price_b_rp_per_kwbln"
-            :electricity-price-c="parameterTeknisFinansial?.electricity_price_c_rp_per_kwh"
-            :electricity-price-d="parameterTeknisFinansial?.electricity_price_d_rp_per_kwh" :bahan-bakars="bahanBakars"
-            :combo-bahan-bakar="comboBahanBakar" />
+            :list-tahun-asumsi="listTahunAsumsi" :daya-terpasang="parameterTeknisFinansial.daya_terpasang"
+            :daya-mampu-netto="parameterTeknisFinansial.daya_mampu_netto_mw"
+            :auxiliary="parameterTeknisFinansial.auxiliary" :susut-trafo="parameterTeknisFinansial.susut_trafo"
+            :pemakaian-sendiri="parameterTeknisFinansial.ps" :net-plant-heat-rate="parameterTeknisFinansial.nphr"
+            :total-project-cost="parameterTeknisFinansial.total_project_cost" :loan="parameterTeknisFinansial.loan"
+            :equity="parameterTeknisFinansial.equity"
+            :electricity-price-a="parameterTeknisFinansial.electricity_price_a_rp_per_kwbln"
+            :electricity-price-b="parameterTeknisFinansial.electricity_price_b_rp_per_kwbln"
+            :electricity-price-c="parameterTeknisFinansial.electricity_price_c_rp_per_kwh"
+            :electricity-price-d="parameterTeknisFinansial.electricity_price_d_rp_per_kwh" :bahan-bakars="bahanBakars"
+            :combo-bahan-bakar="comboBahanBakar" :is-fetching-error="parameterTeknisFinansial.isFetchingError" />
         </TabItem>
         <TabItem title="Data Teknis">
-          <TableDataTeknis :data-teknis="dataTeknis" :tahun-terakhir-realisasi="parseInt(selectedYear)"
-            :type-periodic="typePeriodic" />
+          <TableDataTeknis @on-click="reloadDataTeknis" :data-teknis="dataTeknis"
+            :tahun-terakhir-realisasi="parseInt(selectedYear)" :type-periodic="typePeriodic"
+            :is-fetching-error="dataTeknis.isFetchingError" />
         </TabItem>
         <TabItem title="Data Finansial">
-          <TableDataFinansial v-if="dataFinansial" :source="finansialMappingResult" :data-finansial="dataFinansial"
-            :tahun-terakhir-realisasi="parseInt(selectedYear)" />
+          <TableDataFinansial @on-click="reloadDataFinansial" :source="finansialMappingResult"
+            :data-finansial="dataFinansial" :tahun-terakhir-realisasi="parseInt(selectedYear)"
+            :is-fetching-error="dataFinansial.isFetchingError" />
         </TabItem>
         <TabItem title="Hasil Simulasi">
           <div class="flex flex-col w-full px-2">
@@ -96,26 +91,27 @@
                 </li>
               </ul>
             </nav>
-            <AkhirMasaManfaat v-if="hasilSimulasi" :irr-on-project="hasilSimulasi.track_irr_project"
+            <AkhirMasaManfaat @on-click="reloadHasilSimulasi" :irr-on-project="hasilSimulasi.track_irr_project"
               :irr-on-equity="hasilSimulasi.track_irr_equity" :npv-on-equity="hasilSimulasi.track_npv_equity"
               :npv-on-project="hasilSimulasi.track_npv_project" :average-ncf="hasilSimulasi.track_average_cf"
-              :average-eaf="hasilSimulasi.track_average_eaf" v-show="selectedTab === 'Akhir Masa'" />
-            <TahunBerjalan v-if="hasilSimulasi" :irr-on-project="hasilSimulasi.now_track_irr_project"
+              :average-eaf="hasilSimulasi.track_average_eaf" v-show="selectedTab === 'Akhir Masa'"
+              :is-fetching-error="hasilSimulasi.isFetchingError" />
+            <TahunBerjalan @on-click="reloadHasilSimulasi" :irr-on-project="hasilSimulasi.now_track_irr_project"
               :irr-on-equity="hasilSimulasi.now_track_irr_equity" :npv-on-equity="hasilSimulasi.now_track_npv_equity"
               :npv-on-project="hasilSimulasi.now_track_npv_project" :average-ncf="hasilSimulasi.now_track_average_cf"
-              :average-eaf="hasilSimulasi.now_track_average_eaf" v-show="selectedTab === 'Tahun Berjalan'" />
-            <Periode v-show="selectedTab === 'Periode'" />
-            <Proyeksi v-show="selectedTab === 'Proyeksi'" />
+              :average-eaf="hasilSimulasi.now_track_average_eaf" v-show="selectedTab === 'Tahun Berjalan'"
+              :is-fetching-error="hasilSimulasi.isFetchingError" />
           </div>
         </TabItem>
       </TabsWrapper>
     </div>
+    <ShimmerLoading v-else class="w-full h-96" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
+import { encryptStorage } from "@/utils/app-encrypt-storage";
 import { notifyError } from "@/services/helper/toast-notification";
 import { useRoute } from "vue-router";
 const route = useRoute();
@@ -133,16 +129,14 @@ import AkhirMasaManfaat from "@/views/Data/RekapKertasKerja/DetailRekap/HasilSim
 import UserService from "@/services/user-service";
 const userService = new UserService();
 import TahunBerjalan from "@/views/Data/RekapKertasKerja/DetailRekap/HasilSimulasi/TahunBerjalan.vue";
-import Periode from "@/views/Data/RekapKertasKerja/DetailRekap/HasilSimulasi/Periode.vue";
-import Proyeksi from "@/views/Data/RekapKertasKerja/DetailRekap/HasilSimulasi/Proyeksi.vue";
 import AsumsiMakro from "@/components/ui/AsumsiMakro.vue";
 import GlobalFormat from "@/services/format/global-format";
 const globalFormat = new GlobalFormat();
 import ParameterTeknis from "@/components/ui/ParameterTeknis.vue";
 import InfoHeader from '@/components/ui/InfoHeader.vue'
-import axios from "axios";
 import TableDataTeknis from "@/components/RekapKertasKerja/TableDataTeknis.vue";
 import TableDataFinansial from "@/components/RekapKertasKerja/TableDataFinansial.vue";
+import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
 
 const nodeMode: any = import.meta.env.MODE;
 const kodeMesin = ref<MesinItem>();
@@ -151,21 +145,63 @@ const mesin = ref<MesinItem>();
 const kodeJenisPembangkit = ref<string>("");
 const namaPengelola = ref<string>('');
 const namaPembina = ref<string>('');
-const asumsiParameter = ref<AsumsiParameterItem>();
-const parameterTeknisFinansial = ref<ParameterTeknisFinancialItem>();
+const asumsiParameter = ref<AsumsiParameterItem>({
+  data: {},
+  id_asumsi: 0,
+  id_mesin: 0,
+  kode_mesin: "",
+  status: "",
+  corporate_tax_rate: 0,
+  discount_rate: 0,
+  interest_rate: 0,
+  loan_tenor: 0,
+  loan_portion: 0,
+  equity_portion: 0,
+  umur_teknis: 0,
+  bahan_bakars: [],
+  isFetchingError: false
+});
+const parameterTeknisFinansial = ref<ParameterTeknisFinancialItem>({
+  daya_terpasang: 0,
+  daya_mampu_netto_mw: 0,
+  auxiliary: 0,
+  susut_trafo: 0,
+  ps: 0,
+  total_project_cost: 0,
+  loan: 0,
+  equity: 0,
+  nphr: 0,
+  electricity_price_a_rp_per_kwbln: 0,
+  electricity_price_b_rp_per_kwbln: 0,
+  electricity_price_c_rp_per_kwh: 0,
+  electricity_price_d_rp_per_kwh: 0,
+  isFetchingError: false
+});
 const bahanBakars = ref<any[]>([]);
 const selectedYear = ref<any>(route.query.tahun);
 const listYear = ref<any[]>([]);
 const dataTeknis = ref<{
-  header: any[],
-  tahun: number[],
+  header: any[]
+  tahun: number[]
   detail: any[]
+  isFetchingError: boolean
 }>({
   header: [],
   tahun: [],
-  detail: []
+  detail: [],
+  isFetchingError: false
 });
-const dataFinansial = ref<any>();
+const dataFinansial = ref<{
+  header: any[]
+  tahun: number[]
+  detail: any[]
+  isFetchingError: boolean
+}>({
+  header: [],
+  tahun: [],
+  detail: [],
+  isFetchingError: false
+});
 const tahunBerjalan = new Date().getFullYear();
 const comboBahanBakar = ref<any>([]);
 const tahunRealisasi = ref<number>(tahunBerjalan);
@@ -182,8 +218,37 @@ const typePeriodic = ref<Object[]>([]);
 const isLoading = ref();
 const selectedTab = ref("Akhir Masa");
 const finansialMappingResult = ref<any[]>([]);
-const hasilSimulasi = ref();
+const hasilSimulasi = ref<{
+  track_irr_project: number
+  track_irr_equity: number
+  track_npv_project: number
+  track_npv_equity: number
+  track_average_cf: number
+  track_average_eaf: number
+  now_track_irr_project: number
+  now_track_irr_equity: number
+  now_track_npv_project: number
+  now_track_npv_equity: number
+  now_track_average_cf: number
+  now_track_average_eaf: number
+  isFetchingError: boolean
+}>({
+  track_irr_project: 0,
+  track_irr_equity: 0,
+  track_npv_project: 0,
+  track_npv_equity: 0,
+  track_average_cf: 0,
+  track_average_eaf: 0,
+  now_track_irr_project: 0,
+  now_track_irr_equity: 0,
+  now_track_npv_project: 0,
+  now_track_npv_equity: 0,
+  now_track_average_cf: 0,
+  now_track_average_eaf: 0,
+  isFetchingError: false
+});
 const currentNamaMesin = ref<string>('');
+const listtahunRealisasi = ref<any[]>([]);
 
 interface MesinItem {
   data: any
@@ -212,6 +277,7 @@ interface AsumsiParameterItem {
   equity_portion: number
   umur_teknis: number
   bahan_bakars: any
+  isFetchingError: boolean
 }
 interface ParameterTeknisFinancialItem {
   daya_terpasang: number
@@ -227,11 +293,11 @@ interface ParameterTeknisFinancialItem {
   electricity_price_b_rp_per_kwbln: number
   electricity_price_c_rp_per_kwh: number
   electricity_price_d_rp_per_kwh: number
+  isFetchingError: boolean
 }
 
 const fetchMesinById = async () => {
   try {
-    isLoading.value = true;
     const response: MesinItem = await detailRekapService.getMesinById(
       nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id
     );
@@ -270,9 +336,8 @@ const downloadEvidence = async () => {
     notifyError('Evidence Tidak Ada', 5000)
   }
 }
-const fetchAsumsiParameterData = async () => {
+const fetchAsumsiParameter = async () => {
   try {
-    isLoading.value = true;
     const response: AsumsiParameterItem =
       await detailRekapService.getAsumsiParameter(
         parseInt(selectedYear.value) - 1,
@@ -284,9 +349,16 @@ const fetchAsumsiParameterData = async () => {
     bahanBakars.value = response.data.harga_bahan_bakars;
   } catch (error) {
     console.error("Fetch Asumsi Parameter Error : " + error);
+    asumsiParameter.value.isFetchingError = true;
+    parameterTeknisFinansial.value.isFetchingError = true;
   }
 };
-const fetchDataTeknisData = async () => {
+const reloadAsumsiParameter = () => {
+  asumsiParameter.value.isFetchingError = false;
+  parameterTeknisFinansial.value.isFetchingError = false;
+  fetchAsumsiParameter();
+}
+const fetchDataTeknis = async () => {
   try {
     const response: any = await detailRekapService.getDataTeknis(
       parseInt(selectedYear.value),
@@ -296,18 +368,16 @@ const fetchDataTeknisData = async () => {
     console.log(dataTeknis.value)
   } catch (error) {
     console.error("Fetch Data Teknis Error : " + error);
+    dataTeknis.value.isFetchingError = true;
   }
 };
-const fetchComboBahanBakar = async () => {
-  try {
-    const response: any = await detailRekapService.getComboBahanBakar(kodeJenisPembangkit.value);
-    comboBahanBakar.value = response.data;
-    console.log(response.data)
-  } catch (error) {
-    console.error('Fetch Combo Bahan Bakar Error : ' + error);
-  }
+
+const reloadDataTeknis = () => {
+  dataTeknis.value.isFetchingError = false;
+  fetchDataTeknis();
 }
-const fetchDataFinansialData = async () => {
+
+const fetchDataFinansial = async () => {
   try {
     finansialMappingResult.value = []
     const response: any = await detailRekapService.getDataFinansial(
@@ -343,8 +413,13 @@ const fetchDataFinansialData = async () => {
     dataFinansial.value = response.data;
   } catch (error) {
     console.error("Fetch Data Finansial Error : " + error);
+    dataFinansial.value.isFetchingError = true;
   }
 };
+const reloadDataFinansial = () => {
+  dataFinansial.value.isFetchingError = false;
+  fetchDataFinansial();
+}
 const fetchHasilSimulasi = async () => {
   try {
     const response: any = await detailRekapService.getHasilSimulasi(
@@ -356,6 +431,20 @@ const fetchHasilSimulasi = async () => {
     hasilSimulasi.value = response.data;
   } catch (error) {
     console.error("Fetch Hasil Simulasi Error : " + error);
+    hasilSimulasi.value.isFetchingError = true;
+  }
+}
+const reloadHasilSimulasi = () => {
+  hasilSimulasi.value.isFetchingError = false;
+  fetchHasilSimulasi();
+}
+const fetchComboBahanBakar = async () => {
+  try {
+    const response: any = await detailRekapService.getComboBahanBakar(kodeJenisPembangkit.value);
+    comboBahanBakar.value = response.data;
+    console.log(response.data)
+  } catch (error) {
+    console.error('Fetch Combo Bahan Bakar Error : ' + error);
   }
 }
 const handleDownloadExcelMesin = async () => {
@@ -383,9 +472,10 @@ const fetchTahunRealisasiData = async () => {
     const response: any = await detailRekapService.getTahunRealisasi(
       nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id
     );
+    listtahunRealisasi.value = response.data;
     listYear.value[0] = response.data[0].tahun;
     listYear.value[1] = response.data[response.data.length - 1].tahun;
-    console.log(listYear.value);
+    console.log(listYear.value, 'list');
   } catch (error) {
     console.error("Fetch Tahun Realisasi Error : " + error);
   }
@@ -443,30 +533,30 @@ const handleYearChange = async () => {
   router.replace({ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(idMesin.value) : idMesin.value }, query: { tahun: selectedYear.value } });
   await fetchMesinById();
   await fetchTahunRealisasiData();
-  await fetchUnitPengelola();
-  await fetchTypePeriodic();
-  await fetchHasilSimulasi();
-  await fetchAsumsiParameterData();
-  await fetchListTahunAsumsi();
-  await fetchDataTeknisData();
-  await fetchDataFinansialData();
-  await fetchComboBahanBakar();
   isLoading.value = false
+  fetchUnitPengelola();
+  fetchTypePeriodic();
+  fetchHasilSimulasi();
+  fetchAsumsiParameter();
+  fetchListTahunAsumsi();
+  fetchDataTeknis();
+  fetchDataFinansial();
+  fetchComboBahanBakar();
 }
 
 onMounted(async () => {
   isLoading.value = true;
   await fetchMesinById();
   await fetchTahunRealisasiData();
-  await fetchUnitPengelola();
-  await fetchTypePeriodic();
-  await fetchHasilSimulasi();
-  await fetchAsumsiParameterData();
-  await fetchListTahunAsumsi();
-  await fetchDataTeknisData();
-  await fetchDataFinansialData();
-  await fetchComboBahanBakar();
   isLoading.value = false;
+  fetchUnitPengelola();
+  fetchTypePeriodic();
+  fetchHasilSimulasi();
+  fetchAsumsiParameter();
+  fetchListTahunAsumsi();
+  fetchDataTeknis();
+  fetchDataFinansial();
+  fetchComboBahanBakar();
 });
 </script>
 

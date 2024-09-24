@@ -2,15 +2,24 @@
   <div class="flex flex-row items-start justify-between p-4 bg-white rounded-lg">
     <div class="flex flex-col space-y-2">
       <p class="text-lg font-semibold text-primaryTextColor">{{ props.namaMesin }}</p>
-      <section class="text-xs">
-        <span class="font-medium text-gray-400">Unit Pengelola : </span>
-        <span>{{ props.namaPengelola }}</span>
+      <section class="flex items-center space-x-1 text-xs">
+        <div class="flex items-center space-x-1">
+          <span class="font-medium text-gray-400">Unit Pengelola : </span>
+          <span v-if="props.namaPengelola">{{ props.namaPengelola }}</span>
+          <ShimmerLoading v-else class="w-24 h-2.5" />
+        </div>
         <span class="text-gray-200"> / </span>
-        <span class="font-medium text-gray-400">Unit Pembina : </span>
-        <span>{{ props.namaPembina }}</span>
+        <div class="flex items-center space-x-1">
+          <span class="font-medium text-gray-400">Unit Pembina : </span>
+          <span v-if="props.namaPembina">{{ props.namaPembina }}</span>
+          <ShimmerLoading v-else class="h-2.5 w-18" />
+        </div>
         <span class="text-gray-200"> / </span>
-        <span class="font-medium text-gray-400">Status Mesin : </span>
-        <span>{{ props.kondisiUnit }}</span>
+        <div class="flex items-center space-x-1">
+          <span class="font-medium text-gray-400">Status Mesin : </span>
+          <span v-if="props.kondisiUnit">{{ props.kondisiUnit }}</span>
+          <ShimmerLoading v-else class="w-16 h-2.5" />
+        </div>
       </section>
       <div class="flex">
         <Chips :title="'Kategori Unit Pembangkit'" :content="props.kodeJenisPembangkit" />
@@ -33,6 +42,7 @@
 import GlobalFormat from '@/services/format/global-format';
 const globalFormat = new GlobalFormat();
 import Chips from './Chips.vue';
+import ShimmerLoading from './ShimmerLoading.vue';
 
 interface Props {
   namaMesin: string

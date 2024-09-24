@@ -1,7 +1,7 @@
 <template>
   <ModalWrapper :showModal="props.showModal" :width="'w-80'" :height="'h-auto'">
     <div class="flex flex-col items-center">
-      <Vue3Lottie :animationData="props.animationData" :width="200" :height="200" :loop="false" :speed="0.8" />
+      <Vue3Lottie :animationData="props.animationData" :width="200" :height="200" :loop="true" :speed="0.8" />
       <h1 class="mb-3 text-lg font-semibold text-center text-gray-700">
         {{ props.title }}
       </h1>

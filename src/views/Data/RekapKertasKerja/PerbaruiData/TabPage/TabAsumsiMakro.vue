@@ -1,12 +1,12 @@
 <template>
   <div class="flex flex-col space-y-4">
-    <section class="flex flex-row items-center space-x-1 text-xs" v-if="props.isPerbaruiData === true">
+    <!-- <section class="flex flex-row items-center space-x-1 text-xs" v-if="props.isPerbaruiData === true">
       <span class="font-medium text-gray-400">Periode : </span>
       <span class="font-semibold">{{ props.tahunRealisasi }}</span>
       <span class="text-gray-200"> / </span>
       <span class="font-medium text-gray-400">Unit : </span>
-      <span class="font-semibold">{{ props.mesin }}</span>
-      <!-- <span class="text-gray-200"> / </span>
+      <span class="font-semibold">{{ props.mesin }}</span> -->
+    <!-- <span class="text-gray-200"> / </span>
       <span class="mr-1.5 font-medium text-gray-400">Catatan : </span>
       <div class="flex flex-row items-center space-x-1">
         <WarningIcon />
@@ -16,8 +16,8 @@
         <span class="text-warningColor" v-else>Data yang ditampilkan merupakan data simulasi,
           mohon pilih opsi simulasi untuk mengubah ke data tetap</span>
       </div> -->
-    </section>
-    <section class="text-xs" v-else-if="props.isPerbaruiData === false">
+    <!-- </section> -->
+    <section class="text-xs" v-if="props.isPerbaruiData === false">
       <span class="font-medium text-gray-400">Periode : </span>
       <span class="font-semibold">{{ props.tahunRealisasi }}</span>
       <span class="text-gray-200"> / </span>

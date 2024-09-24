@@ -2,7 +2,7 @@
   <Loading v-if="isLoading" />
   <div class="flex flex-col h-full p-6 space-y-5 font-medium bg-white rounded-lg text-md">
     <div class="flex flex-row space-x-4"
-      v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina'">
+      v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pusat' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina'">
       <SearchBoxSuggestion v-if="listSuggestionSentral" v-model="store.searchRekapQuery" :source="listSuggestionSentral"
         @on-key-enter="store.selectedRekapSearchQuery = store.searchRekapQuery; handleSearch()"
         @on-click="store.selectedRekapSearchQuery = store.searchRekapQuery; handleSearch()" />
@@ -114,7 +114,7 @@
         </div>
       </ModalWrapper>
     </div>
-    <div class="whitespace-nowrap" v-if="authService.checkLevel() === 'Admin'">
+    <div class="whitespace-nowrap" v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pusat'">
       <ul class="flex flex-row w-full overflow-x-auto" v-if="pengelolaData.length !== 0">
         <li v-for="( pengelola, pengelolaIndex ) in pengelolaData " :key="pengelolaIndex"
           class="relative p-2 ml-3 overflow-hidden text-xs font-bold text-gray-400 border border-gray-300 rounded-lg cursor-pointer w-fit hover:text-primaryColor first:ml-0 hover:border-primaryColor active:bg-primaryColor active:bg-opacity-20"
@@ -442,7 +442,7 @@
                   v-if="listStatusInputAsumsiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0]">
                   <RouterLink
                     :to="checkUnggahRequiredProp(mesinItem.nilai_asset_awal, mesinItem.tahun_nilai_perolehan, mesinItem.masa_manfaat) ? '' : { name: 'input-asumsi-parameter', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(mesinItem.id_mesin) : mesinItem.id_mesin } }"
-                    v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral'">
+                    v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral' || (authService.checkLevel() === 'Pembina' && authService.checkRole() === 'Input')">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
                       id="hover-button"
@@ -461,7 +461,7 @@
                   <button
                     class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
                     id="hover-button"
-                    v-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum terisi' && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral')"
+                    v-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum terisi' && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral' || (authService.checkLevel() === 'Pembina' && authService.checkRole() === 'Input'))"
                     @click="checkUnggahRequiredProp(mesinItem.nilai_asset_awal, mesinItem.tahun_nilai_perolehan, mesinItem.masa_manfaat) ? isRequiredPropsComplete = true : isFSDialogOpen = true; currentIdMesin = mesinItem.id_mesin; currentNamaMesin = mesinItem.mesin; currentIdSentral = sentralItem.id_sentral; currentKodeJenisPembangkit = mesinItem.kode_jenis_pembangkit; currentKodePengelola = sentralItem.kode_pengelola">
                     <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -489,7 +489,7 @@
                   <button
                     class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
                     id="hover-button"
-                    v-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum terisi' && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral')"
+                    v-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum terisi' && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral' || (authService.checkLevel() === 'Pembina' && authService.checkRole() === 'Input'))"
                     @click="checkUnggahRequiredProp(mesinItem.nilai_asset_awal, mesinItem.tahun_nilai_perolehan, mesinItem.masa_manfaat) ? isRequiredPropsComplete = true : checkInputAsumsi(mesinItem.id_mesin) ? isRekapDialogOpen = true : isNotAlreadyInput = true; currentIdMesin = mesinItem.id_mesin; currentNamaMesin = mesinItem.mesin; currentIdSentral = sentralItem.id_sentral; currentKodePengelola = sentralItem.kode_pengelola">
                     <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -500,7 +500,7 @@
                   </button>
                   <RouterLink
                     :to="{ name: 'perbarui-data', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(mesinItem.id_mesin) : mesinItem.id_mesin } }"
-                    v-else-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum update' && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral')">
+                    v-else-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum update' && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral' || (authService.checkLevel() === 'Pembina' && authService.checkRole() === 'Input'))">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
                       id="hover-button">
@@ -1389,7 +1389,7 @@ const uploadFile = async () => {
     await fetchStatusRealisasiSentral();
     await fetchStatusRealisasiMesin();
     selectedFileEvidence.value = null;
-    if (authService.checkLevel() === 'Sentral' || authService.checkLevel() === 'Admin') {
+    if (authService.checkLevel() === 'Sentral' || authService.checkLevel() === 'Admin' || (authService.checkLevel() === 'Pembina' && authService.checkRole() === 'Input')) {
       router.push({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { id_sentral: currentIdSentral.value, tahun: tahunBerjalan.value } });
     }
     else {

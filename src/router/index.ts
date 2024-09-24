@@ -10,6 +10,7 @@ import LamanData from "@/views/Beranda/LamanData/LamanData.vue";
 import LamanAnalitik from "@/views/Beranda/LamanAnalitik/LamanAnalitik.vue";
 import GraphicPage from "@/views/Data/GrafikPage.vue";
 import RekapKertasKerja from "@/views/Data/RekapKertasKerja/RekapKertasKerja.vue";
+import RekapKertasKerjaV1 from "@/views/Data/RekapKertasKerjaV1/RekapKertasKerjaV1.vue";
 import FeasibilityStudy from "@/views/Data/RekapKertasKerja/FeasibilityStudy/FeasibilityStudy.vue";
 import FeasibilityStudySentral from "@/views/Data/RekapKertasKerja/FeasibilityStudy/FeasibilityStudySentral.vue";
 import VerifikasiApprover from "@/views/Verifikasi/Approver/VerifikasiPersetujuan.vue";
@@ -37,10 +38,11 @@ import InputAsumsiParameter from "@/views/Data/RekapKertasKerja/InputAsumsiParam
 import LihatCAPEX from "@/views/Beranda/LamanData/LihatCAPEX.vue";
 import LihatOPEX from "@/views/Beranda/LamanData/LihatOPEX.vue";
 import Parameter from "@/views/Master/Parameter.vue";
-import ProfileUser from "@/views/ManajemenPengguna/ProfileUser.vue";
-import Pengguna from "@/views/ManajemenPengguna/Pengguna.vue";
-import Role from "@/views/ManajemenPengguna/Role.vue";
-import EditPermission from "@/views/ManajemenPengguna/EditPermission.vue";
+import ProfileUser from "@/views/Manajemen/Pengguna/ProfileUser.vue";
+import Pengguna from "@/views/Manajemen/Pengguna/Pengguna.vue";
+import Role from "@/views/Manajemen/Pengguna/RolePage.vue";
+import EditPermission from "@/views/Manajemen/Pengguna/EditPermission.vue";
+import LogActivity from "@/views/Manajemen/LogActivity/LogActivity.vue";
 // import Query from "@/views/Query/Query.vue";
 import MesinBelumTerinput from "@/views/Beranda/LamanUtama/MesinBelumTerinput.vue";
 import Login from "../views/Login.vue";
@@ -148,6 +150,15 @@ const routes = [
         meta: {
           requiresAuth: true,
           label: 'Rekap Kertas Kerja',
+        },
+      },
+      {
+        path: "/rekap-kertas-kerja-v1",
+        name: "rekap-kertas-kerja-v1",
+        component:  RekapKertasKerjaV1,
+        meta: {
+          requiresAuth: true,
+          label: 'Rekap Kertas Kerja V1',
         },
       },
       {
@@ -385,6 +396,15 @@ const routes = [
         meta: {
           requiresAuth: true,
           label: 'Edit Permission',
+        },
+      },
+      {
+        path: "/log-activity",
+        name: "log-activity",
+        component: LogActivity,
+        meta: {
+          requiresAuth: true,
+          label: 'Log Aktivitas',
         },
       },
       // {

@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full overflow-auto border rounded-lg whitespace-nowrap">
+  <div class="w-full overflow-auto border rounded-lg whitespace-nowrap" v-if="props.dataTeknis.detail.length">
     <table class="w-full text-sm">
       <thead>
         <tr class="text-[#0099AD] text-sm text-left border-b-2">
@@ -44,13 +44,18 @@
       </tbody>
     </table>
   </div>
+  <ReloadComponent v-else-if="isFetchingError && !props.dataTeknis.detail.length" @on-click="emit('onClick')" />
+  <ShimmerLoading v-else class="w-full h-96" />
 </template>
 
 <script setup lang="ts">
 import GlobalFormat from '@/services/format/global-format';
 const globalFormat = new GlobalFormat();
+import ShimmerLoading from '../ui/ShimmerLoading.vue';
+import ReloadComponent from '../ui/ReloadComponent.vue';
 
 interface Props {
+  isFetchingError: boolean
   dataTeknis: {
     tahun: number[]
     detail: any[]
@@ -59,7 +64,10 @@ interface Props {
   tahunTerakhirRealisasi?: number
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  isFetchingError: false
+})
+const emit = defineEmits(['onClick']);
 
 const getTypePeriodic = (num: number) => {
   let filteredTypePeriodic: any;

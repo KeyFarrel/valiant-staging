@@ -6,13 +6,13 @@
       @on-accept-click="isShowModalConfirmation = false; emit('on-save'); selectedTitle = 'Opsi Simulasi'" />
   </ModalWrapper>
   <div class="flex flex-col space-y-3">
-    <section class="flex flex-row items-center space-x-1 text-xs">
+    <!-- <section class="flex flex-row items-center space-x-1 text-xs">
       <span class="font-medium text-gray-400">Periode : </span>
       <span class="font-semibold">{{ props.tahun }}</span>
       <span class="text-gray-200"> / </span>
       <span class="font-medium text-gray-400">Unit : </span>
-      <span class="font-semibold">{{ props.mesin }}</span>
-      <!-- <span class="text-gray-200"> / </span>
+      <span class="font-semibold">{{ props.mesin }}</span> -->
+    <!-- <span class="text-gray-200"> / </span>
       <span class="mr-1.5 font-medium text-gray-400">Catatan : </span>
       <div class="flex flex-row items-center space-x-1">
         <WarningIcon />
@@ -25,10 +25,10 @@
           merupakan data simulasi,
           mohon pilih opsi simulasi untuk mengubah ke data tetap</span>
       </div> -->
-    </section>
+    <!-- </section> -->
     <div class="flex flex-col space-y-8">
-      <div class="flex flex-col space-y-3.5">
-        <div
+      <!-- <div class="flex flex-col space-y-3.5"> -->
+        <!-- <div
           class="w-full p-3 flex flex-col bg-infoComponentBorderColor bg-opacity-10 border border-infoComponentBorderColor rounded-lg space-y-1.5">
           <div class="flex items-center space-x-2">
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -43,8 +43,8 @@
             kolom total Cost Component B dan D
             merupakan hasil penggabungan dari Cost Component B dan Cost Component D
           </p>
-        </div>
-        <div class="flex space-x-3">
+        </div> -->
+        <!-- <div class="flex space-x-3">
           <div class="flex space-x-1.5">
             <input type="radio" id="gabung" name="radio-1" class="radio radio-sm radio-info" value="gabung"
               v-model="picked" />
@@ -57,8 +57,8 @@
               <label class="text-sm" for="pisah">Pisah</label>
             </div>
           </div>
-        </div>
-      </div>
+        </div> -->
+      <!-- </div> -->
       <div class="flex flex-col space-y-8">
         <div class="flex flex-col space-y-3">
           <div class="flex flex-row space-x-2">

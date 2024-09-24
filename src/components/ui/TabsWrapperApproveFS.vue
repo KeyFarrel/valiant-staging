@@ -506,8 +506,6 @@ onMounted(async () => {
       let indexOpt;
       let indexOptimum;
       let tahunOptimum;
-      let selisih = Infinity;
-      let selisihOpt = Infinity;
 
       dataPlanMesin.value = res.data;
 
@@ -518,6 +516,7 @@ onMounted(async () => {
       revPlanMesin.value = [];
       sumLccPlanMesin.value = [];
       yAxisPlan.value = [];
+      var isBepFounded = false;
 
       if (res.data != null) {
         var wlcAnnu = [];
@@ -545,12 +544,19 @@ onMounted(async () => {
           comBDAnnu.push(res.data[i].cost_component_bd);
           fuelComAnnu.push(res.data[i].cost_component_c_annualized);
 
-          const difference = Math.abs(res.data[i].total_wlcc_annualized - res.data[i].revenue_annualized);
-          if (difference < selisih) {
-            indexTerdekat = i;
-            indexBEP = i + 1;
-            selisih = difference;
-            tahunBEP = res.data[i].tahun
+          if (i > 0 && !isBepFounded && res.data[i].revenue_annualized >= res.data[i].total_wlcc_annualized) {
+            const selisihNow = res.data[i].revenue_annualized - res.data[i].total_wlcc_annualized
+            const selisihMinus1 = res.data[i - 1].revenue_annualized - res.data[i - 1].total_wlcc_annualized
+            if (Math.abs(selisihNow) > Math.abs(selisihMinus1)) {
+              indexTerdekat = i - 1;
+              indexBEP = i;
+              tahunBEP = res.data[i - 1].tahun;
+            } else {
+              indexTerdekat = i;
+              indexBEP = i + 1;
+              tahunBEP = res.data[i].tahun;
+            }
+            isBepFounded = true;
           }
 
           const finalOptimum = Math.max.apply(Math, profitLoss.value)
@@ -572,7 +578,7 @@ onMounted(async () => {
         dataPlanMesin == null;
       }
 
-      chartPlanningMesin.value = {
+      chartPlanningMesin.value = isBepFounded ? {
         title: {
           show: false,
         },
@@ -660,6 +666,156 @@ onMounted(async () => {
               label: { show: false },
               data: [[{ name: 'BEP FS', xAxis: indexTerdekat }, { xAxis: indexTerdekat }]]
             },
+            color: "#0D5A71",
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatDecimal(value) + " Rp(Juta)",
+            },
+          },
+          {
+            name: "FS: Cost Component B + D Annualized",
+            type: "bar",
+            stack: "Ad",
+            emphasis: {
+              focus: "series",
+            },
+            data: comBDPlanMesin,
+            markPoint: {
+              silent: true,
+              symbol: 'rect',
+              symbolSize: [95, 30],
+              itemStyle: { color: '#0D5A71' },
+              label: { fontSize: 10, fontWeight: 'bold' },
+              data: [{ name: 'Min', value: `Optimum life FS : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: finalMax }],
+              symbolOffset: [0, 20]
+            },
+            markArea: {
+              silent: true,
+              itemStyle: { color: '#E2EAF2' },
+              label: { show: false },
+              data: [[{ name: 'Optimum Life FS', xAxis: indexOptimum }, { xAxis: indexOptimum }]]
+            },
+            color: "#37B1D5",
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatDecimal(value) + " Rp(Juta)",
+            },
+          },
+          {
+            name: "FS: Cost Component C Annualized",
+            type: "bar",
+            stack: "Ad",
+            emphasis: {
+              focus: "series",
+            },
+            itemStyle: {
+              borderRadius: [5, 5, 0, 0],
+            },
+            data: fuelComPlanMesin,
+            color: "#CCF2FF",
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatDecimal(value) + " Rp(Juta)",
+            },
+          },
+          {
+            name: "FS: Revenue Annualized",
+            type: "line",
+            smooth: true,
+            showSymbol: false,
+            data: revPlanMesin,
+            color: "#0099AD",
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatDecimal(value) + " Rp(Juta)",
+            },
+          },
+          {
+            name: "FS: Total LCC Annualized",
+            type: "line",
+            smooth: true,
+            showSymbol: false,
+            data: sumLccPlanMesin,
+            color: "#1E1F4E",
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatDecimal(value) + " Rp(Juta)",
+            },
+          },
+        ],
+      } : {
+        title: {
+          show: false,
+        },
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "shadow",
+          },
+        },
+        legend: {
+          bottom: "bottom",
+          data: [
+            "FS: Revenue Annualized",
+            "FS: Total LCC Annualized",
+            "FS: Cost Component A (Capex) Annualized",
+            "FS: Cost Component B + D Annualized",
+            "FS: Cost Component C Annualized",
+          ],
+        },
+        grid:
+        {
+          top: "8%",
+          left: "3%",
+          right: "3%",
+          bottom: "15%",
+          containLabel: true,
+        },
+        xAxis: [
+          {
+            type: "category",
+            data: tahunPlanningMesin,
+            axisLabel: {
+              fontSize: 10,
+              color: '#37B1D5',
+              formatter: function (value: any, index: number) {
+                return index + 1 + `\n${value}`;
+              },
+            }
+          },
+        ],
+        yAxis: [
+          {
+            type: "value",
+            name: "Triliun Rupiah",
+            nameLocation: "center",
+            nameTextStyle: {
+              align: "left",
+              padding: [30, 20, 20, -25],
+              fontSize: 14,
+              color: "#4D5E80",
+              fontWeight: "bold",
+            },
+            axisLabel: {
+              fontSize: 10,
+              formatter: function (value: any) {
+                return globalFormat.formatRupiah((value * 1000000) / 1000000000000);
+              },
+            },
+            splitNumber: 20,
+            min: 0,
+            max: finalMax ? finalMax * 1.1 : finalMax
+          },
+        ],
+        series: [
+          {
+            name: "FS: Cost Component A (Capex) Annualized",
+            type: "bar",
+            stack: "Ad",
+            emphasis: {
+              focus: "series",
+            },
+            data: capexPlanMesin,
             color: "#0D5A71",
             tooltip: {
               valueFormatter: (value: any) =>

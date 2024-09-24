@@ -229,7 +229,7 @@
         <div>
           <div class="flex text-lg">
             <p class="pt-2 pl-2 font-bold">
-              {{ globalFormat.formatRupiah(parseInt(totalDaya.daya_terpasang_baru)) }}
+              {{ globalFormat.formatRupiah(totalDaya.daya_terpasang_baru) }}
             </p>
             <p class="pl-2 pt-2 text-[#7F7F80]">MW</p>
           </div>
