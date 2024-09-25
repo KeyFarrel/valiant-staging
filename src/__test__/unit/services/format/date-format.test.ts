@@ -16,12 +16,6 @@ describe('DateFormat', () => {
     expect(formattedDate).toBe(expectedOutput);
   });
 
-  // it('should handle invalid date strings', () => {
-  //   const invalidDate = 'invalid-date';
-
-  //   expect(() => dateFormat.formatDate(invalidDate)).toThrowError();
-  // });
-
   it('should handle leap years correctly', () => {
     const leapYearDate = '2024-02-29T12:15:00Z'; // A valid leap year date
     const expectedOutput = '29 Februari 2024<br>12:15 WIB';
