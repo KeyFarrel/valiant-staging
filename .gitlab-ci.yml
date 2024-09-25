@@ -10,6 +10,7 @@ stages:
 variables:
   IMAGE_NAME: "valiant/valiant-frontend"
   STAGING_VERSION: "build-$CI_COMMIT_SHORT_SHA"
+  PATH: "./node_modules/.bin:$PATH"
 
 # Caching Build
 .npm-cache:
