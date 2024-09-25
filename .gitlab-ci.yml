@@ -40,7 +40,7 @@ unit-test:
     - npm install -g jest
     - npm install --save-dev jest-junit
   script:
-    - jest --ci --reporters=default --reporters=jest-junit
+    - jest —coverage
   allow_failure: true
   artifacts:
     when: always
