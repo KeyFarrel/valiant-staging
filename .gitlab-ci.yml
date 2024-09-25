@@ -18,6 +18,7 @@ variables:
     key: $CI_COMMIT_REF_SLUG
     paths:
       - .npm/
+      - node_modules/
   before_script:
     - npm install --cache .npm --prefer-offline
 
@@ -42,7 +43,7 @@ unit-test:
     - npm install ts-node --save-dev
     - npm install ts-jest typescript --save-dev
   script:
-    - jest --coverage
+    - ./node_modules/.bin/jest --coverage
   allow_failure: true
   artifacts:
     when: always
