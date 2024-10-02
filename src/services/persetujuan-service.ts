@@ -1,7 +1,7 @@
 import BaseService from "./base-service";
 
-const url = import.meta.env.VITE_API_URL;
-export default class LamanService extends BaseService {
+const url = "https://portalapp.iconpln.co.id:5080/valiant-be/v1/";
+export default class PersetujuanService extends BaseService {
   // Persetujuan All
   async getPersetujuanKertasKerja<T>(param: any): Promise<T> {
     return this.post(url + "persetujuan/all-persetujuan", param);

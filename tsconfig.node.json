@@ -1,11 +1,18 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.node.json",
-  "include": ["vite.config.*", "jest.config.*", "cypress.config.*"],
+  "extends": "./tsconfig.json",
   "compilerOptions": {
+    "module": "NodeNext", // CommonJS for Node.js compatibility
+    "moduleResolution": "NodeNext", // Standard module resolution for Node.js
+    "target": "ESNext",
+    "lib": ["ESNext"],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true, // Enable JSON module resolution
     "composite": true,
-    "types": ["jest", "node"],        
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "allowSyntheticDefaultImports": true
-  }
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["jest.config.ts", "src/**/*.ts", "src/**/__tests__/*",  "src/**/*.json"],
+  "exclude": ["node_modules", "tsconfig.app.json"]
 }

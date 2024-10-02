@@ -1,6 +1,7 @@
 import axios from "axios";
 import { store } from "../store";
 import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
+import { AxiosResponse } from "axios";
 
 const nodeMode: any = import.meta.env.MODE;
 const TIME_OUT = 120000;
@@ -21,15 +22,6 @@ export default class BaseService {
     const headers: any = {
       "Content-Type": contentType || "application/json",
     };
-
-    const token = store.getState().token;
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-
-    if (this.role_id) {
-      headers['Role-ID'] = this.role_id;
-  }
 
     const response = await axios({
       method,
@@ -99,7 +91,7 @@ export default class BaseService {
     }
 
     try {
-      const response = await axios({
+      const response: AxiosResponse = await axios({
         method: "POST",
         url: path,
         data: payload,

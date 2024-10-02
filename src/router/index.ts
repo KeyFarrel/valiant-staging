@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHistory, createWebHashHistory, RouteRecordRaw } from "vue-router";
 import { useRoleMenuStore } from "@/store/storeRoleMenu";
 import { useNavbarLabelStore } from '@/store/storeNavbar';
 import { useRekapNavigationStore } from '@/store/storeRekapKertasKerja';
@@ -53,7 +53,7 @@ export {}
 
 const nodeMode: any = import.meta.env.MODE;
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: "/login",
     name: "login",

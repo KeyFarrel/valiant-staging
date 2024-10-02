@@ -1,9 +1,9 @@
 module.exports = {
   presets: [
-    "@babel/preset-env", // For modern JavaScript
-    "@babel/preset-typescript", // For handling TypeScript
+    '@babel/preset-env',  // Untuk mendukung fitur ES6+
+    '@babel/preset-typescript'  // Untuk mendukung TypeScript
   ],
   plugins: [
-    "@babel/plugin-transform-runtime", // Optional: Helps with async/await and other runtime transformations
-  ],
+    '@babel/plugin-transform-runtime'  // Opsional: Membantu dengan async/await dan transformasi runtime lainnya
+  ]
 };
