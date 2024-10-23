@@ -1,34 +1,34 @@
 {
-  "files": [],     
   "compilerOptions": {
-    "types": ["vitest/globals"],
-    "module": "CommonJS",
-    "target": "ES5",
+    "types": ["jest", "node", "vite/client"],
+    "target": "ES2020",
+    "moduleResolution": "Node", // Standard for Vite apps
+    "module": "ESNext",
     "sourceMap": true,
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
-      "actions" :["src/service/peta-service"]
+      "@/*": ["src/*"]
     },
-    "forceConsistentCasingInFileNames": true, //tambahan acep
-    //"moduleResolution": "node",//tambahan acep
-    "lib": [
-      "DOM",
-      "ES6",
-      "ES5",
-      "ESNext"
-    ]
-  },  
-  // "include": ["src/**/*"],
-  "exclude": ["node_modules", "src/**/*.spec.ts"], 
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": ["DOM", "ESNext"],
+    "resolveJsonModule": true
+  },
+  "include": [
+    "env.d.ts",
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "shims-vue.d.ts",
+    "jest.setup.ts",
+    "src/**/__tests__/*",
+    "src/**/*.json"
+  ],
+  "exclude": ["node_modules"],
   "references": [
-    {
-      "path": "./tsconfig.node.json"
-    },
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.vitest.json"
-    }
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
   ]
 }

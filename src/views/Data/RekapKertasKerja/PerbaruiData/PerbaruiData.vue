@@ -1,9 +1,12 @@
 <template>
   <Loading v-if="isLoading" />
-  <ModalNotification :show-modal="isShowModalNotification" :animation-data="errorJsonData" :title="'Data gagal dikirim'"
+  <ModalNotification :show-modal="isShowModalNotification" :animation-data="errorJsonData" :title="'Data Gagal Dikirim'"
     :subtitle="'Semua input wajib diisi, mohon cek kembali inputan anda'" />
-  <ModalNotification :show-modal="isSuccessSimulasi" :animation-data="successJsonData" :title="'Data berhasil dikirim'"
+  <ModalNotification :show-modal="isSuccessSimulasi" :animation-data="successJsonData" :title="'Data Berhasil Dikirim'"
     :subtitle="'Data telah berhasil dikirim, silahkan lanjutkan perbarui dengan memilih opsi simulasi'" />
+  <ModalNotification :show-modal="isSuccessEvidence" :animation-data="successJsonData"
+    :title="'Evidence Berhasil Disimpan'"
+    :subtitle="'Evidence berhasil disimpan, evidence bisa didownload pada menu Detail Rekap'" />
   <ModalNotification :show-modal="isSuccessPermanent" :animation-data="successJsonData"
     :title="'Data berhasil disimpan'" :subtitle="'Data telah berhasil disimpan'" />
   <ModalWrapper :show-modal="isShowFinalConfirmation" :z-index="'z-[55]'" :width="'w-auto'" :height="'h-auto'">
@@ -274,6 +277,39 @@
       :nama-pembina="namaPembina">
     </InfoHeader>
     <div class="items-start w-full max-w-full min-h-screen p-6 bg-white rounded-lg">
+      <div v-if="approveMesinKK">
+        <div v-auto-animate="{ duration: 300 }"
+          v-if="approveMesinKK.status === 'Ditolak T1' || approveMesinKK.status === 'Ditolak T2'"
+          class="p-2 -mt-1 mb-3 w-full bg-[#FFE5E6] border-2 border-[#FF5656] rounded-md">
+          <div class="flex justify-between">
+            <div class="flex space-x-0.5">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M11.0002 3.66536C6.95007 3.66536 3.66683 6.94861 3.66683 10.9987C3.66683 15.0488 6.95007 18.332 11.0002 18.332C15.0503 18.332 18.3335 15.0488 18.3335 10.9987C18.3335 6.94861 15.0503 3.66536 11.0002 3.66536ZM1.8335 10.9987C1.8335 5.93609 5.93755 1.83203 11.0002 1.83203C16.0628 1.83203 20.1668 5.93609 20.1668 10.9987C20.1668 16.0613 16.0628 20.1654 11.0002 20.1654C5.93755 20.1654 1.8335 16.0613 1.8335 10.9987ZM11.0002 7.33203C11.5064 7.33203 11.9168 7.74244 11.9168 8.2487V11.6862C11.9168 12.1925 11.5064 12.6029 11.0002 12.6029C10.4939 12.6029 10.0835 12.1925 10.0835 11.6862V8.2487C10.0835 7.74244 10.4939 7.33203 11.0002 7.33203ZM10.0835 14.4362C10.0835 13.9299 10.4939 13.5195 11.0002 13.5195H11.007C11.5133 13.5195 11.9237 13.9299 11.9237 14.4362V14.4431C11.9237 14.9493 11.5133 15.3597 11.007 15.3597H11.0002C10.4939 15.3597 10.0835 14.9493 10.0835 14.4431V14.4362Z"
+                  fill="#FF5656" />
+              </svg>
+              <p class="font-semibold" v-if="approveMesinKK.status === 'Ditolak T1'">Ditolak Unit Pembina</p>
+              <p class="font-semibold" v-else-if="approveMesinKK.status === 'Ditolak T2'">Ditolak Unit Pengelola</p>
+            </div>
+            <div class="cursor-pointer" @click="isShowRejected = !isShowRejected">
+              <svg v-if="isShowRejected" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M5.29289 7.29289C5.68342 6.90237 6.31658 6.90237 6.70711 7.29289L10 10.5858L13.2929 7.29289C13.6834 6.90237 14.3166 6.90237 14.7071 7.29289C15.0976 7.68342 15.0976 8.31658 14.7071 8.70711L10.7071 12.7071C10.3166 13.0976 9.68342 13.0976 9.29289 12.7071L5.29289 8.70711C4.90237 8.31658 4.90237 7.68342 5.29289 7.29289Z"
+                  fill="#FF5656" />
+              </svg>
+              <svg v-if="!isShowRejected" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                  d="M14.7071 12.7071C14.3166 13.0976 13.6834 13.0976 13.2929 12.7071L10 9.41421L6.70711 12.7071C6.31658 13.0976 5.68342 13.0976 5.29289 12.7071C4.90237 12.3166 4.90237 11.6834 5.29289 11.2929L9.29289 7.29289C9.68342 6.90237 10.3166 6.90237 10.7071 7.29289L14.7071 11.2929C15.0976 11.6834 15.0976 12.3166 14.7071 12.7071Z"
+                  fill="#FF5656" />
+              </svg>
+            </div>
+          </div>
+          <p v-if="isShowRejected && approveMesinKK" class="mt-2 ml-6 text-sm capitalize">{{ approveMesinKK.keterangan
+            }}</p>
+        </div>
+      </div>
       <TabsWrapper :laman-data="false" class="w-full">
         <TabItem title="Asumsi Makro">
           <TabAsumsiMakro :error="error.asumsi" :is-permanent="isPermanent" :tahun-realisasi="tahunBerjalan"
@@ -292,9 +328,10 @@
             :combo-bahan-bakar="comboBahanBakar" :init-auxiliary="asumsiParameter.parameterTeknis.auxiliary"
             :init-susut-trafo="asumsiParameter.parameterTeknis.susutTrafo"
             :init-pemakaian-sendiri="asumsiParameter.parameterTeknis.pemakaianSendiri" :error="error.parameter"
-            @on-hapus-bahan-bakar="handleHapusBahanBakar" @on-tambah-bahan-bakar="handleTambahBahanBakar"
-            :tahun-realisasi="tahunBerjalan" :is-input-asumsi-parameter="false" :mesin="mesinDataById.mesin"
-            :kode-pengelola="kodePengelola" v-model:nphr="asumsiParameter.parameterTeknis.nphr"
+            @on-change="handleChange" @on-hapus-bahan-bakar="handleHapusBahanBakar"
+            @on-tambah-bahan-bakar="handleTambahBahanBakar" :tahun-realisasi="tahunBerjalan"
+            :is-input-asumsi-parameter="false" :mesin="mesinDataById.mesin" :kode-pengelola="kodePengelola"
+            v-model:nphr="asumsiParameter.parameterTeknis.nphr"
             v-model:auxiliary="asumsiParameter.parameterTeknis.auxiliary"
             v-model:susut-trafo="asumsiParameter.parameterTeknis.susutTrafo"
             v-model:pemakaian-sendiri="asumsiParameter.parameterTeknis.pemakaianSendiri"
@@ -612,7 +649,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, onUnmounted } from "vue";
+import { ref, onMounted, watch, onUnmounted, computed, watchEffect } from "vue";
 import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
 import { notifyError } from "@/services/helper/toast-notification";
 import { usePerbaruiTabStore } from "@/store/storeRekapKertasKerja";
@@ -630,6 +667,8 @@ import AuthService from "@/services/auth-service";
 const authService = new AuthService();
 import RekapService from "@/services/rekap-service";
 const rekapService = new RekapService();
+import PersetujuanService from "@/services/persetujuan-service";
+const persetujuanService = new PersetujuanService();
 import TabAsumsiMakro from "@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabAsumsiMakro.vue";
 import TabParameterTeknis from "@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabParameterTeknis.vue";
 import TabDataTeknis from "@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabDataTeknis.vue";
@@ -663,6 +702,8 @@ const tahunBerjalan = new Date().getFullYear();
 const kodeMesin = ref();
 const isPermanent = ref<boolean>(false);
 const jenisPembangkit = ref();
+const approveMesinKK = ref<any>();
+const statusMesin = ref<string>('');
 const namaPengelola = ref<string>('');
 const namaPembina = ref<string>('');
 const comboTypePeriodic = ref<ComboTypePeriodicItem[]>([]);
@@ -682,6 +723,7 @@ const isShowModalEvidence = ref<boolean>(false);
 const isSuccessEvidence = ref<boolean>(false);
 const idSentral = ref<string>('');
 const isShowFinalConfirmation = ref<boolean>(false);
+const isShowRejected = ref<boolean>(true);
 const isIntegrasi = ref<boolean>(false);
 // Tab Asumsi Makro & Parameter Teknis Model
 const statusAsumsi = ref<string>('');
@@ -1129,6 +1171,18 @@ const fetchUnitPengelola = async () => {
     console.error("Fetch Unit Pengelola Error : " + error);
   }
 };
+const fetchPersetujuanKK = async () => {
+  try {
+    const response: any = await persetujuanService.getPersetujuanKKSentral({
+      id_sentral: idSentral.value,
+      tahun: tahunBerjalan
+    });
+    approveMesinKK.value = response.data.mesins.filter((val: any) => val.id_mesin == idMesin)[0];
+    statusMesin.value = approveMesinKK.value.id_status;
+  } catch (error) {
+    console.error('Fetch Persetujuan KK Sentral Error : ' + error);
+  }
+}
 const fetchAsumsiParameter = async () => {
   try {
     const response: AsumsiParameterItem =
@@ -1712,14 +1766,33 @@ function handleTambahBahanBakar() {
   watch(() => bahanBakarGroup.value.bahanBakars.map(b => b.kode_bahan_bakar), (newValues, oldValues) => {
     newValues.forEach((newValue, index) => {
       const selectedBahanBakar = comboBahanBakar.value.find(data => data.kode_bahan_bakar === newValue);
+      console.log(selectedBahanBakar, 'Selected Bahan Bakar');
       if (selectedBahanBakar) {
         bahanBakarGroup.value.fuelConsumption[index].id_uraian = parseInt(selectedBahanBakar.id_uraian_fuel_consumption);
         bahanBakarGroup.value.fuelConsumption[index].bahan_bakar = selectedBahanBakar.bahan_bakar;
       }
       bahanBakarGroup.value.costCDetail[index].kode_bahan_bakar = newValue;
+      console.log(bahanBakarGroup.value, 'Bahan Bakar Group')
     });
   });
 }
+
+const handleChange = () => {
+  watchEffect(() => {
+    bahanBakarGroup.value.bahanBakars.forEach((bahanBakar, index) => {
+      const newValue = bahanBakar.kode_bahan_bakar;
+      const selectedBahanBakar = comboBahanBakar.value.find(data => data.kode_bahan_bakar === newValue);
+
+      if (selectedBahanBakar) {
+        bahanBakarGroup.value.fuelConsumption[index].id_uraian = parseInt(selectedBahanBakar.id_uraian_fuel_consumption);
+        bahanBakarGroup.value.fuelConsumption[index].bahan_bakar = selectedBahanBakar.bahan_bakar;
+      }
+      bahanBakarGroup.value.costCDetail[index].kode_bahan_bakar = newValue;
+      console.log(bahanBakarGroup.value, 'Bahan Bakar Group');
+    });
+  });
+}
+
 function handleHapusBahanBakar() {
   if (checkedBahanBakar.value.length) {
     checkedBahanBakar.value.forEach((checkedItemId) => {
@@ -1944,44 +2017,44 @@ const handleSubmit = async () => {
   } else {
     errorDataFinansial.costComponentB = false;
   }
-  if (picked.value === 'pisah') {
-    if (biayaKepegawaian.value === 'NaN' || biayaKepegawaian.value === '') {
-      errorDataFinansial.biayaKepegawaian = true;
-    } else {
-      errorDataFinansial.biayaKepegawaian = false;
-    }
-    if (biayaPemeliharaanRutin.value === 'NaN' || biayaPemeliharaanRutin.value === '') {
-      errorDataFinansial.biayaPemeliharaanRutin = true;
-    } else {
-      errorDataFinansial.biayaPemeliharaanRutin = false;
-    }
-    if (biayaAdministrasiUmum.value === 'NaN' || biayaAdministrasiUmum.value === '') {
-      errorDataFinansial.biayaAdministrasiUmum = true;
-    } else {
-      errorDataFinansial.biayaAdministrasiUmum = false;
-    }
-    if (biayaPembelianTenagaListrik.value === 'NaN' || biayaPembelianTenagaListrik.value === '') {
-      errorDataFinansial.biayaPembelianTenagaListrik = true;
-    } else {
-      errorDataFinansial.biayaPembelianTenagaListrik = false;
-    }
-    if (biayaLainLain.value === 'NaN' || biayaLainLain.value === '') {
-      errorDataFinansial.biayaLainLain = true;
-    } else {
-      errorDataFinansial.biayaLainLain = false;
-    }
-  } else if (picked.value === 'gabung') {
-    if (oMCost.value === 'NaN' || oMCost.value === '') {
-      errorDataFinansial.oMCost = true;
-    } else {
-      errorDataFinansial.oMCost = false;
-    }
-    if (periodicMaintenanceCost.value === 'NaN' || periodicMaintenanceCost.value === '') {
-      errorDataFinansial.periodicMaintenanceCost = true;
-    } else {
-      errorDataFinansial.periodicMaintenanceCost = false;
-    }
+  // if (picked.value === 'pisah') {
+  if (biayaKepegawaian.value === 'NaN' || biayaKepegawaian.value === '') {
+    errorDataFinansial.biayaKepegawaian = true;
+  } else {
+    errorDataFinansial.biayaKepegawaian = false;
   }
+  if (biayaPemeliharaanRutin.value === 'NaN' || biayaPemeliharaanRutin.value === '') {
+    errorDataFinansial.biayaPemeliharaanRutin = true;
+  } else {
+    errorDataFinansial.biayaPemeliharaanRutin = false;
+  }
+  if (biayaAdministrasiUmum.value === 'NaN' || biayaAdministrasiUmum.value === '') {
+    errorDataFinansial.biayaAdministrasiUmum = true;
+  } else {
+    errorDataFinansial.biayaAdministrasiUmum = false;
+  }
+  if (biayaPembelianTenagaListrik.value === 'NaN' || biayaPembelianTenagaListrik.value === '') {
+    errorDataFinansial.biayaPembelianTenagaListrik = true;
+  } else {
+    errorDataFinansial.biayaPembelianTenagaListrik = false;
+  }
+  if (biayaLainLain.value === 'NaN' || biayaLainLain.value === '') {
+    errorDataFinansial.biayaLainLain = true;
+  } else {
+    errorDataFinansial.biayaLainLain = false;
+  }
+  // } else if (picked.value === 'gabung') {
+  // if (oMCost.value === 'NaN' || oMCost.value === '') {
+  //   errorDataFinansial.oMCost = true;
+  // } else {
+  //   errorDataFinansial.oMCost = false;
+  // }
+  // if (periodicMaintenanceCost.value === 'NaN' || periodicMaintenanceCost.value === '') {
+  //   errorDataFinansial.periodicMaintenanceCost = true;
+  // } else {
+  //   errorDataFinansial.periodicMaintenanceCost = false;
+  // }
+  // }
   if (costComponentC.value === 'NaN' || costComponentC.value === '') {
     errorDataFinansial.costComponentC = true;
   } else {
@@ -2120,39 +2193,39 @@ const handleSubmit = async () => {
       const finalElecC = asumsiParameter.value.parameterTeknis.electricityPriceC.includes('.') ? asumsiParameter.value.parameterTeknis.electricityPriceC.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.electricityPriceC;
       const finalElecD = asumsiParameter.value.parameterTeknis.electricityPriceD.includes('.') ? asumsiParameter.value.parameterTeknis.electricityPriceD.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.electricityPriceD;
       var formParameterUpdate = {};
-      if (kodePengelola.value === 'PIP') {
-        formParameterUpdate = {
-          id_asumsi: idAsumsi.value,
-          id_mesin: idMesin,
-          tahun: tahunBerjalan,
-          tahun_realisasi: tahunBerjalan - 1,
-          nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
-          auxiliary: parseFloat(finalAuxiliary.replace(/,/g, '.')),
-          susut_trafo: parseFloat(finalSusutTrafo.replace(/,/g, '.')),
-          ps: parseFloat(finalPemakaianSendiri.replace(/,/g, '.')),
-          electricity_price_a_rp_per_kwbln: parseFloat(finalElecA.replace(/,/g, '.')),
-          electricity_price_b_rp_per_kwbln: parseFloat(finalElecB.replace(/,/g, '.')),
-          electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),
-          electricity_price_d_rp_per_kwh: parseFloat(finalElecD.replace(/,/g, '.')),
-          harga_bahan_bakars: finalBahanBakars
-        }
-      } else {
-        formParameterUpdate = {
-          id_asumsi: idAsumsi.value,
-          id_mesin: idMesin,
-          tahun: tahunBerjalan,
-          tahun_realisasi: tahunBerjalan - 1,
-          nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
-          auxiliary: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalAuxiliary.replace(/,/g, '.')) : 0,
-          susut_trafo: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalSusutTrafo.replace(/,/g, '.')) : 0,
-          ps: pickedParameterValue.value === 'pemakaianSendiri' ? parseFloat(finalPemakaianSendiri.replace(/,/g, '.')) : 0,
-          electricity_price_a_rp_per_kwbln: parseFloat(finalElecA.replace(/,/g, '.')),
-          electricity_price_b_rp_per_kwbln: parseFloat(finalElecB.replace(/,/g, '.')),
-          electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),
-          electricity_price_d_rp_per_kwh: parseFloat(finalElecD.replace(/,/g, '.')),
-          harga_bahan_bakars: finalBahanBakars
-        }
+      // if (kodePengelola.value === 'PIP') {
+      formParameterUpdate = {
+        id_asumsi: idAsumsi.value,
+        id_mesin: idMesin,
+        tahun: tahunBerjalan,
+        tahun_realisasi: tahunBerjalan - 1,
+        nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
+        auxiliary: parseFloat(finalAuxiliary.replace(/,/g, '.')),
+        susut_trafo: parseFloat(finalSusutTrafo.replace(/,/g, '.')),
+        ps: parseFloat(finalPemakaianSendiri.replace(/,/g, '.')),
+        electricity_price_a_rp_per_kwbln: parseFloat(finalElecA.replace(/,/g, '.')),
+        electricity_price_b_rp_per_kwbln: parseFloat(finalElecB.replace(/,/g, '.')),
+        electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),
+        electricity_price_d_rp_per_kwh: parseFloat(finalElecD.replace(/,/g, '.')),
+        harga_bahan_bakars: finalBahanBakars
       }
+      // } else {
+      //   formParameterUpdate = {
+      //     id_asumsi: idAsumsi.value,
+      //     id_mesin: idMesin,
+      //     tahun: tahunBerjalan,
+      //     tahun_realisasi: tahunBerjalan - 1,
+      //     nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
+      //     auxiliary: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalAuxiliary.replace(/,/g, '.')) : 0,
+      //     susut_trafo: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalSusutTrafo.replace(/,/g, '.')) : 0,
+      //     ps: pickedParameterValue.value === 'pemakaianSendiri' ? parseFloat(finalPemakaianSendiri.replace(/,/g, '.')) : 0,
+      //     electricity_price_a_rp_per_kwbln: parseFloat(finalElecA.replace(/,/g, '.')),
+      //     electricity_price_b_rp_per_kwbln: parseFloat(finalElecB.replace(/,/g, '.')),
+      //     electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),
+      //     electricity_price_d_rp_per_kwh: parseFloat(finalElecD.replace(/,/g, '.')),
+      //     harga_bahan_bakars: finalBahanBakars
+      //   }
+      // }
       await perbaruiDataService.updateParameterTeknisPermanent(formParameterUpdate);
 
       // Update Data Teknis
@@ -2245,79 +2318,79 @@ const handleSubmit = async () => {
       const finalRevenueKompD = revenueKompD.value.includes('.') ? revenueKompD.value.replace(/[.]/g, '') : revenueKompD.value;
 
       let formDataFinansialUpdate;
-      if (picked.value === 'pisah') {
-        formDataFinansialUpdate = {
+      // if (picked.value === 'pisah') {
+      formDataFinansialUpdate = {
+        id_mesin: idMesin,
+        tahun: tahunBerjalan - 1,
+        status_b_d: 2,
+        cost_component_a: parseFloat(finalCostComponentA.replace(/,/g, '.')),
+        cost_component_b: parseFloat(finalCostComponentB.replace(/,/g, '.')),
+        cost_component_b_detail: {
+          id_ao: 0,
           id_mesin: idMesin,
           tahun: tahunBerjalan - 1,
-          status_b_d: 2,
-          cost_component_a: parseFloat(finalCostComponentA.replace(/,/g, '.')),
-          cost_component_b: parseFloat(finalCostComponentB.replace(/,/g, '.')),
-          cost_component_b_detail: {
-            id_ao: 0,
-            id_mesin: idMesin,
-            tahun: tahunBerjalan - 1,
-            biaya_kepegawaian: parseFloat(finalBiayaKepegawaian.replace(/,/g, '.')),
-            biaya_pemeliharaan_rutin: parseFloat(finalBiayaPemeliharaanRutin.replace(/,/g, '.')),
-            biaya_administrasi_umum: parseFloat(finalBiayaAdministrasiUmum.replace(/,/g, '.')),
-            biaya_pembelian_tenaga_listrik: parseFloat(finalBiayaPembelianTenagaListrik.replace(/,/g, '.')),
-            biaya_penyusutan_aset_tetap: 0,
-            biaya_lain_lain: parseFloat(finalBiayaLainLain.replace(/,/g, '.')),
-            biaya_periodic_maintenance_non_mi: 0
-          },
-          cost_component_c: parseFloat(finalCostComponentC.replace(/,/g, '.')),
-          cost_component_c_detail: finalCostComponentCDetail,
-          cost_component_d: parseFloat(finalCostComponentD.replace(/,/g, '.')),
-          cost_component_d_detail: {
-            id_pelumas_bahan_kimia: 0,
-            id_mesin: idMesin,
-            tahun: tahunBerjalan - 1,
-            biaya_pelumas: parseFloat(finalBiayaPelumas.replace(/,/g, '.')),
-            biaya_bahan_kimia: parseFloat(finalBahanKimia.replace(/,/g, '.')),
-            biaya_lain_lain: 0
-          },
-          revenue: parseFloat(finalRevenue.replace(/,/g, '.')),
-          revenue_a: parseFloat(finalRevenueKompA.replace(/,/g, '.')),
-          revenue_b: parseFloat(finalRevenueKompB.replace(/,/g, '.')),
-          revenue_c: parseFloat(finalRevenueKompC.replace(/,/g, '.')),
-          revenue_d: parseFloat(finalRevenueKompD.replace(/,/g, '.'))
-        }
-      } else {
-        formDataFinansialUpdate = {
+          biaya_kepegawaian: parseFloat(finalBiayaKepegawaian.replace(/,/g, '.')),
+          biaya_pemeliharaan_rutin: parseFloat(finalBiayaPemeliharaanRutin.replace(/,/g, '.')),
+          biaya_administrasi_umum: parseFloat(finalBiayaAdministrasiUmum.replace(/,/g, '.')),
+          biaya_pembelian_tenaga_listrik: parseFloat(finalBiayaPembelianTenagaListrik.replace(/,/g, '.')),
+          biaya_penyusutan_aset_tetap: 0,
+          biaya_lain_lain: parseFloat(finalBiayaLainLain.replace(/,/g, '.')),
+          biaya_periodic_maintenance_non_mi: 0
+        },
+        cost_component_c: parseFloat(finalCostComponentC.replace(/,/g, '.')),
+        cost_component_c_detail: finalCostComponentCDetail,
+        cost_component_d: parseFloat(finalCostComponentD.replace(/,/g, '.')),
+        cost_component_d_detail: {
+          id_pelumas_bahan_kimia: 0,
           id_mesin: idMesin,
           tahun: tahunBerjalan - 1,
-          status_b_d: 1,
-          cost_component_a: parseFloat(finalCostComponentA.replace(/,/g, '.')),
-          cost_component_b: parseFloat(finalCostComponentB.replace(/,/g, '.')),
-          cost_component_b_detail: {
-            id_ao: 0,
-            id_mesin: idMesin,
-            tahun: tahunBerjalan - 1,
-            biaya_kepegawaian: 0,
-            biaya_pemeliharaan_rutin: 0,
-            biaya_administrasi_umum: 0,
-            biaya_pembelian_tenaga_listrik: 0,
-            biaya_penyusutan_aset_tetap: 0,
-            biaya_lain_lain: parseFloat(finalOMCost.replace(/,/g, '.')),
-            biaya_periodic_maintenance_non_mi: parseFloat(finalBiayaPeriodic.replace(/,/g, '.'))
-          },
-          cost_component_c: parseFloat(finalCostComponentC.replace(/,/g, '.')),
-          cost_component_c_detail: finalCostComponentCDetail,
-          cost_component_d: 0,
-          cost_component_d_detail: {
-            id_pelumas_bahan_kimia: 0,
-            id_mesin: idMesin,
-            tahun: tahunBerjalan - 1,
-            biaya_pelumas: 0,
-            biaya_bahan_kimia: 0,
-            biaya_lain_lain: 0
-          },
-          revenue: parseFloat(finalRevenue.replace(/,/g, '.')),
-          revenue_a: parseFloat(finalRevenueKompA.replace(/,/g, '.')),
-          revenue_b: parseFloat(finalRevenueKompB.replace(/,/g, '.')),
-          revenue_c: parseFloat(finalRevenueKompC.replace(/,/g, '.')),
-          revenue_d: parseFloat(finalRevenueKompD.replace(/,/g, '.'))
-        }
+          biaya_pelumas: parseFloat(finalBiayaPelumas.replace(/,/g, '.')),
+          biaya_bahan_kimia: parseFloat(finalBahanKimia.replace(/,/g, '.')),
+          biaya_lain_lain: 0
+        },
+        revenue: parseFloat(finalRevenue.replace(/,/g, '.')),
+        revenue_a: parseFloat(finalRevenueKompA.replace(/,/g, '.')),
+        revenue_b: parseFloat(finalRevenueKompB.replace(/,/g, '.')),
+        revenue_c: parseFloat(finalRevenueKompC.replace(/,/g, '.')),
+        revenue_d: parseFloat(finalRevenueKompD.replace(/,/g, '.'))
       }
+      // } else {
+      //   formDataFinansialUpdate = {
+      //     id_mesin: idMesin,
+      //     tahun: tahunBerjalan - 1,
+      //     status_b_d: 1,
+      //     cost_component_a: parseFloat(finalCostComponentA.replace(/,/g, '.')),
+      //     cost_component_b: parseFloat(finalCostComponentB.replace(/,/g, '.')),
+      //     cost_component_b_detail: {
+      //       id_ao: 0,
+      //       id_mesin: idMesin,
+      //       tahun: tahunBerjalan - 1,
+      //       biaya_kepegawaian: 0,
+      //       biaya_pemeliharaan_rutin: 0,
+      //       biaya_administrasi_umum: 0,
+      //       biaya_pembelian_tenaga_listrik: 0,
+      //       biaya_penyusutan_aset_tetap: 0,
+      //       biaya_lain_lain: parseFloat(finalOMCost.replace(/,/g, '.')),
+      //       biaya_periodic_maintenance_non_mi: parseFloat(finalBiayaPeriodic.replace(/,/g, '.'))
+      //     },
+      //     cost_component_c: parseFloat(finalCostComponentC.replace(/,/g, '.')),
+      //     cost_component_c_detail: finalCostComponentCDetail,
+      //     cost_component_d: 0,
+      //     cost_component_d_detail: {
+      //       id_pelumas_bahan_kimia: 0,
+      //       id_mesin: idMesin,
+      //       tahun: tahunBerjalan - 1,
+      //       biaya_pelumas: 0,
+      //       biaya_bahan_kimia: 0,
+      //       biaya_lain_lain: 0
+      //     },
+      //     revenue: parseFloat(finalRevenue.replace(/,/g, '.')),
+      //     revenue_a: parseFloat(finalRevenueKompA.replace(/,/g, '.')),
+      //     revenue_b: parseFloat(finalRevenueKompB.replace(/,/g, '.')),
+      //     revenue_c: parseFloat(finalRevenueKompC.replace(/,/g, '.')),
+      //     revenue_d: parseFloat(finalRevenueKompD.replace(/,/g, '.'))
+      //   }
+      // }
       await perbaruiDataService.updateDataFinansialSimulasi(formDataFinansialUpdate);
       // Handle Sesudah Submit
       bahanBakarGroup.value.fuelConsumption = [];
@@ -2338,9 +2411,9 @@ const handleSubmit = async () => {
       await fetchHasilSimulasi2();
       console.log(bahanBakarGroup.value);
       storePerbaruiTab.currentTab = 'Opsi Simulasi';
-    } catch (error) {
+    } catch (error: any) {
       console.error('Update Error : ' + error);
-      notifyError('Update Error: ' + error, 1000);
+      notifyError('Update Error: ' + error.response.data.message, 1000);
     } finally {
       isLoading.value = false;
     }
@@ -2479,6 +2552,7 @@ onUnmounted(() => {
 onMounted(async () => {
   await fetchMesinById();
   await fetchUnitPengelola();
+  await fetchPersetujuanKK();
   await fetchCheckIntegrasi();
   await fetchComboBahanBakar();
   await fetchAsumsiParameter();

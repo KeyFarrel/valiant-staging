@@ -1,5 +1,6 @@
 <template>
-  <div class="w-full overflow-auto border rounded-lg whitespace-nowrap">
+  <div class="w-full overflow-auto border rounded-lg whitespace-nowrap"
+    v-if="props.source.length && props.dataFinansial.tahun.length">
     <table class="w-full">
       <thead>
         <tr class="text-[#0099AD] text-sm text-left border-b-2">
@@ -70,10 +71,11 @@
             <td class="text-right"
               v-for="( tahun, tahunIndex ) in props.dataFinansial.tahun.length === 0 ? 1 : props.dataFinansial.tahun "
               :class="{ 'bg-blue-50': tahun === props.tahunTerakhirRealisasi }">
-              {{ props.dataFinansial.tahun ? level2.uraian.includes('Kalkulasi' || 'kalkulasi') ? '' : level2['t' +
-                tahun]
-                == null ? '-' : globalFormat.formatRupiah(level2['t' +
-                  tahun])
+              {{ props.dataFinansial.tahun ? (level2.uraian.includes('Kalkulasi') ||
+                level2.uraian.includes('kalkulasi')) ? '' : level2['t' +
+                  tahun]
+                  == null ? '-' : globalFormat.formatRupiah(level2['t' +
+                    tahun])
                 : '-' }}
             </td>
           </tr>
@@ -102,9 +104,10 @@
               <td class="text-right"
                 v-for="( tahun, tahunIndex ) in props.dataFinansial.tahun.length === 0 ? 1 : props.dataFinansial.tahun "
                 :class="{ 'bg-blue-50': tahun === props.tahunTerakhirRealisasi }" :key="tahunIndex">
-                {{ props.dataFinansial.tahun ? level3.uraian.includes('Kalkulasi' || 'kalkulasi') ? '' : level3['t' +
-                  tahun]
-                  == null ? '-'
+                {{ props.dataFinansial.tahun ? (level3.uraian.includes('Kalkulasi') ||
+                  level3.uraian.includes('kalkulasi')) ? '' : level3['t' +
+                    tahun]
+                    == null ? '-'
                   : globalFormat.formatRupiah(level3['t' + tahun])
                   : '-' }}
               </td>
@@ -116,9 +119,10 @@
                 <td class="text-right"
                   v-for="( tahun, tahunIndex ) in props.dataFinansial.tahun.length === 0 ? 1 : props.dataFinansial.tahun "
                   :class="{ 'bg-blue-50': tahun === props.tahunTerakhirRealisasi }">
-                  {{ props.dataFinansial.tahun ? level4.uraian.includes('Kalkulasi' || 'kalkulasi') ? '' : level4['t'
-                    +
-                    tahun] == null ? '-' :
+                  {{ props.dataFinansial.tahun ? (level4.uraian.includes('Kalkulasi') ||
+                    level4.uraian.includes('kalkulasi')) ? '' : level4['t'
+                      +
+                      tahun] == null ? '-' :
                     globalFormat.formatRupiah(level4['t' + tahun]) : '-' }}
                 </td>
               </tr>
@@ -128,23 +132,32 @@
       </tbody>
     </table>
   </div>
+  <ReloadComponent v-else-if="props.isFetchingError && (!props.source.length && !props.dataFinansial.tahun.length)"
+    @on-click="emit('onClick')" />
+  <ShimmerLoading v-else class="w-full h-40" />
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import GlobalFormat from '@/services/format/global-format';
 const globalFormat = new GlobalFormat();
+import ShimmerLoading from '../ui/ShimmerLoading.vue';
+import ReloadComponent from '../ui/ReloadComponent.vue';
 
 const isRowTabOpen = ref<number[]>([]);
 
 interface Props {
+  isFetchingError: boolean
   dataFinansial: {
     tahun: number[]
   }
   source: any[]
   tahunTerakhirRealisasi?: number
 }
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  isFetchingError: false
+})
+const emit = defineEmits(['onClick']);
 
 const toggleRow = (itemId: number) => {
   if (isRowOpen(itemId)) {

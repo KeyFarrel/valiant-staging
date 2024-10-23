@@ -1,6 +1,7 @@
 <template>
   <div
-    class="overflow-hidden flex flex-col w-full border px-5 py-4 rounded-lg shadow-sm border-l-8 border-l-[#0099AD] relative">
+    class="overflow-hidden flex flex-col w-full border px-5 py-4 rounded-lg shadow-sm border-l-8 border-l-[#0099AD] relative"
+    v-if="props.dayaTerpasang || props.dayaMampuNetto">
     <div class="absolute bottom-0 right-0">
       <svg width="126" height="61" viewBox="0 0 126 61" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle opacity="0.15" cx="88.5" cy="88.5" r="88.5" fill="#80C1CD" />
@@ -17,10 +18,10 @@
         <div class="mt-0.5 mb-4">
           <div class="flex items-center text-xs">
             <p class="font-bold">Periode</p>
-            <p class="ml-2 font-bold text-[#0099AD]">{{ props.tahun !== '-' ? props.tahun : '-' }}</p>
+            <p class="ml-1 font-bold text-[#0099AD]">{{ props.tahun !== '-' ? props.tahun : '-' }}</p>
             <p class="ml-2">/</p>
             <p class="ml-2 font-bold">Data</p>
-            <p class="ml-2 font-bold text-[#0099AD]">{{ props.data }}</p>
+            <p class="ml-1 font-bold text-[#0099AD]">{{ props.data }}</p>
           </div>
         </div>
       </div>
@@ -178,6 +179,9 @@
       </div>
     </template>
   </div>
+  <ReloadComponent v-else-if="props.isFetchingError && (!props.dayaTerpasang || !props.dayaMampuNetto)"
+    @onClick="emit('onClick')" />
+  <ShimmerLoading v-else class="w-full h-[500px]" />
 </template>
 
 <script setup lang="ts">
@@ -189,31 +193,35 @@ import ComponentDitolakT2 from '../Status/ComponentDitolakT2.vue';
 import ComponentWaitingT1 from '../Status/ComponentWaitingT1.vue';
 import ComponentWaitingT2 from '../Status/ComponentWaitingT2.vue';
 import ComponentDraft from '../Status/ComponentDraft.vue';
+import ShimmerLoading from './ShimmerLoading.vue';
+import ReloadComponent from './ReloadComponent.vue';
 
 interface Props {
-  data: string,
-  status: string,
-  tahun: number | string,
-  dayaTerpasang: any,
-  dayaMampuNetto: any,
-  auxiliary: any,
-  susutTrafo: any,
-  pemakaianSendiri: any,
-  netPlantHeatRate: any,
-  totalProjectCost: any,
-  loan: any,
-  equity: any,
-  electricityPriceA: any,
-  electricityPriceB: any,
-  electricityPriceC: any,
-  electricityPriceD: any,
-  comboBahanBakar: any,
-  bahanBakars?: any,
+  data: string
+  status: string
+  tahun: number | string
+  dayaTerpasang: any
+  dayaMampuNetto: any
+  auxiliary: any
+  susutTrafo: any
+  pemakaianSendiri: any
+  netPlantHeatRate: any
+  totalProjectCost: any
+  loan: any
+  equity: any
+  electricityPriceA: any
+  electricityPriceB: any
+  electricityPriceC: any
+  electricityPriceD: any
+  comboBahanBakar: any
+  isFetchingError: boolean
+  bahanBakars?: any
 }
 
-const emit = defineEmits(['onChange'])
-const selectedTahun = defineModel('selectedTahun');
-const props = defineProps<Props>()
+const emit = defineEmits(['onChange', 'onClick'])
+const props = withDefaults(defineProps<Props>(), {
+  isFetchingError: false
+})
 const namaBahanBakar = (kodeBahanBakar: any) => {
   const result = props.comboBahanBakar.filter((val: any) => val.kode_bahan_bakar === kodeBahanBakar);
   if (result.length !== 0) {

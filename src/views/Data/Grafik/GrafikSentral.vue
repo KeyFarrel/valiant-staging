@@ -499,11 +499,6 @@ import GlobalFormat from "@/services/format/global-format";
 import Empty from "@/components/ui/EmptyData.vue";
 import Loading from '@/components/ui/LoadingSpinner.vue';
 import ModalWrapper from "@/components/ui/ModalWrapper.vue";
-// import { useLamanDataPeriodeStore } from "@/store/storeLamanDataTab";
-// import Modal from "@/components/Grafik/ModalGrafik.vue";
-// import ButtonComponent from "@/components/ui/Button.vue";
-// import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
-// const stored = useLamanDataPeriodeStore();
 
 const store = useTagSentral();
 const grafikService = new GrafikService();

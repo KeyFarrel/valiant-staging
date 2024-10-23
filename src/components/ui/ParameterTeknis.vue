@@ -1,6 +1,7 @@
 <template>
   <div
-    class="overflow-hidden flex flex-col w-full border px-5 py-4 rounded-lg shadow-sm border-l-8 border-l-[#0099AD] relative">
+    class="overflow-hidden flex flex-col w-full border px-5 py-4 rounded-lg shadow-sm border-l-8 border-l-[#0099AD] relative"
+    v-if="props.dayaTerpasang || props.dayaMampuNetto">
     <div class="absolute bottom-0 right-0">
       <svg width="126" height="61" viewBox="0 0 126 61" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle opacity="0.15" cx="88.5" cy="88.5" r="88.5" fill="#80C1CD" />
@@ -162,11 +163,16 @@
       </div>
     </template>
   </div>
+  <ReloadComponent v-else-if="props.isFetchingError && (!props.dayaTerpasang || !props.dayaMampuNetto)"
+    @onClick="emit('onClick')" />
+  <ShimmerLoading v-else class="w-full h-[500px]" />
 </template>
 
 <script setup lang="ts">
 import GlobalFormat from '@/services/format/global-format';
 const globalFormat = new GlobalFormat();
+import ShimmerLoading from './ShimmerLoading.vue';
+import ReloadComponent from './ReloadComponent.vue';
 
 interface Props {
   dayaTerpasang: any
@@ -183,6 +189,7 @@ interface Props {
   electricityPriceC: any
   electricityPriceD: any
   comboBahanBakar: any
+  isFetchingError: boolean
   bahanBakars?: any
   listTahunAsumsi?: {
     start: string | number
@@ -191,9 +198,10 @@ interface Props {
   selectedYear?: string | number
 }
 
-const emit = defineEmits(['onChange'])
-const selectedTahun = defineModel('selectedTahun');
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  isFetchingError: false
+})
+const emit = defineEmits(['onChange', 'onClick'])
 const namaBahanBakar = (kodeBahanBakar: any) => {
   const result = props.comboBahanBakar.filter((val: any) => val.kode_bahan_bakar === kodeBahanBakar);
   if (result.length !== 0) {

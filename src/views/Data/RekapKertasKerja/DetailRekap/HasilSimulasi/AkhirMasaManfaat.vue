@@ -1,5 +1,6 @@
 <template>
-  <div class="grid grid-cols-2 mt-5 gap-x-10 gap-y-5" v-bind="$attrs">
+  <div class="grid grid-cols-2 mt-5 gap-x-10 gap-y-5" v-bind="$attrs"
+    v-if="props.irrOnEquity || props.npvOnEquity || props.averageNcf || props.averageEaf">
     <div class="overflow-hidden relative flex flex-col px-5 py-4 border-l-8 border-l-[#0099AD] rounded-lg border">
       <div class="absolute bottom-0 right-0">
         <svg width="126" height="61" viewBox="0 0 126 61" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -95,14 +96,27 @@
           class="text-textDisabledColor">%</span></p>
     </div>
   </div>
+  <ReloadComponent
+    v-else-if="props.isFetchingError && (!props.irrOnEquity || !props.npvOnEquity || !props.averageNcf || !props.averageEaf)"
+    @onClick="emit('onClick')" />
+  <div class="grid grid-cols-2 mt-5 gap-x-10 gap-y-5" v-else>
+    <ShimmerLoading class="w-full h-36" />
+    <ShimmerLoading class="w-full h-36" />
+    <ShimmerLoading class="w-full h-36" />
+    <ShimmerLoading class="w-full h-36" />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
 import GlobalFormat from '@/services/format/global-format';
 const globalFormat = new GlobalFormat();
+import ShimmerLoading from '@/components/ui/ShimmerLoading.vue';
+import ReloadComponent from '@/components/ui/ReloadComponent.vue';
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  isFetchingError: false
+})
+const emit = defineEmits(['onClick'])
 
 interface Props {
   irrOnProject: number | string
@@ -111,11 +125,8 @@ interface Props {
   npvOnProject: number
   averageNcf: number
   averageEaf: number
+  isFetchingError: boolean
 }
-
-onMounted(() => {
-  console.log('props', props.irrOnProject);
-})
 </script>
 
 <style scoped></style>

@@ -30,6 +30,9 @@ export default class UserService extends BaseService {
     async createUser<T>(dataToPost: any): Promise<T> {
         return this.post(`${url}user`, dataToPost);
     }
+    async resetPassword<T>(emailConfirm: string, emailReset: string): Promise<T> {
+        return this.post(`${url}user/reset-password`, {email_confirm: emailConfirm, email: emailReset});
+    }
     async updateUser<T>(id: number, data: any): Promise<T> {
         return this.patch(`${url}user/${id}`, data);
     }

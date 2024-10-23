@@ -38,7 +38,7 @@
             <button
               class="flex items-center px-3 py-2 duration-300 border rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white border-primaryColor"
               @click="toggleEdit('Sentral')"
-              v-if="!isEditOpen('Sentral') && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral')">
+              v-if="!isEditOpen('Sentral') && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral' || (authService.checkLevel() === 'Pembina' && authService.checkRole() === 'Input'))">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"
                 class="mr-2">
                 <g clip-path="url(#clip0_1055_14765)">
@@ -166,7 +166,7 @@
             <button
               class="flex items-center px-3 py-2 duration-300 border rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white border-primaryColor"
               @click="toggleEdit(mesinItem.mesin)"
-              v-if="!isEditOpen(mesinItem.mesin) && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral')">
+              v-if="!isEditOpen(mesinItem.mesin) && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral' || (authService.checkLevel() === 'Pembina' && authService.checkRole() === 'Input'))">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"
                 class="mr-2">
                 <g clip-path="url(#clip0_1055_14765)">

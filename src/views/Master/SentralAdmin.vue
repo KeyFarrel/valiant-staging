@@ -4,12 +4,13 @@
     <div class="flex flex-col h-full p-6 space-y-4 font-medium bg-white rounded-lg text-md">
       <div class="flex flex-col space-y-4">
         <div class="flex flex-row"
-          v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina'">
+          v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pusat' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina'">
           <SearchBoxSuggestion v-if="listSuggestionSentral.length !== 0" v-model="searchQuery"
             :source="listSuggestionSentral" @on-key-enter="handleSearch" @on-click="handleSearch" />
           <ShimmerLoading class="h-8 w-80" v-else-if="listSuggestionSentral.length === 0" />
         </div>
-        <div class="whitespace-nowrap" v-if="authService.checkLevel() === 'Admin'">
+        <div class="whitespace-nowrap"
+          v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pusat'">
           <ul class="flex w-full overflow-x-auto" v-if="pengelolaData.length !== 0">
             <li
               class="relative p-2 ml-3 text-xs font-bold text-gray-400 border border-gray-300 rounded-lg cursor-pointer w-fit hover:text-primaryColor first:ml-0 hover:border-primaryColor hover:border-"

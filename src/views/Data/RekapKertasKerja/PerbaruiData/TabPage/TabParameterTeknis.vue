@@ -1,48 +1,14 @@
 <template>
   <div class="flex flex-col space-y-6">
-    <section class="flex flex-row items-center space-x-1 text-xs" v-if="props.isPerbaruiData === true">
-      <span class="font-medium text-gray-400">Periode : </span>
-      <span class="font-semibold">{{ props.tahunRealisasi }}</span>
-      <span class="text-gray-200"> / </span>
-      <span class="font-medium text-gray-400">Unit : </span>
-      <span class="font-semibold">{{ props.mesin }}</span>
-      <!-- <span class="text-gray-200"> / </span>
-      <span class="mr-1.5 font-medium text-gray-400">Catatan : </span>
-      <div class="flex flex-row items-center space-x-1">
-        <WarningIcon />
-        <span class="text-warningColor" v-if="props.isPermanent === true">Data yang ditampilkan merupakan data tahun
-          sebelumnya, silahkan lakukan
-          update terhadap data tersebut!</span>
-        <span class="text-warningColor" v-else>Data yang ditampilkan merupakan data
-          simulasi,
-          mohon pilih opsi simulasi untuk mengubah ke data tetap</span>
-      </div> -->
-    </section>
-    <section class="text-xs" v-else-if="props.isPerbaruiData === false">
+    <section class="text-xs" v-if="props.isPerbaruiData === false">
       <span class="font-medium text-gray-400">Periode : </span>
       <span class="font-semibold">{{ props.tahunRealisasi }}</span>
       <span class="text-gray-200"> / </span>
       <span class="font-medium text-gray-400">Unit : </span>
       <span class="font-semibold">{{ props.mesin }}</span>
     </section>
-    <div class="flex space-x-3" v-if="props.isIntegrasi === false">
-      <div class="flex space-x-1.5">
-        <input type="radio" id="auxiliarySusut" class="radio radio-sm radio-info" value="auxiliarySusut"
-          v-model="pickedValue"
-          :disabled="props.initValue?.auxiliary === '0,00' && props.initValue?.susutTrafo === '0,00'" />
-        <label class="text-sm" for="auxiliarySusut">Auxiliary & Susut Trafo</label>
-      </div>
-      <div class="flex space-x-3">
-        <div class="flex space-x-1.5">
-          <input type="radio" id="pemakaianSendiri" class="radio radio-sm radio-info" value="pemakaianSendiri"
-            v-model="pickedValue" :disabled="props.initValue?.pemakaianSendiri === '0,00'" />
-          <label label class="text-sm" for="pemakaianSendiri">Pemakaian Sendiri (PS)</label>
-        </div>
-      </div>
-    </div>
     <form class="flex flex-col space-y-6 text-sm">
-      <div class="grid gap-x-6"
-        :class="{ 'grid-cols-3': pickedValue === 'auxiliarySusut', 'grid-cols-2': pickedValue === 'pemakaianSendiri', 'grid-cols-4': props.isIntegrasi }">
+      <div class="grid grid-cols-4 gap-x-6">
         <div class="space-y-1">
           <label class="block font-bold text-gray-500">Net Plant Heat Rate (NPHR) <span
               class="text-warningColor">*</span></label>
@@ -53,7 +19,7 @@
           </div>
           <div class="text-xs text-warningColor" v-if="props.error?.nphr === true">NPHR wajib diisi</div>
         </div>
-        <div class="space-y-1" v-if="pickedValue === 'auxiliarySusut' || props.isIntegrasi">
+        <div class="space-y-1">
           <label class="block font-bold text-gray-500">Auxiliary <span class="text-warningColor">*</span></label>
           <div class="flex items-center justify-end">
             <TextField @on-input="handleInputDecimalRupiah('auxiliary')" v-model="auxiliary" class="pr-10"
@@ -62,7 +28,7 @@
           </div>
           <div class="text-xs text-warningColor" v-if="props.error?.auxiliary === true">Auxiliary wajib diisi</div>
         </div>
-        <div class="space-y-1" v-if="pickedValue === 'auxiliarySusut' || props.isIntegrasi">
+        <div class="space-y-1">
           <label class="block font-bold text-gray-500">Susut Trafo <span class="text-warningColor">*</span></label>
           <div class="flex items-center justify-end">
             <TextField @on-input="handleInputDecimalRupiah('susutTrafo')" v-model="susutTrafo" class="pr-10"
@@ -71,7 +37,7 @@
           </div>
           <div class="text-xs text-warningColor" v-if="props.error?.susutTrafo === true">Susut Trafo wajib diisi</div>
         </div>
-        <div class="space-y-1" v-if="pickedValue === 'pemakaianSendiri' || props.isIntegrasi">
+        <div class="space-y-1">
           <label class="block font-bold text-gray-500">Pemakaian Sendiri (PS) <span
               class="text-warningColor">*</span></label>
           <div class="flex items-center justify-end">
@@ -148,8 +114,8 @@
               <label class="block font-bold text-gray-500">Bahan Bakar {{ bahanBakars.length > 0 ?
                 bahanBakarItem.flag_bahan_bakar === 1 ? 'Utama' : bahanBakarIndex + 1 : '-' }}<span
                   class="text-warningColor">*</span></label>
-              <select class="text-sm border-gray-300 rounded-lg" v-model="bahanBakarItem.kode_bahan_bakar" required
-                :disabled="props.isRealisasiUploaded === true">
+              <select class="text-sm border-gray-300 rounded-lg" @change="emit('onChange')"
+                v-model="bahanBakarItem.kode_bahan_bakar" required :disabled="props.isRealisasiUploaded === true">
                 <option value="" disabled hidden>Pilih Bahan Bakar</option>
                 <option v-for="( comboBahanBakarItem, comboBahanBakarIndex ) in props.comboBahanBakar"
                   :value="(comboBahanBakarItem as any).kode_bahan_bakar" :key="comboBahanBakarIndex"
@@ -239,7 +205,7 @@ const electricityPriceB = defineModel('electricityPriceB');
 const electricityPriceC = defineModel('electricityPriceC');
 const electricityPriceD = defineModel('electricityPriceD');
 const pickedValue = defineModel('pickedValue');
-const emit = defineEmits(['onSubmit', 'onChecked', 'onHapusBahanBakar', 'onTambahBahanBakar'])
+const emit = defineEmits(['onSubmit', 'onChecked', 'onHapusBahanBakar', 'onTambahBahanBakar', 'onChange'])
 const selectedTitle = inject("selectedTitle");
 
 interface Props {
@@ -285,7 +251,7 @@ const props = withDefaults(defineProps<Props>(), {
 const bahanBakarsFinal = () => {
   if (bahanBakars.value.some((e: any) => e.flag_bahan_bakar === 1)) {
     const utamaIndex = bahanBakars.value.findIndex((e: any) => e.flag_bahan_bakar === 1);
-    if (utamaIndex !== 0) {
+    if (utamaIndex) {
       const utama = bahanBakars.value[utamaIndex];
       bahanBakars.value.splice(utamaIndex, 1);
       bahanBakars.value.unshift(utama);

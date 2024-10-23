@@ -234,9 +234,7 @@ import Loading from "@/components/ui/LoadingSpinner.vue";
 import SortingIcon from "@/components/icons/SortingIcon.vue";
 import LamanService from "@/services/laman-service";
 import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
-import axios from "axios";
 
-const nodeMode = import.meta.env.MODE;
 const lamanService = new LamanService();
 const teknisData = ref<PengelolaItem[]>([]);
 const isUpTabOpen = ref<string[]>([]);

@@ -4,7 +4,8 @@
     :nama-pengelola="approveSentralFS.pengelola ? approveSentralFS.pengelola : '-'"
     :nama-pembina="approveSentralFS.pembina ? approveSentralFS.pembina : '-'"
     :kode-jenis-pembangkit="approveSentralFS.jenis_kit ? approveSentralFS.jenis_kit : '-'"
-    :daya-terpasang="approveSentralFS.daya_terpasang.toString()" :daya-mampu="approveSentralFS.daya_mampu.toString()"
+    :daya-terpasang="approveSentralFS.daya_terpasang ? approveSentralFS.daya_terpasang.toString() : '-'"
+    :daya-mampu="approveSentralFS.daya_mampu ? approveSentralFS.daya_mampu.toString() : '-'"
     :tahun-operasi="approveSentralFS.tahun_operasi ? approveSentralFS.tahun_operasi : '-'"
     :umur-teknis="approveSentralFS.umur_teknis ? approveSentralFS.umur_teknis : '-'">
   </InfoHeader>

@@ -384,8 +384,6 @@ import ComponentDraft from '@/components/Status/ComponentDraft.vue';
 const nodeMode = import.meta.env.MODE;
 const route = useRoute();
 const isLoading = ref(false);
-const levelID = ref(nodeMode === 'production' ? encryptStorage.getItem('level_id') : localStorage.getItem("level_id"));
-const level_ID = ref(levelID.value);
 const isSuccess = ref(false);
 const isReject = ref(false);
 const modalCancel = ref(false);
@@ -399,7 +397,15 @@ const persetujuanService = new PersetujuanService();
 const approveSentralFS = ref<ListApprove>();
 const approveMesinFS = ref<ListApprove>();
 const comboBahanBakar = ref<[]>([]);
-const asumsiMakro = ref<AsumsiMakroItem>()
+const asumsiMakro = ref<AsumsiMakroItem>({
+  corporate_tax_rate: 0,
+  discount_rate: 0,
+  interest_rate: 0,
+  loan_tenor: 0,
+  loan_portion: 0,
+  equity_portion: 0,
+  isFetchingError: false
+});
 const parameterTeknisFinansial = ref<ParameterTeknisFinancialItem>();
 const mesinDataById = ref<MesinItem>();
 const namaPengelola = ref<string>('');
@@ -473,6 +479,7 @@ interface AsumsiMakroItem {
   loan_tenor: number
   loan_portion: number
   equity_portion: number
+  isFetchingError: boolean
 }
 
 interface ParameterTeknisFinancialItem {
@@ -489,6 +496,7 @@ interface ParameterTeknisFinancialItem {
   electricity_price_b_rp_per_kwbln: number
   electricity_price_c_rp_per_kwh: number
   electricity_price_d_rp_per_kwh: number
+  isFetchingError: boolean
 }
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -541,6 +549,7 @@ const fetchAsumsiFeasibility = async () => {
       loan_tenor: response.data.asumsi_makro.loan_tenor,
       loan_portion: response.data.asumsi_makro.loan_portion,
       equity_portion: response.data.asumsi_makro.equity_portion,
+      isFetchingError: false
     }
     parameterTeknisFinansial.value = {
       daya_terpasang: response.data.parameter_teknis_financial
@@ -569,6 +578,7 @@ const fetchAsumsiFeasibility = async () => {
         .electricity_price_c_rp_per_kwh,
       electricity_price_d_rp_per_kwh: response.data.parameter_teknis_financial
         .electricity_price_d_rp_per_kwh,
+      isFetchingError: false
     };
     bahanBakars.value = response.data.harga_bahan_bakars;
     umurTeknis.value = response.data.umur_teknis;

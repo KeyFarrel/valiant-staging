@@ -4,9 +4,7 @@ import router from "./router";
 import Vue3Toasity, { type ToastContainerOptions } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import { createPinia } from "pinia";
-import { createVfm } from "vue-final-modal";
 import { autoAnimatePlugin } from "@formkit/auto-animate/vue";
-import { VueRecaptchaPlugin } from 'vue-recaptcha'
 import { install } from "vue3-recaptcha-v2";
 import OpenLayersMap from "vue3-openlayers";
 import "vue3-openlayers/styles.css";
@@ -26,7 +24,6 @@ const app = createApp(App)
   .use(Vue3Toasity, { autoClose: false} as ToastContainerOptions)
   .use(Vue3Lottie)
   .use(autoAnimatePlugin)
-  .use(createVfm)
   .use(ElementPlus)
   .use(install, {
     sitekey: "6LcdBh0qAAAAAHU6gVhG4QQqEuJHZwRuFzBzZnFE",

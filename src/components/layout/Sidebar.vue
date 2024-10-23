@@ -16,7 +16,7 @@
       <div class="flex items-center ml-2 md:mr-24">
         <ValiantLogo />
         <span v-show="isSidebarOpen"
-          class="self-center text-lg font-semibold text-white sm:text-2xl whitespace-nowrap dark:text-white">Valiant</span>
+          class="self-center text-lg font-semibold text-white duration-300 sm:text-2xl whitespace-nowrap dark:text-white">Valiant</span>
       </div>
       <div class="text-white -ml-[72px]" :class="isSidebarOpen ? 'ml-3' : ''">
         <p class="text-lg font-semibold">{{ store.label }}</p>
@@ -78,13 +78,16 @@
             </div>
           </div>
           <hr />
-          <button @click="authService.logOut" class="flex px-10 py-2 cursor-pointer">
-            <svg width="14" height="18" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <button @click="authService.logOut"
+            class="flex items-center w-full justify-center py-2 space-x-1.5 cursor-pointer border">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
-                d="M8.76639 11.1772L9.19542 10.75H8.59H1C0.801088 10.75 0.610323 10.671 0.46967 10.5303C0.329018 10.3897 0.25 10.1989 0.25 10C0.25 9.80109 0.329018 9.61032 0.46967 9.46967C0.610323 9.32902 0.801088 9.25 1 9.25H8.59H9.19542L8.76639 8.82284L6.46678 6.53322C6.46676 6.5332 6.46674 6.53319 6.46672 6.53317C6.39672 6.46316 6.3412 6.38004 6.30331 6.28858C6.26541 6.19709 6.24591 6.09903 6.24591 6C6.24591 5.90097 6.26541 5.80291 6.30331 5.71142C6.34121 5.61993 6.39675 5.5368 6.46678 5.46678C6.5368 5.39675 6.61993 5.34121 6.71142 5.30331C6.80291 5.26541 6.90097 5.24591 7 5.24591C7.09903 5.24591 7.19709 5.26541 7.28858 5.30331C7.38007 5.34121 7.4632 5.39675 7.53322 5.46678L11.5312 9.46472C11.5986 9.53565 11.6515 9.61911 11.6869 9.71038L11.6869 9.71039L11.6888 9.715C11.7638 9.8976 11.7638 10.1024 11.6888 10.285L11.6887 10.285L11.6869 10.2896C11.6515 10.3809 11.5986 10.4643 11.5312 10.5353L7.53322 14.5332L7.5325 14.5339C7.46278 14.6042 7.37982 14.66 7.28843 14.6981C7.19704 14.7362 7.09901 14.7558 7 14.7558C6.90099 14.7558 6.80296 14.7362 6.71157 14.6981C6.62018 14.66 6.53722 14.6042 6.4675 14.5339L6.46605 14.5325C6.39575 14.4628 6.33996 14.3798 6.30188 14.2884C6.26381 14.197 6.2442 14.099 6.2442 14C6.2442 13.901 6.26381 13.803 6.30188 13.7116C6.33996 13.6202 6.39575 13.5372 6.46605 13.4675L6.46639 13.4672L8.76639 11.1772ZM3 0.25H13C13.7293 0.25 14.4288 0.539731 14.9445 1.05546C15.4603 1.57118 15.75 2.27065 15.75 3V17C15.75 17.7293 15.4603 18.4288 14.9445 18.9445C14.4288 19.4603 13.7293 19.75 13 19.75H3C2.27065 19.75 1.57118 19.4603 1.05546 18.9445C0.539732 18.4288 0.25 17.7293 0.25 17V14C0.25 13.8011 0.329018 13.6103 0.46967 13.4697C0.610323 13.329 0.801088 13.25 1 13.25C1.19891 13.25 1.38968 13.329 1.53033 13.4697C1.67098 13.6103 1.75 13.8011 1.75 14V17C1.75 17.3315 1.8817 17.6495 2.11612 17.8839C2.35054 18.1183 2.66848 18.25 3 18.25H13C13.3315 18.25 13.6495 18.1183 13.8839 17.8839C14.1183 17.6495 14.25 17.3315 14.25 17V3C14.25 2.66848 14.1183 2.35054 13.8839 2.11612C13.6495 1.8817 13.3315 1.75 13 1.75H3C2.66848 1.75 2.35054 1.8817 2.11612 2.11612C1.8817 2.35054 1.75 2.66848 1.75 3V6C1.75 6.19891 1.67098 6.38968 1.53033 6.53033C1.38968 6.67098 1.19891 6.75 1 6.75C0.801088 6.75 0.610323 6.67098 0.46967 6.53033C0.329018 6.38968 0.25 6.19891 0.25 6V3C0.25 2.27065 0.539731 1.57118 1.05546 1.05546C1.57118 0.539731 2.27065 0.25 3 0.25Z"
-                fill="#333333" stroke="white" stroke-width="0.5" />
+                d="M10 8V6C10 5.46957 10.2107 4.96086 10.5858 4.58579C10.9609 4.21071 11.4696 4 12 4H19C19.5304 4 20.0391 4.21071 20.4142 4.58579C20.7893 4.96086 21 5.46957 21 6V18C21 18.5304 20.7893 19.0391 20.4142 19.4142C20.0391 19.7893 19.5304 20 19 20H12C11.4696 20 10.9609 19.7893 10.5858 19.4142C10.2107 19.0391 10 18.5304 10 18V16"
+                stroke="#333333" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M15 12H3M3 12L6 9M3 12L6 15" stroke="#333333" stroke-width="1.33333" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
-            <p class="ml-3 -mt-1 text-[14px] text-primaryTextColor">Logout</p>
+            <p class="text-sm text-primaryTextColor">Logout</p>
           </button>
         </div>
       </div>
@@ -92,9 +95,9 @@
   </nav>
 
   <aside id="logo-sidebar"
-    class="fixed top-0 left-0 z-40 w-20 h-screen pt-14 border-r border-[#E5E7E9] sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
-    :class="isSidebarOpen ? 'w-[240px]' : ''" @mouseleave="toggleSidebar" aria-label="Sidebar">
-    <div v-show="isSidebarOpen" class="h-full pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+    class="fixed top-0 left-0 z-40 h-screen pt-[55px] border-r border-[#E5E7E9] sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700 duration-300"
+    :class="isSidebarOpen ? 'w-[240px]' : 'w-20'" @mouseleave="toggleSidebar" aria-label="Sidebar">
+    <div v-show="isSidebarOpen" class="h-full pb-4 overflow-y-auto bg-white dark:bg-gray-800 whitespace-nowrap">
       <ul class="space-y-2 font-medium">
         <li class="px-3">
           <div class="flex items-center mt-6 px-2 text-[#7F7F80] rounded-lg dark:text-white">
@@ -116,13 +119,13 @@
           </RouterLink>
         </li>
         <li class="px-3"
-          v-if="(authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina') && (authService.checkRole() === 'Monitoring' || authService.checkRole() === 'Super Admin')">
+          v-if="(authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pusat' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina') && (authService.checkRole() === 'Monitoring' || authService.checkRole() === 'Super Admin')">
           <div class="flex items-center px-2 pt-1 text-[#7F7F80] dark:text-white">
             <span class="ml-8 text-xs font-semibold">Laman</span>
           </div>
         </li>
         <li
-          v-if="authService.checkLevel() === 'Admin' && (authService.checkRole() === 'Monitoring' || authService.checkRole() === 'Super Admin')">
+          v-if="(authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pusat') && (authService.checkRole() === 'Monitoring' || authService.checkRole() === 'Super Admin')">
           <RouterLink to="/laman" id="sidebar-button" @click="store.label = 'Laman Utama'"
             class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
             :class="{ selected: store.label === 'Laman Utama' }">
@@ -136,7 +139,7 @@
           </RouterLink>
         </li>
         <li
-          v-if="(authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina') && (authService.checkRole() === 'Monitoring' || authService.checkRole() === 'Super Admin')">
+          v-if="(authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pusat' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina') && (authService.checkRole() === 'Monitoring' || authService.checkRole() === 'Super Admin')">
           <RouterLink id="sidebar-button" @click="store.label = 'Laman Data'" to="/laman-data"
             class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
             :class="{ selected: store.label === 'Laman Data' }">
@@ -150,7 +153,7 @@
           </RouterLink>
         </li>
         <li
-          v-if="(authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina') && (authService.checkRole() === 'Monitoring' || authService.checkRole() === 'Super Admin')">
+          v-if="(authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pusat' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina') && (authService.checkRole() === 'Monitoring' || authService.checkRole() === 'Super Admin')">
           <RouterLink id="sidebar-button" @click="store.label = 'Laman Analitik'" to="/laman-analitik"
             class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
             :class="{ selected: store.label === 'Laman Analitik' }">
@@ -190,8 +193,16 @@
             <span class="ml-8 text-xs">Rekap Kertas Kerja</span>
           </RouterLink>
         </li>
+        <!-- <li v-if="authService.checkLevel() === 'Admin'">
+          <RouterLink id="sidebar-button"
+            @click="store.label = 'Rekap Kertas Kerja V1'; rekapStore.searchRekapQuery = ''; rekapStore.selectedRekapSearchQuery = '';"
+            to="/rekap-kertas-kerja-v1" href="#" class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
+            :class="{ selected: store.label === 'Rekap Kertas Kerja V1' }">
+            <span class="ml-8 text-xs">Rekap Kertas Kerja V1</span>
+          </RouterLink>
+        </li> -->
         <li class="px-3"
-          v-if="authService.checkRole() == 'Approver' || authService.checkRole() == 'Staff' || authService.checkRole() == 'Super Admin' || authService.checkRole() == 'Monitoring'">
+          v-if="authService.checkRole() == 'Approver' || authService.checkRole() == 'Staff' || authService.checkRole() == 'Super Admin' || authService.checkRole() == 'Monitoring' || authService.checkRole() == 'Input'">
           <div class="flex items-center px-2 text-[#7F7F80] dark:text-white">
             <svg
               class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -204,7 +215,7 @@
           </div>
         </li>
         <li
-          v-if="authService.checkLevel() == 'Pembina' || authService.checkLevel() == 'Pengelola' || authService.checkLevel() == 'Admin'">
+          v-if="authService.checkRole() == 'Approver' || authService.checkRole() == 'Staff' || authService.checkRole() == 'Super Admin' || authService.checkRole() == 'Monitoring' || authService.checkRole() == 'Input'">
           <RouterLink id="sidebar-button" @click="store.label = 'Persetujuan'" to="/persetujuan-by-approve"
             class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
             :class="{ selected: store.label === 'Persetujuan' }">
@@ -278,6 +289,13 @@
             <span class="ml-8 text-xs">Role</span>
           </RouterLink>
         </li> -->
+        <li v-if="authService.checkLevel() === 'Admin'">
+          <RouterLink id="sidebar-button" @click="store.label = 'Log Aktivitas'" to="/log-activity"
+            class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
+            :class="{ selected: store.label === 'Log Aktivitas' }">
+            <span class="ml-8 text-xs">Log Aktivitas</span>
+          </RouterLink>
+        </li>
         <!-- <li class="px-3">
           <div class="flex items-center px-2 text-gray-900 dark:text-white">
             <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -310,7 +328,7 @@
           </svg>
         </li>
         <li class="flex items-center justify-center h-12 rounded-lg"
-          :class="{ selected: store.label === 'Grafik' || store.label === 'Rekap Kertas Kerja' }">
+          :class="{ selected: store.label === 'Grafik' || store.label === 'Rekap Kertas Kerja' || store.label === 'Rekap Kertas Kerja V1' }">
           <svg width="24" height="24" class="cursor-pointer" viewBox="0 0 24 24" fill="none"
             xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd"

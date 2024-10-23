@@ -365,32 +365,32 @@ const insertAsumsiParameter = async () => {
     } else {
       errorParameterTeknis.nphr = false;
     }
-    if (pickedParameterValue.value === 'auxiliarySusut') {
-      if (auxiliary.value === '') {
-        errorParameterTeknis.auxiliary = true;
-        errorParameterTeknis.pemakaianSendiri = false;
-      } else {
-        errorParameterTeknis.auxiliary = false;
-        errorParameterTeknis.pemakaianSendiri = false;
-      }
-      if (susutTrafo.value === '') {
-        errorParameterTeknis.susutTrafo = true;
-        errorParameterTeknis.pemakaianSendiri = false;
-      } else {
-        errorParameterTeknis.susutTrafo = false;
-        errorParameterTeknis.pemakaianSendiri = false;
-      }
-    } else if (pickedParameterValue.value === 'pemakaianSendiri') {
-      if (pemakaianSendiri.value === '') {
-        errorParameterTeknis.pemakaianSendiri = true;
-        errorParameterTeknis.auxiliary = false;
-        errorParameterTeknis.susutTrafo = false;
-      } else {
-        errorParameterTeknis.pemakaianSendiri = false;
-        errorParameterTeknis.auxiliary = false;
-        errorParameterTeknis.susutTrafo = false;
-      }
+    // if (pickedParameterValue.value === 'auxiliarySusut') {
+    if (auxiliary.value === '') {
+      errorParameterTeknis.auxiliary = true;
+    } else {
+      errorParameterTeknis.auxiliary = false;
     }
+    if (susutTrafo.value === '') {
+      errorParameterTeknis.susutTrafo = true;
+    } else {
+      errorParameterTeknis.susutTrafo = false;
+    } if (pemakaianSendiri.value === '') {
+      errorParameterTeknis.pemakaianSendiri = true;
+    } else {
+      errorParameterTeknis.pemakaianSendiri = false;
+    }
+    // } else if (pickedParameterValue.value === 'pemakaianSendiri') {
+    //   if (pemakaianSendiri.value === '') {
+    //     errorParameterTeknis.pemakaianSendiri = true;
+    //     errorParameterTeknis.auxiliary = false;
+    //     errorParameterTeknis.susutTrafo = false;
+    //   } else {
+    //     errorParameterTeknis.pemakaianSendiri = false;
+    //     errorParameterTeknis.auxiliary = false;
+    //     errorParameterTeknis.susutTrafo = false;
+    //   }
+    // }
     if (electricityPriceA.value === '') {
       errorParameterTeknis.electricityPriceA = true;
     } else {
@@ -463,9 +463,9 @@ const insertAsumsiParameter = async () => {
           tahun: tahunBerjalan,
           tahun_realisasi: tahunBerjalan - 1,
           nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
-          auxiliary: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalAuxiliary.replace(/,/g, '.')) : 0,
-          susut_trafo: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalSusutTrafo.replace(/,/g, '.')) : 0,
-          ps: pickedParameterValue.value === 'pemakaianSendiri' ? parseFloat(finalPemakaianSendiri.replace(/,/g, '.')) : 0,
+          auxiliary: parseFloat(finalAuxiliary.replace(/,/g, '.')),
+          susut_trafo: parseFloat(finalSusutTrafo.replace(/,/g, '.')),
+          ps: parseFloat(finalPemakaianSendiri.replace(/,/g, '.')),
           electricity_price_a_rp_per_kwbln: parseFloat(finalElecA.replace(/,/g, '.')),
           electricity_price_b_rp_per_kwbln: parseFloat(finalElecB.replace(/,/g, '.')),
           electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),
@@ -515,9 +515,9 @@ const insertAsumsiParameter = async () => {
           tahun: tahunBerjalan,
           tahun_realisasi: tahunBerjalan - 1,
           nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
-          auxiliary: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalAuxiliary.replace(/,/g, '.')) : 0,
-          susut_trafo: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalSusutTrafo.replace(/,/g, '.')) : 0,
-          ps: pickedParameterValue.value === 'pemakaianSendiri' ? parseFloat(finalPemakaianSendiri.replace(/,/g, '.')) : 0,
+          auxiliary: parseFloat(finalAuxiliary.replace(/,/g, '.')),
+          susut_trafo: parseFloat(finalSusutTrafo.replace(/,/g, '.')),
+          ps: parseFloat(finalPemakaianSendiri.replace(/,/g, '.')),
           electricity_price_a_rp_per_kwbln: parseFloat(finalElecA.replace(/,/g, '.')),
           electricity_price_b_rp_per_kwbln: parseFloat(finalElecB.replace(/,/g, '.')),
           electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),

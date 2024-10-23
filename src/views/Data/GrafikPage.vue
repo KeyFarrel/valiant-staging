@@ -202,7 +202,7 @@
     <div v-for="(item, i) in dataUnit" :key="i" v-show="selectedTitle === item.mesin"
       @click="selectedTitle = item.mesin" class="relative">
       <div class="absolute z-20 flex flex-row items-center ml-4 space-x-3 right-5"
-        :class="authService.checkLevel() === 'Sentral' ? '-top-[120px]' : '-top-[118px]'"
+        :class="osDetector.getOS() === 'Windows' ? '-top-[131px]' : '-top-[118px]'"
         v-if="selectedYear[i].tahun !== null || (selectedYear[i].range[0] !== null && selectedYear[i].range[1] !== null)">
         <label class="text-sm font-semibold text-labelColor" for="">Periode</label>
         <VueDatePicker class="mr-3 text-xs date-picker" v-model="selectedYear[i].tahun"
@@ -397,6 +397,8 @@ import { useRoute } from "vue-router";
 import { useTagSentral } from "@/store/storeTagGrafik";
 import { useTagMesin } from "@/store/storeTagGrafik";
 import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
+import { notifyError } from "@/services/helper/toast-notification";
+import { osDetector } from "@/utils/os-detector";
 import DetailSentralService from "@/services/detail-sentral-service";
 const detailSentralService = new DetailSentralService();
 import AuthService from "@/services/auth-service";
@@ -416,7 +418,6 @@ import SearchBox from "@/components/ui/SearchBox.vue";
 import ModalSearch from "@/components/ModalSearch.vue";
 import Chips from "@/components/ui/Chips.vue";
 import Loading from "@/components/ui/LoadingSpinner.vue";
-import { notifyError } from "@/services/helper/toast-notification";
 
 const nodeMode = import.meta.env.MODE;
 const route = useRoute();
