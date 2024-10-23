@@ -4,7 +4,8 @@
     :nama-pengelola="approveSentralKK.pengelola ? approveSentralKK.pengelola : '-'"
     :nama-pembina="approveSentralKK.pembina ? approveSentralKK.pembina : '-'"
     :kode-jenis-pembangkit="approveSentralKK.jenis_kit ? approveSentralKK.jenis_kit : '-'"
-    :daya-terpasang="approveSentralKK.daya_terpasang.toString()" :daya-mampu="approveSentralKK.daya_mampu.toString()"
+    :daya-terpasang="approveSentralKK.daya_terpasang ? approveSentralKK.daya_terpasang.toString() : '-'"
+    :daya-mampu="approveSentralKK.daya_mampu ? approveSentralKK.daya_mampu.toString() : '-'"
     :tahun-operasi="approveSentralKK.tahun_operasi ? approveSentralKK.tahun_operasi : '-'"
     :umur-teknis="approveSentralKK.umur_teknis ? approveSentralKK.umur_teknis : '-'">
   </InfoHeader>

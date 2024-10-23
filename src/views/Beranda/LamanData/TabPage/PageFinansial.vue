@@ -185,9 +185,7 @@ const globalFormat = new GlobalFormat();
 import SearchBox from '@/components/ui/SearchBox.vue'
 import ButtonComponent from '@/components/ui/Button.vue'
 import TableComponent from '@/components/ui/Table.vue'
-import axios from 'axios';
 
-const nodeMode = import.meta.env.MODE;
 const lamanService = new LamanService();
 const date = new Date();
 const tahunBerjalan = date.getFullYear()

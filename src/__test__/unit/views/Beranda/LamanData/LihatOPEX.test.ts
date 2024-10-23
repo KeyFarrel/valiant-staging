@@ -19,12 +19,16 @@ describe('LihatOPEX.vue', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-  
+    
+    // Inisialisasi spy untuk console.error
+    consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    
     (useRoute as jest.Mock).mockReturnValue({
       params: { id: '1' },
       query: { tahun: '2024' },
     });
   
+    // Mock data fetching
     LihatOPEXService.prototype.getMesinById = jest.fn().mockResolvedValue({
       data: {
         mesin: 'Mesin A',
@@ -36,6 +40,7 @@ describe('LihatOPEX.vue', () => {
         masa_manfaat: 15,
       },
     });
+
     LihatOPEXService.prototype.getOPEXKomponenB = jest.fn().mockResolvedValue({
       data: {
         cost_component_b: 5000000,
@@ -46,6 +51,7 @@ describe('LihatOPEX.vue', () => {
         biaya_lain_lain: 500000,
       },
     });
+
     LihatOPEXService.prototype.getOPEXKomponenC = jest.fn().mockResolvedValue({
       data: {
         total_component_c: { cost_component_c: 6000000 },
@@ -54,6 +60,7 @@ describe('LihatOPEX.vue', () => {
         ],
       },
     });
+
     LihatOPEXService.prototype.getOPEXKomponenD = jest.fn().mockResolvedValue({
       data: {
         cost_component_d: 4000000,
@@ -61,13 +68,15 @@ describe('LihatOPEX.vue', () => {
         biaya_lain_lain: 250000,
       },
     });
+
     UserService.prototype.getPembina = jest.fn().mockResolvedValue({
       data: [{ id_pembina: 1, pembina: 'Pembina A' }],
     });
-  });  
+  });
 
   afterEach(() => {
-    consoleSpy.mockRestore(); // Restore original console.error after each test
+    // Pastikan untuk memulihkan spy setelah setiap test selesai
+    consoleSpy.mockRestore();
   });
 
   it('should display loading spinner when data is being fetched', () => {
@@ -111,15 +120,15 @@ describe('LihatOPEX.vue', () => {
   });
 
   it('should handle errors when fetching data fails', async () => {
-    // Mock implementation to simulate a failed request
+    // Simulasikan kesalahan pada request
     LihatOPEXService.prototype.getMesinById = jest.fn().mockRejectedValue(new Error('Fetch failed'));
-
+  
     wrapper = mount(LihatOPEX);
-
-    // Wait for promises to resolve
+  
+    // Tunggu sampai semua promises selesai
     await flushPromises();
-
-    // Assert that an error is logged to the console (you can also test specific error handling UI if needed)
+  
+    // Pastikan console.error dipanggil dengan pesan yang tepat
     expect(console.error).toHaveBeenCalledWith('Fetch Mesin By Id Error : Error: Fetch failed');
-  });
+  });  
 });

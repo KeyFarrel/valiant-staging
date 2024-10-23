@@ -6,59 +6,7 @@
       @on-accept-click="isShowModalConfirmation = false; emit('on-save'); selectedTitle = 'Opsi Simulasi'" />
   </ModalWrapper>
   <div class="flex flex-col space-y-3">
-    <!-- <section class="flex flex-row items-center space-x-1 text-xs">
-      <span class="font-medium text-gray-400">Periode : </span>
-      <span class="font-semibold">{{ props.tahun }}</span>
-      <span class="text-gray-200"> / </span>
-      <span class="font-medium text-gray-400">Unit : </span>
-      <span class="font-semibold">{{ props.mesin }}</span> -->
-    <!-- <span class="text-gray-200"> / </span>
-      <span class="mr-1.5 font-medium text-gray-400">Catatan : </span>
-      <div class="flex flex-row items-center space-x-1">
-        <WarningIcon />
-        <span class="text-warningColor" v-if="props.isPermanent">Data yang ditampilkan merupakan data tahun sebelumnya,
-          silahkan
-          lakukan
-          update
-          terhadap data tersebut!</span>
-        <span class="text-warningColor" v-else>Data yang ditampilkan
-          merupakan data simulasi,
-          mohon pilih opsi simulasi untuk mengubah ke data tetap</span>
-      </div> -->
-    <!-- </section> -->
     <div class="flex flex-col space-y-8">
-      <!-- <div class="flex flex-col space-y-3.5"> -->
-        <!-- <div
-          class="w-full p-3 flex flex-col bg-infoComponentBorderColor bg-opacity-10 border border-infoComponentBorderColor rounded-lg space-y-1.5">
-          <div class="flex items-center space-x-2">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M11 3.66732C6.94995 3.66732 3.66671 6.95056 3.66671 11.0007C3.66671 15.0507 6.94995 18.334 11 18.334C15.0501 18.334 18.3334 15.0507 18.3334 11.0007C18.3334 6.95056 15.0501 3.66732 11 3.66732ZM1.83337 11.0007C1.83337 5.93804 5.93743 1.83398 11 1.83398C16.0626 1.83398 20.1667 5.93804 20.1667 11.0007C20.1667 16.0633 16.0626 20.1673 11 20.1673C5.93743 20.1673 1.83337 16.0633 1.83337 11.0007ZM11 7.33398C11.5063 7.33398 11.9167 7.74439 11.9167 8.25065V11.6882C11.9167 12.1944 11.5063 12.6048 11 12.6048C10.4938 12.6048 10.0834 12.1944 10.0834 11.6882V8.25065C10.0834 7.74439 10.4938 7.33398 11 7.33398ZM10.0834 14.4382C10.0834 13.9319 10.4938 13.5215 11 13.5215H11.0069C11.5132 13.5215 11.9236 13.9319 11.9236 14.4382V14.445C11.9236 14.9513 11.5132 15.3617 11.0069 15.3617H11C10.4938 15.3617 10.0834 14.9513 10.0834 14.445V14.4382Z"
-                fill="#4791F2" />
-            </svg>
-            <p class="text-base font-semibold">Informasi Cost Component B dan D</p>
-          </div>
-          <p class="text-sm text-gray-500 whitespace-normal">Apabila Cost Component B dan D digabung,
-            maka data yang diinputkan pada
-            kolom total Cost Component B dan D
-            merupakan hasil penggabungan dari Cost Component B dan Cost Component D
-          </p>
-        </div> -->
-        <!-- <div class="flex space-x-3">
-          <div class="flex space-x-1.5">
-            <input type="radio" id="gabung" name="radio-1" class="radio radio-sm radio-info" value="gabung"
-              v-model="picked" />
-            <label class="text-sm" for="gabung">Gabung</label>
-          </div>
-          <div class="flex space-x-3">
-            <div class="flex space-x-1.5">
-              <input type="radio" id="pisah" name="radio-1" class="radio radio-sm radio-info" value="pisah"
-                v-model="picked" checked />
-              <label class="text-sm" for="pisah">Pisah</label>
-            </div>
-          </div>
-        </div> -->
-      <!-- </div> -->
       <div class="flex flex-col space-y-8">
         <div class="flex flex-col space-y-3">
           <div class="flex flex-row space-x-2">

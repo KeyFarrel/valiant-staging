@@ -1,23 +1,5 @@
 <template>
   <div class="flex flex-col space-y-6">
-    <!-- <section class="flex flex-row items-center space-x-1 text-xs" v-if="props.isPerbaruiData === true">
-      <span class="font-medium text-gray-400">Periode : </span>
-      <span class="font-semibold">{{ props.tahunRealisasi }}</span>
-      <span class="text-gray-200"> / </span>
-      <span class="font-medium text-gray-400">Unit : </span>
-      <span class="font-semibold">{{ props.mesin }}</span> -->
-    <!-- <span class="text-gray-200"> / </span>
-      <span class="mr-1.5 font-medium text-gray-400">Catatan : </span>
-      <div class="flex flex-row items-center space-x-1">
-        <WarningIcon />
-        <span class="text-warningColor" v-if="props.isPermanent === true">Data yang ditampilkan merupakan data tahun
-          sebelumnya, silahkan lakukan
-          update terhadap data tersebut!</span>
-        <span class="text-warningColor" v-else>Data yang ditampilkan merupakan data
-          simulasi,
-          mohon pilih opsi simulasi untuk mengubah ke data tetap</span>
-      </div> -->
-    <!-- </section> -->
     <section class="text-xs" v-if="props.isPerbaruiData === false">
       <span class="font-medium text-gray-400">Periode : </span>
       <span class="font-semibold">{{ props.tahunRealisasi }}</span>
@@ -25,21 +7,6 @@
       <span class="font-medium text-gray-400">Unit : </span>
       <span class="font-semibold">{{ props.mesin }}</span>
     </section>
-    <!-- <div class="flex space-x-3" v-if="props.isIntegrasi === false">
-      <div class="flex space-x-1.5">
-        <input type="radio" id="auxiliarySusut" class="radio radio-sm radio-info" value="auxiliarySusut"
-          v-model="pickedValue"
-          :disabled="props.initValue?.auxiliary === '0,00' && props.initValue?.susutTrafo === '0,00'" />
-        <label class="text-sm" for="auxiliarySusut">Auxiliary & Susut Trafo</label>
-      </div>
-      <div class="flex space-x-3">
-        <div class="flex space-x-1.5">
-          <input type="radio" id="pemakaianSendiri" class="radio radio-sm radio-info" value="pemakaianSendiri"
-            v-model="pickedValue" :disabled="props.initValue?.pemakaianSendiri === '0,00'" />
-          <label label class="text-sm" for="pemakaianSendiri">Pemakaian Sendiri (PS)</label>
-        </div>
-      </div>
-    </div> -->
     <form class="flex flex-col space-y-6 text-sm">
       <div class="grid grid-cols-4 gap-x-6">
         <div class="space-y-1">

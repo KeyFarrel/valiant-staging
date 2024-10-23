@@ -48,7 +48,7 @@ provide(THEME_KEY, 'light');
 
 const chartRef = ref(null);
 
-echarts.registerTransform(ecStat.transform.regression);
+// echarts.registerTransform(ecStat.transform.regression);
 const option = computed({
   get() {
     const chartOption: ComposeOption<LineSeriesOption | ScatterSeriesOption | GridComponentOption | TooltipComponentOption | VisualMapComponentOption> = {

@@ -202,7 +202,6 @@ const yearRange = ref<number[]>([]);
 const periodeTahun = ref<any[]>([]);
 const tahunBerjalan = new Date().getFullYear();
 const searchQ = ref<string>("");
-const nodeMode = import.meta.env.MODE;
 
 const handleYearRangePicked = async (modelData: Array<number>) => {
   yearRangePicked.value = modelData;
