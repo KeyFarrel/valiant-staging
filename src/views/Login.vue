@@ -213,7 +213,7 @@
         </div>
       </div>
     </div>
-    <div class="flex md:w-4/12 min-h-screen justify-center items-center py-10 bg-[#F6FAFD]">
+    <div class="flex md:w-4/12 min-h-screen justify-center items-center py-10 bg-[#F6FAFD] overflow-auto">
       <form class="bg-[#F6FAFD]">
         <div>
           <img src="../assets/img/LogoValiant.png" class="m-auto w-72" alt="logo-valiant" />
@@ -286,18 +286,19 @@
           <div class="mb-2 text-sm font-bold tracking-wide text-gray-700">
             Captcha
           </div>
-          <RecaptchaV2 class="flex items-center justify-center" @widget-id="handleWidgetId"
+          <!-- <RecaptchaV2 class="flex items-center justify-center" @widget-id="handleWidgetId"
             @error-callback="handleErrorCalback" @expired-callback="handleExpiredCallback"
-            @load-callback="handleLoadCallback" />
-          <!-- <div
-            class="bg-gray-200 text-primaryTextColor h-[80px] w-[350px] px-4 border-2 border-gray-200 flex items-center justify-between rounded-md">
-            <label for="check">
-              <input type="checkbox" id="check" class="cursor-pointer" v-model="checkbox" @click="checkboxChange" />
-              <span class="p-2 text-xs" :class="ceklistCaptcha === true
+            @load-callback="handleLoadCallback" /> -->
+          <div
+            class="bg-white text-primaryTextColor h-[80px] w-[350px] px-4 border-2 border-gray-200 flex items-center justify-between rounded-md">
+            <label for="check" class="space-x-2.5">
+              <input type="checkbox" id="check" class="w-5 h-5 rounded-sm cursor-pointer" v-model="checkbox"
+                @click="checkboxChange" />
+              <span class="text-sm" :class="ceklistCaptcha === true
                 ? 'text-green-500'
                 : ceklistCaptcha === false
                   ? 'text-red-500'
-                  : ''
+                  : 'text-primaryTextColor'
                 ">I'm not a robot</span>
             </label>
             <div>
@@ -312,10 +313,10 @@
               </div>
             </div>
           </div>
-          <div class="bg-white text-primaryTextColor h-[140px] w-[350px] border border-gray-300 rounded-md"
+          <div class="mt-2 bg-white text-primaryTextColor h-[140px] w-[350px] border border-gray-300 rounded-md"
             :class="box === true ? 'block' : 'hidden'">
-            <input type="text" id="captchaInput" class="w-[330px] mx-2 text-xs m-1 border-0" placeholder="Type the text"
-              v-model="valCaptcha" />
+            <input type="text" id="captchaInput" class="w-[330px] mx-2 text-xs m-1 border-0"
+              placeholder="Masukkan captcha disini" v-model="valCaptcha" />
             <hr class="border-gray-300 w-[330px] mx-2" />
             <div class="flex items-center justify-center">
               <div class="m-2">
@@ -331,16 +332,16 @@
                 <img src="https://www.gstatic.com/recaptcha/api2/info.png" alt="info" class="w-5 h-5" />
               </div>
               <button
-                class="w-20 p-1 text-xs font-semibold tracking-wide text-white duration-300 bg-indigo-600 rounded-md shadow-lg font-display focus:outline-none focus:shadow-outline hover:bg-indigo-300 hover:text-indigo-600"
+                class="w-20 text-xs font-semibold tracking-wide text-white duration-300 bg-indigo-600 rounded-md shadow-lg font-display focus:outline-none focus:shadow-outline hover:bg-indigo-300 hover:text-indigo-600"
                 @click="checkCaptcha" type="button">
                 Verify
               </button>
             </div>
-          </div> -->
+          </div>
         </div>
         <button @click="onSubmitLogin" type="button"
           class="text-white uppercase  bg-[#0099AD] w-[350px] hover:bg-[#0099AD] hover:text-white active:ring active:ring-[#005A66] rounded-lg text-xs p-3 my-4 dark:bg-[#005A66] dark:hover:bg-slate-300 focus:outline-none dark:focus:ring-[#0099AD]"
-          v-if="isVerified && (valEmail && valPassword)">
+          v-if="ceklistCaptcha && (valEmail && valPassword)">
           <p v-show="!isLoadingButton" class="font-semibold">Masuk Ke Aplikasi</p>
           <div v-show="isLoadingButton" class="flex flex-row items-center justify-center space-x-2">
             <svg aria-hidden="true" class="inline w-5 h-5 text-gray-200 animate-spin fill-[#0099AD]"
@@ -396,6 +397,7 @@ import errorJsonData from '@/assets/lottie/error.json';
 import LottieInfo from "@/assets/lottie/info.json";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import LottieSuccess from "@/assets/lottie/success.json";
+import Chips from "@/components/ui/Chips.vue";
 
 const nodeMode = import.meta.env.MODE;
 const router = useRouter();
@@ -428,6 +430,13 @@ const isOldPasswordWrong = ref<boolean>(false);
 const isShowCompletePassword = ref<boolean>(false);
 const url = import.meta.env.VITE_API_URL;
 const isChangePasswordSuccess = ref<boolean>(false);
+const checkbox = ref<boolean>(false);
+const ceklistCaptcha = ref<boolean | null>(null);
+const box = ref<boolean>(false);
+const valCaptcha = ref<string>("");
+const captcha = ref<any[]>([]);
+const verify = ref(false);
+
 const userData = ref<DataItem>({
   data: {},
   id_user: "",
@@ -464,8 +473,12 @@ interface DataItem {
   created_at: any
 }
 
-function visiblePassword() {
+const visiblePassword = () => {
   showPassword.value = !showPassword.value;
+}
+
+const checkboxChange = () => {
+  box.value = true;
 }
 
 const { handleGetResponse } = useRecaptcha();
@@ -579,11 +592,46 @@ const changePassword = async () => {
     }
   }
 };
+
+const checkCaptcha = () => {
+  if (valCaptcha.value !== captcha.value.map((c: any) => c.char).join("")) {
+    console.log('papa')
+    valPasswordErr.value = "Captcha yang anda masukkan tidak sesuai";
+  } else if (valCaptcha.value === captcha.value.map((c: any) => c.char).join("")) {
+    console.log('masuk2')
+    valPasswordErr.value = "";
+    verify.value = true;
+    checkbox.value = true;
+    ceklistCaptcha.value = true;
+    box.value = false;
+  } else {
+    console.log('rtes')
+    valPasswordErr.value = "";
+    box.value = false;
+    ceklistCaptcha.value = false;
+  }
+}
+
+
 const handleClickChangePassword = async () => {
   await fetchDataProfile();
   isShowCompletePassword.value = false;
   isModalChangePasswordShow.value = true;
 }
+
+const generateCaptcha = () => {
+  const chars =
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let captchaChars = [];
+  for (let i = 0; i < 6; i++) {
+    let char = chars[Math.floor(Math.random() * chars.length)];
+    let fontSize = Math.floor(Math.random() * 10) + 20; // random font size between 20 and 30
+    let rotation = Math.floor(Math.random() * 21) - 10; // random rotation between -10 and 10 degrees
+    captchaChars.push({ char, fontSize, rotation });
+  }
+  captcha.value = captchaChars;
+}
+
 const onSubmitLogin = async () => {
   if (isLoadingButton.value) return;
 
@@ -594,7 +642,7 @@ const onSubmitLogin = async () => {
     valPasswordErr.value = "Password kosong mohon diisi";
     valEmailErr.value = "";
   } else {
-    if (isVerified.value) {
+    if (ceklistCaptcha.value) {
       isLoadingButton.value = true;
       valEmailErr.value = "";
       valPasswordErr.value = "";
@@ -662,6 +710,7 @@ const loginSSO = async () => {
 }
 
 onMounted(() => {
+  generateCaptcha();
   initFlowbite();
   const hasRefreshed = sessionStorage.getItem('hasRefreshed');
   if (!hasRefreshed) {
