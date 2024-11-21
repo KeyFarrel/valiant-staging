@@ -1,4 +1,4 @@
-import { shallowMount } from "@vue/test-utils";
+import { mount } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia"; // Import Pinia
 import TabsWrapperApproveFS from "@/components/ui/TabsWrapperApproveFS.vue";
 import TabItem from "@/components/ui/TabItem.vue";
@@ -10,8 +10,8 @@ describe("TabsWrapperApproveFS.vue", () => {
     const pinia = createPinia();
     setActivePinia(pinia);
 
-    // Ganti shallowMount dengan mount untuk pengujian mendalam
-    wrapper = shallowMount(TabsWrapperApproveFS, {
+    // Ganti mount dengan mount untuk pengujian mendalam
+    wrapper = mount(TabsWrapperApproveFS, {
       global: {
         plugins: [pinia],
         components: {
@@ -108,5 +108,16 @@ describe("TabsWrapperApproveFS.vue", () => {
     const tabItem = wrapper.findComponent(TabItem);
     expect(tabItem.props("idMesin")).toBe("123");
     expect(tabItem.props("tahunGrafik")).toBe(2024);
+  })
+
+  it('should render li element with class items-end content-end justify-end ml-auto justify-items-end when isLihatGrafik is true', () => {
+    const li = wrapper.find('li.items-end.content-end.justify-end.ml-auto.justify-items-end');
+    expect(li.exists()).toBe(true);
+  });
+
+  it('should not render li element with class items-end content-end justify-end ml-auto justify-items-end when isLihatGrafik is false', async () => {
+    await wrapper.setProps({ isLihatGrafik: false });
+    const li = wrapper.find('li.items-end.content-end.justify-end.ml-auto.justify-items-end');
+    expect(li.exists()).toBe(false);
   });
 });

@@ -11,4 +11,12 @@ globalThis.import = {
   },
 };
 
+class MockResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+global.ResizeObserver = MockResizeObserver;
+
 // Other setup tasks if needed

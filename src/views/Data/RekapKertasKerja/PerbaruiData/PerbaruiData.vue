@@ -1842,29 +1842,29 @@ const fetchDataFinansialSimulasi1 = async () => {
         currentLevel2 = {
           ...item,
           level3: [],
-        }
+        };
         currentLevel1.level2.push(currentLevel2);
       } else if (item.level === 3 && currentLevel1 !== null) {
         currentLevel3 = {
           ...item,
           level4: [],
-        }
+        };
         currentLevel2.level3.push(currentLevel3);
       } else if (item.level === 4 && currentLevel1 !== null) {
         currentLevel3.level4.push({ ...item });
-      }
-    }
+      };
+    };
     dataFinansialSimulasi1.value = response.data;
     console.log('Simulasi Finansial 1 : ', response.data);
   } catch (error) {
     console.error('Fetch Opsi Simulasi Error : ', error);
-  }
-}
+  };
+};
 const fetchDataFinansialSimulasi2 = async () => {
   try {
-    simulasi2DataFinansial.value = [];
-    const response: any = await perbaruiDataService.getDataFinansialSimulasi2(tahunBerjalan, idMesin);
-    let currentLevel1: any | null = null;
+    simulasi2DataFinansial.value = []
+    const response: any = await perbaruiDataService.getDataFinansialSimulasi2(tahunBerjalan, idMesin)
+    let currentLevel1: any | null = null
     let currentLevel2: any | null = null;
     let currentLevel3: any | null = null;
     for (const item of response.data.detail) {
@@ -1872,8 +1872,8 @@ const fetchDataFinansialSimulasi2 = async () => {
         currentLevel1 = {
           ...item,
           level2: [],
-        };
-        simulasi2DataFinansial.value.push(currentLevel1);
+        }
+        simulasi2DataFinansial.value.push(currentLevel1)
       } else if (item.level === 2 && currentLevel1 !== null) {
         currentLevel2 = {
           ...item,
@@ -1884,18 +1884,18 @@ const fetchDataFinansialSimulasi2 = async () => {
         currentLevel3 = {
           ...item,
           level4: [],
-        }
-        currentLevel2.level3.push(currentLevel3);
+        };
+        currentLevel2.level3.push(currentLevel3)
       } else if (item.level === 4 && currentLevel1 !== null) {
-        currentLevel3.level4.push({ ...item });
+        currentLevel3.level4.push({ ...item })
       }
-    }
+    };
     dataFinansialSimulasi2.value = response.data;
-    console.log('Simulasi : Finansial 2', simulasi2DataFinansial.value);
+    console.log('Simulasi : Finansial 2', simulasi2DataFinansial.value)
   } catch (error) {
-    console.error('Fetch Opsi Simulasi Error : ', error);
+    console.error('Fetch Opsi Simulasi Error : ', error)
   }
-}
+};
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const handleSubmit = async () => {
   const errorAsumsiInput = error.value.asumsi;
@@ -2506,44 +2506,44 @@ const handleDownloadExcelSimulasi1 = async () => {
     console.log(response);
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
-    const fileName = fileNameMatch ? fileNameMatch[1] : `Simulasi 1 - Kertas Kerja Actual - ${mesinDataById.value?.mesin}_${tahunBerjalan}_${globalFormat.formatNumberFiveDigits(idMesin)}.xlsx`;
+    const fileName = fileNameMatch ? fileNameMatch[1] : `Simulasi 1 - Kertas Kerja Actual - ${mesinDataById.value?.mesin}_${tahunBerjalan}_${globalFormat.formatNumberFiveDigits(idMesin)}.xlsx`
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement('a')
     link.href = url;
     link.setAttribute('download', fileName);
-    document.body.appendChild(link);
+    document.body.appendChild(link)
     link.click();
     document.body.removeChild(link);
-    isLoading.value = false;
+    isLoading.value = false
   } catch (error) {
     console.error('Handle Download Template Rekap Error : ' + error);
   } finally {
     isLoading.value = false;
   }
-}
+};
 const handleDownloadExcelSimulasi2 = async () => {
   try {
-    isLoading.value = true;
+    isLoading.value = true
     const response: any = await rekapService.downloadSimulasi2(tahunBerjalan, tahunBerjalan - 1, idMesin);
-    const contentDisposition = response.headers['content-disposition'];
+    const contentDisposition = response.headers['content-disposition']
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
-    const fileName = fileNameMatch ? fileNameMatch[1] : `Simulasi 2 - Kertas Kerja Actual - ${mesinDataById.value?.mesin}_${tahunBerjalan}_${globalFormat.formatNumberFiveDigits(idMesin)}.xlsx`;
+    const fileName = fileNameMatch ? fileNameMatch[1] : `Simulasi 2 - Kertas Kerja Actual - ${mesinDataById.value?.mesin}_${tahunBerjalan}_${globalFormat.formatNumberFiveDigits(idMesin)}.xlsx`
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = window.URL.createObjectURL(blob);
+    const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a');
-    link.href = url;
+    link.href = url
     link.setAttribute('download', fileName);
-    document.body.appendChild(link);
+    document.body.appendChild(link)
     link.click();
-    document.body.removeChild(link);
+    document.body.removeChild(link)
     isLoading.value = false;
   } catch (error) {
-    console.error('Handle Download Template Rekap Error : ' + error);
+    console.error('Handle Download Template Rekap Error : ' + error)
   } finally {
     isLoading.value = false;
   }
-}
+};
 
 onUnmounted(() => {
   storePerbaruiTab.currentTab = 'Asumsi Makro';

@@ -1,58 +1,58 @@
 <script setup lang="ts">
 import { onMounted, type Ref, ref, watch } from "vue";
-import Empty from "@/components/icons/IconEmptyData.vue";
-import ShimmerLoading from "@/components/ui/ShimmerLoading.vue"
-import ModalWrapper from "@/components/ui/ModalWrapper.vue";
+import Empty from "@/components/icons/IconEmptyData.vue"
+import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
+import ModalWrapper from "@/components/ui/ModalWrapper.vue"
 import PetaService from "@/services/peta-service";
-import GrafikService from "@/services/grafik-service";
+import GrafikService from "@/services/grafik-service"
 import type { CheckboxValueType } from 'element-plus';
-import type { BaseResponse, ResCapexEfor } from "@/types/LamanAnalitik/TypeFinansial";
+import type { BaseResponse, ResCapexEfor } from "@/types/LamanAnalitik/TypeFinansial"
 import { id } from "date-fns/locale";
-import DynamicScatterPlot from "@/views/Beranda/LamanAnalitik/TabPage/DynamicScatterPlot.vue";
+import DynamicScatterPlot from "@/views/Beranda/LamanAnalitik/TabPage/DynamicScatterPlot.vue"
 import { notifyError } from "@/services/helper/toast-notification";
 
-const petaService = new PetaService();
+const petaService = new PetaService()
 const grafikService = new GrafikService();
 // const periodeTahun = ref<Array<number>>([]);
 const checkAll = ref(false)
-const checkDmn = ref(true)
+const checkDmn = ref(true);
 const indeterminate = ref(false)
-const indeterminateDmn = ref(false)
-const value = ref<CheckboxValueType[]>([]);
-const dmn = ref<CheckboxValueType[]>([1, 2, 3])
-const showModal = ref<boolean>(false);
+const indeterminateDmn = ref(false);
+const value = ref<CheckboxValueType[]>([])
+const dmn = ref<CheckboxValueType[]>([1, 2, 3]);
+const showModal = ref<boolean>(false)
 
 const props = defineProps<{
   itemsPembangkit: { id: string; name: string }[]
   itemsDayaMampu: { id: string; name: string }[]
   title: string
   yearRange: number[]
-}>()
+}>();
 
 const isLoading = ref(false)
 const graphData: Ref<{
-  legends?: { label: string; color: string }[]
+  legends?: { label: string; color: string }[];
   source: any
-  series: any
+  series: any;
   pln: { x: number; y: number }
-  ipp: { x: number; y: number }
+  ipp: { x: number; y: number };
   isEmpty?: boolean
-  dataZoom: { start: number, type: string, orient: string }
+  dataZoom: { start: number, type: string, orient: string };
 }> = ref({
   legends: [],
   source: [],
-  series: [],
   pln: { x: 0, y: 0 },
+  series: [],
   ipp: { x: 0, y: 0 },
   isEmpty: true,
   dataZoom: { start: 0, type: 'inside', orient: 'vertical' }
-})
+});
 const filter: Ref<{
   kategoriPembangkit: string[] | null
-  tahun: number
+  tahun: number;
 }> = ref({
   kategoriPembangkit: [""],
-  tahun: new Date().getFullYear()
+  tahun: new Date().getFullYear(),
 })
 
 // const fetchTahunTerakhirRealisasi = async () => {
@@ -67,11 +67,11 @@ const fetchInitialPembangkit = async () => {
   try {
     const response: any = await grafikService.getInitialPembangkit();
     for (const iterator of response.data) {
-      value.value.push(iterator.kode_jenis_pembangkit);
-    }
+      value.value.push(iterator.kode_jenis_pembangkit)
+    };
   } catch (error) {
-    console.error('Fetch Initial Pembangkit Error : ', error);
-  }
+    console.error('Fetch Initial Pembangkit Error : ', error)
+  };
 }
 
 async function getDataGraph() {
@@ -130,17 +130,17 @@ async function getDataGraphNoDMN() {
       kode_jenis_pembangkit: value.value ? value.value : "",
       id_daya: [],
       periode: filter.value.tahun.toString()
-    })
+    });
     if (response.success) {
-      const data = response.data[0]
+      const data = response.data[0];
       graphData.value.isEmpty = data.grafik === null
-      graphData.value.series = []
+      graphData.value.series = [];
       graphData.value.legends = []
-      graphData.value.source = []
+      graphData.value.source = [];
       graphData.value.pln.x = data.average_pln_efor
-      graphData.value.pln.y = data.average_pln_capex
+      graphData.value.pln.y = data.average_pln_capex;
       graphData.value.ipp.x = data.average_ipp_efor
-      graphData.value.ipp.y = data.average_ipp_capex
+      graphData.value.ipp.y = data.average_ipp_capex;
       data.legend?.map((item, index) => {
         graphData.value.legends?.push(item)
         const scatterTemplate: {
@@ -153,34 +153,34 @@ async function getDataGraphNoDMN() {
           type: 'scatter',
           data: [],
           color: item.color,
-        }
+        };
         data.grafik?.map(graph => {
           if (graph.kode_jenis_kit === item.label) {
             scatterTemplate.data.push([graph.data.efor, graph.data.capex, 5, graph.nama_mesin])
-            graphData.value.source?.push([graph.data.efor, graph.data.capex])
+            graphData.value.source?.push([graph.data.efor, graph.data.capex]);
           }
-        })
+        });
         graphData.value.series.push(scatterTemplate)
-      })
+      });
       isLoading.value = false
-    }
+    };
   } catch (e) {
     isLoading.value = false
-    console.log(e)
+    console.log(e);
   }
-}
+};
 
 const closeModal = () => {
   if (value.value.length) {
-    showModal.value = false
+    showModal.value = false;
   } else if (value.value.length === 0 && filter.value.tahun === null) {
     notifyError('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000);
   } else if (filter.value.tahun === null) {
     notifyError('Mohon pilih 1 tahun!', 5000);
   } else {
     notifyError('Mohon pilih minimal 1 kategori pembangkit!', 5000);
-  }
-}
+  };
+};
 
 const applyFilter = async () => {
   if (value.value.length) {
@@ -192,8 +192,8 @@ const applyFilter = async () => {
     notifyError('Mohon pilih 1 tahun!', 5000);
   } else {
     notifyError('Mohon pilih minimal 1 kategori pembangkit!', 5000);
-  }
-}
+  };
+};
 
 const applyFilterNoDMN = async () => {
   if (value.value.length) {
@@ -205,8 +205,8 @@ const applyFilterNoDMN = async () => {
     notifyError('Mohon pilih 1 tahun!', 5000);
   } else {
     notifyError('Mohon pilih minimal 1 kategori pembangkit!', 5000);
-  }
-}
+  };
+};
 
 // const fetchPeriodeTahunSentral = async () => {
 //   try {
@@ -219,54 +219,54 @@ const applyFilterNoDMN = async () => {
 
 watch(value, (val) => {
   if (val.length === 0) {
-    checkAll.value = false
-    indeterminate.value = false
+    checkAll.value = false;
+    indeterminate.value = false;
   } else if (val.length === props.itemsPembangkit.length) {
-    checkAll.value = true
-    indeterminate.value = false
+    checkAll.value = true;
+    indeterminate.value = false;
   } else {
-    indeterminate.value = true
-  }
-})
+    indeterminate.value = true;
+  };
+});
 
 const handleCheckAll = (val: CheckboxValueType) => {
-  indeterminate.value = false
+  indeterminate.value = false;
   if (val) {
-    value.value = props.itemsPembangkit.map((_) => _.name)
+    value.value = props.itemsPembangkit.map((_) => _.name);
   } else {
-    value.value = []
-  }
-}
+    value.value = [];
+  };
+};
 
 watch(dmn, (val) => {
   if (val.length === 0) {
-    checkDmn.value = false
-    indeterminateDmn.value = false
+    checkDmn.value = false;
+    indeterminateDmn.value = false;
   } else if (val.length === props.itemsDayaMampu.length) {
-    checkDmn.value = true
-    indeterminateDmn.value = false
+    checkDmn.value = true;
+    indeterminateDmn.value = false;
   } else {
-    indeterminateDmn.value = true
-  }
-})
+    indeterminateDmn.value = true;
+  };
+});
 
 const handleCheckDmn = (val: CheckboxValueType) => {
-  indeterminateDmn.value = false
+  indeterminateDmn.value = false;
   if (val) {
-    dmn.value = props.itemsDayaMampu.map((_) => _.id)
+    dmn.value = props.itemsDayaMampu.map((_) => _.id);
   } else {
-    dmn.value = []
-  }
-}
+    dmn.value = [];
+  };
+};
 
 
 onMounted(async () => {
-  isLoading.value = true
+  isLoading.value = true;
   await fetchInitialPembangkit();
   // await fetchTahunTerakhirRealisasi();
   // fetchPeriodeTahunSentral();
   getDataGraph();
-})
+});
 </script>
 
 <template>

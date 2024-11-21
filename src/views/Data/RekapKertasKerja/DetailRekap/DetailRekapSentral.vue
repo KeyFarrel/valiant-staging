@@ -14,10 +14,10 @@
           : '-'
           " :discount-rate="asumsiParameter ? asumsiParameter.asumsi_makro.discount_rate : '-'
             " :interest-rate="asumsiParameter ? asumsiParameter.asumsi_makro.discount_rate : '-'
-      " :loan-tenor="asumsiParameter ? asumsiParameter.asumsi_makro.loan_tenor : '-'
-      " :loan-portion="asumsiParameter ? asumsiParameter.asumsi_makro.loan_portion : '-'
-      " :equity-portion="asumsiParameter ? asumsiParameter.asumsi_makro.equity : '-'
-      " />
+              " :loan-tenor="asumsiParameter ? asumsiParameter.asumsi_makro.loan_tenor : '-'
+        " :loan-portion="asumsiParameter ? asumsiParameter.asumsi_makro.loan_portion : '-'
+        " :equity-portion="asumsiParameter ? asumsiParameter.asumsi_makro.equity : '-'
+        " />
       </TabItem>
       <TabItem title="Parameter Teknis & Finansial">
         <ParameterTeknis v-model="tahunRealisasi" :daya-terpasang="asumsiParameter
@@ -27,43 +27,43 @@
             ? asumsiParameter.parameter_teknis_financial.daya_mampu_netto_mw
             : '-'
             " :auxiliary="asumsiParameter
-      ? asumsiParameter.parameter_teknis_financial.auxiliary
-      : '-'
-      " :susut-trafo="asumsiParameter
-      ? asumsiParameter.parameter_teknis_financial.susut_trafo
-      : '-'
-      " :pemakaian-sendiri="asumsiParameter
-      ? asumsiParameter.parameter_teknis_financial.ps
-      : '-'
-      " :net-plant-heat-rate="asumsiParameter
-      ? asumsiParameter.parameter_teknis_financial.nphr
-      : '-'
-      " :total-project-cost="asumsiParameter
-      ? asumsiParameter.parameter_teknis_financial.total_project_cost
-      : '-'
-      " :loan="asumsiParameter
-      ? asumsiParameter.parameter_teknis_financial.loan
-      : '-'
-      " :equity="asumsiParameter
-      ? asumsiParameter.parameter_teknis_financial.equity
-      : '-'
-      " :electricity-price-a="asumsiParameter
-      ? asumsiParameter.parameter_teknis_financial
-        .electricity_price_a_rp_per_kwbln
-      : '-'
-      " :electricity-price-b="asumsiParameter
-      ? asumsiParameter.parameter_teknis_financial
-        .electricity_price_b_rp_per_kwbln
-      : '-'
-      " :electricity-price-c="asumsiParameter
-      ? asumsiParameter.parameter_teknis_financial
-        .electricity_price_c_rp_per_kwh
-      : '-'
-      " :electricity-price-d="asumsiParameter
-      ? asumsiParameter.parameter_teknis_financial
-        .electricity_price_d_rp_per_kwh
-      : '-'
-      " :bahan-bakars="asumsiParameter ? asumsiParameter.bahan_bakars : '-'" />
+              ? asumsiParameter.parameter_teknis_financial.auxiliary
+              : '-'
+              " :susut-trafo="asumsiParameter
+        ? asumsiParameter.parameter_teknis_financial.susut_trafo
+        : '-'
+        " :pemakaian-sendiri="asumsiParameter
+        ? asumsiParameter.parameter_teknis_financial.ps
+        : '-'
+        " :net-plant-heat-rate="asumsiParameter
+        ? asumsiParameter.parameter_teknis_financial.nphr
+        : '-'
+        " :total-project-cost="asumsiParameter
+        ? asumsiParameter.parameter_teknis_financial.total_project_cost
+        : '-'
+        " :loan="asumsiParameter
+        ? asumsiParameter.parameter_teknis_financial.loan
+        : '-'
+        " :equity="asumsiParameter
+        ? asumsiParameter.parameter_teknis_financial.equity
+        : '-'
+        " :electricity-price-a="asumsiParameter
+        ? asumsiParameter.parameter_teknis_financial
+          .electricity_price_a_rp_per_kwbln
+        : '-'
+        " :electricity-price-b="asumsiParameter
+        ? asumsiParameter.parameter_teknis_financial
+          .electricity_price_b_rp_per_kwbln
+        : '-'
+        " :electricity-price-c="asumsiParameter
+        ? asumsiParameter.parameter_teknis_financial
+          .electricity_price_c_rp_per_kwh
+        : '-'
+        " :electricity-price-d="asumsiParameter
+        ? asumsiParameter.parameter_teknis_financial
+          .electricity_price_d_rp_per_kwh
+        : '-'
+        " :bahan-bakars="asumsiParameter ? asumsiParameter.bahan_bakars : '-'" />
       </TabItem>
       <TabItem title="Data Teknis">
         <div class="w-full overflow-auto border rounded-lg whitespace-nowrap">
@@ -377,36 +377,36 @@ const fetchDataFinansial = async () => {
       tahunRealisasi.value,
       idSentral
     );
-    let currentLevel1: any | null = null;
-    let currentLevel2: any | null = null;
-    let currentLevel3: any | null = null;
+    let currentLevel1: any | null = null
+    let currentLevel2: any | null = null
+    let currentLevel3: any | null = null
     for (const item of response.data.detail) {
       if (item.level === 1) {
         currentLevel1 = {
           ...item,
           level2: [],
-        };
+        }
         finansialMappingResult.value.push(currentLevel1);
       } else if (item.level === 2 && currentLevel1 !== null) {
         currentLevel2 = {
           ...item,
           level3: [],
-        }
-        currentLevel1.level2.push(currentLevel2);
+        };
+        currentLevel1.level2.push(currentLevel2)
       } else if (item.level === 3 && currentLevel1 !== null) {
         currentLevel3 = {
           ...item,
           level4: [],
-        }
-        currentLevel2.level3.push(currentLevel3)
+        };
+        currentLevel2.level3.push(currentLevel3);
       } else if (item.level === 4 && currentLevel1 !== null) {
-        currentLevel3.level4.push({ ...item })
+        currentLevel3.level4.push({ ...item });
       }
-    }
-    dataFinansial.value = response.data;
+    };
+    dataFinansial.value = response.data
   } catch (error) {
     console.error("Fetch Data Finansial Error : " + error);
-  }
+  };
 };
 const fetchTypePeriodic = async () => {
   try {

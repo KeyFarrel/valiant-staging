@@ -17,12 +17,8 @@ jest.mock('@/utils/app-encrypt-storage', () => ({
   },
 }));
 
-jest.mock('@/services/rekap-service', () => {
-  return jest.fn().mockImplementation(() => ({
-    getEvidencePath: jest.fn(),
-    downloadEvidence: jest.fn(),
-  }));
-});
+jest.mock('@/services/rekap-service');
+jest.mock('@/services/detail-rekap-service');
 
 jest.mock('vue-router', () => ({
   useRoute: jest.fn(() => ({
@@ -123,4 +119,34 @@ describe('DetailKKMesin.vue', () => {
     expect(wrapper.vm.modalApprove).toBe(true);  // Pastikan nilainya benar
   });
   
+
+  it('is fetching fetchComboBahanBakar', async () => {
+    const fetchComboBahanBakarSpy = jest.spyOn(wrapper.vm, 'fetchComboBahanBakar');
+    await wrapper.vm.fetchComboBahanBakar();
+    expect(fetchComboBahanBakarSpy).toHaveBeenCalled();
+  });
+
+  it('is fetching fetchTypePeriodic', async () => {
+    const fetchTypePeriodicSpy = jest.spyOn(wrapper.vm, 'fetchTypePeriodic');
+    await wrapper.vm.fetchTypePeriodic();
+    expect(fetchTypePeriodicSpy).toHaveBeenCalled();
+  });
+
+  it('is fetching fetchHasilSimulasi', async () => {
+    const fetchHasilSimulasiSpy = jest.spyOn(wrapper.vm, 'fetchHasilSimulasi');
+    await wrapper.vm.fetchHasilSimulasi();
+    expect(fetchHasilSimulasiSpy).toHaveBeenCalled();
+  });
+
+  it('is fetching fetchMesinById', async () => {
+    const fetchMesinByIdSpy = jest.spyOn(wrapper.vm, 'fetchMesinById');
+    await wrapper.vm.fetchMesinById();
+    expect(fetchMesinByIdSpy).toHaveBeenCalled();
+  });
+
+  it('is fetching fetchAsumsiParameter', async () => {
+    const fetchAsumsiParameterSpy = jest.spyOn(wrapper.vm, 'fetchAsumsiParameter');
+    await wrapper.vm.fetchAsumsiParameter();
+    expect(fetchAsumsiParameterSpy).toHaveBeenCalled();
+  });
 });

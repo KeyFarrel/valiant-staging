@@ -68,33 +68,32 @@ const fetchInitialPembangkit = async () => {
 async function getDataGraph() {
   try {
     isLoading.value = true
-    // filterChips.value?.setValue()
     const param: any = {
-      kode_jenis_pembangkit: [],
       id_daya: [],
+      kode_jenis_pembangkit: [],
+      tahun_akhir: "",
       tahun_awal: "",
-      tahun_akhir: ""
     }
-    param.kode_jenis_pembangkit = value.value;
     param.id_daya = dmn.value;
-    param.tahun_awal = filter.value.periode ? filter.value.periode[0].toString() : "";
+    param.kode_jenis_pembangkit = value.value;
     param.tahun_akhir = filter.value.periode ? filter.value.periode[1].toString() : "";
+    param.tahun_awal = filter.value.periode ? filter.value.periode[0].toString() : "";
 
     const response: BaseResponse<ResComponent> = await grafikService.getGraphicTeknisNPHR(param)
     if (response.success) {
       const data = response.data
+      graphData.value.legends = []
       graphData.value.isEmpty = data.data === null
       graphData.value.series = []
-      graphData.value.legends = []
-      graphData.value.years = []
       graphData.value.values = []
+      graphData.value.years = []
       data.legend?.map((item) => {
         graphData.value.legends?.push(item)
         const scatterTemplate: {
-          name: string
-          type: string
-          data: any
-          color: string
+          name: string,
+          type: string,
+          data: any,
+          color: string,
         } = {
           name: item.label,
           type: 'scatter',
@@ -105,28 +104,31 @@ async function getDataGraph() {
           graphData.value.years.push(parseInt(graph.data.tahun))
           graphData.value.values.push(graph.data.value)
           if (graph.kode_jenis_kit === item.label) {
-            scatterTemplate.data.push([parseInt(graph.data.tahun), graph.data.value, 5, graph.nama_mesin])
+            scatterTemplate.data.push(
+              [parseInt(graph.data.tahun), graph.data.value, 5, graph.nama_mesin]
+            )
           }
         })
         graphData.value.series.push(scatterTemplate)
-      })
-      isLoading.value = false
+      }
+      )
+      isLoading.value = false;
     }
   } catch (e) {
-    isLoading.value = false
     console.log(e)
+    isLoading.value = false
   }
-}
+};
 
 async function getDataGraphNoDMN() {
   try {
     isLoading.value = true
-    // filterChips.value?.setValue()
+    // filterChips.value?.setValue();
     const param: any = {
       kode_jenis_pembangkit: [],
       id_daya: [],
-      tahun_awal: "",
-      tahun_akhir: ""
+      tahun_awal: '',
+      tahun_akhir: ''
     }
     param.kode_jenis_pembangkit = value.value;
     param.id_daya = [];
@@ -223,37 +225,37 @@ watch(value, (val) => {
 
 watch(dmn, (val) => {
   if (val.length === 0) {
-    checkDmn.value = false
+    checkDmn.value = false;
     indeterminateDmn.value = false
   } else if (val.length === props.itemsDayaMampu.length) {
     checkDmn.value = true
     indeterminateDmn.value = false
   } else {
-    indeterminateDmn.value = true
+    indeterminateDmn.value = true;
   }
 })
 
 const handleCheckDmn = (val: CheckboxValueType) => {
   indeterminateDmn.value = false
   if (val) {
-    dmn.value = props.itemsDayaMampu.map((_) => _.id)
+    dmn.value = props.itemsDayaMampu.map((_) => _.id);
   } else {
     dmn.value = []
   }
 }
 
 const handleCheckAll = (val: CheckboxValueType) => {
-  indeterminate.value = false
+  indeterminate.value = false;
   if (val) {
     value.value = props.itemsPembangkit.map((_) => _.name)
   } else {
     value.value = []
   }
-}
+};
 
 onMounted(async () => {
-  await fetchInitialPembangkit();
-  getDataGraph();
+  await fetchInitialPembangkit()
+  getDataGraph()
 })
 </script>
 

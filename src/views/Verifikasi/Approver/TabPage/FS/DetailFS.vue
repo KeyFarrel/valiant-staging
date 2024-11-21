@@ -30,26 +30,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import PersetujuanService from '@/services/persetujuan-service';
-import Loading from "@/components/ui/LoadingSpinner.vue";
-import InfoHeader from '@/components/ui/InfoHeader.vue';
+import { ref, onMounted } from "vue"
+import PersetujuanService from '@/services/persetujuan-service'
+import Loading from "@/components/ui/LoadingSpinner.vue"
+import InfoHeader from '@/components/ui/InfoHeader.vue'
 import { useRoute } from 'vue-router'
 
-const route = useRoute();
-const isLoading = ref(false);
-const persetujuanService = new PersetujuanService();
-const approveSentralFS = ref<ListApprove>({});
+const route = useRoute()
+const isLoading = ref(false)
+const persetujuanService = new PersetujuanService()
+const approveSentralFS = ref<ListApprove>({})
 
 interface ListApprove {
-  data: any
   sentral: string
-  pengelola: string
+  data: any
   pembina: string
-  jenis_kit: string
+  pengelola: string
   daya_terpasang: string
-  daya_mampu: string
+  jenis_kit: string
   tahun_operasi: string
+  daya_mampu: string
   umur_teknis: string
 }
 
@@ -57,16 +57,16 @@ const fetchPersetujuanFS = async () => {
   try {
     const response: ListApprove = await persetujuanService.getPersetujuanFSSentral({
       id_sentral: route.query.id_sentral
-    });
-    approveSentralFS.value = response.data;
+    })
+    approveSentralFS.value = response.data
   } catch (error) {
-    console.error('Fetch Persetujuan FS Sentral Error : ' + error);
+    console.error('Fetch Persetujuan FS Sentral Error : ' + error)
   }
 }
 
 onMounted(async () => {
-  isLoading.value = true;
-  await fetchPersetujuanFS();
-  isLoading.value = false;
+  isLoading.value = true
+  await fetchPersetujuanFS()
+  isLoading.value = false
 })
 </script>

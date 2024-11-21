@@ -604,7 +604,7 @@ const fetchDataFinansial = async () => {
       parseInt(idGrafik)
     );
     let currentLevel1: any | null = null;
-    let currentLevel2: any | null = null;
+    let currentLevel2: any | null = null
     let currentLevel3: any | null = null;
     for (const item of response.data.detail) {
       if (item.level === 1) {
@@ -612,12 +612,12 @@ const fetchDataFinansial = async () => {
           ...item,
           level2: [],
         };
-        finansialMappingResult.value.push(currentLevel1);
+        finansialMappingResult.value.push(currentLevel1)
       } else if (item.level === 2 && currentLevel1 !== null) {
         currentLevel2 = {
           ...item,
           level3: [],
-        }
+        };
         currentLevel1.level2.push(currentLevel2);
       } else if (item.level === 3 && currentLevel1 !== null) {
         currentLevel3 = {
@@ -628,10 +628,10 @@ const fetchDataFinansial = async () => {
       } else if (item.level === 4 && currentLevel1 !== null) {
         currentLevel3.level4.push({ ...item });
       }
-    }
+    };
     dataFinansial.value = response.data;
   } catch (error) {
-    console.error("Fetch Data Finansial Error : " + error);
+    console.error("Fetch Data Finansial Error : " + error)
   }
 };
 
@@ -659,34 +659,33 @@ const fetchTypePeriodic = async () => {
 };
 const fetchListPembina = async () => {
   try {
-    const response: any = await userService.getPembina('');
-    return response.data;
+    const response: any = await userService.getPembina("");
+    return response.data
   } catch (error) {
-    console.error('Fetch Pembina Error : ' + error)
-  }
-}
+    console.error("Fetch Pembina Error : " + error);
+  };
+};
 const fetchUnitPengelola = async () => {
   try {
     if (mesinDataById.value) {
-      const kodeSentral = mesinDataById.value.kode_sentral;
+      const kodeSentral = mesinDataById.value.kode_sentral
       const pembangkitResponse: any =
         await detailRekapService.getPembangkitByKode(kodeSentral);
-      const kodePengelola = pembangkitResponse.data.kode_pengelola;
-      jumlahMesin.value = pembangkitResponse.data.mesins.length;
-      const pengelolaResponse: any =
-        await detailRekapService.getPengelolaData();
+      const kodePengelola = pembangkitResponse.data.kode_pengelola
+      jumlahMesin.value = pembangkitResponse.data.mesins.length
+      const pengelolaResponse: any = await detailRekapService.getPengelolaData();
       const pengelola = pengelolaResponse.data.filter(
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola
       );
-      namaPengelola.value = pengelola[0].pengelola;
+      namaPengelola.value = pengelola[0].pengelola
       const idPembina = pembangkitResponse.data.id_pembina;
       const pembinaList: any = await fetchListPembina();
-      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina;
-    }
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina
+    };
   } catch (error) {
     console.error("Fetch Unit Pengelola Error : " + error);
   }
-};
+}
 
 const downloadEvidence = async () => {
   try {
@@ -697,21 +696,21 @@ const downloadEvidence = async () => {
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `${finalFileName}`;
-    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
     const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement('a')
     link.href = url;
-    link.setAttribute('download', fileName);
+    link.setAttribute('download', fileName)
     document.body.appendChild(link);
-    link.click();
+    link.click()
     document.body.removeChild(link);
-    isLoading.value = false;
+    isLoading.value = false
   } catch (error) {
-    console.error('Evidence Error : ' + error)
-    isLoading.value = false;
-    notifyError('Evidence Tidak Ada', 5000)
+    console.error('Evidence Error : ' + error);
+    isLoading.value = false
+    notifyError('Evidence Tidak Ada', 5000);
   }
-}
+};
 
 const fetchComboBahanBakar = async () => {
   try {

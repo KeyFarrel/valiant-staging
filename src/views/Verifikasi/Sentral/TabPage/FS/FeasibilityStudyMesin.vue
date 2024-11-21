@@ -151,83 +151,78 @@ interface Props {
 }
 
 interface PersetujuanFSItem {
-  tahun: string
   irr_on_project: number | string
-  irr_on_equity: number | string
+  tahun: string
   npv_on_project: number
-  npv_on_equity: number
+  irr_on_equity: number | string
   status: string
-  id_mesin: any
+  npv_on_equity: number
   id_sentral: any
+  id_mesin: any
 }
 
 const navigation = ref<{
-  currentPage: number,
-  totalPages: number,
-  totalRecords: number,
+  currentPage: number
+  totalPages: number
+  totalRecords: number
   limit: number
 }>({
-  currentPage: 1,
   totalPages: 1,
+  currentPage: 1,
+  limit: 10,
   totalRecords: 0,
-  limit: 10
 });
 
 const generatePageList = computed(() => {
-  const pageList = [];
+  const pageList = []
   const maxPages = 5;
   if (navigation.value.totalPages <= maxPages) {
     for (let i = 1; i <= navigation.value.totalPages; i++) {
-      pageList.push(i);
-    }
+      pageList.push(i)
+    };
   } else {
     if (navigation.value.currentPage <= 3) {
       for (let i = 1; i <= Math.min(navigation.value.totalPages, maxPages - 1); i++) {
-        pageList.push(i);
-      }
+        pageList.push(i)
+      };
       if (navigation.value.totalPages > maxPages) {
-        pageList.push('...');
+        pageList.push('...')
         pageList.push(navigation.value.totalPages);
       }
     } else if (navigation.value.currentPage >= navigation.value.totalPages - 2) {
       pageList.push(1);
-      pageList.push('...');
+      pageList.push('...')
       for (let i = navigation.value.totalPages - (maxPages - 2); i <= navigation.value.totalPages; i++) {
         pageList.push(i);
       }
     } else {
       pageList.push(1);
-      pageList.push('...');
+      pageList.push('...')
       for (let i = navigation.value.currentPage - 1; i <= navigation.value.currentPage + 1; i++) {
         pageList.push(i);
       }
       pageList.push('...');
-      pageList.push(navigation.value.totalPages);
-    }
+      pageList.push(navigation.value.totalPages)
+    };
   }
   return pageList;
-});
+})
 
 const goToPage = async (page: any) => {
   try {
-    // isLoading.value = true;
-    navigation.value.currentPage = page;
-    // await fetchSentralData();
-
+    navigation.value.currentPage = page
   } catch (error) {
-    console.error('Go To Page Error : ' + error);
-  } finally {
-    // isLoading.value = false;
+    console.error('Go To Page Error : ' + error)
   }
 };
 const goToPrevious = () => {
-  goToPage(navigation.value.currentPage - 1);
-};
+  goToPage(navigation.value.currentPage - 1)
+}
 const goToNext = () => {
-  goToPage(navigation.value.currentPage + 1);
-};
+  goToPage(navigation.value.currentPage + 1)
+}
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 </script>
 

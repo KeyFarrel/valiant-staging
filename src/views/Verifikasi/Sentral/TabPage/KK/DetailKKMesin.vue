@@ -368,38 +368,38 @@ const approveMesinKK = ref<ListApprove>({
   id_mesin: '',
   id_status: -1
 });
-const mesin = ref<MesinItem>();
+const mesin = ref<MesinItem>()
 const asumsiParameter = ref<AsumsiParameterItem>({
-  data: {},
   id_asumsi: 0,
-  id_mesin: 0,
+  data: {},
   kode_mesin: '',
-  status: '',
+  id_mesin: 0,
   corporate_tax_rate: 0,
-  discount_rate: 0,
+  status: '',
   interest_rate: 0,
-  loan_tenor: 0,
+  discount_rate: 0,
   loan_portion: 0,
-  equity_portion: 0,
+  loan_tenor: 0,
   umur_teknis: 0,
+  equity_portion: 0,
+  isFetchingError: false,
   bahan_bakars: [],
-  isFetchingError: false
 });
 const parameterTeknisFinansial = ref<ParameterTeknisFinancialItem>({
-  daya_terpasang: 0,
   daya_mampu_netto_mw: 0,
-  auxiliary: 0,
+  daya_terpasang: 0,
   susut_trafo: 0,
-  ps: 0,
+  auxiliary: 0,
   total_project_cost: 0,
-  loan: 0,
+  ps: 0,
   equity: 0,
-  nphr: 0,
+  loan: 0,
   electricity_price_a_rp_per_kwbln: 0,
-  electricity_price_b_rp_per_kwbln: 0,
+  nphr: 0,
   electricity_price_c_rp_per_kwh: 0,
+  electricity_price_b_rp_per_kwbln: 0,
+  isFetchingError: false,
   electricity_price_d_rp_per_kwh: 0,
-  isFetchingError: false
 });
 const dataTeknis = ref<{
   header: any[]
@@ -407,10 +407,10 @@ const dataTeknis = ref<{
   detail: any[]
   isFetchingError: boolean
 }>({
-  header: [],
   tahun: [],
+  header: [],
+  isFetchingError: false,
   detail: [],
-  isFetchingError: false
 });
 const tahunTerakhirAsumsi = ref<any>([]);
 const tahunBerjalan = new Date().getFullYear();
@@ -428,43 +428,43 @@ const dataFinansial = ref<{
   detail: any[]
   isFetchingError: boolean
 }>({
-  header: [],
   tahun: [],
+  header: [],
+  isFetchingError: false,
   detail: [],
-  isFetchingError: false
 });
 const hasilSimulasi = ref<{
-  track_irr_project: number
   track_irr_equity: number
-  track_npv_equity: number
+  track_irr_project: number
   track_npv_project: number
-  track_average_cf: number
+  track_npv_equity: number
   track_average_eaf: number
-  wacc_on_project: number
+  track_average_cf: number
   wacc_on_equity: number
-  now_track_irr_project: number
+  wacc_on_project: number
   now_track_irr_equity: number
-  now_track_npv_equity: number
+  now_track_irr_project: number
   now_track_npv_project: number
-  now_track_average_cf: number
+  now_track_npv_equity: number
   now_track_average_eaf: number
   isFetchingError: boolean
+  now_track_average_cf: number
 }>({
-  track_irr_project: 0,
   track_irr_equity: 0,
-  track_npv_equity: 0,
+  track_irr_project: 0,
   track_npv_project: 0,
-  track_average_cf: 0,
+  track_npv_equity: 0,
   track_average_eaf: 0,
-  wacc_on_project: 0,
+  track_average_cf: 0,
   wacc_on_equity: 0,
-  now_track_irr_project: 0,
+  wacc_on_project: 0,
   now_track_irr_equity: 0,
-  now_track_npv_equity: 0,
+  now_track_irr_project: 0,
   now_track_npv_project: 0,
-  now_track_average_cf: 0,
+  now_track_npv_equity: 0,
   now_track_average_eaf: 0,
-  isFetchingError: false
+  isFetchingError: false,
+  now_track_average_cf: 0,
 });
 const updateMesin = ref<any>();
 const avrIrr = ref<number>();
@@ -538,29 +538,29 @@ interface ParameterTeknisFinancialItem {
 }
 
 function toggleButton() {
-  isHover.value = !isHover.value;
+  isHover.value = !isHover.value
 }
 
-const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 const fetchMesinById = async () => {
   try {
     const response: MesinItem = await detailRekapService.getMesinById(
       idGrafik
-    );
+    )
     try {
-      const responsePhoto: any = await detailSentralService.getPhoto(response.data.photo1);
-      const blob = new Blob([responsePhoto]);
-      response.data.photo2 = URL.createObjectURL(blob);
+      const responsePhoto: any = await detailSentralService.getPhoto(response.data.photo1)
+      const blob = new Blob([responsePhoto])
+      response.data.photo2 = URL.createObjectURL(blob)
     } catch (error) {
       console.error('Photo Error: ', error)
     }
-    mesin.value = response.data;
-    tahunTerakhirRealisasi.value = parseInt(response.data.tahun_realisasi);
-    kodeJenisPembangkit.value = response.data.kode_jenis_pembangkit;
-    avrIrr.value = response.data.avg_irr;
+    mesin.value = response.data
+    tahunTerakhirRealisasi.value = parseInt(response.data.tahun_realisasi)
+    kodeJenisPembangkit.value = response.data.kode_jenis_pembangkit
+    avrIrr.value = response.data.avg_irr
   } catch (error) {
-    console.error(error);
+    console.error(error)
   }
 };
 
@@ -575,7 +575,7 @@ const fetchPersetujuanKK = async () => {
     tahunTerakhirAsumsi.value = approveMesinKK.value.tahun;
     statusMesin.value = approveMesinKK.value.id_status;
   } catch (error) {
-    console.error('Fetch Persetujuan KK Sentral Error : ' + error);
+    console.error('Fetch Persetujuan KK Sentral Error : ' + error)
   }
 }
 
@@ -586,21 +586,21 @@ const fetchAsumsiParameter = async () => {
         parseInt(route.query.tahun?.toString() ?? '0') - 1,
         parseInt(idGrafik),
         parseInt(route.query.tahun?.toString() ?? '0')
-      );
-    asumsiParameter.value = response.data.asumsi_makro;
-    parameterTeknisFinansial.value = response.data.parameter_teknis_financial;
-    bahanBakars.value = response.data.harga_bahan_bakars;
+      )
+    asumsiParameter.value = response.data.asumsi_makro
+    parameterTeknisFinansial.value = response.data.parameter_teknis_financial
+    bahanBakars.value = response.data.harga_bahan_bakars
   } catch (error) {
-    console.error("Fetch Asumsi Parameter Error : " + error);
-    asumsiParameter.value.isFetchingError = true;
-    parameterTeknisFinansial.value.isFetchingError = true;
+    console.error("Fetch Asumsi Parameter Error : " + error)
+    asumsiParameter.value.isFetchingError = true
+    parameterTeknisFinansial.value.isFetchingError = true
   }
 };
 
 const reloadAsumsiParameter = () => {
-  asumsiParameter.value.isFetchingError = false;
-  parameterTeknisFinansial.value.isFetchingError = false;
-  fetchAsumsiParameter();
+  asumsiParameter.value.isFetchingError = false
+  parameterTeknisFinansial.value.isFetchingError = false
+  fetchAsumsiParameter()
 }
 
 const fetchDataTeknis = async () => {
@@ -608,68 +608,68 @@ const fetchDataTeknis = async () => {
     const response: any = await detailRekapService.getDataTeknis(
       parseInt(route.query.tahun?.toString() ?? '0'),
       parseInt(idGrafik)
-    );
+    )
     if (response.data.tahun[response.data.tahun.length - 1] == tahunBerjalan - 1) {
       const responseTahunRealisasi: any = await detailRekapService.getDataTeknis(
         parseInt(route.query.tahun?.toString() ?? '0') - 1,
         parseInt(idGrafik)
-      );
-      dataTeknis.value = responseTahunRealisasi.data;
-      tahunGrafik.value = parseInt(route.query.tahun?.toString() ?? '0') - 1;
+      )
+      dataTeknis.value = responseTahunRealisasi.data
+      tahunGrafik.value = parseInt(route.query.tahun?.toString() ?? '0') - 1
     } else {
-      dataTeknis.value = response.data;
-      tahunGrafik.value = parseInt(route.query.tahun?.toString() ?? '0');
+      dataTeknis.value = response.data
+      tahunGrafik.value = parseInt(route.query.tahun?.toString() ?? '0')
     }
   } catch (error) {
-    console.error("Fetch Data Teknis Error : " + error);
-    dataTeknis.value.isFetchingError = true;
+    console.error("Fetch Data Teknis Error : " + error)
+    dataTeknis.value.isFetchingError = true
   }
 };
 
 const reloadDataTeknis = () => {
-  dataTeknis.value.isFetchingError = false;
-  fetchDataTeknis();
+  dataTeknis.value.isFetchingError = false
+  fetchDataTeknis()
 }
 
 const fetchDataFinansial = async () => {
   try {
-    finansialMappingResult.value = [];
+    finansialMappingResult.value = []
     const response: any = await detailRekapService.getDataFinansial(
       parseInt(route.query.tahun?.toString() ?? '0'),
       parseInt(idGrafik)
-    );
-    let currentLevel1: any | null = null;
-    let currentLevel2: any | null = null;
-    let currentLevel3: any | null = null;
+    )
+    let currentLevel1: any | null = null
+    let currentLevel2: any | null = null
+    let currentLevel3: any | null = null
     if (response.data.tahun[response.data.tahun.length - 1] == tahunBerjalan - 1) {
       const responseTahunRealisasi: any = await detailRekapService.getDataFinansial(
         parseInt(route.query.tahun?.toString() ?? '0') - 1,
         parseInt(idGrafik)
-      );
+      )
       for (const item of responseTahunRealisasi.data.detail) {
         if (item.level === 1) {
           currentLevel1 = {
             ...item,
             level2: [],
-          };
-          finansialMappingResult.value.push(currentLevel1);
+          }
+          finansialMappingResult.value.push(currentLevel1)
         } else if (item.level === 2 && currentLevel1 !== null) {
           currentLevel2 = {
             ...item,
             level3: [],
           }
-          currentLevel1.level2.push(currentLevel2);
+          currentLevel1.level2.push(currentLevel2)
         } else if (item.level === 3 && currentLevel1 !== null) {
           currentLevel3 = {
             ...item,
             level4: [],
           }
-          currentLevel2.level3.push(currentLevel3);
+          currentLevel2.level3.push(currentLevel3)
         } else if (item.level === 4 && currentLevel1 !== null) {
-          currentLevel3.level4.push({ ...item });
+          currentLevel3.level4.push({ ...item })
         }
       }
-      dataFinansial.value = responseTahunRealisasi.data;
+      dataFinansial.value = responseTahunRealisasi.data
     } else {
       for (const item of response.data.detail) {
         if (item.level === 1) {
@@ -677,19 +677,19 @@ const fetchDataFinansial = async () => {
             ...item,
             level2: [],
           };
-          finansialMappingResult.value.push(currentLevel1);
+          finansialMappingResult.value.push(currentLevel1)
         } else if (item.level === 2 && currentLevel1 !== null) {
           currentLevel2 = {
             ...item,
             level3: [],
-          }
-          currentLevel1.level2.push(currentLevel2);
+          };
+          currentLevel1.level2.push(currentLevel2)
         } else if (item.level === 3 && currentLevel1 !== null) {
           currentLevel3 = {
             ...item,
             level4: [],
-          }
-          currentLevel2.level3.push(currentLevel3);
+          };
+          currentLevel2.level3.push(currentLevel3)
         } else if (item.level === 4 && currentLevel1 !== null) {
           currentLevel3.level4.push({ ...item });
         }
@@ -697,14 +697,14 @@ const fetchDataFinansial = async () => {
       dataFinansial.value = response.data;
     }
   } catch (error) {
-    console.error("Fetch Data Finansial Error : " + error);
-    dataFinansial.value.isFetchingError = true;
+    console.error("Fetch Data Finansial Error : " + error)
+    dataFinansial.value.isFetchingError = true
   }
-};
+}
 
 const reloadDataFinansial = () => {
-  dataFinansial.value.isFetchingError = false;
-  fetchDataFinansial();
+  dataFinansial.value.isFetchingError = false
+  fetchDataFinansial()
 }
 
 const fetchHasilSimulasi = async () => {
@@ -739,34 +739,34 @@ const fetchTypePeriodic = async () => {
 
 const downloadEvidence = async () => {
   try {
-    isLoading.value = true;
-    const filePath: any = await rekapService.getEvidencePath(idGrafik, route.query.tahun?.toString() ?? '0', 0);
-    const finalFileName: any = filePath.data[0].file_name;
-    const response: any = await rekapService.downloadEvidence(filePath.data[0].dokumen_evidence);
-    const contentDisposition = response.headers['content-disposition'];
-    const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
-    const fileName = fileNameMatch ? fileNameMatch[1] : `${finalFileName}`;
-    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    isLoading.value = true
+    const filePath: any = await rekapService.getEvidencePath(idGrafik, route.query.tahun?.toString() ?? '0', 0)
+    const finalFileName: any = filePath.data[0].file_name
+    const response: any = await rekapService.downloadEvidence(filePath.data[0].dokumen_evidence)
+    const contentDisposition = response.headers['content-disposition']
+    const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/)
+    const fileName = fileNameMatch ? fileNameMatch[1] : `${finalFileName}`
+    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
     const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement('a')
     link.href = url;
-    link.setAttribute('download', fileName);
-    document.body.appendChild(link);
+    link.setAttribute('download', fileName)
+    document.body.appendChild(link)
     link.click();
     document.body.removeChild(link);
     isLoading.value = false;
   } catch (error) {
-    console.error('Evidence Error : ' + error)
-    isLoading.value = false;
+    // console.error('Evidence Error : ' + error)
+    isLoading.value = false
     notifyError('Evidence Tidak Ada', 5000)
-  }
-}
+  };
+};
 
 const fetchComboBahanBakar = async () => {
   try {
     const response: any = await detailRekapService.getComboBahanBakar(
       kodeJenisPembangkit.value
-    );
+    )
     comboBahanBakar.value = response.data;
   } catch (error) {
     console.error('Fetch Combo Bahan Bakar Error : ' + error);
@@ -806,8 +806,8 @@ const updateKK = async () => {
 }
 const fetchListPembina = async () => {
   try {
-    const response: any = await userService.getPembina('');
-    return response.data;
+    const response: any = await userService.getPembina('')
+    return response.data
   } catch (error) {
     console.error('Fetch Pembina Error : ' + error)
   }
@@ -815,23 +815,23 @@ const fetchListPembina = async () => {
 const fetchUnitPengelola = async () => {
   try {
     if (mesin.value) {
-      const kodeSentral = mesin.value.kode_sentral;
+      const kodeSentral = mesin.value.kode_sentral
       const pembangkitResponse: any =
-        await detailRekapService.getPembangkitByKode(kodeSentral);
-      const kodePengelola = pembangkitResponse.data.kode_pengelola;
-      jumlahMesin.value = pembangkitResponse.data.mesins.length;
+        await detailRekapService.getPembangkitByKode(kodeSentral)
+      const kodePengelola = pembangkitResponse.data.kode_pengelola
+      jumlahMesin.value = pembangkitResponse.data.mesins.length
       const pengelolaResponse: any =
-        await detailRekapService.getPengelolaData();
+        await detailRekapService.getPengelolaData()
       const pengelola = pengelolaResponse.data.filter(
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola
-      );
-      namaPengelola.value = pengelola[0].pengelola;
-      const idPembina = pembangkitResponse.data.id_pembina;
-      const pembinaList: any = await fetchListPembina();
-      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina;
+      )
+      namaPengelola.value = pengelola[0].pengelola
+      const idPembina = pembangkitResponse.data.id_pembina
+      const pembinaList: any = await fetchListPembina()
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina
     }
   } catch (error) {
-    console.error("Fetch Unit Pengelola Error : " + error);
+    console.error("Fetch Unit Pengelola Error : " + error)
   }
 };
 

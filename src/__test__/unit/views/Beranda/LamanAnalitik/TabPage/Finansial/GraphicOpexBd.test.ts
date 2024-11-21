@@ -99,4 +99,17 @@ describe('GraphicOpexBd.vue', () => {
     const resetButton = wrapper.find('button[text="Reset"]');
     expect(resetButton.exists()).toBe(false);
   });
+
+  it("is fetching fetchInitialPembangkit", async () => {
+    const fetchInitialPembangkitSpy = jest.spyOn(wrapper.vm, "fetchInitialPembangkit");
+    await wrapper.vm.fetchInitialPembangkit();
+    expect(fetchInitialPembangkitSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching getDataGraph", async () => {
+    const getDataGraphSpy = jest.spyOn(wrapper.vm, "getDataGraph");
+    await wrapper.vm.getDataGraph();
+    expect(getDataGraphSpy).toHaveBeenCalled();
+  });
 });
+

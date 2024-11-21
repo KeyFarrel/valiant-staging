@@ -31,10 +31,11 @@
           v-if="props.tahunData && authService.checkRole() !== 'Approver'">
           <RouterLink
             :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(props.idMesin) : props.idMesin }, query: { tahun: props.tahunData } }">
-            <button type="button" :disabled="statusApprove === 'Data belum terisi'"
+            <button type="button" id="lihat-data-button" :disabled="statusApprove === 'Data belum terisi'"
               class="space-x-2 text-[#0099AD] hover:text-white hover:bg-primaryColor bg-white border border-[#0099AD] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2.5 flex justify-center items-center duration-300 focus:outline-none">
               <p class="font-semibold">Lihat Data</p>
-              <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg id="lihat-data-svg" width="8" height="12" viewBox="0 0 8 12" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
                   d="M6.80622 5.38128C7.14793 5.72299 7.14793 6.27701 6.80622 6.61872L2.43122 10.9937C2.08951 11.3354 1.53549 11.3354 1.19378 10.9937C0.852073 10.652 0.852073 10.098 1.19378 9.75628L4.95006 6L1.19378 2.24372C0.852073 1.90201 0.852073 1.34799 1.19378 1.00628C1.53549 0.664573 2.08951 0.664573 2.43122 1.00628L6.80622 5.38128Z"
                   fill="#0099AD" />
@@ -114,9 +115,10 @@
         <div class="flex items-center justify-center px-6">
           <RouterLink
             :to="{ name: 'feasibility-study', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(props.idMesin) : props.idMesin } }">
-            <button type="button" :disabled="statusApprovePlanning === 'Data belum terisi'"
+            <button type="button" id="lihat-data-button" :disabled="statusApprovePlanning === 'Data belum terisi'"
               class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center dark:bg-[#005A66] dark:hover:bg-[#0099AD] focus:outline-none dark:focus:ring-[#007E8F]">
-              <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg id="lihat-data-svg" width="8" height="12" viewBox="0 0 8 12" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
                   d="M6.80622 5.38128C7.14793 5.72299 7.14793 6.27701 6.80622 6.61872L2.43122 10.9937C2.08951 11.3354 1.53549 11.3354 1.19378 10.9937C0.852073 10.652 0.852073 10.098 1.19378 9.75628L4.95006 6L1.19378 2.24372C0.852073 1.90201 0.852073 1.34799 1.19378 1.00628C1.53549 0.664573 2.08951 0.664573 2.43122 1.00628L6.80622 5.38128Z"
                   fill="#0099AD" />
@@ -181,9 +183,10 @@
         <div class="flex items-center justify-center px-6">
           <RouterLink
             :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(props.idMesin) : props.idMesin }, query: { tahun: props.tahunData } }">
-            <button type="button" :disabled="statusApprove === 'Data belum terisi'"
+            <button type="button" id="lihat-data-button" :disabled="statusApprove === 'Data belum terisi'"
               class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center dark:bg-[#005A66] dark:hover:bg-[#0099AD] focus:outline-none dark:focus:ring-[#007E8F]">
-              <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg id="lihat-data-svg" width="8" height="12" viewBox="0 0 8 12" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
                   d="M6.80622 5.38128C7.14793 5.72299 7.14793 6.27701 6.80622 6.61872L2.43122 10.9937C2.08951 11.3354 1.53549 11.3354 1.19378 10.9937C0.852073 10.652 0.852073 10.098 1.19378 9.75628L4.95006 6L1.19378 2.24372C0.852073 1.90201 0.852073 1.34799 1.19378 1.00628C1.53549 0.664573 2.08951 0.664573 2.43122 1.00628L6.80622 5.38128Z"
                   fill="#0099AD" />
@@ -238,9 +241,10 @@
         <div class="flex items-center justify-center px-6">
           <RouterLink
             :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(props.idMesin) : props.idMesin }, query: { tahun: props.tahunData } }">
-            <button type="button" :disabled="statusApprove === 'Data belum terisi'"
+            <button id="lihat-data-button" type="button" :disabled="statusApprove === 'Data belum terisi'"
               class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center dark:bg-[#005A66] dark:hover:bg-[#0099AD] focus:outline-none dark:focus:ring-[#007E8F]">
-              <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg id="lihat-data-svg" width="8" height="12" viewBox="0 0 8 12" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
                   d="M6.80622 5.38128C7.14793 5.72299 7.14793 6.27701 6.80622 6.61872L2.43122 10.9937C2.08951 11.3354 1.53549 11.3354 1.19378 10.9937C0.852073 10.652 0.852073 10.098 1.19378 9.75628L4.95006 6L1.19378 2.24372C0.852073 1.90201 0.852073 1.34799 1.19378 1.00628C1.53549 0.664573 2.08951 0.664573 2.43122 1.00628L6.80622 5.38128Z"
                   fill="#0099AD" />
@@ -932,47 +936,69 @@ function handleClickWlcAll(param: any) {
 
   grafikService
     .getGrafikWLCALLDetailMesin({
-      id_mesin: props.idMesin,
       tahun_realisasi: props.tahunData,
-      tahun: tahunWLCAllMesin.value[param.dataIndex],
+      id_mesin: props.idMesin,
+      tahun: tahunWLCAllMesin.value[param.dataIndex]
     })
     .then((res: any) => {
-      judulDetWlcAll.value = [];
-      realDetWlcAll.value = [];
-      planDetWlcAll.value = [];
+      judulDetWlcAll.value = []
+      realDetWlcAll.value = []
+      planDetWlcAll.value = []
 
-      dataDetailWlcAllMesin.value = res.data.graph;
-      datatableWlcAllMesin.value = res.data.table;
-      res.data.graph.sort((a: any, b: any) => a.nomor - b.nomor);
-      res.data.table.sort((a: any, b: any) => a.nomor - b.nomor);
+      dataDetailWlcAllMesin.value = res.data.graph
+      datatableWlcAllMesin.value = res.data.table
+      res.data.graph.sort((a: any, b: any) => a.nomor - b.nomor)
+      res.data.table.sort((a: any, b: any) => a.nomor - b.nomor)
 
       for (var i = 0; i < res.data.graph.length; i++) {
-        judulDetWlcAll.value.push(res.data.graph[i].judul);
-        realDetWlcAll.value.push(res.data.graph[i].realisasi);
-        planDetWlcAll.value.push(res.data.graph[i].planning);
+        judulDetWlcAll.value.push(res.data.graph[i].judul)
+        realDetWlcAll.value.push(res.data.graph[i].realisasi)
+        planDetWlcAll.value.push(res.data.graph[i].planning)
       }
 
       chartDetailWLCAllMesin.value = {
-        title: {
-          show: false,
+        legend: {
+          bottom: "bottom",
+          data: ["Realisasi + Proyeksi", "Planning"]
         },
         tooltip: {
           trigger: "axis",
           axisPointer: {
             type: "shadow",
-          },
-        },
-        legend: {
-          bottom: "bottom",
-          data: ["Realisasi + Proyeksi", "Planning"],
+          }
         },
         grid: {
           top: "3%",
           left: "3%",
           right: "2%",
           bottom: "3%",
-          containLabel: true,
+          containLabel: true
         },
+        title: {
+          show: false
+        },
+        yAxis: [
+          {
+            type: "value",
+            nameLocation: "center",
+            axisLabel: {
+              fontSize: 10,
+              formatter: function (value: any) {
+                return globalFormat.formatRupiah((value * 1000000) / 1000000000000);
+              },
+            },
+            nameTextStyle: {
+              align: "left",
+              padding: [30, 20, 25, -25],
+              fontSize: 14,
+              color: "#4D5E80",
+              fontWeight: "bold",
+            },
+            splitNumber: 10,
+            min: 0,
+            name: "Triliun Rupiah",
+          },
+        ],
         xAxis: [
           {
             type: "category",
@@ -981,29 +1007,7 @@ function handleClickWlcAll(param: any) {
               fontSize: 10,
               rotate: 25
             },
-          },
-        ],
-        yAxis: [
-          {
-            type: "value",
-            name: "Triliun Rupiah",
-            nameLocation: "center",
-            nameTextStyle: {
-              align: "left",
-              padding: [30, 20, 25, -25],
-              fontSize: 14,
-              color: "#4D5E80",
-              fontWeight: "bold",
-            },
-            axisLabel: {
-              fontSize: 10,
-              formatter: function (value: any) {
-                return globalFormat.formatRupiah((value * 1000000) / 1000000000000);
-              },
-            },
-            splitNumber: 10,
-            min: 0,
-          },
+          }
         ],
         series: [
           {
@@ -1046,39 +1050,29 @@ function handleClickWlcKom(param: any) {
 
   grafikService
     .getGrafikWLCKomDetailMesin({
-      id_mesin: props.idMesin,
-      tahun_realisasi: props.tahunData,
       tahun: tahunWLCKomMesin.value[param.dataIndex],
+      id_mesin: props.idMesin,
+      tahun_realisasi: props.tahunData
     })
     .then((res: any) => {
       judulDetWlcKom.value = [];
-      realDetWlcKom.value = [];
+      realDetWlcKom.value = []
       planDetWlcKom.value = [];
 
-      dataDetailWlcKomMesin.value = res.data.graph;
+      dataDetailWlcKomMesin.value = res.data.graph
       datatableWlcKomMesin.value = res.data.table;
-      res.data.graph.sort((a: any, b: any) => a.nomor - b.nomor);
+      res.data.graph.sort((a: any, b: any) => a.nomor - b.nomor)
       res.data.table.sort((a: any, b: any) => a.nomor - b.nomor);
 
       for (var i = 0; i < res.data.graph.length; i++) {
-        judulDetWlcKom.value.push(res.data.graph[i].judul);
+        judulDetWlcKom.value.push(res.data.graph[i].judul)
         realDetWlcKom.value.push(res.data.graph[i].realisasi);
-        planDetWlcKom.value.push(res.data.graph[i].planning);
-      }
+        planDetWlcKom.value.push(res.data.graph[i].planning)
+      };
 
       chartDetailWLCKomMesin.value = {
         title: {
-          show: false,
-        },
-        tooltip: {
-          trigger: "axis",
-          axisPointer: {
-            type: "shadow",
-          },
-        },
-        legend: {
-          bottom: "bottom",
-          data: ["Realisasi + Proyeksi", "Planning"],
+          show: false
         },
         grid: {
           top: "3%",
@@ -1086,6 +1080,16 @@ function handleClickWlcKom(param: any) {
           right: "4%",
           bottom: "8%",
           containLabel: true,
+        },
+        tooltip: {
+          axisPointer: {
+            type: "shadow",
+          },
+          trigger: "axis",
+        },
+        legend: {
+          data: ["Realisasi + Proyeksi", "Planning"],
+          bottom: "bottom",
         },
         xAxis: [
           {
@@ -1166,79 +1170,79 @@ function handleClickPlan(param: any) {
     })
     .then((res: any) => {
       judulDetPlan.value = [];
-      realDetPlan.value = [];
       planDetPlan.value = [];
+      realDetPlan.value = [];
 
       dataDetailPlanMesin.value = res.data.graph;
-      datatablePlanMesin.value = res.data.table;
+      datatablePlanMesin.value = res.data.table
       res.data.graph.sort((a: any, b: any) => a.nomor - b.nomor);
-      res.data.table.sort((a: any, b: any) => a.nomor - b.nomor);
+      res.data.table.sort((a: any, b: any) => a.nomor - b.nomor)
 
       for (var i = 0; i < res.data.graph.length; i++) {
         judulDetPlan.value.push(res.data.graph[i].judul);
-        planDetPlan.value.push(res.data.graph[i].planning);
+        planDetPlan.value.push(res.data.graph[i].planning)
       }
 
       chartDetailPlanMesin.value = {
-        title: {
-          show: false,
-        },
-        tooltip: {
-          trigger: "axis",
-          axisPointer: {
-            type: "shadow",
-          },
-        },
         legend: {
           bottom: "bottom",
           data: ["Planning"],
+        },
+        title: {
+          show: false,
         },
         grid: {
           top: "3%",
           left: "3%",
           right: "2%",
           bottom: "3%",
-          containLabel: true,
+          containLabel: true
         },
         xAxis: [
           {
             type: "category",
             data: judulDetPlan,
             axisLabel: {
+              rotate: 25,
               fontSize: 10,
-              rotate: 25
-            },
-          },
+            }
+          }
         ],
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "shadow",
+          },
+        },
         yAxis: [
           {
-            type: "value",
             name: "Triliun Rupiah",
-            nameLocation: "center",
+            type: "value",
             nameTextStyle: {
+              fontSize: 14,
               align: "left",
               padding: [30, 20, 25, -25],
-              fontSize: 14,
-              color: "#4D5E80",
               fontWeight: "bold",
+              color: "#4D5E80",
             },
+            nameLocation: "center",
+            splitNumber: 10,
+            min: 0,
             axisLabel: {
               fontSize: 10,
               formatter: function (value: any) {
                 return globalFormat.formatRupiah((value * 1000000) / 1000000000000);
               },
             },
-            splitNumber: 10,
-            min: 0,
           },
         ],
         series: [
           {
-            name: "Planning",
-            type: "bar",
             stack: "Ad",
+            type: "bar",
+            name: "Planning",
             emphasis: {
-              focus: "series",
+              focus: "series"
             },
             data: planDetPlan,
             tooltip: {
@@ -1264,40 +1268,33 @@ function handleClickPlanKom(param: any) {
       tahun: tahunPlanKomMesin.value[param.dataIndex],
     })
     .then((res: any) => {
-      judulDetPlanKom.value = [];
       realDetPlanKom.value = [];
       planDetPlanKom.value = [];
+      judulDetPlanKom.value = [];
 
-      dataDetailPlanKomMesin.value = res.data.graph;
-      datatablePlanKomMesin.value = res.data.table;
-      res.data.graph.sort((a: any, b: any) => a.nomor - b.nomor);
+      dataDetailPlanKomMesin.value = res.data.graph
+      datatablePlanKomMesin.value = res.data.table
+      res.data.graph.sort((a: any, b: any) => a.nomor - b.nomor)
       res.data.table.sort((a: any, b: any) => a.nomor - b.nomor);
 
       for (var i = 0; i < res.data.graph.length; i++) {
         judulDetPlanKom.value.push(res.data.graph[i].judul);
-        planDetPlanKom.value.push(res.data.graph[i].planning);
+        planDetPlanKom.value.push(res.data.graph[i].planning)
       }
 
       chartDetailPlanKomMesin.value = {
         title: {
           show: false,
         },
-        tooltip: {
-          trigger: "axis",
-          axisPointer: {
-            type: "shadow",
-          },
-        },
         legend: {
           bottom: "bottom",
           data: ["Planning"],
         },
-        grid: {
-          top: "3%",
-          left: "4%",
-          right: "4%",
-          bottom: "8%",
-          containLabel: true,
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "shadow"
+          }
         },
         xAxis: [
           {
@@ -1307,12 +1304,17 @@ function handleClickPlanKom(param: any) {
               fontSize: 10,
               rotate: 25
             },
-          },
+          }
         ],
+        grid: {
+          top: "3%",
+          left: "4%",
+          right: "4%",
+          bottom: "8%",
+          containLabel: true,
+        },
         yAxis: [
           {
-            type: "value",
-            name: "Triliun Rupiah",
             nameLocation: "center",
             nameTextStyle: {
               align: "left",
@@ -1321,30 +1323,32 @@ function handleClickPlanKom(param: any) {
               color: "#4D5E80",
               fontWeight: "bold",
             },
+            type: "value",
+            name: "Triliun Rupiah",
+            splitNumber: 10,
+            min: 0,
             axisLabel: {
               fontSize: 10,
               formatter: function (value: any) {
                 return globalFormat.formatRupiah((value * 1000000) / 1000000000000);
               },
             },
-            splitNumber: 10,
-            min: 0,
           },
         ],
         series: [
           {
-            name: "Planning",
             type: "bar",
-            stack: "Ad",
+            name: "Planning",
             emphasis: {
               focus: "series",
             },
-            data: planDetPlanKom,
+            stack: "Ad",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
-          },
+            data: planDetPlanKom
+          }
         ],
         color: ["#0D5A71", "#97E4FF"],
       };
@@ -1402,19 +1406,18 @@ function handleClickPRP(param: any) {
         },
         xAxis: [
           {
-            type: "category",
-            data: judulDetPRP,
             axisLabel: {
               fontSize: 10,
               rotate: 25
             },
+            type: "category",
+            data: judulDetPRP
           },
         ],
         yAxis: [
           {
-            type: "value",
-            name: "Triliun Rupiah",
-            nameLocation: "center",
+            name: 'Triliun Rupiah',
+            type: 'value',
             nameTextStyle: {
               align: "left",
               padding: [30, 20, 25, -25],
@@ -1425,22 +1428,23 @@ function handleClickPRP(param: any) {
             axisLabel: {
               fontSize: 10,
               formatter: function (value: any) {
-                return globalFormat.formatRupiah((value * 1000000) / 1000000000000);
+                return globalFormat.formatRupiah((value * 1000000) / 1000000000000)
               },
             },
             splitNumber: 10,
             min: 0,
-          },
+            nameLocation: 'center'
+          }
         ],
         series: [
           {
-            name: "Planning",
-            type: "bar",
-            stack: "Ad",
+            data: planDetPRP,
             emphasis: {
               focus: "series",
             },
-            data: planDetPRP,
+            name: 'Planning',
+            type: 'bar',
+            stack: 'Ad',
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
@@ -1514,21 +1518,10 @@ function handleClickLastY(param: any) {
           bottom: "3%",
           containLabel: true,
         },
-        xAxis: [
-          {
-            type: "category",
-            data: judulDetLastY,
-            axisLabel: {
-              fontSize: 10,
-              rotate: 25
-            },
-          },
-        ],
         yAxis: [
           {
             type: "value",
             name: "Triliun Rupiah",
-            nameLocation: "center",
             nameTextStyle: {
               align: "left",
               padding: [30, 20, 25, -25],
@@ -1536,6 +1529,8 @@ function handleClickLastY(param: any) {
               color: "#4D5E80",
               fontWeight: "bold",
             },
+            nameLocation: "center",
+            min: 0,
             axisLabel: {
               fontSize: 10,
               formatter: function (value: any) {
@@ -1543,13 +1538,12 @@ function handleClickLastY(param: any) {
               },
             },
             splitNumber: 10,
-            min: 0,
           },
         ],
         series: [
           {
             name: "Planning",
-            type: "bar",
+            type: 'bar',
             stack: "Ad",
             emphasis: {
               focus: "series",
@@ -1571,6 +1565,16 @@ function handleClickLastY(param: any) {
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
+            },
+          },
+        ],
+        xAxis: [
+          {
+            type: "category",
+            data: judulDetLastY,
+            axisLabel: {
+              fontSize: 10,
+              rotate: 25
             },
           },
         ],
@@ -1656,13 +1660,12 @@ const fetchGrafikWLCAllMesin = async () => {
 
       var maxWlc = Math.max.apply(Math, wlcAnnu);
       var maxRev = Math.max.apply(Math, revenAnnu);
-      var maxCapex = Math.max.apply(Math, capexAnnu);
+      var maxCapex = Math.max.apply(Math, capexAnnu)
       var maxComBD = Math.max.apply(Math, comBDAnnu);
       var maxFuelCom = Math.max.apply(Math, fuelComAnnu);
 
-      var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxWlc, maxRev];
+      var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxWlc, maxRev]
       finalMax = Math.max.apply(Math, listOfMax);
-
     } else {
       dataWLCAllMesin == null;
     }
@@ -1724,113 +1727,110 @@ const fetchGrafikWLCAllMesin = async () => {
           nameTextStyle: {
             align: "left",
             padding: [30, 20, 25, -25],
-            fontSize: 14,
-            color: "#4D5E80",
             fontWeight: "bold",
+            color: "#4D5E80",
+            fontSize: 14,
           },
           axisLabel: {
             fontSize: 10,
             formatter: function (value: any) {
-              return globalFormat.formatRupiah((value * 1000000) / 1000000000000);
-            },
+              return globalFormat.formatRupiah((value * 1000000) / 1000000000000)
+            }
           },
-          splitNumber: 20,
           min: 0,
-          max: finalMax ? finalMax * 1.1 : finalMax
-        },
+          splitNumber: 20,
+          max: finalMax ? finalMax * 1.1 : finalMax,
+        }
       ],
       series: [
         {
+          smooth: true,
+          type: "line",
           name: "Revenue Annualized",
-          type: "line",
-          smooth: true,
-          showSymbol: false,
-          data: revWLCMesin,
           color: "#0099AD",
-          tooltip: {
-            valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
-          },
-        },
-        {
-          name: "Total LCC Annualized",
-          type: "line",
-          smooth: true,
+          data: revWLCMesin,
           showSymbol: false,
-          data: sumLccWLCMesin,
-          color: "#1E1F4E",
           tooltip: {
             valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
+              globalFormat.formatDecimal(value) + " Rp(Juta)"
+          }
+        },
+        {
+          smooth: true,
+          type: "line",
+          name: "Total LCC Annualized",
+          color: "#1E1F4E",
+          data: sumLccWLCMesin,
+          showSymbol: false,
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)"
           },
         },
         {
-          name: "Cost Component A (Capex) Annualized",
           type: "bar",
           stack: "Ad",
+          name: "Cost Component A (Capex) Annualized",
           emphasis: {
-            focus: "series",
+            focus: "series"
           },
-          data: capexWLCMesin,
           markPoint: {
-            silent: true,
             symbol: 'rect',
-            symbolSize: [80, 30],
+            silent: true,
             itemStyle: { color: '#0D5A71' },
+            symbolSize: [80, 30],
+            symbolOffset: [0, 0],
             label: { fontSize: 10, fontWeight: 'bold' },
             data: [{ name: 'BEPP', value: `BEP : ${tahunBEP} (${indexBEP})`, xAxis: indexTerdekat, yAxis: finalMax }],
-            symbolOffset: [0, 0]
           },
+          data: capexWLCMesin,
           markArea: {
-            silent: true,
             itemStyle: { color: '#E2EAF2' },
-            label: { show: false },
             data: [[{ name: 'BEP', xAxis: indexTerdekat }, { xAxis: indexTerdekat }]],
+            silent: true,
+            label: { show: false },
           },
-          color: "#0D5A71",
+          color: '#0D5A71',
           tooltip: {
             valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
-          },
+              globalFormat.formatDecimal(value) + ' Rp(Juta)',
+          }
         },
         {
-          name: "Cost Component B + D Annualized",
-          type: "bar",
           stack: "Ad",
+          type: "bar",
           emphasis: {
             focus: "series",
           },
+          name: "Cost Component B + D Annualized",
           data: comBDWLCMesin,
           markPoint: {
-            silent: true,
             symbol: 'rect',
             symbolSize: [85, 30],
             itemStyle: { color: '#0D5A71' },
-            label: { fontSize: 10, fontWeight: 'bold' },
+            silent: true,
             data: [{ name: 'Min', value: `Optimum life : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: finalMax }],
-            symbolOffset: [0, 20]
+            symbolOffset: [0, 20],
+            label: { fontSize: 10, fontWeight: 'bold' },
           },
           markArea: {
-            silent: true,
             itemStyle: { color: '#E2EAF2' },
             label: { show: false },
-            data: [[{ name: 'Optimum Life', xAxis: indexOptimum }, { xAxis: indexOptimum }]]
+            data: [[{ name: 'Optimum Life', xAxis: indexOptimum }, { xAxis: indexOptimum }]],
+            silent: true,
           },
-          color: "#37B1D5",
           tooltip: {
             valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
+              globalFormat.formatDecimal(value) + " Rp(Juta)"
           },
+          color: "#37B1D5"
         },
         {
-          name: "Cost Component C Annualized",
-          type: "bar",
           stack: "Ad",
-          emphasis: {
-            focus: "series",
-          },
+          type: "bar",
+          name: "Cost Component C Annualized",
           itemStyle: {
-            borderRadius: [5, 5, 0, 0],
+            borderRadius: [5, 5, 0, 0]
           },
           data: fuelComWLCMesin,
           color: "#CCF2FF",
@@ -1838,20 +1838,22 @@ const fetchGrafikWLCAllMesin = async () => {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
-        },
+          emphasis: {
+            focus: "series",
+          }
+        }
       ],
     } : {
       title: {
-        show: false,
+        show: false
       },
       tooltip: {
-        trigger: "axis",
         axisPointer: {
           type: "shadow",
         },
+        trigger: "axis"
       },
       legend: {
-        bottom: "bottom",
         data: [
           "Revenue Annualized",
           "Total LCC Annualized",
@@ -1859,6 +1861,7 @@ const fetchGrafikWLCAllMesin = async () => {
           "Cost Component B + D Annualized",
           "Cost Component C Annualized",
         ],
+        bottom: "bottom"
       },
       grid: {
         top: "5%",
@@ -1870,132 +1873,132 @@ const fetchGrafikWLCAllMesin = async () => {
       xAxis: [
         {
           type: "category",
-          data: tahunWLCAllMesin,
           axisLabel: {
             fontSize: 10,
             color: function (value: any, index: number) {
               const filterTahun = tahunData.value.toString();
               if (value < filterTahun) {
-                return '#FF5656';
+                return '#FF5656'
               } else if (value == filterTahun) {
                 return '#6C6C6C';
               } else if (value > filterTahun) {
-                return '#37B1D5';
-              }
+                return '#37B1D5'
+              };
             },
             formatter: function (value: any, index: number) {
-              return index + 1 + `\n${value}`;
+              return index + 1 + `\n${value}`
             },
-          }
+          },
+          data: tahunWLCAllMesin
         },
       ],
       yAxis: [
         {
-          type: "value",
+          type: 'value',
           name: "Triliun Rupiah",
-          nameLocation: "center",
+          nameLocation: 'center',
           nameTextStyle: {
             align: "left",
             padding: [30, 20, 25, -25],
             fontSize: 14,
-            color: "#4D5E80",
-            fontWeight: "bold",
+            color: '#4D5E80',
+            fontWeight: 'bold',
           },
+          splitNumber: 20,
+          min: 0,
           axisLabel: {
             fontSize: 10,
             formatter: function (value: any) {
               return globalFormat.formatRupiah((value * 1000000) / 1000000000000);
             },
           },
-          splitNumber: 20,
-          min: 0,
           max: finalMax ? finalMax * 1.1 : finalMax
         },
       ],
       series: [
         {
-          name: "Revenue Annualized",
           type: "line",
           smooth: true,
           showSymbol: false,
-          data: revWLCMesin,
+          name: "Revenue Annualized",
           color: "#0099AD",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          data: revWLCMesin,
         },
         {
-          name: "Total LCC Annualized",
           type: "line",
           smooth: true,
           showSymbol: false,
-          data: sumLccWLCMesin,
+          name: "Total LCC Annualized",
           color: "#1E1F4E",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          data: sumLccWLCMesin,
         },
         {
-          name: "Cost Component A (Capex) Annualized",
           type: "bar",
           stack: "Ad",
+          name: "Cost Component A (Capex) Annualized",
           emphasis: {
-            focus: "series",
+            focus: 'series'
           },
-          data: capexWLCMesin,
           color: "#0D5A71",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          data: capexWLCMesin,
         },
         {
-          name: "Cost Component B + D Annualized",
-          type: "bar",
-          stack: "Ad",
           emphasis: {
-            focus: "series",
+            focus: "series"
           },
-          data: comBDWLCMesin,
-          markPoint: {
-            silent: true,
-            symbol: 'rect',
-            symbolSize: [85, 30],
-            itemStyle: { color: '#0D5A71' },
-            label: { fontSize: 10, fontWeight: 'bold' },
-            data: [{ name: 'Min', value: `Optimum life : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: finalMax }],
-            symbolOffset: [0, 20]
-          },
-          markArea: {
-            silent: true,
-            itemStyle: { color: '#E2EAF2' },
-            label: { show: false },
-            data: [[{ name: 'Optimum Life', xAxis: indexOptimum }, { xAxis: indexOptimum }]]
-          },
-          color: "#37B1D5",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          name: "Cost Component B + D Annualized",
+          stack: 'Ad',
+          data: comBDWLCMesin,
+          markPoint: {
+            silent: true,
+            symbolSize: [85, 30],
+            symbol: 'rect',
+            itemStyle: { color: '#0D5A71' },
+            data: [{ name: 'Min', value: `Optimum life : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: finalMax }],
+            label: { fontSize: 10, fontWeight: 'bold' },
+            symbolOffset: [0, 20]
+          },
+          type: "bar",
+          markArea: {
+            silent: true,
+            label: { show: false },
+            data: [[{ name: 'Optimum Life', xAxis: indexOptimum }, { xAxis: indexOptimum }]],
+            itemStyle: { color: '#E2EAF2' }
+          },
+          color: "#37B1D5"
         },
         {
           name: "Cost Component C Annualized",
           type: "bar",
           stack: "Ad",
-          emphasis: {
-            focus: "series",
-          },
+          color: "#CCF2FF",
           itemStyle: {
-            borderRadius: [5, 5, 0, 0],
+            borderRadius: [5, 5, 0, 0]
           },
           data: fuelComWLCMesin,
-          color: "#CCF2FF",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          emphasis: {
+            focus: "series",
+          }
         },
       ],
     };
@@ -2028,32 +2031,27 @@ const fetchGrafikWLCKomMesin = async () => {
           response.data[i].cost_komp_c +
           response.data[i].cost_komp_d
         );
-      }
+      };
     } else {
       dataWLCKomMesin == null;
-    }
+    };
 
     chartWLCKomMesin.value = {
-      title: {
-        show: false,
-      },
       tooltip: {
-        trigger: "axis",
         axisPointer: {
           type: "shadow",
         },
+        trigger: "axis"
       },
-      legend: {
-        bottom: "bottom",
-        padding: 0,
-        data: ["Total Cost", "Cost Component A", "Cost Component B + D", "Cost Component C"],
+      title: {
+        show: false,
       },
       grid: {
         top: "5%",
         left: "3%",
         right: "2%",
         bottom: "8%",
-        containLabel: true,
+        containLabel: true
       },
       xAxis: [
         {
@@ -2077,6 +2075,11 @@ const fetchGrafikWLCKomMesin = async () => {
           }
         },
       ],
+      legend: {
+        bottom: "bottom",
+        padding: 0,
+        data: ["Total Cost", "Cost Component A", "Cost Component B + D", "Cost Component C"]
+      },
       yAxis: [
         {
           type: "value",
@@ -2129,36 +2132,36 @@ const fetchGrafikWLCKomMesin = async () => {
           },
         },
         {
-          name: "Cost Component C",
-          type: "bar",
-          stack: "Ad",
+          name: 'Cost Component C',
           emphasis: {
             focus: "series",
           },
           itemStyle: {
             borderRadius: [5, 5, 0, 0],
           },
-          data: costCompCMesin,
           color: "#CCF2FF",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          data: costCompCMesin,
+          type: "bar",
+          stack: 'Ad'
         },
         {
-          name: "Total Cost",
-          type: "line",
-          smooth: true,
           showSymbol: false,
-          data: sumCostCompMesin,
           color: "#53599A",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          data: sumCostCompMesin,
+          type: "line",
+          name: "Total Cost",
+          smooth: true
         },
       ],
-    };
+    }
     forceRender1();
   } catch (error) {
     console.error('Fetch Grafik WLC Kom Mesin', error);
@@ -2209,25 +2212,25 @@ const fetchGrafikPlanMesin = async () => {
         maxPlanOpt.value = Math.max.apply(Math, yAxisPlan.value);
 
         wlcAnnu.push(response.data[i].total_wlcc_annualized);
-        revenAnnu.push(response.data[i].revenue_annualized);
+        revenAnnu.push(response.data[i].revenue_annualized)
         capexAnnu.push(response.data[i].capex_annualized);
-        comBDAnnu.push(response.data[i].cost_component_bd);
+        comBDAnnu.push(response.data[i].cost_component_bd)
         fuelComAnnu.push(response.data[i].cost_component_c_annualized);
 
         if (i > 0 && !isBepFounded && response.data[i].revenue_annualized >= response.data[i].total_wlcc_annualized) {
           const selisihNow = response.data[i].revenue_annualized - response.data[i].total_wlcc_annualized
-          const selisihMinus1 = response.data[i - 1].revenue_annualized - response.data[i - 1].total_wlcc_annualized
+          const selisihMinus1 = response.data[i - 1].revenue_annualized - response.data[i - 1].total_wlcc_annualized;
           if (Math.abs(selisihNow) > Math.abs(selisihMinus1)) {
-            indexTerdekat = i - 1;
+            indexTerdekat = i - 1
             indexBEP = i;
-            tahunBEP = response.data[i - 1].tahun;
+            tahunBEP = response.data[i - 1].tahun
           } else {
             indexTerdekat = i;
-            indexBEP = i + 1;
+            indexBEP = i + 1
             tahunBEP = response.data[i].tahun;
           }
-          isBepFounded = true;
-        }
+          isBepFounded = true
+        };
 
         // const diffOpt = Math.min.apply(Math, sumLccPlanMesin.value)
         // if (diffOpt < selisihOpt) {
@@ -2238,33 +2241,33 @@ const fetchGrafikPlanMesin = async () => {
         // }
         const finalOptimum = Math.max.apply(Math, profitLoss)
         if (finalOptimum == response.data[i].profit_loss) {
-          indexOptimum = i
+          indexOptimum = i;
           indexOpt = i + 1
-          tahunOptimum = response.data[i].tahun
+          tahunOptimum = response.data[i].tahun;
         }
-      }
+      };
       // console.log(tahunOptimum, 'Optimum');
-      var maxWlc = Math.max.apply(Math, wlcAnnu);
+      var maxWlc = Math.max.apply(Math, wlcAnnu)
       var maxRev = Math.max.apply(Math, revenAnnu);
       var maxCapex = Math.max.apply(Math, capexAnnu);
-      var maxComBD = Math.max.apply(Math, comBDAnnu);
+      var maxComBD = Math.max.apply(Math, comBDAnnu)
       var maxFuelCom = Math.max.apply(Math, fuelComAnnu);
 
-      var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxWlc, maxRev];
+      var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxWlc, maxRev]
       finalMax = Math.max.apply(Math, listOfMax);
     } else {
-      dataPlanMesin == null;
-    }
+      dataPlanMesin == null
+    };
 
     chartPlanningMesin.value = isBepFounded ? {
       title: {
-        show: false,
+        show: false
       },
       tooltip: {
         trigger: "axis",
         axisPointer: {
           type: "shadow",
-        },
+        }
       },
       legend: {
         bottom: "bottom",
@@ -2274,7 +2277,7 @@ const fetchGrafikPlanMesin = async () => {
           "FS: Cost Component A (Capex) Annualized",
           "FS: Cost Component B + D Annualized",
           "FS: Cost Component C Annualized",
-        ],
+        ]
       },
       grid:
       {
@@ -2282,7 +2285,7 @@ const fetchGrafikPlanMesin = async () => {
         left: "3%",
         right: "2%",
         bottom: "8%",
-        containLabel: true,
+        containLabel: true
       },
       xAxis: [
         {
@@ -2293,9 +2296,9 @@ const fetchGrafikPlanMesin = async () => {
             color: '#37B1D5',
             formatter: function (value: any, index: number) {
               return index + 1 + `\n${value}`;
-            },
+            }
           }
-        },
+        }
       ],
       yAxis: [
         {
@@ -2306,149 +2309,141 @@ const fetchGrafikPlanMesin = async () => {
             align: "left",
             padding: [30, 20, 25, -25],
             fontSize: 14,
-            color: "#4D5E80",
-            fontWeight: "bold",
+            color: '#4D5E80',
+            fontWeight: 'bold'
           },
+          splitNumber: 20,
+          min: 0,
           axisLabel: {
             fontSize: 10,
             formatter: function (value: any) {
               return globalFormat.formatRupiah((value * 1000000) / 1000000000000);
-            },
+            }
           },
-          splitNumber: 20,
-          min: 0,
-          // max: maxPlanBep
           max: finalMax ? finalMax * 1.1 : finalMax
-        },
+          // max: maxPlanBep
+        }
       ],
       series: [
         {
           name: "FS: Cost Component A (Capex) Annualized",
           type: "bar",
-          stack: "Ad",
-          emphasis: {
-            focus: "series",
-          },
+          stack: 'Ad',
           data: capexPlanMesin,
           markPoint: {
             silent: true,
             symbol: 'rect',
-            symbolSize: [100, 30],
             itemStyle: { color: '#0D5A71' },
-            label: { fontSize: 10, fontWeight: 'bold' },
+            symbolSize: [100, 30],
             data: [{ name: 'Max', value: `BEP FS : ${tahunBEP} (${indexBEP})`, xAxis: indexTerdekat, yAxis: finalMax }],
-            symbolOffset: [0, 0]
+            label: { fontSize: 10, fontWeight: 'bold' },
+            symbolOffset: [0, 0],
+          },
+          emphasis: {
+            focus: 'series'
           },
           markArea: {
-            silent: true,
             itemStyle: { color: '#E2EAF2' },
+            data: [[{ name: 'BEP FS', xAxis: indexTerdekat }, { xAxis: indexTerdekat }]],
             label: { show: false },
-            data: [[{ name: 'BEP FS', xAxis: indexTerdekat }, { xAxis: indexTerdekat }]]
+            silent: true,
           },
-          color: "#0D5A71",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          color: "#0D5A71"
         },
         {
-          name: "FS: Cost Component B + D Annualized",
           type: "bar",
           stack: "Ad",
-          emphasis: {
-            focus: "series",
-          },
+          name: "FS: Cost Component B + D Annualized",
           data: comBDPlanMesin,
+          emphasis: {
+            focus: 'series'
+          },
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+          markArea: {
+            itemStyle: { color: '#E2EAF2' },
+            label: { show: false },
+            silent: true,
+            data: [[{ name: 'Optimum Life FS', xAxis: indexOptimum }, { xAxis: indexOptimum }]]
+          },
+          color: "#37B1D5",
           markPoint: {
             silent: true,
             symbol: 'rect',
             symbolSize: [95, 30],
+            data: [{ name: 'Min', value: `Optimum life FS : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: finalMax }],
             itemStyle: { color: '#0D5A71' },
             label: { fontSize: 10, fontWeight: 'bold' },
-            data: [{ name: 'Min', value: `Optimum life FS : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: finalMax }],
             symbolOffset: [0, 20]
-          },
-          markArea: {
-            silent: true,
-            itemStyle: { color: '#E2EAF2' },
-            label: { show: false },
-            data: [[{ name: 'Optimum Life FS', xAxis: indexOptimum }, { xAxis: indexOptimum }]]
-          },
-          color: "#37B1D5",
-          tooltip: {
-            valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
         },
         {
-          name: "FS: Cost Component C Annualized",
-          type: "bar",
-          stack: "Ad",
-          emphasis: {
-            focus: "series",
-          },
           itemStyle: {
             borderRadius: [5, 5, 0, 0],
           },
           data: fuelComPlanMesin,
           color: "#CCF2FF",
+          emphasis: {
+            focus: "series",
+          },
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          type: "bar",
+          name: "FS: Cost Component C Annualized",
+          stack: "Ad",
         },
         {
-          name: "FS: Revenue Annualized",
           type: "line",
-          smooth: true,
+          name: 'FS: Revenue Annualized',
           showSymbol: false,
-          data: revPlanMesin,
+          smooth: true,
           color: "#0099AD",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          data: revPlanMesin,
         },
         {
-          name: "FS: Total LCC Annualized",
-          type: "line",
+          type: 'line',
           smooth: true,
-          showSymbol: false,
+          name: 'FS: Total LCC Annualized',
           data: sumLccPlanMesin,
           color: "#1E1F4E",
+          showSymbol: false,
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
-          },
+          }
         },
       ],
     } : {
-      title: {
-        show: false,
-      },
       tooltip: {
-        trigger: "axis",
+        trigger: 'axis',
         axisPointer: {
-          type: "shadow",
-        },
+          type: 'shadow',
+        }
       },
       legend: {
         bottom: "bottom",
         data: [
-          "FS: Revenue Annualized",
-          "FS: Total LCC Annualized",
+          'FS: Revenue Annualized',
+          'FS: Total LCC Annualized',
           "FS: Cost Component A (Capex) Annualized",
           "FS: Cost Component B + D Annualized",
           "FS: Cost Component C Annualized",
-        ],
+        ]
       },
-      grid:
-      {
-        top: "5%",
-        left: "3%",
-        right: "2%",
-        bottom: "8%",
-        containLabel: true,
+      title: {
+        show: false
       },
       xAxis: [
         {
@@ -2459,14 +2454,14 @@ const fetchGrafikPlanMesin = async () => {
             color: '#37B1D5',
             formatter: function (value: any, index: number) {
               return index + 1 + `\n${value}`;
-            },
+            }
           }
         },
       ],
       yAxis: [
         {
           type: "value",
-          name: "Triliun Rupiah",
+          name: 'Triliun Rupiah',
           nameLocation: "center",
           nameTextStyle: {
             align: "left",
@@ -2483,10 +2478,18 @@ const fetchGrafikPlanMesin = async () => {
           },
           splitNumber: 20,
           min: 0,
-          // max: maxPlanBep
+          // max: maxPlanBep,
           max: finalMax ? finalMax * 1.1 : finalMax
         },
       ],
+      grid:
+      {
+        top: "5%",
+        left: "3%",
+        right: "2%",
+        bottom: "8%",
+        containLabel: true
+      },
       series: [
         {
           name: "FS: Cost Component A (Capex) Annualized",
@@ -2509,15 +2512,19 @@ const fetchGrafikPlanMesin = async () => {
           emphasis: {
             focus: "series",
           },
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
           data: comBDPlanMesin,
           markPoint: {
-            silent: true,
-            symbol: 'rect',
             symbolSize: [95, 30],
             itemStyle: { color: '#0D5A71' },
             label: { fontSize: 10, fontWeight: 'bold' },
-            data: [{ name: 'Min', value: `Optimum life FS : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: finalMax }],
-            symbolOffset: [0, 20]
+            silent: true,
+            data: [{ name: "Min", value: `Optimum life FS : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: finalMax }],
+            symbolOffset: [0, 20],
+            symbol: 'rect',
           },
           markArea: {
             silent: true,
@@ -2525,52 +2532,48 @@ const fetchGrafikPlanMesin = async () => {
             label: { show: false },
             data: [[{ name: 'Optimum Life FS', xAxis: indexOptimum }, { xAxis: indexOptimum }]]
           },
-          color: "#37B1D5",
+          color: "#37B1D5"
+        },
+        {
+          stack: "Ad",
+          data: fuelComPlanMesin,
+          name: "FS: Cost Component C Annualized",
+          type: "bar",
+          color: "#CCF2FF",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
-        },
-        {
-          name: "FS: Cost Component C Annualized",
-          type: "bar",
-          stack: "Ad",
           emphasis: {
             focus: "series",
           },
           itemStyle: {
             borderRadius: [5, 5, 0, 0],
           },
-          data: fuelComPlanMesin,
-          color: "#CCF2FF",
+        },
+        {
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          name: "FS: Revenue Annualized",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
-        },
-        {
-          name: "FS: Revenue Annualized",
-          type: "line",
-          smooth: true,
-          showSymbol: false,
           data: revPlanMesin,
           color: "#0099AD",
-          tooltip: {
-            valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
-          },
         },
         {
-          name: "FS: Total LCC Annualized",
-          type: "line",
-          smooth: true,
-          showSymbol: false,
           data: sumLccPlanMesin,
           color: "#1E1F4E",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          name: "FS: Total LCC Annualized",
+          type: "line",
+          smooth: true,
+          showSymbol: false
         },
       ],
     };
@@ -2605,23 +2608,18 @@ const fetchGrafikPlanKomMesin = async () => {
         );
       }
     } else {
-      dataPlanKomMesin == null;
+      dataPlanKomMesin == null
     }
 
     chartPlanKomMesin.value = {
-      title: {
-        show: false,
-      },
       tooltip: {
         trigger: "axis",
         axisPointer: {
           type: "shadow",
         },
       },
-      legend: {
-        bottom: "bottom",
-        padding: 0,
-        data: ["FS: Total Cost", "FS: Cost Component A", "FS: Cost Component B + D", "FS: Cost Component C"],
+      title: {
+        show: false,
       },
       grid: {
         top: "5%",
@@ -2630,18 +2628,23 @@ const fetchGrafikPlanKomMesin = async () => {
         bottom: "8%",
         containLabel: true,
       },
+      legend: {
+        bottom: "bottom",
+        padding: 0,
+        data: ["FS: Total Cost", "FS: Cost Component A", "FS: Cost Component B + D", "FS: Cost Component C"],
+      },
       xAxis: [
         {
-          type: "category",
+          type: 'category',
           data: tahunPlanKomMesin,
           axisLabel: {
             fontSize: 10,
             color: '#37B1D5',
             formatter: function (value: any, index: number) {
-              return index + 1 + `\n${value}`;
-            },
+              return index + 1 + `\n${value}`
+            }
           }
-        },
+        }
       ],
       yAxis: [
         {
@@ -2663,66 +2666,66 @@ const fetchGrafikPlanKomMesin = async () => {
           },
           splitNumber: 20,
           min: 0,
-        },
+        }
       ],
       series: [
         {
-          name: "FS: Cost Component A",
-          type: "bar",
           stack: "Ad",
           emphasis: {
-            focus: "series",
+            focus: "series"
           },
           data: costCompAMesinPlan,
-          color: "#068D9D",
+          color: '#068D9D',
+          name: "FS: Cost Component A",
+          type: 'bar',
           tooltip: {
             valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
-          },
+              globalFormat.formatDecimal(value) + ' Rp(Juta)',
+          }
         },
         {
-          name: "FS: Cost Component B + D",
-          type: "bar",
-          stack: "Ad",
           emphasis: {
             focus: "series",
           },
           data: costCompBDMesinPlan,
-          color: "#6D9DC5",
+          name: "FS: Cost Component B + D",
+          type: "bar",
+          stack: "Ad",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          color: "#6D9DC5"
         },
         {
-          name: "FS: Cost Component C",
           type: "bar",
           stack: "Ad",
           emphasis: {
-            focus: "series",
+            focus: "series"
+          },
+          name: "FS: Cost Component C",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
           itemStyle: {
             borderRadius: [5, 5, 0, 0],
           },
           data: costCompCMesinPlan,
           color: "#CCF2FF",
+        },
+        {
+          color: "#53599A",
+          data: sumCostCompMesinPlan,
+          showSymbol: false,
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
-        },
-        {
           name: "FS: Total Cost",
           type: "line",
           smooth: true,
-          showSymbol: false,
-          data: sumCostCompMesinPlan,
-          color: "#53599A",
-          tooltip: {
-            valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
-          },
-        },
+        }
       ],
     };
     forceRender10();
@@ -2873,15 +2876,15 @@ const fetchGrafikPRPMesin = async () => {
 
     if (response.data[0].planning != null) {
       var capexAnnu: number[] = [];
-      var comBDAnnu: number[] = [];
+      var comBDAnnu: number[] = []
       var fuelComAnnu: number[] = [];
       var sumrevenAnnu: number[] = [];
       var revenAnnu: number[] = [];
-      var wlcAnnu: number[] = [];
+      var wlcAnnu: number[] = []
       var revaAnnu: number[] = [];
-      var revbAnnu: number[] = [];
+      var revbAnnu: number[] = []
       var revcAnnu: number[] = [];
-      var revdAnnu: number[] = [];
+      var revdAnnu: number[] = []
       var finalMaxPlan: any;
 
       for (var j = 0; j < response.data[0].planning.length; j++) {
@@ -2937,18 +2940,18 @@ const fetchGrafikPRPMesin = async () => {
         }
       }
       var maxCapex = Math.max.apply(Math, capexAnnu);
-      var maxComBD = Math.max.apply(Math, comBDAnnu);
+      var maxComBD = Math.max.apply(Math, comBDAnnu)
       var maxFuelCom = Math.max.apply(Math, fuelComAnnu);
-      var maxsumRev = Math.max.apply(Math, sumrevenAnnu);
+      var maxsumRev = Math.max.apply(Math, sumrevenAnnu)
       var maxRev = Math.max.apply(Math, revenAnnu);
-      var maxWlc = Math.max.apply(Math, wlcAnnu);
+      var maxWlc = Math.max.apply(Math, wlcAnnu)
       var maxRevA = Math.max.apply(Math, revaAnnu);
-      var maxRevB = Math.max.apply(Math, revbAnnu);
+      var maxRevB = Math.max.apply(Math, revbAnnu)
       var maxRevC = Math.max.apply(Math, revcAnnu);
-      var maxRevD = Math.max.apply(Math, revdAnnu);
+      var maxRevD = Math.max.apply(Math, revdAnnu)
 
       var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxsumRev, maxWlc, maxRev, maxRevA, maxRevB, maxRevC, maxRevD];
-      finalMaxPlan = Math.max.apply(Math, listOfMax);
+      finalMaxPlan = Math.max.apply(Math, listOfMax)
       // console.log(profitLoss)
     } else {
       dataPRPPlanMesin == null;
@@ -3016,32 +3019,32 @@ const fetchGrafikPRPMesin = async () => {
             axisLabel: {
               fontSize: 10,
               color: function (value: any, index: number) {
-                const filterTahun = tahunData.value.toString();
+                const filterTahun = tahunData.value.toString()
                 if (value < filterTahun) {
                   return '#FF5656';
                 } else if (value == filterTahun) {
-                  return '#6C6C6C';
+                  return '#6C6C6C'
                 } else if (value > filterTahun) {
                   return '#37B1D5';
                 }
               },
               formatter: function (value: any, index: number) {
                 return index + 1 + `\n${value}`;
-              },
-            }
+              }
+            },
           },
         ],
         yAxis: [
           {
             type: "value",
-            name: "Triliun Rupiah",
+            name: 'Triliun Rupiah',
             nameLocation: "center",
             nameTextStyle: {
-              align: "left",
+              align: 'left',
               padding: [30, 20, 25, -25],
               fontSize: 14,
               color: "#4D5E80",
-              fontWeight: "bold",
+              fontWeight: 'bold',
             },
             axisLabel: {
               fontSize: 10,
@@ -3133,32 +3136,32 @@ const fetchGrafikPRPMesin = async () => {
               symbolOffset: [10, 20]
             },
             markArea: {
-              silent: true,
               itemStyle: { color: '#E2EAF2' },
+              silent: true,
+              data: [[{ name: 'Optimum Life', xAxis: indexOptimum }, { xAxis: indexOptimum }]],
               label: { show: false },
-              data: [[{ name: 'Optimum Life', xAxis: indexOptimum }, { xAxis: indexOptimum }]]
             },
-            color: "#212E7C",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            color: '#212E7C'
           },
           {
-            name: "Cost Component C Annualized",
-            type: "bar",
             stack: "Ad",
+            type: 'bar',
             emphasis: {
-              focus: "series",
+              focus: 'series'
+            },
+            name: "Cost Component C Annualized",
+            color: "#4EB180",
+            data: fuelComPRPMesin,
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
             itemStyle: {
               borderRadius: [2, 2, 0, 0],
-            },
-            data: fuelComPRPMesin,
-            color: "#4EB180",
-            tooltip: {
-              valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
           },
           {
@@ -3303,94 +3306,94 @@ const fetchGrafikPRPMesin = async () => {
               data: [{ name: 'Min', value: `Optimum life FS : \n ${tahunOptimumPlan} (${indexOptPlan})`, xAxis: indexOptimumPlan, yAxis: finalMaxPlan }],
               symbolOffset: [-10, 30]
             },
-            markArea: {
-              silent: true,
-              itemStyle: { color: '#E2EAF2' },
-              label: { show: false },
-              data: [[{ name: 'Optimum Life FS', xAxis: indexOptimumPlan }, { xAxis: indexOptimumPlan }]]
-            },
-            color: "#BFBFBF",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            markArea: {
+              itemStyle: { color: '#E2EAF2' },
+              silent: true,
+              data: [[{ name: 'Optimum Life FS', xAxis: indexOptimumPlan }, { xAxis: indexOptimumPlan }]],
+              label: { show: false }
+            },
+            color: "#BFBFBF",
           },
           {
-            name: "FS: Cost Component C Annualized",
-            type: "bar",
-            stack: "Ab",
             emphasis: {
               focus: "series",
             },
-            itemStyle: {
-              borderRadius: [2, 2, 0, 0],
-            },
+            name: "FS: Cost Component C Annualized",
+            type: "bar",
+            stack: "Ab",
             data: fuelComPRPPlanMesin,
             color: "#7C7C7C",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            itemStyle: {
+              borderRadius: [2, 2, 0, 0],
+            },
           },
           {
-            name: "FS: Total Revenue",
-            type: "line",
             smooth: true,
             showSymbol: false,
             data: sumRevPRPPlanMesin,
-            color: "#3C0753",
+            name: "FS: Total Revenue",
+            type: "line",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            color: "#3C0753"
           },
           {
+            smooth: true,
             name: "FS: Revenue A",
             type: "line",
-            smooth: true,
+            areaStyle: {},
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatDecimal(value) + " Rp(Juta)",
+            },
             showSymbol: false,
             data: revAPRPPlanMesin,
             color: "#761A1A",
-            areaStyle: {},
-            tooltip: {
-              valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
           },
           {
+            showSymbol: false,
+            data: revBPRPPlanMesin,
             name: "FS: Revenue B",
             type: "line",
             smooth: true,
-            showSymbol: false,
-            data: revBPRPPlanMesin,
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatDecimal(value) + " Rp(Juta)",
+            },
             color: "#C13131",
             areaStyle: {},
+          },
+          {
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
-          },
-          {
+            smooth: true,
             name: "FS: Revenue C",
             type: "line",
-            smooth: true,
-            showSymbol: false,
             data: revCPRPPlanMesin,
+            showSymbol: false,
             color: "#A7CD78",
             areaStyle: {},
-            tooltip: {
-              valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
           },
           {
+            showSymbol: false,
             name: "FS: Revenue D",
+            areaStyle: {},
             type: "line",
             smooth: true,
-            showSymbol: false,
-            data: revDPRPPlanMesin,
             color: "#FFF279",
-            areaStyle: {},
+            data: revDPRPPlanMesin,
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
@@ -3400,17 +3403,16 @@ const fetchGrafikPRPMesin = async () => {
       };
     } else if (isBepKKFounded && !isBepFSFounded) {
       chartPRPMesin.value = {
-        title: {
-          show: false,
-        },
         tooltip: {
           trigger: "axis",
           axisPointer: {
-            type: "shadow",
-          },
+            type: "shadow"
+          }
+        },
+        title: {
+          show: false
         },
         legend: {
-          bottom: "bottom",
           data: [
             "Revenue Annualized",
             "Total LCC Annualized",
@@ -3431,8 +3433,16 @@ const fetchGrafikPRPMesin = async () => {
             "FS: Revenue A",
             "FS: Revenue B",
             "FS: Revenue C",
-            "FS: Revenue D",
+            "FS: Revenue D"
           ],
+          bottom: "bottom",
+          grid: {
+            top: "5%",
+            left: "3%",
+            right: "2%",
+            bottom: "18%",
+            containLabel: true,
+          },
           selected: {
             "Revenue A": false,
             "Revenue B": false,
@@ -3443,19 +3453,11 @@ const fetchGrafikPRPMesin = async () => {
             "FS: Revenue B": false,
             "FS: Revenue C": false,
             "FS: Revenue D": false,
-            "FS: Total Revenue": false,
-          }
-        },
-        grid: {
-          top: "5%",
-          left: "3%",
-          right: "2%",
-          bottom: "18%",
-          containLabel: true,
+            "FS: Total Revenue": false
+          },
         },
         xAxis: [
           {
-            type: "category",
             data: tahunPRPMesin,
             axisLabel: {
               fontSize: 10,
@@ -3472,44 +3474,42 @@ const fetchGrafikPRPMesin = async () => {
               formatter: function (value: any, index: number) {
                 return index + 1 + `\n${value}`;
               },
-            }
-          },
+            },
+            type: "category",
+          }
         ],
         yAxis: [
           {
-            type: "value",
             name: "Triliun Rupiah",
             nameLocation: "center",
+            type: "value",
             nameTextStyle: {
-              align: "left",
               padding: [30, 20, 25, -25],
-              fontSize: 14,
+              align: "left",
               color: "#4D5E80",
-              fontWeight: "bold",
+              fontSize: 14,
+              fontWeight: "bold"
             },
             axisLabel: {
-              fontSize: 10,
               formatter: function (value: any) {
                 return globalFormat.formatRupiah((value * 1000000) / 1000000000000);
               },
+              fontSize: 10,
             },
-            splitNumber: 20,
             min: 0,
-            // max: finalMax,
+            splitNumber: 20,
             max: function () {
               if (finalMax > finalMaxPlan) {
-                return finalMax;
+                return finalMax
               } else if (finalMax < finalMaxPlan) {
-                return finalMaxPlan;
-              }
-            }
+                return finalMaxPlan
+              };
+            },
+            // max: finalMax,
           },
         ],
         series: [
           {
-            name: "Revenue Annualized",
-            type: "line",
-            smooth: true,
             showSymbol: false,
             data: revPRPMesin,
             color: "#489FB7",
@@ -3517,27 +3517,25 @@ const fetchGrafikPRPMesin = async () => {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            name: "Revenue Annualized",
+            type: "line",
+            smooth: true,
           },
           {
-            name: "Total LCC Annualized",
             type: "line",
             smooth: true,
             showSymbol: false,
             data: sumLccPRPMesin,
             color: "#1E1F4E",
+            name: "Total LCC Annualized",
             tooltip: {
               valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
+                globalFormat.formatDecimal(value) + " Rp(Juta)"
+            }
           },
           {
             name: "Cost Component A (Capex) Annualized",
-            type: "bar",
             stack: "Ad",
-            emphasis: {
-              focus: "series",
-            },
-            data: capexPRPMesin,
             markPoint: {
               silent: true,
               symbol: 'rect',
@@ -3547,6 +3545,8 @@ const fetchGrafikPRPMesin = async () => {
               data: [{ name: 'Max', value: `BEP : ${tahunBEP} (${indexBEP})`, xAxis: indexTerdekat, yAxis: finalMax }],
               symbolOffset: [10, 0]
             },
+            type: "bar",
+            data: capexPRPMesin,
             markArea: {
               silent: true,
               itemStyle: { color: '#E2EAF2' },
@@ -3558,15 +3558,11 @@ const fetchGrafikPRPMesin = async () => {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
-          },
-          {
-            name: "Cost Component B + D Annualized",
-            type: "bar",
-            stack: "Ad",
             emphasis: {
               focus: "series",
             },
-            data: comBDPRPMesin,
+          },
+          {
             markPoint: {
               silent: true,
               symbol: 'rect',
@@ -3576,137 +3572,144 @@ const fetchGrafikPRPMesin = async () => {
               data: [{ name: 'Min', value: `Optimum life : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: finalMax }],
               symbolOffset: [10, 20]
             },
+            name: "Cost Component B + D Annualized",
+            type: "bar",
+            stack: "Ad",
+            emphasis: {
+              focus: "series",
+            },
+            data: comBDPRPMesin,
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatDecimal(value) + " Rp(Juta)",
+            },
+            color: "#212E7C",
             markArea: {
               silent: true,
               itemStyle: { color: '#E2EAF2' },
               label: { show: false },
               data: [[{ name: 'Optimum Life', xAxis: indexOptimum }, { xAxis: indexOptimum }]]
             },
-            color: "#212E7C",
-            tooltip: {
-              valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
           },
           {
-            name: "Cost Component C Annualized",
-            type: "bar",
-            stack: "Ad",
-            emphasis: {
-              focus: "series",
-            },
             itemStyle: {
               borderRadius: [2, 2, 0, 0],
             },
+            name: "Cost Component C Annualized",
             data: fuelComPRPMesin,
             color: "#4EB180",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            type: "bar",
+            stack: "Ad",
+            emphasis: {
+              focus: "series"
+            }
           },
           {
-            name: "Total Revenue",
-            type: "line",
-            smooth: true,
-            showSymbol: false,
             data: sumRevPRPMesin,
             color: "#5F6F52",
+            name: "Total Revenue",
+            type: "line",
+            showSymbol: false,
+            smooth: true,
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
           },
           {
-            name: "Revenue A",
-            type: "line",
-            smooth: true,
             showSymbol: false,
+            type: "line",
             data: revAPRPMesin,
             color: "#191919",
             areaStyle: {},
+            name: "Revenue A",
+            smooth: true,
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
           },
           {
-            name: "Revenue B",
-            type: "line",
-            smooth: true,
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatDecimal(value) + " Rp(Juta)",
+            },
             showSymbol: false,
             data: revBPRPMesin,
             color: "#750E21",
+            name: "Revenue B",
+            type: "line",
+            smooth: true,
             areaStyle: {},
+          },
+          {
+            smooth: true,
+            type: "line",
+            name: "Revenue C",
+            showSymbol: false,
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
-          },
-          {
-            name: "Revenue C",
-            type: "line",
-            smooth: true,
-            showSymbol: false,
             data: revCPRPMesin,
             color: "#E3651D",
             areaStyle: {},
-            tooltip: {
-              valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
           },
           {
-            name: "Revenue D",
             type: "line",
             smooth: true,
             showSymbol: false,
+            areaStyle: {},
             data: revDPRPMesin,
             color: "#BED754",
-            areaStyle: {},
+            name: "Revenue D",
             tooltip: {
               valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
+                globalFormat.formatDecimal(value) + " Rp(Juta)"
+            }
           },
           {
-            name: "FS: Revenue Annualized",
-            type: "line",
-            smooth: true,
-            showSymbol: false,
-            lineStyle: {
-              type: "dashed",
-            },
             data: revPRPPlanMesin,
             color: "#A6A6A6",
-            tooltip: {
-              valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
-          },
-          {
-            name: "FS: Total LCC Annualized",
-            type: "line",
+            name: "FS: Revenue Annualized",
             smooth: true,
-            showSymbol: false,
+            type: "line",
             lineStyle: {
-              type: "dashed",
+              type: "dashed"
             },
-            data: sumLccPRPPlanMesin,
-            color: "#7A7A7A",
+            showSymbol: false,
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
+            }
+          },
+          {
+            showSymbol: false,
+            type: "line",
+            name: "FS: Total LCC Annualized",
+            smooth: true,
+            lineStyle: {
+              type: "dashed"
+            },
+            color: "#7A7A7A",
+            data: sumLccPRPPlanMesin,
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatDecimal(value) + " Rp(Juta)"
             },
           },
           {
-            name: "FS: Cost Component B + D Annualized",
             type: "bar",
             stack: "Ab",
-            emphasis: {
-              focus: "series",
-            },
+            name: "FS: Cost Component B + D Annualized",
             data: comBDPRPPlanMesin,
+            emphasis: {
+              focus: "series"
+            },
             markPoint: {
               silent: true,
               symbol: 'rect',
@@ -3813,9 +3816,6 @@ const fetchGrafikPRPMesin = async () => {
       };
     } else if (!isBepKKFounded && isBepFSFounded) {
       chartPRPMesin.value = {
-        title: {
-          show: false,
-        },
         tooltip: {
           trigger: "axis",
           axisPointer: {
@@ -3846,6 +3846,9 @@ const fetchGrafikPRPMesin = async () => {
             "FS: Revenue C",
             "FS: Revenue D",
           ],
+          title: {
+            show: false,
+          },
           selected: {
             "Revenue A": false,
             "Revenue B": false,
@@ -3860,16 +3863,14 @@ const fetchGrafikPRPMesin = async () => {
           }
         },
         grid: {
+          containLabel: true,
           top: "5%",
           left: "3%",
           right: "2%",
           bottom: "18%",
-          containLabel: true,
         },
         xAxis: [
           {
-            type: "category",
-            data: tahunPRPMesin,
             axisLabel: {
               fontSize: 10,
               color: function (value: any, index: number) {
@@ -3885,68 +3886,67 @@ const fetchGrafikPRPMesin = async () => {
               formatter: function (value: any, index: number) {
                 return index + 1 + `\n${value}`;
               },
-            }
+            },
+            type: "category",
+            data: tahunPRPMesin,
           },
         ],
         yAxis: [
           {
-            type: "value",
-            name: "Triliun Rupiah",
             nameLocation: "center",
+            type: "value",
+            name: 'Triliun Rupiah',
             nameTextStyle: {
-              align: "left",
-              padding: [30, 20, 25, -25],
-              fontSize: 14,
-              color: "#4D5E80",
               fontWeight: "bold",
+              padding: [30, 20, 25, -25],
+              align: "left",
+              color: "#4D5E80",
+              fontSize: 14,
             },
+            splitNumber: 20,
+            min: 0,
+            // max: finalMax,
             axisLabel: {
               fontSize: 10,
               formatter: function (value: any) {
                 return globalFormat.formatRupiah((value * 1000000) / 1000000000000);
               },
             },
-            splitNumber: 20,
-            min: 0,
-            // max: finalMax,
             max: function () {
               if (finalMax > finalMaxPlan) {
-                return finalMax;
+                return finalMax
               } else if (finalMax < finalMaxPlan) {
                 return finalMaxPlan;
               }
-            }
+            },
           },
         ],
         series: [
           {
-            name: "Revenue Annualized",
-            type: "line",
             smooth: true,
             showSymbol: false,
             data: revPRPMesin,
-            color: "#489FB7",
+            name: "Revenue Annualized",
+            type: "line",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            color: "#489FB7",
           },
           {
+            showSymbol: false,
+            data: sumLccPRPMesin,
             name: "Total LCC Annualized",
             type: "line",
             smooth: true,
-            showSymbol: false,
-            data: sumLccPRPMesin,
-            color: "#1E1F4E",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            color: "#1E1F4E",
           },
           {
-            name: "Cost Component B + D Annualized",
-            type: "bar",
-            stack: "Ad",
             emphasis: {
               focus: "series",
             },
@@ -3960,146 +3960,149 @@ const fetchGrafikPRPMesin = async () => {
               data: [{ name: 'Min', value: `Optimum life : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: finalMax }],
               symbolOffset: [10, 20]
             },
-            markArea: {
-              silent: true,
-              itemStyle: { color: '#E2EAF2' },
-              label: { show: false },
-              data: [[{ name: 'Optimum Life', xAxis: indexOptimum }, { xAxis: indexOptimum }]]
-            },
+            name: "Cost Component B + D Annualized",
+            type: "bar",
+            stack: "Ad",
             color: "#212E7C",
             tooltip: {
               valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
+                globalFormat.formatDecimal(value) + ' Rp(Juta)'
             },
+            markArea: {
+              data: [[{ name: 'Optimum Life', xAxis: indexOptimum }, { xAxis: indexOptimum }]],
+              silent: true,
+              itemStyle: { color: "#E2EAF2" },
+              label: { show: false },
+            }
           },
           {
+            stack: 'Ad',
             name: "Cost Component C Annualized",
             type: "bar",
-            stack: "Ad",
             emphasis: {
               focus: "series",
             },
-            itemStyle: {
-              borderRadius: [2, 2, 0, 0],
-            },
-            data: fuelComPRPMesin,
             color: "#4EB180",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            itemStyle: {
+              borderRadius: [2, 2, 0, 0]
+            },
+            data: fuelComPRPMesin,
           },
           {
-            name: "Total Revenue",
-            type: "line",
-            smooth: true,
-            showSymbol: false,
-            data: sumRevPRPMesin,
-            color: "#5F6F52",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
-          },
-          {
-            name: "Revenue A",
             type: "line",
             smooth: true,
+            name: "Total Revenue",
+            data: sumRevPRPMesin,
+            color: "#5F6F52",
+            showSymbol: false,
+          },
+          {
             showSymbol: false,
             data: revAPRPMesin,
             color: "#191919",
+            name: "Revenue A",
             areaStyle: {},
+            type: "line",
             tooltip: {
               valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
+                globalFormat.formatDecimal(value) + " Rp(Juta)"
             },
+            smooth: true,
           },
           {
-            name: "Revenue B",
-            type: "line",
-            smooth: true,
-            showSymbol: false,
-            data: revBPRPMesin,
             color: "#750E21",
+            type: "line",
+            smooth: true,
+            name: "Revenue B",
+            data: revBPRPMesin,
             areaStyle: {},
+            showSymbol: false,
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
           },
           {
-            name: "Revenue C",
-            type: "line",
-            smooth: true,
+            color: "#E3651D",
             showSymbol: false,
             data: revCPRPMesin,
-            color: "#E3651D",
+            type: "line",
             areaStyle: {},
+            name: "Revenue C",
+            smooth: true,
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
+            }
           },
           {
+            areaStyle: {},
+            type: "line",
             name: "Revenue D",
-            type: "line",
-            smooth: true,
             showSymbol: false,
-            data: revDPRPMesin,
+            smooth: true,
             color: "#BED754",
-            areaStyle: {},
+            data: revDPRPMesin,
             tooltip: {
               valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
+                globalFormat.formatDecimal(value) + " Rp(Juta)"
+            }
           },
           {
-            name: "FS: Revenue Annualized",
             type: "line",
             smooth: true,
             showSymbol: false,
-            lineStyle: {
-              type: "dashed",
-            },
+            name: "FS: Revenue Annualized",
             data: revPRPPlanMesin,
             color: "#A6A6A6",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
-          },
-          {
-            name: "FS: Total LCC Annualized",
-            type: "line",
-            smooth: true,
-            showSymbol: false,
             lineStyle: {
               type: "dashed",
             },
+          },
+          {
             data: sumLccPRPPlanMesin,
+            lineStyle: {
+              type: "dashed",
+            },
             color: "#7A7A7A",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            name: "FS: Total LCC Annualized",
+            type: "line",
+            smooth: true,
+            showSymbol: false,
           },
           {
-            name: "FS: Cost Component A (Capex) Annualized",
             type: "bar",
-            stack: "Ab",
+            name: "FS: Cost Component A (Capex) Annualized",
             emphasis: {
               focus: "series",
             },
-            data: capexPRPPlanMesin,
+            stack: "Ab",
             markPoint: {
-              silent: true,
               symbol: 'rect',
-              symbolSize: [95, 30],
+              silent: true,
               itemStyle: { color: '#0D5A71' },
+              symbolSize: [95, 30],
               label: { fontSize: 10, fontWeight: 'bold' },
               data: [{ name: 'Max', value: `BEP FS : ${tahunBEPPlan} (${indexBEPPlan})`, xAxis: indexTerdekatPlan, yAxis: finalMaxPlan }],
               symbolOffset: [-10, 20]
             },
+            data: capexPRPPlanMesin,
             markArea: {
               silent: true,
               itemStyle: {
@@ -4131,27 +4134,24 @@ const fetchGrafikPRPMesin = async () => {
               data: [{ name: 'Min', value: `Optimum life FS : \n ${tahunOptimumPlan} (${indexOptPlan})`, xAxis: indexOptimumPlan, yAxis: finalMaxPlan }],
               symbolOffset: [-10, 30]
             },
-            markArea: {
-              silent: true,
-              itemStyle: { color: '#E2EAF2' },
-              label: { show: false },
-              data: [[{ name: 'Optimum Life FS', xAxis: indexOptimumPlan }, { xAxis: indexOptimumPlan }]]
-            },
             color: "#BFBFBF",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            markArea: {
+              silent: true,
+              itemStyle: { color: '#E2EAF2' },
+              label: { show: false },
+              data: [[{ name: 'Optimum Life FS', xAxis: indexOptimumPlan }, { xAxis: indexOptimumPlan }]],
+            }
           },
           {
+            stack: "Ab",
             name: "FS: Cost Component C Annualized",
             type: "bar",
-            stack: "Ab",
             emphasis: {
-              focus: "series",
-            },
-            itemStyle: {
-              borderRadius: [2, 2, 0, 0],
+              focus: "series"
             },
             data: fuelComPRPPlanMesin,
             color: "#7C7C7C",
@@ -4159,70 +4159,73 @@ const fetchGrafikPRPMesin = async () => {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
-          },
-          {
-            name: "FS: Total Revenue",
-            type: "line",
-            smooth: true,
-            showSymbol: false,
-            data: sumRevPRPPlanMesin,
-            color: "#3C0753",
-            tooltip: {
-              valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
+            itemStyle: {
+              borderRadius: [2, 2, 0, 0],
             },
           },
           {
-            name: "FS: Revenue A",
+            type: "line",
+            name: "FS: Total Revenue",
+            showSymbol: false,
+            smooth: true,
+            color: "#3C0753",
+            data: sumRevPRPPlanMesin,
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatDecimal(value) + " Rp(Juta)"
+            }
+          },
+          {
             type: "line",
             smooth: true,
-            showSymbol: false,
+            name: "FS: Revenue A",
             data: revAPRPPlanMesin,
             color: "#761A1A",
-            areaStyle: {},
+            showSymbol: false,
             tooltip: {
               valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
+                globalFormat.formatDecimal(value) + " Rp(Juta)"
             },
+            areaStyle: {}
           },
           {
-            name: "FS: Revenue B",
-            type: "line",
             smooth: true,
             showSymbol: false,
             data: revBPRPPlanMesin,
             color: "#C13131",
-            areaStyle: {},
+            name: "FS: Revenue B",
+            type: "line",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            areaStyle: {},
           },
           {
-            name: "FS: Revenue C",
-            type: "line",
             smooth: true,
             showSymbol: false,
+            name: "FS: Revenue C",
             data: revCPRPPlanMesin,
+            type: "line",
             color: "#A7CD78",
             areaStyle: {},
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
+            }
           },
           {
-            name: "FS: Revenue D",
-            type: "line",
-            smooth: true,
-            showSymbol: false,
-            data: revDPRPPlanMesin,
-            color: "#FFF279",
-            areaStyle: {},
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            type: "line",
+            smooth: true,
+            showSymbol: false,
+            name: "FS: Revenue D",
+            data: revDPRPPlanMesin,
+            color: "#FFF279",
+            areaStyle: {},
           },
         ],
       };
@@ -4230,12 +4233,6 @@ const fetchGrafikPRPMesin = async () => {
       chartPRPMesin.value = {
         title: {
           show: false,
-        },
-        tooltip: {
-          trigger: "axis",
-          axisPointer: {
-            type: "shadow",
-          },
         },
         legend: {
           bottom: "bottom",
@@ -4261,6 +4258,19 @@ const fetchGrafikPRPMesin = async () => {
             "FS: Revenue C",
             "FS: Revenue D",
           ],
+          grid: {
+            top: "5%",
+            left: "3%",
+            right: "2%",
+            bottom: "18%",
+            containLabel: true,
+          },
+          tooltip: {
+            trigger: "axis",
+            axisPointer: {
+              type: "shadow"
+            }
+          },
           selected: {
             "Revenue A": false,
             "Revenue B": false,
@@ -4271,22 +4281,14 @@ const fetchGrafikPRPMesin = async () => {
             "FS: Revenue B": false,
             "FS: Revenue C": false,
             "FS: Revenue D": false,
-            "FS: Total Revenue": false,
-          }
-        },
-        grid: {
-          top: "5%",
-          left: "3%",
-          right: "2%",
-          bottom: "18%",
-          containLabel: true,
+            "FS: Total Revenue": false
+          },
         },
         xAxis: [
           {
-            type: "category",
             data: tahunPRPMesin,
+            type: 'category',
             axisLabel: {
-              fontSize: 10,
               color: function (value: any, index: number) {
                 const filterTahun = tahunData.value.toString();
                 if (value < filterTahun) {
@@ -4300,51 +4302,51 @@ const fetchGrafikPRPMesin = async () => {
               formatter: function (value: any, index: number) {
                 return index + 1 + `\n${value}`;
               },
-            }
-          },
+              fontSize: 10,
+            },
+          }
         ],
         yAxis: [
           {
-            type: "value",
-            name: "Triliun Rupiah",
             nameLocation: "center",
-            nameTextStyle: {
-              align: "left",
-              padding: [30, 20, 25, -25],
-              fontSize: 14,
-              color: "#4D5E80",
-              fontWeight: "bold",
-            },
             axisLabel: {
               fontSize: 10,
               formatter: function (value: any) {
                 return globalFormat.formatRupiah((value * 1000000) / 1000000000000);
               },
             },
-            splitNumber: 20,
-            min: 0,
-            // max: finalMax,
+            name: "Triliun Rupiah",
+            nameTextStyle: {
+              fontSize: 14,
+              align: "left",
+              padding: [30, 20, 25, -25],
+              fontWeight: "bold",
+              color: "#4D5E80",
+            },
+            type: "value",
             max: function () {
               if (finalMax > finalMaxPlan) {
                 return finalMax;
               } else if (finalMax < finalMaxPlan) {
                 return finalMaxPlan;
               }
-            }
-          },
+            },
+            splitNumber: 20,
+            min: 0
+          }
         ],
         series: [
           {
-            name: "Revenue Annualized",
             type: "line",
             smooth: true,
             showSymbol: false,
             data: revPRPMesin,
             color: "#489FB7",
+            name: "Revenue Annualized",
             tooltip: {
               valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
+                globalFormat.formatDecimal(value) + " Rp(Juta)"
+            }
           },
           {
             name: "Total LCC Annualized",
@@ -4360,12 +4362,23 @@ const fetchGrafikPRPMesin = async () => {
           },
           {
             name: "Cost Component B + D Annualized",
+            data: comBDPRPMesin,
             type: "bar",
             stack: "Ad",
             emphasis: {
               focus: "series",
             },
-            data: comBDPRPMesin,
+            color: '#212E7C',
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatDecimal(value) + " Rp(Juta)",
+            },
+            markArea: {
+              label: { show: false },
+              itemStyle: { color: '#E2EAF2' },
+              data: [[{ name: 'Optimum Life', xAxis: indexOptimum }, { xAxis: indexOptimum }]],
+              silent: true,
+            },
             markPoint: {
               silent: true,
               symbol: 'rect',
@@ -4375,39 +4388,25 @@ const fetchGrafikPRPMesin = async () => {
               data: [{ name: 'Min', value: `Optimum life : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: finalMax }],
               symbolOffset: [10, 20]
             },
-            markArea: {
-              silent: true,
-              itemStyle: { color: '#E2EAF2' },
-              label: { show: false },
-              data: [[{ name: 'Optimum Life', xAxis: indexOptimum }, { xAxis: indexOptimum }]]
-            },
-            color: "#212E7C",
-            tooltip: {
-              valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
           },
           {
-            name: "Cost Component C Annualized",
-            type: "bar",
-            stack: "Ad",
-            emphasis: {
-              focus: "series",
-            },
-            itemStyle: {
-              borderRadius: [2, 2, 0, 0],
-            },
             data: fuelComPRPMesin,
             color: "#4EB180",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            type: "bar",
+            stack: "Ad",
+            name: "Cost Component C Annualized",
+            emphasis: {
+              focus: "series",
+            },
+            itemStyle: {
+              borderRadius: [2, 2, 0, 0]
+            }
           },
           {
-            name: "Total Revenue",
-            type: "line",
-            smooth: true,
             showSymbol: false,
             data: sumRevPRPMesin,
             color: "#5F6F52",
@@ -4415,24 +4414,24 @@ const fetchGrafikPRPMesin = async () => {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            name: "Total Revenue",
+            type: "line",
+            smooth: true,
           },
           {
-            name: "Revenue A",
-            type: "line",
             smooth: true,
             showSymbol: false,
             data: revAPRPMesin,
             color: "#191919",
             areaStyle: {},
+            name: "Revenue A",
+            type: "line",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
+            }
           },
           {
-            name: "Revenue B",
-            type: "line",
-            smooth: true,
             showSymbol: false,
             data: revBPRPMesin,
             color: "#750E21",
@@ -4441,71 +4440,73 @@ const fetchGrafikPRPMesin = async () => {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
-          },
-          {
-            name: "Revenue C",
+            name: "Revenue B",
             type: "line",
             smooth: true,
+          },
+          {
+            areaStyle: {},
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatDecimal(value) + " Rp(Juta)",
+            },
+            type: "line",
+            name: "Revenue C",
             showSymbol: false,
+            smooth: true,
             data: revCPRPMesin,
             color: "#E3651D",
-            areaStyle: {},
-            tooltip: {
-              valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
           },
           {
-            name: "Revenue D",
             type: "line",
             smooth: true,
-            showSymbol: false,
+            name: "Revenue D",
             data: revDPRPMesin,
             color: "#BED754",
-            areaStyle: {},
+            showSymbol: false,
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            areaStyle: {},
           },
           {
-            name: "FS: Revenue Annualized",
-            type: "line",
-            smooth: true,
-            showSymbol: false,
-            lineStyle: {
-              type: "dashed",
-            },
             data: revPRPPlanMesin,
             color: "#A6A6A6",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            type: "line",
+            smooth: true,
+            showSymbol: false,
+            name: "FS: Revenue Annualized",
+            lineStyle: {
+              type: "dashed",
+            },
           },
           {
-            name: "FS: Total LCC Annualized",
-            type: "line",
             smooth: true,
             showSymbol: false,
             lineStyle: {
               type: "dashed",
             },
-            data: sumLccPRPPlanMesin,
+            name: "FS: Total LCC Annualized",
+            type: "line",
             color: "#7A7A7A",
+            data: sumLccPRPPlanMesin,
             tooltip: {
               valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
+                globalFormat.formatDecimal(value) + " Rp(Juta)"
+            }
           },
           {
-            name: "FS: Cost Component B + D Annualized",
-            type: "bar",
-            stack: "Ab",
             emphasis: {
-              focus: "series",
+              focus: "series"
             },
-            data: comBDPRPPlanMesin,
+            name: "FS: Cost Component B + D Annualized",
+            stack: "Ab",
+            type: "bar",
             markPoint: {
               silent: true,
               symbol: 'rect',
@@ -4515,41 +4516,42 @@ const fetchGrafikPRPMesin = async () => {
               data: [{ name: 'Min', value: `Optimum life FS : \n ${tahunOptimumPlan} (${indexOptPlan})`, xAxis: indexOptimumPlan, yAxis: finalMaxPlan }],
               symbolOffset: [-10, 30]
             },
+            data: comBDPRPPlanMesin,
             markArea: {
-              silent: true,
               itemStyle: { color: '#E2EAF2' },
               label: { show: false },
-              data: [[{ name: 'Optimum Life FS', xAxis: indexOptimumPlan }, { xAxis: indexOptimumPlan }]]
+              silent: true,
+              data: [[{ name: 'Optimum Life FS', xAxis: indexOptimumPlan }, { xAxis: indexOptimumPlan }]],
             },
-            color: "#BFBFBF",
             tooltip: {
               valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
+                globalFormat.formatDecimal(value) + " Rp(Juta)"
             },
+            color: "#BFBFBF"
           },
           {
-            name: "FS: Cost Component C Annualized",
             type: "bar",
+            name: "FS: Cost Component C Annualized",
             stack: "Ab",
             emphasis: {
               focus: "series",
+            },
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
             itemStyle: {
               borderRadius: [2, 2, 0, 0],
             },
             data: fuelComPRPPlanMesin,
             color: "#7C7C7C",
-            tooltip: {
-              valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
           },
           {
+            showSymbol: false,
+            data: sumRevPRPPlanMesin,
             name: "FS: Total Revenue",
             type: "line",
             smooth: true,
-            showSymbol: false,
-            data: sumRevPRPPlanMesin,
             color: "#3C0753",
             tooltip: {
               valueFormatter: (value: any) =>
@@ -4557,56 +4559,56 @@ const fetchGrafikPRPMesin = async () => {
             },
           },
           {
+            data: revAPRPPlanMesin,
+            color: "#761A1A",
+            areaStyle: {},
             name: "FS: Revenue A",
             type: "line",
             smooth: true,
             showSymbol: false,
-            data: revAPRPPlanMesin,
-            color: "#761A1A",
-            areaStyle: {},
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
           },
           {
-            name: "FS: Revenue B",
-            type: "line",
             smooth: true,
             showSymbol: false,
             data: revBPRPPlanMesin,
             color: "#C13131",
+            name: "FS: Revenue B",
+            type: "line",
             areaStyle: {},
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
+            }
           },
           {
+            data: revCPRPPlanMesin,
+            color: "#A7CD78",
             name: "FS: Revenue C",
             type: "line",
             smooth: true,
-            showSymbol: false,
-            data: revCPRPPlanMesin,
-            color: "#A7CD78",
             areaStyle: {},
+            showSymbol: false,
             tooltip: {
               valueFormatter: (value: any) =>
-                globalFormat.formatDecimal(value) + " Rp(Juta)",
+                globalFormat.formatDecimal(value) + " Rp(Juta)"
             },
           },
           {
             name: "FS: Revenue D",
             type: "line",
             smooth: true,
-            showSymbol: false,
-            data: revDPRPPlanMesin,
-            color: "#FFF279",
-            areaStyle: {},
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            showSymbol: false,
+            data: revDPRPPlanMesin,
+            color: "#FFF279",
+            areaStyle: {},
           },
         ],
       };
@@ -4615,48 +4617,47 @@ const fetchGrafikPRPMesin = async () => {
 
     //Chart PRP FS
     chartPRPFS.value = isBepFSFounded ? {
-      title: {
-        show: false,
+      grid: {
+        left: "3%",
+        top: '5%',
+        containLabel: true,
+        bottom: '18%',
+        right: '2%',
       },
       tooltip: {
-        trigger: "axis",
         axisPointer: {
           type: "shadow",
         },
+        trigger: "axis",
       },
       legend: {
-        bottom: "bottom",
+        bottom: 'bottom',
         data: [
-          "FS: Revenue Annualized",
+          'FS: Revenue Annualized',
           "FS: Total LCC Annualized",
-          "FS: Cost Component A (Capex) Annualized",
-          "FS: Cost Component B + D Annualized",
+          'FS: Cost Component A (Capex) Annualized',
+          'FS: Cost Component B + D Annualized',
           "FS: Cost Component C Annualized",
-          "FS: Total Revenue",
-          "FS: Revenue A",
+          'FS: Total Revenue',
+          'FS: Revenue A',
           "FS: Revenue B",
-          "FS: Revenue C",
-          "FS: Revenue D",
+          'FS: Revenue C',
+          'FS: Revenue D',
         ],
         selected: {
           "FS: Revenue A": false,
-          "FS: Revenue B": false,
-          "FS: Revenue C": false,
+          'FS: Revenue B': false,
+          'FS: Revenue C': false,
           "FS: Revenue D": false,
-          "FS: Total Revenue": false,
+          'FS: Total Revenue': false,
         }
       },
-      grid: {
-        top: "5%",
-        left: "3%",
-        right: "2%",
-        bottom: "18%",
-        containLabel: true,
+      title: {
+        show: false,
       },
       xAxis: [
         {
           type: "category",
-          data: tahunPRPPlan,
           axisLabel: {
             fontSize: 10,
             color: function (value: any, index: number) {
@@ -4664,22 +4665,23 @@ const fetchGrafikPRPMesin = async () => {
               if (value < filterTahun) {
                 return '#FF5656';
               } else if (value == filterTahun) {
-                return '#6C6C6C';
+                return '#6C6C6C'
               } else if (value > filterTahun) {
                 return '#37B1D5';
-              }
+              };
             },
             formatter: function (value: any, index: number) {
-              return index + 1 + `\n${value}`;
+              return index + 1 + `\n${value}`
             },
-          }
+          },
+          data: tahunPRPPlan,
         },
       ],
       yAxis: [
         {
-          type: "value",
-          name: "Triliun Rupiah",
-          nameLocation: "center",
+          type: 'value',
+          nameLocation: 'center',
+          name: 'Triliun Rupiah',
           nameTextStyle: {
             align: "left",
             padding: [30, 20, 25, -25],
@@ -4707,51 +4709,51 @@ const fetchGrafikPRPMesin = async () => {
       ],
       series: [
         {
-          name: "FS: Revenue Annualized",
-          type: "line",
           smooth: true,
           showSymbol: false,
-          lineStyle: {
-            type: "dashed",
-          },
-          data: revPRPPlanMesin,
+          name: "FS: Revenue Annualized",
+          type: "line",
           color: "#A6A6A6",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
-        },
-        {
-          name: "FS: Total LCC Annualized",
-          type: "line",
-          smooth: true,
-          showSymbol: false,
           lineStyle: {
             type: "dashed",
           },
+          data: revPRPPlanMesin,
+        },
+        {
+          smooth: true,
+          type: "line",
+          showSymbol: false,
+          name: "FS: Total LCC Annualized",
           data: sumLccPRPPlanMesin,
-          color: "#7A7A7A",
+          lineStyle: {
+            type: "dashed",
+          },
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          color: "#7A7A7A",
         },
         {
-          name: "FS: Cost Component A (Capex) Annualized",
-          type: "bar",
           stack: "Ab",
-          emphasis: {
-            focus: "series",
-          },
+          type: "bar",
           data: capexPRPPlanMesin,
+          name: "FS: Cost Component A (Capex) Annualized",
           markPoint: {
-            silent: true,
             symbol: 'rect',
+            silent: true,
             symbolSize: [95, 30],
             itemStyle: { color: '#0D5A71' },
             label: { fontSize: 10, fontWeight: 'bold' },
             data: [{ name: 'Max', value: `BEP FS : ${tahunBEPPlan} (${indexBEPPlan})`, xAxis: indexTerdekatPlan, yAxis: finalMaxPlan }],
-            symbolOffset: [-10, 20]
+            symbolOffset: [-10, 20],
+          },
+          emphasis: {
+            focus: "series",
           },
           markArea: {
             silent: true,
@@ -4785,27 +4787,27 @@ const fetchGrafikPRPMesin = async () => {
             symbolOffset: [-10, 30]
           },
           markArea: {
+            data: [[{ name: 'Optimum Life FS', xAxis: indexOptimumPlan }, { xAxis: indexOptimumPlan }]],
             silent: true,
-            itemStyle: { color: '#E2EAF2' },
             label: { show: false },
-            data: [[{ name: 'Optimum Life FS', xAxis: indexOptimumPlan }, { xAxis: indexOptimumPlan }]]
+            itemStyle: { color: '#E2EAF2' },
           },
           color: "#BFBFBF",
           tooltip: {
             valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
-          },
+              globalFormat.formatDecimal(value) + " Rp(Juta)"
+          }
         },
         {
-          name: "FS: Cost Component C Annualized",
-          type: "bar",
-          stack: "Ab",
           emphasis: {
             focus: "series",
           },
           itemStyle: {
             borderRadius: [2, 2, 0, 0],
           },
+          name: "FS: Cost Component C Annualized",
+          type: "bar",
+          stack: "Ab",
           data: fuelComPRPPlanMesin,
           color: "#7C7C7C",
           tooltip: {
@@ -4817,9 +4819,9 @@ const fetchGrafikPRPMesin = async () => {
           name: "FS: Total Revenue",
           type: "line",
           smooth: true,
-          showSymbol: false,
           data: sumRevPRPPlanMesin,
           color: "#3C0753",
+          showSymbol: false,
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
@@ -4827,55 +4829,55 @@ const fetchGrafikPRPMesin = async () => {
         },
         {
           name: "FS: Revenue A",
-          type: "line",
           smooth: true,
           showSymbol: false,
+          type: "line",
           data: revAPRPPlanMesin,
           color: "#761A1A",
-          areaStyle: {},
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          areaStyle: {},
         },
         {
           name: "FS: Revenue B",
           type: "line",
-          smooth: true,
-          showSymbol: false,
-          data: revBPRPPlanMesin,
           color: "#C13131",
-          areaStyle: {},
-          tooltip: {
-            valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
-          },
-        },
-        {
-          name: "FS: Revenue C",
-          type: "line",
           smooth: true,
           showSymbol: false,
-          data: revCPRPPlanMesin,
-          color: "#A7CD78",
-          areaStyle: {},
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          areaStyle: {},
+          data: revBPRPPlanMesin,
         },
         {
+          areaStyle: {},
+          smooth: true,
+          color: "#A7CD78",
+          data: revCPRPPlanMesin,
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
+          type: "line",
+          name: "FS: Revenue C",
+          showSymbol: false,
+        },
+        {
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)"
+          },
+          data: revDPRPPlanMesin,
+          color: "#FFF279",
           name: "FS: Revenue D",
           type: "line",
           smooth: true,
           showSymbol: false,
-          data: revDPRPPlanMesin,
-          color: "#FFF279",
           areaStyle: {},
-          tooltip: {
-            valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
-          },
         },
       ],
     } : {
@@ -4889,64 +4891,64 @@ const fetchGrafikPRPMesin = async () => {
         },
       },
       legend: {
-        bottom: "bottom",
+        bottom: 'bottom',
         data: [
-          "FS: Revenue Annualized",
-          "FS: Total LCC Annualized",
-          "FS: Cost Component A (Capex) Annualized",
-          "FS: Cost Component B + D Annualized",
-          "FS: Cost Component C Annualized",
-          "FS: Total Revenue",
-          "FS: Revenue A",
-          "FS: Revenue B",
-          "FS: Revenue C",
-          "FS: Revenue D",
+          'FS: Revenue Annualized',
+          'FS: Total LCC Annualized',
+          'FS: Cost Component A (Capex) Annualized',
+          'FS: Cost Component B + D Annualized',
+          'FS: Cost Component C Annualized',
+          'FS: Total Revenue',
+          'FS: Revenue A',
+          'FS: Revenue B',
+          'FS: Revenue C',
+          'FS: Revenue D',
         ],
         selected: {
-          "FS: Revenue A": false,
-          "FS: Revenue B": false,
-          "FS: Revenue C": false,
-          "FS: Revenue D": false,
-          "FS: Total Revenue": false,
-        }
-      },
-      grid: {
-        top: "5%",
-        left: "3%",
-        right: "2%",
-        bottom: "18%",
-        containLabel: true,
+          'FS: Revenue A': false,
+          'FS: Revenue B': false,
+          'FS: Revenue C': false,
+          'FS: Revenue D': false,
+          'FS: Total Revenue': false,
+        },
       },
       xAxis: [
         {
-          type: "category",
           data: tahunPRPPlan,
           axisLabel: {
             fontSize: 10,
+            formatter: function (value: any, index: number) {
+              return index + 1 + `\n${value}`
+            },
             color: function (value: any, index: number) {
               const filterTahun = tahunData.value.toString();
               if (value < filterTahun) {
-                return '#FF5656';
+                return '#FF5656'
               } else if (value == filterTahun) {
                 return '#6C6C6C';
               } else if (value > filterTahun) {
                 return '#37B1D5';
-              }
-            },
-            formatter: function (value: any, index: number) {
-              return index + 1 + `\n${value}`;
-            },
-          }
+              };
+            }
+          },
+          type: "category"
         },
       ],
+      grid: {
+        top: '5%',
+        left: '3%',
+        right: '2%',
+        bottom: '18%',
+        containLabel: true,
+      },
       yAxis: [
         {
-          type: "value",
-          name: "Triliun Rupiah",
           nameLocation: "center",
+          type: "value",
+          name: 'Triliun Rupiah',
           nameTextStyle: {
-            align: "left",
             padding: [30, 20, 25, -25],
+            align: 'left',
             fontSize: 14,
             color: "#4D5E80",
             fontWeight: "bold",
@@ -4971,48 +4973,48 @@ const fetchGrafikPRPMesin = async () => {
       ],
       series: [
         {
+          smooth: true,
           name: "FS: Revenue Annualized",
           type: "line",
-          smooth: true,
-          showSymbol: false,
           lineStyle: {
             type: "dashed",
           },
-          data: revPRPPlanMesin,
+          showSymbol: false,
           color: "#A6A6A6",
+          data: revPRPPlanMesin,
           tooltip: {
             valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
-          },
+              globalFormat.formatDecimal(value) + " Rp(Juta)"
+          }
         },
         {
+          lineStyle: {
+            type: "dashed",
+          },
           name: "FS: Total LCC Annualized",
+          data: sumLccPRPPlanMesin,
           type: "line",
           smooth: true,
           showSymbol: false,
-          lineStyle: {
-            type: "dashed",
-          },
-          data: sumLccPRPPlanMesin,
-          color: "#7A7A7A",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          color: "#7A7A7A"
         },
         {
-          name: "FS: Cost Component A (Capex) Annualized",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
           type: "bar",
           stack: "Ab",
+          name: "FS: Cost Component A (Capex) Annualized",
           emphasis: {
             focus: "series",
           },
-          data: capexPRPPlanMesin,
           color: "#DDDDDD",
-          tooltip: {
-            valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
-          },
+          data: capexPRPPlanMesin,
         },
         {
           name: "FS: Cost Component B + D Annualized",
@@ -5022,6 +5024,17 @@ const fetchGrafikPRPMesin = async () => {
             focus: "series",
           },
           data: comBDPRPPlanMesin,
+          markArea: {
+            silent: true,
+            data: [[{ name: 'Optimum Life FS', xAxis: indexOptimumPlan }, { xAxis: indexOptimumPlan }]],
+            label: { show: false },
+            itemStyle: { color: '#E2EAF2' }
+          },
+          color: "#BFBFBF",
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
           markPoint: {
             silent: true,
             symbol: 'rect',
@@ -5031,25 +5044,8 @@ const fetchGrafikPRPMesin = async () => {
             data: [{ name: 'Min', value: `Optimum life FS : \n ${tahunOptimumPlan} (${indexOptPlan})`, xAxis: indexOptimumPlan, yAxis: finalMaxPlan }],
             symbolOffset: [-10, 30]
           },
-          markArea: {
-            silent: true,
-            itemStyle: { color: '#E2EAF2' },
-            label: { show: false },
-            data: [[{ name: 'Optimum Life FS', xAxis: indexOptimumPlan }, { xAxis: indexOptimumPlan }]]
-          },
-          color: "#BFBFBF",
-          tooltip: {
-            valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
-          },
         },
         {
-          name: "FS: Cost Component C Annualized",
-          type: "bar",
-          stack: "Ab",
-          emphasis: {
-            focus: "series",
-          },
           itemStyle: {
             borderRadius: [2, 2, 0, 0],
           },
@@ -5059,70 +5055,76 @@ const fetchGrafikPRPMesin = async () => {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          emphasis: {
+            focus: "series",
+          },
+          type: "bar",
+          name: "FS: Cost Component C Annualized",
+          stack: "Ab",
         },
         {
           name: "FS: Total Revenue",
-          type: "line",
-          smooth: true,
-          showSymbol: false,
-          data: sumRevPRPPlanMesin,
-          color: "#3C0753",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          smooth: true,
+          showSymbol: false,
+          type: "line",
+          color: "#3C0753",
+          data: sumRevPRPPlanMesin,
         },
         {
+          data: revAPRPPlanMesin,
           name: "FS: Revenue A",
           type: "line",
           smooth: true,
           showSymbol: false,
-          data: revAPRPPlanMesin,
-          color: "#761A1A",
           areaStyle: {},
+          color: "#761A1A",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
         },
         {
+          color: "#C13131",
           name: "FS: Revenue B",
           type: "line",
           smooth: true,
           showSymbol: false,
           data: revBPRPPlanMesin,
-          color: "#C13131",
-          areaStyle: {},
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          areaStyle: {},
         },
         {
-          name: "FS: Revenue C",
           type: "line",
           smooth: true,
           showSymbol: false,
           data: revCPRPPlanMesin,
-          color: "#A7CD78",
-          areaStyle: {},
+          name: "FS: Revenue C",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          areaStyle: {},
+          color: "#A7CD78",
         },
         {
-          name: "FS: Revenue D",
-          type: "line",
           smooth: true,
-          showSymbol: false,
-          data: revDPRPPlanMesin,
-          color: "#FFF279",
           areaStyle: {},
+          type: "line",
+          data: revDPRPPlanMesin,
+          showSymbol: false,
+          color: "#FFF279",
           tooltip: {
             valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
+              globalFormat.formatDecimal(value) + " Rp(Juta)"
           },
+          name: "FS: Revenue D"
         },
       ],
     };
@@ -5130,35 +5132,35 @@ const fetchGrafikPRPMesin = async () => {
     //Chart PRP WLC
     chartPRPWLC.value = isBepKKFounded ? {
       title: {
-        show: false,
+        show: false
       },
       tooltip: {
-        trigger: "axis",
+        trigger: 'axis',
         axisPointer: {
-          type: "shadow",
+          type: 'shadow',
         },
       },
       legend: {
-        bottom: "bottom",
+        bottom: 'bottom',
         data: [
           "Revenue Annualized",
-          "Total LCC Annualized",
+          'Total LCC Annualized',
           "Cost Component A (Capex) Annualized",
-          "Cost Component B + D Annualized",
+          'Cost Component B + D Annualized',
           "Cost Component C Annualized",
-          "Total Revenue",
+          'Total Revenue',
           "Revenue A",
-          "Revenue B",
+          'Revenue B',
           "Revenue C",
-          "Revenue D",
+          'Revenue D',
         ],
         selected: {
           "Revenue A": false,
-          "Revenue B": false,
+          'Revenue B': false,
           "Revenue C": false,
-          "Revenue D": false,
-          "Total Revenue": false,
-        }
+          'Revenue D': false,
+          "Total Revenue": false
+        },
       },
       grid: {
         top: "5%",
@@ -5169,10 +5171,7 @@ const fetchGrafikPRPMesin = async () => {
       },
       xAxis: [
         {
-          type: "category",
-          data: tahunPRPMesin,
           axisLabel: {
-            fontSize: 10,
             color: function (value: any, index: number) {
               const filterTahun = tahunData.value.toString();
               if (value < filterTahun) {
@@ -5183,23 +5182,26 @@ const fetchGrafikPRPMesin = async () => {
                 return '#37B1D5';
               }
             },
+            fontSize: 10,
             formatter: function (value: any, index: number) {
               return index + 1 + `\n${value}`;
-            },
-          }
+            }
+          },
+          type: 'category',
+          data: tahunPRPMesin
         },
       ],
       yAxis: [
         {
-          type: "value",
-          name: "Triliun Rupiah",
           nameLocation: "center",
+          name: "Triliun Rupiah",
+          type: "value",
           nameTextStyle: {
-            align: "left",
             padding: [30, 20, 25, -25],
             fontSize: 14,
-            color: "#4D5E80",
+            align: "left",
             fontWeight: "bold",
+            color: "#4D5E80",
           },
           axisLabel: {
             fontSize: 10,
@@ -5221,37 +5223,32 @@ const fetchGrafikPRPMesin = async () => {
       ],
       series: [
         {
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
           name: "Revenue Annualized",
           type: "line",
           smooth: true,
           showSymbol: false,
           data: revPRPMesin,
           color: "#489FB7",
-          tooltip: {
-            valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
-          },
         },
         {
-          name: "Total LCC Annualized",
-          type: "line",
-          smooth: true,
-          showSymbol: false,
-          data: sumLccPRPMesin,
           color: "#1E1F4E",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          name: "Total LCC Annualized",
+          type: "line",
+          smooth: true,
+          showSymbol: false,
+          data: sumLccPRPMesin,
         },
         {
           name: "Cost Component A (Capex) Annualized",
           type: "bar",
-          stack: "Ad",
-          emphasis: {
-            focus: "series",
-          },
-          data: capexPRPMesin,
           markPoint: {
             silent: true,
             symbol: 'rect',
@@ -5261,6 +5258,7 @@ const fetchGrafikPRPMesin = async () => {
             data: [{ name: 'Max', value: `BEP : ${tahunBEP} (${indexBEP})`, xAxis: indexTerdekat, yAxis: finalMax }],
             symbolOffset: [10, 0]
           },
+          stack: "Ad",
           markArea: {
             silent: true,
             itemStyle: { color: '#E2EAF2' },
@@ -5268,18 +5266,16 @@ const fetchGrafikPRPMesin = async () => {
             data: [[{ name: 'BEP', xAxis: indexTerdekat }, { xAxis: indexTerdekat }]]
           },
           color: "#A8E2FC",
+          data: capexPRPMesin,
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
-        },
-        {
-          name: "Cost Component B + D Annualized",
-          type: "bar",
-          stack: "Ad",
           emphasis: {
             focus: "series",
           },
+        },
+        {
           data: comBDPRPMesin,
           markPoint: {
             silent: true,
@@ -5290,22 +5286,32 @@ const fetchGrafikPRPMesin = async () => {
             data: [{ name: 'Min', value: `Optimum life : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: finalMax }],
             symbolOffset: [10, 20]
           },
+          name: "Cost Component B + D Annualized",
+          type: "bar",
+          stack: "Ad",
+          emphasis: {
+            focus: "series"
+          },
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)"
+          },
+          color: '#212E7C',
           markArea: {
             silent: true,
             itemStyle: { color: '#E2EAF2' },
             label: { show: false },
-            data: [[{ name: 'Optimum Life', xAxis: indexOptimum }, { xAxis: indexOptimum }]]
-          },
-          color: "#212E7C",
-          tooltip: {
-            valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
+            data: [
+              [
+                { name: 'Optimum Life', xAxis: indexOptimum }, { xAxis: indexOptimum },
+              ],
+            ]
           },
         },
         {
-          name: "Cost Component C Annualized",
-          type: "bar",
+          type: 'bar',
           stack: "Ad",
+          name: 'Cost Component C Annualized',
           emphasis: {
             focus: "series",
           },
@@ -5320,129 +5326,129 @@ const fetchGrafikPRPMesin = async () => {
           },
         },
         {
-          name: "Total Revenue",
           type: "line",
-          smooth: true,
-          showSymbol: false,
-          data: sumRevPRPMesin,
+          name: "Total Revenue",
           color: "#5F6F52",
+          showSymbol: false,
+          smooth: true,
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          data: sumRevPRPMesin
         },
         {
-          name: "Revenue A",
+          showSymbol: false,
           type: "line",
           smooth: true,
-          showSymbol: false,
-          data: revAPRPMesin,
+          name: "Revenue A",
           color: "#191919",
-          areaStyle: {},
+          data: revAPRPMesin,
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          areaStyle: {}
         },
         {
           name: "Revenue B",
           type: "line",
-          smooth: true,
-          showSymbol: false,
           data: revBPRPMesin,
-          color: "#750E21",
-          areaStyle: {},
+          showSymbol: false,
+          smooth: true,
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          areaStyle: {},
+          color: "#750E21"
         },
         {
-          name: "Revenue C",
-          type: "line",
           smooth: true,
+          type: "line",
           showSymbol: false,
-          data: revCPRPMesin,
+          name: "Revenue C",
           color: "#E3651D",
           areaStyle: {},
+          data: revCPRPMesin,
           tooltip: {
             valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
-          },
+              globalFormat.formatDecimal(value) + " Rp(Juta)"
+          }
         },
         {
-          name: "Revenue D",
-          type: "line",
-          smooth: true,
-          showSymbol: false,
-          data: revDPRPMesin,
-          color: "#BED754",
-          areaStyle: {},
           tooltip: {
             valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
+              globalFormat.formatDecimal(value) + " Rp(Juta)"
           },
+          type: "line",
+          smooth: true,
+          name: "Revenue D",
+          data: revDPRPMesin,
+          showSymbol: false,
+          color: "#BED754",
+          areaStyle: {},
         },
       ],
     } : {
       title: {
-        show: false,
+        show: false
       },
       tooltip: {
-        trigger: "axis",
         axisPointer: {
           type: "shadow",
         },
+        trigger: "axis",
       },
       legend: {
-        bottom: "bottom",
         data: [
           "Revenue Annualized",
           "Total LCC Annualized",
-          "Cost Component A (Capex) Annualized",
+          'Cost Component A (Capex) Annualized',
           "Cost Component B + D Annualized",
           "Cost Component C Annualized",
-          "Total Revenue",
+          'Total Revenue',
           "Revenue A",
           "Revenue B",
-          "Revenue C",
+          'Revenue C',
           "Revenue D",
         ],
         selected: {
           "Revenue A": false,
-          "Revenue B": false,
+          'Revenue B': false,
           "Revenue C": false,
           "Revenue D": false,
-          "Total Revenue": false,
-        }
+          'Total Revenue': false,
+        },
+        bottom: "bottom",
       },
       grid: {
         top: "5%",
         left: "3%",
-        right: "2%",
-        bottom: "18%",
+        right: '2%',
         containLabel: true,
+        bottom: "18%",
       },
       xAxis: [
         {
-          type: "category",
-          data: tahunPRPMesin,
           axisLabel: {
             fontSize: 10,
             color: function (value: any, index: number) {
-              const filterTahun = tahunData.value.toString();
+              const filterTahun = tahunData.value.toString()
               if (value < filterTahun) {
-                return '#FF5656';
+                return '#FF5656'
               } else if (value == filterTahun) {
-                return '#6C6C6C';
+                return '#6C6C6C'
               } else if (value > filterTahun) {
-                return '#37B1D5';
+                return '#37B1D5'
               }
             },
             formatter: function (value: any, index: number) {
-              return index + 1 + `\n${value}`;
-            },
-          }
+              return index + 1 + `\n${value}`
+            }
+          },
+          type: 'category',
+          data: tahunPRPMesin
         },
       ],
       yAxis: [
@@ -5479,40 +5485,40 @@ const fetchGrafikPRPMesin = async () => {
         {
           name: "Revenue Annualized",
           type: "line",
-          smooth: true,
-          showSymbol: false,
-          data: revPRPMesin,
+          tooltip: {
+            valueFormatter: (value: any) =>
+              globalFormat.formatDecimal(value) + " Rp(Juta)",
+          },
           color: "#489FB7",
-          tooltip: {
-            valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
-          },
-        },
-        {
-          name: "Total LCC Annualized",
-          type: "line",
+          data: revPRPMesin,
           smooth: true,
           showSymbol: false,
-          data: sumLccPRPMesin,
+        },
+        {
+          type: "line",
+          name: "Total LCC Annualized",
           color: "#1E1F4E",
+          showSymbol: false,
+          smooth: true,
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          data: sumLccPRPMesin,
         },
         {
-          name: "Cost Component A (Capex) Annualized",
-          type: "bar",
           stack: "Ad",
           emphasis: {
             focus: "series",
           },
-          data: capexPRPMesin,
+          name: "Cost Component A (Capex) Annualized",
           color: "#A8E2FC",
+          type: "bar",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          data: capexPRPMesin,
         },
         {
           name: "Cost Component B + D Annualized",
@@ -5521,74 +5527,71 @@ const fetchGrafikPRPMesin = async () => {
           emphasis: {
             focus: "series",
           },
-          data: comBDPRPMesin,
           markPoint: {
             silent: true,
+            itemStyle: { color: '#0D5A71' },
             symbol: 'rect',
             symbolSize: [85, 30],
-            itemStyle: { color: '#0D5A71' },
-            label: { fontSize: 10, fontWeight: 'bold' },
             data: [{ name: 'Min', value: `Optimum life : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: finalMax }],
+            label: { fontSize: 10, fontWeight: 'bold', },
             symbolOffset: [10, 20]
           },
           markArea: {
             silent: true,
             itemStyle: { color: '#E2EAF2' },
             label: { show: false },
-            data: [[{ name: 'Optimum Life', xAxis: indexOptimum }, { xAxis: indexOptimum }]]
+            data: [[{ name: 'Optimum Life', xAxis: indexOptimum }, { xAxis: indexOptimum },]],
           },
-          color: "#212E7C",
+          color: '#212E7C',
           tooltip: {
             valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
+              globalFormat.formatDecimal(value) + " Rp(Juta)"
           },
+          data: comBDPRPMesin,
         },
         {
-          name: "Cost Component C Annualized",
-          type: "bar",
-          stack: "Ad",
-          emphasis: {
-            focus: "series",
-          },
           itemStyle: {
             borderRadius: [2, 2, 0, 0],
           },
+          type: "bar",
+          stack: 'Ad',
+          emphasis: {
+            focus: "series",
+          },
+          name: "Cost Component C Annualized",
           data: fuelComPRPMesin,
           color: "#4EB180",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
-          },
+          }
         },
         {
-          name: "Total Revenue",
           type: "line",
+          data: sumRevPRPMesin,
           smooth: true,
           showSymbol: false,
-          data: sumRevPRPMesin,
+          name: "Total Revenue",
           color: "#5F6F52",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
-          },
+          }
         },
         {
-          name: "Revenue A",
           type: "line",
-          smooth: true,
-          showSymbol: false,
-          data: revAPRPMesin,
+          name: "Revenue A",
           color: "#191919",
           areaStyle: {},
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          smooth: true,
+          showSymbol: false,
+          data: revAPRPMesin,
         },
         {
-          name: "Revenue B",
-          type: "line",
-          smooth: true,
           showSymbol: false,
           data: revBPRPMesin,
           color: "#750E21",
@@ -5597,32 +5600,35 @@ const fetchGrafikPRPMesin = async () => {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          name: "Revenue B",
+          smooth: true,
+          type: "line",
         },
         {
-          name: "Revenue C",
           type: "line",
           smooth: true,
-          showSymbol: false,
+          name: "Revenue C",
           data: revCPRPMesin,
-          color: "#E3651D",
+          showSymbol: false,
           areaStyle: {},
+          color: "#E3651D",
           tooltip: {
             valueFormatter: (value: any) =>
-              globalFormat.formatDecimal(value) + " Rp(Juta)",
-          },
+              globalFormat.formatDecimal(value) + " Rp(Juta)"
+          }
         },
         {
-          name: "Revenue D",
-          type: "line",
-          smooth: true,
           showSymbol: false,
           data: revDPRPMesin,
           color: "#BED754",
-          areaStyle: {},
+          type: "line",
+          name: "Revenue D",
           tooltip: {
             valueFormatter: (value: any) =>
               globalFormat.formatDecimal(value) + " Rp(Juta)",
           },
+          smooth: true,
+          areaStyle: {},
         },
       ],
     };
@@ -5782,92 +5788,70 @@ const fetchGrafikPRPLastYearMesin = async () => {
     }
 
     chartLastYearMesin.value = {
-      title: {
-        show: false,
+      legend: {
+        bottom: 'bottom',
+        data: [
+          'Revenue Annualized',
+          'Total LCC Annualized',
+          "Cost Component A (Capex) Annualized",
+          "Cost Component B + D Annualized",
+          'Cost Component C Annualized',
+          'FS: Revenue Annualized',
+          'FS: Total LCC Annualized',
+          "FS: Cost Component A (Capex) Annualized",
+          "FS: Cost Component B + D Annualized",
+          'FS: Cost Component C Annualized',
+          'Total Revenue',
+          'Revenue A',
+          "Revenue B",
+          "Revenue C",
+          'Revenue D',
+          'FS: Total Revenue',
+          'FS: Revenue A',
+          "FS: Revenue B",
+          "FS: Revenue C",
+          'FS: Revenue D',
+        ],
+        selected: {
+          'Revenue A': false,
+          'Revenue B': false,
+          "Revenue C": false,
+          "Revenue D": false,
+          'Total Revenue': false,
+          'FS: Revenue A': false,
+          'FS: Revenue B': false,
+          "FS: Revenue C": false,
+          "FS: Revenue D": false,
+          'FS: Total Revenue': false,
+        },
+        title: {
+          show: false
+        }
+      },
+      grid: {
+        left: '3%',
+        top: '5%',
+        bottom: "18%",
+        right: "2%",
+        containLabel: true
       },
       tooltip: {
         trigger: "axis",
         axisPointer: {
-          type: "shadow",
-        },
-      },
-      legend: {
-        bottom: "bottom",
-        data: [
-          "Revenue Annualized",
-          "Total LCC Annualized",
-          "Cost Component A (Capex) Annualized",
-          "Cost Component B + D Annualized",
-          "Cost Component C Annualized",
-          "FS: Revenue Annualized",
-          "FS: Total LCC Annualized",
-          "FS: Cost Component A (Capex) Annualized",
-          "FS: Cost Component B + D Annualized",
-          "FS: Cost Component C Annualized",
-          "Total Revenue",
-          "Revenue A",
-          "Revenue B",
-          "Revenue C",
-          "Revenue D",
-          "FS: Total Revenue",
-          "FS: Revenue A",
-          "FS: Revenue B",
-          "FS: Revenue C",
-          "FS: Revenue D",
-        ],
-        selected: {
-          "Revenue A": false,
-          "Revenue B": false,
-          "Revenue C": false,
-          "Revenue D": false,
-          "Total Revenue": false,
-          "FS: Revenue A": false,
-          "FS: Revenue B": false,
-          "FS: Revenue C": false,
-          "FS: Revenue D": false,
-          "FS: Total Revenue": false,
+          type: "shadow"
         }
       },
-      grid: {
-        top: "5%",
-        left: "3%",
-        right: "2%",
-        bottom: "18%",
-        containLabel: true,
-      },
-      xAxis: [
-        {
-          type: "category",
-          data: tahunLastYearMesin,
-          axisLabel: {
-            fontSize: 10,
-            color: function (value: any, index: number) {
-              const filterTahun = tahunData.value.toString();
-              if (value < filterTahun) {
-                return '#FF5656';
-              } else if (value == filterTahun) {
-                return '#6C6C6C';
-              } else if (value > filterTahun) {
-                return '#37B1D5';
-              }
-            },
-            formatter: function (value: any, index: number) {
-              return index + 1 + `\n${value}`;
-            },
-          }
-        },
-      ],
       yAxis: [
         {
           type: "value",
           name: "Triliun Rupiah",
-          nameLocation: "center",
+          nameLocation: 'center',
           nameTextStyle: {
-            align: "left",
+            align: 'left',
             padding: [30, 20, 25, -25],
+            fontWeight: "bold",
             fontSize: 14,
             color: "#4D5E80",
-            fontWeight: "bold",
           },
           axisLabel: {
             fontSize: 10,
@@ -5886,6 +5870,28 @@ const fetchGrafikPRPLastYearMesin = async () => {
             } else if (nilaiLY < nilaiLYPlan) {
               return maxLastYearPlanBep;
             }
+          }
+        },
+      ],
+      xAxis: [
+        {
+          data: tahunLastYearMesin,
+          type: 'category',
+          axisLabel: {
+            fontSize: 10,
+            color: function (value: any) {
+              const filterTahun = tahunData.value.toString();
+              if (value < filterTahun) {
+                return '#FF5656';
+              } else if (value == filterTahun) {
+                return '#6C6C6C';
+              } else if (value > filterTahun) {
+                return '#37B1D5';
+              }
+            },
+            formatter: function (value: any, index: number) {
+              return index + 1 + `\n${value}`;
+            },
           }
         },
       ],
@@ -6231,83 +6237,38 @@ const fetchGrafikPRPLastYearMesin = async () => {
         show: false,
       },
       tooltip: {
-        trigger: "axis",
         axisPointer: {
-          type: "shadow",
+          type: "shadow"
         },
-      },
-      legend: {
-        bottom: "bottom",
-        data: [
-          "Revenue Annualized",
-          "Total LCC Annualized",
-          "Cost Component A (Capex) Annualized",
-          "Cost Component B + D Annualized",
-          "Cost Component C Annualized",
-          "Total Revenue",
-          "Revenue A",
-          "Revenue B",
-          "Revenue C",
-          "Revenue D",
-        ],
-        selected: {
-          "Revenue A": false,
-          "Revenue B": false,
-          "Revenue C": false,
-          "Revenue D": false,
-          "Total Revenue": false,
-        }
+        trigger: "axis",
       },
       grid: {
         top: "5%",
-        left: "3%",
-        right: "2%",
-        bottom: "18%",
+        left: '3%',
         containLabel: true,
+        right: '2%',
+        bottom: '18%'
       },
-      xAxis: [
-        {
-          type: "category",
-          data: tahunLastYearMesin,
-          axisLabel: {
-            fontSize: 10,
-            color: function (value: any, index: number) {
-              const filterTahun = tahunData.value.toString();
-              if (value < filterTahun) {
-                return '#FF5656';
-              } else if (value == filterTahun) {
-                return '#6C6C6C';
-              } else if (value > filterTahun) {
-                return '#37B1D5';
-              }
-            },
-            formatter: function (value: any, index: number) {
-              return index + 1 + `\n${value}`;
-            },
-          }
-        },
-      ],
       yAxis: [
         {
           type: "value",
-          name: "Triliun Rupiah",
           nameLocation: "center",
+          name: "Triliun Rupiah",
+          splitNumber: 20,
           nameTextStyle: {
-            align: "left",
             padding: [30, 20, 25, -25],
-            fontSize: 14,
+            align: "left",
             color: "#4D5E80",
+            fontSize: 14,
             fontWeight: "bold",
           },
           axisLabel: {
             fontSize: 10,
             formatter: function (value: any) {
               return globalFormat.formatRupiah((value * 1000000) / 1000000000000);
-            },
+            }
           },
-          splitNumber: 20,
           min: 0,
-          // max: maxLastYearPlanBep
           max: function () {
             const nilaiLY = maxLastYearBep;
             const nilaiLYPlan = maxLastYearPlanBep;
@@ -6317,6 +6278,50 @@ const fetchGrafikPRPLastYearMesin = async () => {
               return maxLastYearPlanBep;
             }
           }
+        },
+      ],
+      legend: {
+        data: [
+          "Revenue Annualized",
+          'Total LCC Annualized',
+          'Cost Component A (Capex) Annualized',
+          'Cost Component B + D Annualized',
+          "Cost Component C Annualized",
+          "Total Revenue",
+          'Revenue A',
+          'Revenue B',
+          'Revenue C',
+          "Revenue D",
+        ],
+        selected: {
+          "Revenue A": false,
+          'Revenue B': false,
+          'Revenue C': false,
+          'Revenue D': false,
+          "Total Revenue": false,
+        },
+        bottom: "bottom"
+      },
+      xAxis: [
+        {
+          type: 'category',
+          axisLabel: {
+            fontSize: 10,
+            color: function (value: any, index: number) {
+              const filterTahun = tahunData.value.toString();
+              if (value < filterTahun) {
+                return '#FF5656';
+              } else if (value == filterTahun) {
+                return '#6C6C6C'
+              } else if (value > filterTahun) {
+                return '#37B1D5'
+              };
+            },
+            formatter: function (value: any, index: number) {
+              return index + 1 + `\n${value}`;
+            }
+          },
+          data: tahunLastYearMesin
         },
       ],
       series: [
@@ -6490,46 +6495,46 @@ const fetchGrafikPRPLastYearMesin = async () => {
           "FS: Total Revenue": false,
         }
       },
-      grid: {
-        top: "5%",
-        left: "3%",
-        right: "2%",
-        bottom: "18%",
-        containLabel: true,
-      },
       xAxis: [
         {
-          type: "category",
           data: tahunLastYearMesin,
+          type: "category",
           axisLabel: {
             fontSize: 10,
             color: function (value: any, index: number) {
               const filterTahun = tahunData.value.toString();
               if (value < filterTahun) {
-                return '#FF5656';
+                return '#FF5656'
               } else if (value == filterTahun) {
-                return '#6C6C6C';
+                return '#6C6C6C'
               } else if (value > filterTahun) {
-                return '#37B1D5';
-              }
+                return '#37B1D5'
+              };
             },
             formatter: function (value: any, index: number) {
               return index + 1 + `\n${value}`;
-            },
+            }
           }
-        },
+        }
       ],
+      grid: {
+        top: "5%",
+        left: "3%",
+        right: "2%",
+        bottom: "18%",
+        containLabel: true
+      },
       yAxis: [
         {
-          type: "value",
           name: "Triliun Rupiah",
-          nameLocation: "center",
+          nameLocation: 'center',
+          type: "value",
           nameTextStyle: {
-            align: "left",
             padding: [30, 20, 25, -25],
             fontSize: 14,
             color: "#4D5E80",
             fontWeight: "bold",
+            align: "left",
           },
           axisLabel: {
             fontSize: 10,
@@ -6755,5 +6760,10 @@ watch(tahunData, async (tahun) => {
   width: 10rem;
   --dp-border-radius: 10px;
   --dp-icon-color: #0099AD;
+}
+
+button#lihat-data-button:hover svg#lihat-data-svg path {
+  fill: #FFF;
+  transition-duration: 300ms;
 }
 </style>

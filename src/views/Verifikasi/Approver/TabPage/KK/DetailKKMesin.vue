@@ -393,34 +393,34 @@ const namaPembina = ref<string>('');
 const mesin = ref<MesinItem>();
 const asumsiParameter = ref<AsumsiParameterItem>({
   data: {},
-  id_asumsi: 0,
-  id_mesin: 0,
   kode_mesin: '',
-  status: '',
+  id_asumsi: 0,
   corporate_tax_rate: 0,
+  status: '',
+  id_mesin: 0,
   discount_rate: 0,
-  interest_rate: 0,
-  loan_tenor: 0,
   loan_portion: 0,
-  equity_portion: 0,
+  interest_rate: 0,
   umur_teknis: 0,
+  equity_portion: 0,
+  loan_tenor: 0,
+  isFetchingError: false,
   bahan_bakars: [],
-  isFetchingError: false
 });
 const parameterTeknisFinansial = ref<ParameterTeknisFinancialItem>({
   daya_terpasang: 0,
-  daya_mampu_netto_mw: 0,
-  auxiliary: 0,
   susut_trafo: 0,
-  ps: 0,
+  daya_mampu_netto_mw: 0,
   total_project_cost: 0,
+  ps: 0,
+  auxiliary: 0,
   loan: 0,
-  equity: 0,
   nphr: 0,
-  electricity_price_a_rp_per_kwbln: 0,
+  equity: 0,
   electricity_price_b_rp_per_kwbln: 0,
   electricity_price_c_rp_per_kwh: 0,
   electricity_price_d_rp_per_kwh: 0,
+  electricity_price_a_rp_per_kwbln: 0,
   isFetchingError: false
 });
 const dataTeknis = ref<{
@@ -560,27 +560,27 @@ interface ParameterTeknisFinancialItem {
   isFetchingError: boolean
 }
 
-const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 const fetchMesinById = async () => {
   try {
     const response: MesinItem = await detailRekapService.getMesinById(
       idGrafik
-    );
+    )
     try {
       const responsePhoto: any = await detailSentralService.getPhoto(response.data.photo1);
       const blob = new Blob([responsePhoto]);
-      response.data.photo2 = URL.createObjectURL(blob);
+      response.data.photo2 = URL.createObjectURL(blob)
     } catch (error) {
       console.error('Error Fetch Photo: ', error)
-    }
+    };
     mesin.value = response.data;
-    tahunTerakhirRealisasi.value = parseInt(response.data.tahun_realisasi);
-    kodeJenisPembangkit.value = response.data.kode_jenis_pembangkit;
+    tahunTerakhirRealisasi.value = parseInt(response.data.tahun_realisasi)
+    kodeJenisPembangkit.value = response.data.kode_jenis_pembangkit
   } catch (error) {
     console.error(error);
-  }
-};
+  };
+}
 
 const fetchPersetujuanKK = async () => {
   try {
@@ -651,41 +651,41 @@ const reloadDataTeknis = () => {
 
 const fetchDataFinansial = async () => {
   try {
-    finansialMappingResult.value = [];
+    finansialMappingResult.value = []
     const response: any = await detailRekapService.getDataFinansial(
       parseInt(route.query.tahun?.toString() ?? '0'),
-      parseInt(idGrafik)
+      parseInt(idGrafik),
     );
-    let currentLevel1: any | null = null;
+    let currentLevel1: any | null = null
     let currentLevel2: any | null = null;
     let currentLevel3: any | null = null;
     if (response.data.tahun[response.data.tahun.length - 1] == tahunBerjalan - 1) {
       const responseTahunRealisasi: any = await detailRekapService.getDataFinansial(
         parseInt(route.query.tahun?.toString() ?? '0') - 1,
-        parseInt(idGrafik)
-      );
+        parseInt(idGrafik),
+      )
       for (const item of responseTahunRealisasi.data.detail) {
         if (item.level === 1) {
           currentLevel1 = {
             ...item,
-            level2: [],
+            level2: []
           };
           finansialMappingResult.value.push(currentLevel1);
         } else if (item.level === 2 && currentLevel1 !== null) {
           currentLevel2 = {
             ...item,
-            level3: [],
+            level3: []
           }
           currentLevel1.level2.push(currentLevel2);
         } else if (item.level === 3 && currentLevel1 !== null) {
           currentLevel3 = {
             ...item,
-            level4: [],
-          }
-          currentLevel2.level3.push(currentLevel3);
+            level4: []
+          };
+          currentLevel2.level3.push(currentLevel3)
         } else if (item.level === 4 && currentLevel1 !== null) {
           currentLevel3.level4.push({ ...item });
-        }
+        };
       }
       dataFinansial.value = responseTahunRealisasi.data;
     } else {
@@ -694,14 +694,14 @@ const fetchDataFinansial = async () => {
           currentLevel1 = {
             ...item,
             level2: [],
-          };
-          finansialMappingResult.value.push(currentLevel1);
+          }
+          finansialMappingResult.value.push(currentLevel1)
         } else if (item.level === 2 && currentLevel1 !== null) {
           currentLevel2 = {
             ...item,
             level3: [],
-          }
-          currentLevel1.level2.push(currentLevel2);
+          };
+          currentLevel1.level2.push(currentLevel2)
         } else if (item.level === 3 && currentLevel1 !== null) {
           currentLevel3 = {
             ...item,
@@ -709,14 +709,14 @@ const fetchDataFinansial = async () => {
           }
           currentLevel2.level3.push(currentLevel3);
         } else if (item.level === 4 && currentLevel1 !== null) {
-          currentLevel3.level4.push({ ...item });
+          currentLevel3.level4.push({ ...item })
         }
-      }
-      dataFinansial.value = response.data;
+      };
+      dataFinansial.value = response.data
     }
   } catch (error) {
     console.error("Fetch Data Finansial Error : " + error);
-    dataFinansial.value.isFetchingError = true;
+    dataFinansial.value.isFetchingError = true
   }
 };
 
@@ -760,20 +760,19 @@ const fetchUnitPengelola = async () => {
         await detailRekapService.getPembangkitByKode(kodeSentral);
       const kodePengelola = pembangkitResponse.data.kode_pengelola;
       jumlahMesin.value = pembangkitResponse.data.mesins.length;
-      const pengelolaResponse: any =
-        await detailRekapService.getPengelolaData();
+      const pengelolaResponse: any = await detailRekapService.getPengelolaData();
       const pengelola = pengelolaResponse.data.filter(
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola
-      );
+      )
       namaPengelola.value = pengelola[0].pengelola;
-      const idPembina = pembangkitResponse.data.id_pembina;
+      const idPembina = pembangkitResponse.data.id_pembina
       const pembinaList: any = await fetchListPembina();
-      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina;
-    }
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina
+    };
   } catch (error) {
-    console.error("Fetch Unit Pengelola Error : " + error);
-  }
-};
+    console.error("Fetch Unit Pengelola Error : " + error)
+  };
+}
 
 const fetchTypePeriodic = async () => {
   try {
@@ -830,27 +829,27 @@ const updateKKPengelola = async () => {
 const downloadEvidence = async () => {
   try {
     isLoading.value = true;
-    const filePath: any = await rekapService.getEvidencePath(idGrafik, route.query.tahun?.toString() ?? '0', 0);
+    const filePath: any = await rekapService.getEvidencePath(idGrafik, route.query.tahun?.toString() ?? "0", 0);
     const finalFileName: any = filePath.data[0].file_name;
-    const response: any = await rekapService.downloadEvidence(filePath.data[0].dokumen_evidence);
+    const response: any = await rekapService.downloadEvidence(filePath.data[0].dokumen_evidence)
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
-    const fileName = fileNameMatch ? fileNameMatch[1] : `${finalFileName}`;
+    const fileName = fileNameMatch ? fileNameMatch[1] : `${finalFileName}`
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement('a')
     link.href = url;
     link.setAttribute('download', fileName);
-    document.body.appendChild(link);
+    document.body.appendChild(link)
     link.click();
     document.body.removeChild(link);
-    isLoading.value = false;
+    isLoading.value = false
   } catch (error) {
-    console.error('Evidence Error : ' + error)
+    console.error('Evidence Error : ' + error);
     isLoading.value = false;
     notifyError('Evidence Tidak Ada', 5000)
-  }
-}
+  };
+};
 
 const rejectKKPengelola = async () => {
   try {

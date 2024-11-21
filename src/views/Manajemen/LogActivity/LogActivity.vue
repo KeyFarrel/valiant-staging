@@ -318,38 +318,38 @@ const goToNext = () => {
 
 const generatePageList = computed(() => {
   const pageList = [];
-  const maxPages = 5;
+  const maxPages = 5
   if (navigation.value.totalPages <= maxPages) {
     for (let i = 1; i <= navigation.value.totalPages; i++) {
-      pageList.push(i);
-    }
+      pageList.push(i)
+    };
   } else {
     if (navigation.value.currentPage <= 3) {
       for (let i = 1; i <= Math.min(navigation.value.totalPages, maxPages - 1); i++) {
-        pageList.push(i);
+        pageList.push(i)
       }
       if (navigation.value.totalPages > maxPages) {
         pageList.push('...');
-        pageList.push(navigation.value.totalPages);
+        pageList.push(navigation.value.totalPages)
       }
     } else if (navigation.value.currentPage >= navigation.value.totalPages - 2) {
       pageList.push(1);
-      pageList.push('...');
+      pageList.push('...')
       for (let i = navigation.value.totalPages - (maxPages - 2); i <= navigation.value.totalPages; i++) {
-        pageList.push(i);
-      }
+        pageList.push(i)
+      };
     } else {
-      pageList.push(1);
-      pageList.push('...');
+      pageList.push(1)
+      pageList.push('...')
       for (let i = navigation.value.currentPage - 1; i <= navigation.value.currentPage + 1; i++) {
         pageList.push(i);
       }
-      pageList.push('...');
+      pageList.push('...')
       pageList.push(navigation.value.totalPages);
     }
   }
   return pageList;
-});
+})
 
 const handleClickOutside = (event: any) => {
   if (showModalFilter.value && dropdownContainer.value && !dropdownContainer.value.contains(event.target)) {
@@ -414,19 +414,19 @@ const downloadEvidenceKK = async (dokumenEvidence: string, namaFileEvidence: str
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `${namaFileEvidence}`;
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
     link.href = url;
-    link.setAttribute('download', fileName);
-    document.body.appendChild(link);
+    link.setAttribute('download', fileName)
+    document.body.appendChild(link)
     link.click();
-    document.body.removeChild(link);
-    isLoading.value = false;
+    document.body.removeChild(link)
+    isLoading.value = false
   } catch (error) {
-    console.error('Evidence Error : ' + error)
-    isLoading.value = false;
+    console.error('Evidence Error : ' + error);
+    isLoading.value = false
     notifyError('Evidence Tidak Ada', 5000)
-  }
+  };
 }
 
 const downloadEvidenceFS = async (dokumenEvidence: string, namaFileEvidence: string) => {
@@ -436,18 +436,18 @@ const downloadEvidenceFS = async (dokumenEvidence: string, namaFileEvidence: str
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `${namaFileEvidence}`;
-    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', fileName);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    isLoading.value = false;
+    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', fileName)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    isLoading.value = false
   } catch (error) {
     console.error('Evidence Error : ' + error)
-    isLoading.value = false;
+    isLoading.value = false
     notifyError('Evidence Tidak Ada', 5000)
   }
 }
@@ -465,19 +465,19 @@ const downloadExcelKK = async (tahun: number, tahunRealisasi: number, idMesin: n
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `Actual - ${responseMesin.data.mesin}_${tahun}_${globalFormat.formatNumberFiveDigits(idMesin)}.xlsx`;
-    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = window.URL.createObjectURL(blob);
+    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', fileName);
+    link.href = url
+    link.setAttribute("download", fileName)
     document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    link.click()
+    document.body.removeChild(link)
     isLoading.value = false;
   } catch (error) {
-    console.error('Handle Download Template Rekap Error : ' + error);
+    console.error("Handle Download Template Rekap Error : " + error)
   }
-}
+};
 
 const downloadExcelFS = async (tahun: number, tahunRealisasi: number, idMesin: number) => {
   try {
@@ -493,17 +493,17 @@ const downloadExcelFS = async (tahun: number, tahunRealisasi: number, idMesin: n
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `Feasibility Study - ${responseMesin.data.mesin}_${tahun}_${globalFormat.formatNumberFiveDigits(idMesin)}.xlsx`;
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = window.URL.createObjectURL(blob);
+    const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a');
-    link.href = url;
+    link.href = url
     link.setAttribute('download', fileName);
-    document.body.appendChild(link);
+    document.body.appendChild(link)
     link.click();
-    document.body.removeChild(link);
+    document.body.removeChild(link)
     isLoading.value = false;
   } catch (error) {
-    isLoading.value = false;
-  }
+    isLoading.value = false
+  };
 }
 
 onBeforeUnmount(() => {

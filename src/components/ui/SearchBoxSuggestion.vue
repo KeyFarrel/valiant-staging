@@ -54,16 +54,16 @@ const handleClickOutside = (event: MouseEvent) => {
 
 const searchResults: any = computed(() => {
   if (searchQuery.value === '') {
-    return props.source;
+    return props.source
   }
   return props.source.filter((item: any) => {
     if (item.sentral ? item.sentral.toLowerCase().includes(searchQuery.value.toLowerCase()) : item.nama_sentral.toLowerCase().includes(searchQuery.value.toLowerCase())) {
-      return item;
+      return item
     }
   })
-});
+})
 
-const selectedSentral = ref<string | null>(props.source ? props.source[0].sentral : null);
+const selectedSentral = ref<string | null>(props.source ? props.source[0].sentral : null)
 
 const setSelected = (item: string, index: number) => {
   selectedSentral.value = item;
@@ -76,23 +76,23 @@ const setSelected = (item: string, index: number) => {
   } else {
     listContainer.value?.scrollBy(0, index * 35);
   }
-};
+}
 
 const selectNextItem = () => {
-  const currentIndex = searchResults.value.findIndex((item: any) => item.sentral === selectedSentral.value);
+  const currentIndex = searchResults.value.findIndex((item: any) => item.sentral === selectedSentral.value)
   if (currentIndex < searchResults.value.length - 1) {
     console.log(searchResults.value[currentIndex + 1].sentral)
-    setSelected(searchResults.value[currentIndex + 1].sentral, currentIndex + 1);
+    setSelected(searchResults.value[currentIndex + 1].sentral, currentIndex + 1)
   }
-};
+}
 
 const selectPreviousItem = () => {
-  const currentIndex = searchResults.value.findIndex((item: any) => item.sentral === selectedSentral.value);
+  const currentIndex = searchResults.value.findIndex((item: any) => item.sentral === selectedSentral.value)
   if (currentIndex > 0) {
     console.log(searchResults.value[currentIndex - 1].sentral)
-    setSelected(searchResults.value[currentIndex - 1].sentral, currentIndex - 1);
+    setSelected(searchResults.value[currentIndex - 1].sentral, currentIndex - 1)
   }
-};
+}
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);

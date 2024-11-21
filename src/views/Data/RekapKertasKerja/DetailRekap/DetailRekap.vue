@@ -384,38 +384,39 @@ const fetchDataFinansial = async () => {
       parseInt(selectedYear.value),
       idMesin.value
     );
-    let currentLevel1: any | null = null;
+    let currentLevel1: any | null = null
     let currentLevel2: any | null = null;
-    let currentLevel3: any | null = null;
+    let currentLevel3: any | null = null
     for (const item of response.data.detail) {
       if (item.level === 1) {
         currentLevel1 = {
           ...item,
-          level2: [],
-        };
-        finansialMappingResult.value.push(currentLevel1);
+          level2: []
+        }
+        finansialMappingResult.value.push(currentLevel1)
       } else if (item.level === 2 && currentLevel1 !== null) {
         currentLevel2 = {
           ...item,
-          level3: [],
-        }
-        currentLevel1.level2.push(currentLevel2);
+          level3: []
+        };
+        currentLevel1.level2.push(currentLevel2)
       } else if (item.level === 3 && currentLevel1 !== null) {
         currentLevel3 = {
           ...item,
-          level4: [],
+          level4: []
         }
         currentLevel2.level3.push(currentLevel3);
       } else if (item.level === 4 && currentLevel1 !== null) {
-        currentLevel3.level4.push({ ...item });
-      }
+        currentLevel3.level4.push({ ...item })
+      };
     }
-    dataFinansial.value = response.data;
+    dataFinansial.value = response.data
   } catch (error) {
-    console.error("Fetch Data Finansial Error : " + error);
+    console.error("Fetch Data Finansial Error : " + error)
     dataFinansial.value.isFetchingError = true;
-  }
+  };
 };
+
 const reloadDataFinansial = () => {
   dataFinansial.value.isFetchingError = false;
   fetchDataFinansial();
@@ -454,18 +455,18 @@ const handleDownloadExcelMesin = async () => {
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `Actual - ${currentNamaMesin.value}_${selectedYear.value}_${globalFormat.formatNumberFiveDigits(parseInt(idMesin.value))}.xlsx`;
-    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const blob = new Blob([response.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
     const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement('a')
     link.href = url;
     link.setAttribute('download', fileName);
-    document.body.appendChild(link);
+    document.body.appendChild(link)
     link.click();
     document.body.removeChild(link);
-    isLoading.value = false;
+    isLoading.value = false
   } catch (error) {
     console.error('Handle Download Template Rekap Error : ' + error);
-  }
+  };
 }
 const fetchTahunRealisasiData = async () => {
   try {

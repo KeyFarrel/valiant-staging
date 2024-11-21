@@ -482,9 +482,10 @@ const submitForm = async () => {
     }
   }
 };
+
 const generatePageList = computed(() => {
-  const pageList = [];
   const maxPages = 5;
+  const pageList = [];
   if (navigation.value.totalPages <= maxPages) {
     for (let i = 1; i <= navigation.value.totalPages; i++) {
       pageList.push(i);
@@ -493,48 +494,48 @@ const generatePageList = computed(() => {
     if (navigation.value.currentPage <= 3) {
       for (let i = 1; i <= Math.min(navigation.value.totalPages, maxPages - 1); i++) {
         pageList.push(i);
-      }
+      };
       if (navigation.value.totalPages > maxPages) {
         pageList.push('...');
-        pageList.push(navigation.value.totalPages);
-      }
+        pageList.push(navigation.value.totalPages)
+      };
     } else if (navigation.value.currentPage >= navigation.value.totalPages - 2) {
       pageList.push(1);
       pageList.push('...');
       for (let i = navigation.value.totalPages - (maxPages - 2); i <= navigation.value.totalPages; i++) {
-        pageList.push(i);
-      }
+        pageList.push(i)
+      };
     } else {
       pageList.push(1);
       pageList.push('...');
       for (let i = navigation.value.currentPage - 1; i <= navigation.value.currentPage + 1; i++) {
-        pageList.push(i);
-      }
+        pageList.push(i)
+      };
       pageList.push('...');
       pageList.push(navigation.value.totalPages);
     }
-  }
+  };
   return pageList;
 });
 const submitEditForm = async () => {
-  errors.value = []; // Mengosongkan pesan kesalahan sebelum validasi
+  errors.value = [] // Mengosongkan pesan kesalahan sebelum validasi
   if (!formData.value.tahun) {
-    errors.value.push("Tahun harus diisi.");
+    errors.value.push("Tahun harus diisi.")
   }
   if (!formData.value.discount_rate) {
-    errors.value.push("Discount Rate harus diisi.");
+    errors.value.push("Discount Rate harus diisi.")
   } else {
-    const discountRate = parseFloat(formData.value.discount_rate);
+    const discountRate = parseFloat(formData.value.discount_rate)
     if (isNaN(discountRate) || discountRate <= 0 || discountRate >= 100) {
       errors.value.push(
         "Discount Rate harus berupa angka positif dan tidak lebih dari 100."
-      );
+      )
     }
   }
   if (!formData.value.corporate_tax_rate) {
-    errors.value.push("Corporate Tax Rate harus diisi.");
+    errors.value.push("Corporate Tax Rate harus diisi.")
   } else {
-    const corporateTaxRate = parseFloat(formData.value.corporate_tax_rate);
+    const corporateTaxRate = parseFloat(formData.value.corporate_tax_rate)
     if (
       isNaN(corporateTaxRate) ||
       corporateTaxRate <= 0 ||
@@ -542,7 +543,7 @@ const submitEditForm = async () => {
     ) {
       errors.value.push(
         "Corporate Tax Rate harus berupa angka positif dan tidak lebih dari 100."
-      );
+      )
     }
   }
   if (errors.value.length === 0) {

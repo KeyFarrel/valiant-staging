@@ -1,4 +1,4 @@
-import { mount, flushPromises } from "@vue/test-utils";
+import { shallowMount, flushPromises } from "@vue/test-utils";
 import MesinBelumTerinput from "@/views/Beranda/LamanUtama/MesinBelumTerinput.vue";
 import LamanService from "@/services/laman-service";
 import TableComponent from "@/components/ui/Table.vue";
@@ -7,34 +7,7 @@ import SearchBox from "@/components/ui/SearchBox.vue";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 
 // Mock LamanService to simulate API calls
-jest.mock("@/services/laman-service", () => {
-  return jest.fn().mockImplementation(() => ({
-    getMesinBelumInput: jest.fn(() =>
-      Promise.resolve({
-        data: [
-          {
-            pengelola: "Unit Pengelola A",
-            sentral: "Unit Sentral A",
-            mesin: "Mesin A",
-            daya_terpasang: 100,
-          },
-        ],
-        meta: {
-          totalRecords: 1,
-          totalPages: 1,
-        },
-      })
-    ),
-    getPengelolaData: jest.fn(() =>
-      Promise.resolve({
-        data: [
-          { kode_pengelola: "123", pengelola: "Unit Pengelola A" },
-          { kode_pengelola: "456", pengelola: "Unit Pengelola B" },
-        ],
-      })
-    ),
-  }));
-});
+jest.mock("@/services/laman-service");
 
 describe("MesinBelumTerinput.vue", () => {
   let wrapper: any;
@@ -42,7 +15,7 @@ describe("MesinBelumTerinput.vue", () => {
 
   beforeEach(async () => {
     lamanService = new LamanService();
-    wrapper = mount(MesinBelumTerinput, {
+    wrapper = shallowMount(MesinBelumTerinput, {
       global: {
         components: { TableComponent, Empty, SearchBox, Loading },
       },
@@ -125,5 +98,17 @@ describe("MesinBelumTerinput.vue", () => {
 
     expect(wrapper.vm.navigation.currentPage).toBe(2);
     expect(lamanService.getMesinBelumInput).toHaveBeenCalledTimes(0); // Pastikan service terpanggil
+  });
+
+  it("is fetching fetchMesinBelumInput", async () => {
+    const fetchMesinBelumInputSpy = jest.spyOn(wrapper.vm, "fetchMesinBelumInput");
+    await wrapper.vm.fetchMesinBelumInput();
+    expect(fetchMesinBelumInputSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching fetchPengelolaData", async () => {
+    const fetchPengelolaDataSpy = jest.spyOn(wrapper.vm, "fetchPengelolaData");
+    await wrapper.vm.fetchPengelolaData();
+    expect(fetchPengelolaDataSpy).toHaveBeenCalled();
   });
 });

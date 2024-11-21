@@ -11,7 +11,7 @@ describe('TabsWrapperApprove.vue', () => {
     const pinia = createPinia();
     setActivePinia(pinia);
 
-    wrapper = shallowMount(TabsWrapperApprove, {
+    wrapper = mount(TabsWrapperApprove, {
       global: {
         plugins: [pinia],
       },
@@ -45,7 +45,9 @@ describe('TabsWrapperApprove.vue', () => {
   });
 
   afterEach(() => {
-    wrapper.unmount();
+    if(wrapper){
+      wrapper.unmount();
+    }
   });
 
   it('renders the correct tab titles', async () => {

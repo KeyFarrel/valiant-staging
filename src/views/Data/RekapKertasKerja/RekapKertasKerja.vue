@@ -1278,20 +1278,20 @@ const handleDownloadTemplateRekap = async () => {
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `Kertas Kerja Actual - ${currentNamaMesin.value}_${tahunBerjalan.value}_${globalFormat.formatNumberFiveDigits(parseInt(currentIdMesin.value))}.xlsx`;
-    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const blob = new Blob([response.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
     const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.setAttribute('download', fileName);
+    link.setAttribute("download", fileName);
     document.body.appendChild(link);
-    link.click();
+    link.click()
     document.body.removeChild(link);
   } catch (error) {
-    notifyError('Download Template Rekap Gagal', 3000);
-    console.error('Handle Download Template Rekap Error : ' + error);
+    notifyError("Download Template Rekap Gagal", 3000);
+    console.error("Handle Download Template Rekap Error : " + error);
   } finally {
     isLoading.value = false;
-  }
+  };
 }
 const handleDownloadTemplateFS = async () => {
   try {
@@ -1303,18 +1303,18 @@ const handleDownloadTemplateFS = async () => {
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', fileName);
+    link.href = url
+    link.setAttribute('download', fileName)
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   } catch (error) {
-    notifyError('Download Template FS Gagal', 3000);
-    console.error('Handle Download Template Rekap Error : ' + error);
+    notifyError('Download Template FS Gagal', 3000)
+    console.error('Handle Download Template Rekap Error : ' + error)
   } finally {
     isLoading.value = false;
-  }
-}
+  };
+};
 const selectedFile: any = ref(null);
 const selectedFileEvidence: any = ref(null);
 const selectedFileFS: any = ref(null);
@@ -1358,24 +1358,25 @@ const uploadFileEvidence = async (statusFS: any) => {
   } finally {
     isLoading.value = false;
   }
-};
+}
+
 const uploadFile = async () => {
   try {
-    isLoading.value = true
+    isLoading.value = true;
     if (!selectedFile.value) {
       notifyError('Mohon pilih file excel terlebih dahulu', 3000);
-      return;
-    }
+      return
+    };
     if (selectedFile.value.size > 2000000) {
-      notifyError('Ukuran file Kertas Kerja tidak boleh lebih dari 2MB', 5000);
+      notifyError('Ukuran file Kertas Kerja tidak boleh lebih dari 2MB', 5000)
       return;
-    }
-    const formData = new FormData();
+    };
+    const formData = new FormData()
     formData.append('file', selectedFile.value);
     if (selectedFileEvidence.value) {
       if (selectedFileEvidence.value.size > 5000000) {
-        notifyError('Ukuran file Evidence tidak boleh lebih dari 5MB', 5000);
-        return;
+        notifyError('Ukuran file Evidence tidak boleh lebih dari 5MB', 5000)
+        return
       } else {
         await uploadFileEvidence(0);
       }

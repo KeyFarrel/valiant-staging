@@ -88,4 +88,16 @@ describe('Sidebar.vue', () => {
     await wrapper.vm.$nextTick();
     expect(wrapper.find('.bg-warningColor').exists()).toBe(true); // Red notification icon shows
   });
+
+  it("is fetching fetchPersetujuanKK", async () => {
+    const fetchPersetujuanKKSpy = jest.spyOn(wrapper.vm, "fetchPersetujuanKK");
+    await wrapper.vm.fetchPersetujuanKK();
+    expect(fetchPersetujuanKKSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching fetchPersetujuanFS", async () => {
+    const fetchPersetujuanFSSpy = jest.spyOn(wrapper.vm, "fetchPersetujuanFS");
+    await wrapper.vm.fetchPersetujuanFS();
+    expect(fetchPersetujuanFSSpy).toHaveBeenCalled();
+  });
 });

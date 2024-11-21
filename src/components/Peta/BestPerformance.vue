@@ -34,7 +34,8 @@
                 </div>
               </div>
             </div>
-            <div class="block max-w-[55rem] max-h-[50rem] overflow-y-auto rounded-lg bg-white scrollbar-hide">
+            <ShimmerLoading v-if="isLoading" class="w-[55rem] h-56" />
+            <div v-else class="block max-w-[55rem] max-h-[50rem] overflow-y-auto rounded-lg bg-white scrollbar-hide">
               <TableComponent>
                 <template v-slot:table-header>
                   <tr>
@@ -182,13 +183,12 @@
                             d="M34.3259 34.561C33.7169 34.561 33.2232 34.0673 33.2232 33.4583C33.2232 32.5046 33.431 31.675 33.8466 30.9697C34.2623 30.2643 35.0225 29.5143 36.1275 28.7195C37.1919 27.9744 37.8913 27.3684 38.2259 26.9015C38.5705 26.4345 38.7429 25.913 38.7429 25.3368C38.7429 24.691 38.4996 24.1993 38.013 23.8615C37.5264 23.5237 36.8472 23.3548 35.9754 23.3548C34.9118 23.3548 33.744 23.593 32.4721 24.0694C31.5113 24.4292 30.4 24.0767 29.9355 23.162C29.4796 22.2643 29.8143 21.1539 30.7467 20.7739C32.5214 20.0506 34.3758 19.689 36.31 19.689C38.3982 19.689 40.0556 20.1807 41.2822 21.1642C42.5189 22.1478 43.1373 23.4591 43.1373 25.0983C43.1373 26.1911 42.8839 27.1349 42.377 27.9297C41.8702 28.7245 40.9071 29.6186 39.4879 30.612C38.5148 31.3174 37.8964 31.8538 37.6328 32.2214C37.3794 32.589 37.2527 33.0708 37.2527 33.6669C37.2527 34.1607 36.8524 34.561 36.3586 34.561H34.3259ZM32.7366 39.6574C32.7366 38.8229 32.9647 38.1921 33.4209 37.7649C33.877 37.3377 34.541 37.1241 35.4128 37.1241C36.2542 37.1241 36.903 37.3427 37.3591 37.7798C37.8255 38.2169 38.0586 38.8428 38.0586 39.6574C38.0586 40.4423 37.8255 41.0632 37.3591 41.5202C36.8928 41.9672 36.2441 42.1908 35.4128 42.1908C34.5613 42.1908 33.9024 41.9722 33.4361 41.5351C32.9698 41.088 32.7366 40.4621 32.7366 39.6574Z"
                             fill="white" />
                         </svg>
-                        <div class="p-2 space-y-1 text-center">
-                          <p class="text-sm font-bold">
-                            Data Belum Tersedia
+                        <div class="p-2 space-y-0.5 text-center">
+                          <p class="text-base font-semibold">
+                            Data Tidak Tersedia
                           </p>
                           <p class="text-sm">
-                            Data tidak tersedia, sistem tidak bisa menampilkan
-                            Best Perfomance Assets
+                            Data tidak tersedia, sistem tidak bisa menampilkan Best Perfomance Assets
                           </p>
                         </div>
                       </td>
@@ -207,7 +207,8 @@
 import { ref, onMounted } from "vue";
 import GlobalFormat from "@/services/format/global-format";
 import PetaService from "@/services/peta-service";
-import TableComponent from "../ui/Table.vue";
+import TableComponent from "@/components/ui/Table.vue";
+import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
 
 const petaService = new PetaService();
 const globalFormat = new GlobalFormat();
@@ -217,6 +218,7 @@ const tahun = ref<any[]>([]);
 let isOptionsExpanded = ref(false);
 const tahunBerjalan = new Date().getFullYear();
 const yearModel = ref<string>(tahunBerjalan.toString());
+const isLoading = ref<boolean>(false);
 
 interface BestItem {
   kode_pengelola: string
@@ -232,6 +234,7 @@ interface BestItem {
 
 const fetchBestPerformance = async () => {
   try {
+    isLoading.value = true
     const response: any = await petaService.getBestPerformance({ tahun: yearModel.value });
     if (response.data === null) {
       bpaData.value = []
@@ -240,6 +243,8 @@ const fetchBestPerformance = async () => {
     }
   } catch (error) {
     console.error('Fetch Best Performance Error : ' + error);
+  } finally {
+    isLoading.value = false
   }
 }
 const fetchYearListBPA = async () => {

@@ -24,27 +24,42 @@ const showModal = ref<boolean>(false);
 const tahunBerjalan = new Date().getFullYear();
 
 const props = defineProps<{
-  itemsPembangkit: { id: string; name: string }[]
-  itemsDayaMampu: { id: string; name: string }[]
+  itemsPembangkit: {
+    id: string
+    name: string
+  }[]
+  itemsDayaMampu: {
+    id: string
+    name: string
+  }[]
   title: string
   yearRange: number[]
 }>()
 
 const isLoading = ref(false)
 const graphData: Ref<{
-  legends?: { label: string; color: string }[]
+  legends?: {
+    label: string
+    color: string
+  }[]
   source: any
   series: any
-  pln: { x: number; y: number }
-  ipp: { x: number; y: number }
+  pln: {
+    x: number
+    y: number
+  }
+  ipp: {
+    x: number
+    y: number
+  }
   isEmpty?: boolean
   dataZoom: { start: number, type: string, orient: string }
 }> = ref({
   legends: [],
   source: [],
   series: [],
-  pln: { x: 0, y: 0 },
   ipp: { x: 0, y: 0 },
+  pln: { x: 0, y: 0 },
   isEmpty: true,
   dataZoom: { start: 0, type: 'inside', orient: 'vertical' }
 })
@@ -52,8 +67,8 @@ const filter: Ref<{
   kategoriPembangkit: string[] | null
   tahun: number
 }> = ref({
-  kategoriPembangkit: [""],
-  tahun: new Date().getFullYear()
+  kategoriPembangkit: [''],
+  tahun: new Date().getFullYear(),
 })
 
 // const fetchTahunTerakhirRealisasi = async () => {
@@ -66,14 +81,14 @@ const filter: Ref<{
 // }
 const fetchInitialPembangkit = async () => {
   try {
-    const response: any = await grafikService.getInitialPembangkit();
+    const response: any = await grafikService.getInitialPembangkit()
     for (const iterator of response.data) {
-      value.value.push(iterator.kode_jenis_pembangkit);
-    }
+      value.value.push(iterator.kode_jenis_pembangkit)
+    };
   } catch (error) {
     console.error('Fetch Initial Pembangkit Error : ', error);
-  }
-}
+  };
+};
 
 async function getDataGraph() {
   try {
@@ -125,35 +140,27 @@ async function getDataGraph() {
             graphData.value.source?.push([graph.data.ebitda_real, graph.data.rnfa_real])
           }
         })
-        graphData.value.series.push(scatterTemplate)
-      })
-      isLoading.value = false
+        graphData.value.series.push(scatterTemplate);
+      });
+      isLoading.value = false;
     }
   } catch (e) {
     isLoading.value = false
     console.log(e)
-  }
-}
+  };
+};
 
-// const fetchPeriodeTahunSentral = async () => {
-//   try {
-//     const response: any = await petaService.getYearListBPA();
-//     periodeTahun.value = [response.data[0].tahun, response.data[response.data.length - 1].tahun];
-//   } catch (error) {
-//     console.error('Fetch Tahun Grafik Sentral Error : ' + error);
-//   }
-// }
 
 const closeModal = () => {
   if (value.value.length) {
     showModal.value = false
   } else if (value.value.length === 0 && filter.value.tahun === null) {
-    notifyError('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000);
+    notifyError('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000)
   } else if (filter.value.tahun === null) {
-    notifyError('Mohon pilih 1 tahun!', 5000);
+    notifyError('Mohon pilih 1 tahun!', 5000)
   } else {
     notifyError('Mohon pilih minimal 1 kategori pembangkit!', 5000);
-  }
+  };
 }
 
 const applyFilter = async () => {
@@ -161,63 +168,63 @@ const applyFilter = async () => {
     getDataGraph();
     showModal.value = false;
   } else if (value.value.length === 0 && filter.value.tahun === null) {
-    notifyError('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000);
+    notifyError('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000)
   } else if (filter.value.tahun === null) {
-    notifyError('Mohon pilih 1 tahun!', 5000);
+    notifyError('Mohon pilih 1 tahun!', 5000)
   } else {
     notifyError('Mohon pilih minimal 1 kategori pembangkit!', 5000);
-  }
-}
+  };
+};
 
 watch(value, (val) => {
   if (val.length === 0) {
     checkAll.value = false
     indeterminate.value = false
   } else if (val.length === props.itemsPembangkit.length) {
-    checkAll.value = true
-    indeterminate.value = false
+    checkAll.value = true;
+    indeterminate.value = false;
   } else {
-    indeterminate.value = true
+    indeterminate.value = true;
   }
 })
 
 const handleCheckAll = (val: CheckboxValueType) => {
-  indeterminate.value = false
+  indeterminate.value = false;
   if (val) {
-    value.value = props.itemsPembangkit.map((_) => _.name)
+    value.value = props.itemsPembangkit.map((_) => _.name);
   } else {
-    value.value = []
+    value.value = [];
   }
 }
 
 watch(dmn, (val) => {
   if (val.length === 0) {
-    checkDmn.value = false
-    indeterminateDmn.value = false
+    checkDmn.value = false;
+    indeterminateDmn.value = false;
   } else if (val.length === props.itemsDayaMampu.length) {
-    checkDmn.value = true
+    checkDmn.value = true;
     indeterminateDmn.value = false
   } else {
     indeterminateDmn.value = true
-  }
-})
+  };
+});
 
 const handleCheckDmn = (val: CheckboxValueType) => {
-  indeterminateDmn.value = false
+  indeterminateDmn.value = false;
   if (val) {
     dmn.value = props.itemsDayaMampu.map((_) => _.id)
   } else {
     dmn.value = []
-  }
-}
+  };
+};
 
 onMounted(async () => {
-  isLoading.value = true
-  await fetchInitialPembangkit();
+  isLoading.value = true;
+  await fetchInitialPembangkit()
   // await fetchTahunTerakhirRealisasi();
   // fetchPeriodeTahunSentral();
-  getDataGraph();
-})
+  getDataGraph()
+});
 </script>
 
 <template>
