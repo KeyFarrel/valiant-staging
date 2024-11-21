@@ -225,35 +225,35 @@ const props = withDefaults(defineProps<Props>(), {
 const namaBahanBakar = (kodeBahanBakar: any) => {
   const result = props.comboBahanBakar.filter((val: any) => val.kode_bahan_bakar === kodeBahanBakar);
   if (result.length !== 0) {
-    return result[0].bahan_bakar;
+    return result[0].bahan_bakar
   }
-  return '-';
-}
+  return '-'
+};
 const labelBahanBakar = (kodeBahanBakar: any) => {
   const result = props.comboBahanBakar.filter((val: any) => val.kode_bahan_bakar === kodeBahanBakar);
   if (result.length !== 0) {
-    return result[0].satuan_harga_bahan_bakar.replace('Rupiah', 'Rp').replace(/ /g, '');
+    return result[0].satuan_harga_bahan_bakar.replace('Rupiah', 'Rp').replace(/ /g, '')
   }
   return '';
-}
+};
 const labelSFC = (kodeBahanBakar: any) => {
-  const result = props.comboBahanBakar.filter((val: any) => val.kode_bahan_bakar === kodeBahanBakar);
+  const result = props.comboBahanBakar.filter((val: any) => val.kode_bahan_bakar === kodeBahanBakar)
   if (result.length !== 0) {
     return result[0].satuan_sfc.replace(/ /g, '');
   }
-  return '';
-}
+  return ''
+};
 const bahanBakarsFinal = () => {
   if (props.bahanBakars.some((e: any) => e.flag_bahan_bakar === 1)) {
-    const utamaIndex = props.bahanBakars.findIndex((e: any) => e.flag_bahan_bakar === 1);
+    const utamaIndex = props.bahanBakars.findIndex((e: any) => e.flag_bahan_bakar === 1)
     if (utamaIndex !== 0) {
       const utama = props.bahanBakars[utamaIndex];
-      props.bahanBakars.splice(utamaIndex, 1);
+      props.bahanBakars.splice(utamaIndex, 1)
       props.bahanBakars.unshift(utama);
     }
-  }
-  return props.bahanBakars;
-}
+  };
+  return props.bahanBakars
+};
 </script>
 
 <style scoped>

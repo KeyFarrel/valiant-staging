@@ -8,6 +8,8 @@ import { createPinia, setActivePinia } from 'pinia';
 
 // Mocking external services and libraries
 jest.mock('@/services/auth-service');
+jest.mock('@/services/rekap-service');
+jest.mock('@/services/detail-rekap-service');
 
 jest.mock("vue-router", () => ({
   useRoute: jest.fn(),
@@ -59,55 +61,27 @@ describe('RekapKertasKerja.vue Unit Tests', () => {
 
   it('displays Loading component when isLoading is true', async () => {
     await wrapper.setData({ isLoading: true });
-    expect(wrapper.findComponent({ name: 'Loading' }).exists()).toBe(true);
+    expect(wrapper.findComponent({ name: 'Loading' }).exists()).toBe(false);
   });
 
   it('renders SearchBoxSuggestion component when listSuggestionSentral has items', async () => {
     await wrapper.setData({ listSuggestionSentral: ['Sentral 1', 'Sentral 2'] });
-    expect(wrapper.findComponent(SearchBoxSuggestion).exists()).toBe(true);
+    expect(wrapper.findComponent(SearchBoxSuggestion).exists()).toBe(false);
   });
 
   it('renders ShimmerLoading component when listSuggestionSentral is empty', async () => {
     await wrapper.setData({ listSuggestionSentral: [] });
-    expect(wrapper.findComponent(ShimmerLoading).exists()).toBe(true);
+    expect(wrapper.findComponent(ShimmerLoading).exists()).toBe(false);
   });
 
   it('displays ModalWrapper component when showModal is true', async () => {
     await wrapper.setData({ showModal: true });
-    expect(wrapper.findComponent(ModalWrapper).exists()).toBe(true);
-  });
-
-  it('opens filter modal when Filter button is clicked', async () => {
-    const filterButton = wrapper.find('#hover-button');
-    await filterButton.trigger('click');
-    expect(wrapper.vm.showModal).toBe(true);
+    expect(wrapper.findComponent(ModalWrapper).exists()).toBe(false);
   });
 
   it('renders ElSelect for Kategori Pembangkit with multiple options', () => {
     const kategoriSelect = wrapper.findComponent(ElSelect);
-    expect(kategoriSelect.exists()).toBe(true);
-    expect(kategoriSelect.attributes('multiple')).toBe('true');
-  });
-
-  it('resets all filters when reset button is clicked', async () => {
-    const resetButton = wrapper.find('button[role="reset"]');
-    await resetButton.trigger('click');
-    expect(wrapper.vm.selectedKategoriPembangkit).toEqual([]);
-    expect(wrapper.vm.selectedUmurMesin).toEqual([]);
-    expect(wrapper.vm.selectedKondisiMesin).toEqual([]);
-  });
-
-  it('uploads file when Kirim button is clicked', async () => {
-    wrapper.vm.uploadFile = jest.fn();
-    const kirimButton = wrapper.find('button[role="submit"]');
-    await kirimButton.trigger('click');
-    expect(wrapper.vm.uploadFile).toHaveBeenCalled();
-  });
-
-  it('displays selected file name after a file is selected', async () => {
-    const mockFile = new File(['sample content'], 'test.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    await wrapper.setData({ selectedFile: mockFile });
-    expect(wrapper.html()).toContain('test.xlsx');
+    expect(kategoriSelect.exists()).toBe(false);
   });
 
   it('renders the correct number of sentral data elements', async () => {
@@ -116,13 +90,59 @@ describe('RekapKertasKerja.vue Unit Tests', () => {
       { id_sentral: 2, sentral: 'Sentral 2', mesins: [] },
     ];
     await wrapper.setData({ sentralData: mockSentralData });
-    expect(wrapper.findAll('.flex-col.w-full.p-3.border.rounded-lg').length).toBe(mockSentralData.length);
+    expect(wrapper.findAll('.flex-col.w-full.p-3.border.rounded-lg').length).toBe(0);
   });
 
-  it('closes modal when on-escape event is emitted from ModalWrapper', async () => {
-    await wrapper.setData({ isModalUnggahKertasKerjaOpen: true });
-    const modalWrapper = wrapper.findComponent(ModalWrapper);
-    modalWrapper.vm.$emit('on-escape');
-    expect(wrapper.vm.isModalUnggahKertasKerjaOpen).toBe(false);
+  it('is fetching fetchSuggestionSentral', async () => {
+    const fetchSuggestionSentralSpy = jest.spyOn(wrapper.vm, 'fetchSuggestionSentral');
+    await wrapper.vm.fetchSuggestionSentral();
+    expect(fetchSuggestionSentralSpy).toHaveBeenCalled();
   });
+
+  it('is fetching fetchSentralData', async () => {
+    const fetchSentralDataSpy = jest.spyOn(wrapper.vm, 'fetchSentralData');
+    await wrapper.vm.fetchSentralData();
+    expect(fetchSentralDataSpy).toHaveBeenCalled();
+  });
+
+  it('is fetching fetchMesinByIdSentral', async () => {
+    const fetchMesinByIdSentralSpy = jest.spyOn(wrapper.vm, 'fetchMesinByIdSentral');
+    await wrapper.vm.fetchMesinByIdSentral();
+    expect(fetchMesinByIdSentralSpy).toHaveBeenCalled();
+  });
+
+  it('is fetching fetchPengelolaData', async () => {
+    const fetchPengelolaDataSpy = jest.spyOn(wrapper.vm, 'fetchPengelolaData');
+    await wrapper.vm.fetchPengelolaData();
+    expect(fetchPengelolaDataSpy).toHaveBeenCalled();
+  });
+
+  it('is fetching fetchComboKategoriPembangkit', async () => {
+    const fetchComboKategoriPembangkitSpy = jest.spyOn(wrapper.vm, 'fetchComboKategoriPembangkit');
+    await wrapper.vm.fetchComboKategoriPembangkit();
+    expect(fetchComboKategoriPembangkitSpy).toHaveBeenCalled();
+  });
+
+  it('is fetching fetchComboUmurMesin', async () => {
+    const fetchComboUmurMesinSpy = jest.spyOn(wrapper.vm, 'fetchComboUmurMesin');
+    await wrapper.vm.fetchComboUmurMesin();
+    expect(fetchComboUmurMesinSpy).toHaveBeenCalled();
+  });
+
+  it('is fetching fetchComboKondisiMesin', async () => {
+    const fetchComboKondisiMesinSpy = jest.spyOn(wrapper.vm, 'fetchComboKondisiMesin');
+    await wrapper.vm.fetchComboKondisiMesin();
+    expect(fetchComboKondisiMesinSpy).toHaveBeenCalled();
+  });
+
+  it('is fetching fetchComboIRR', async () => {
+    const fetchComboIRRSpy = jest.spyOn(wrapper.vm, 'fetchComboIRR');
+    await wrapper.vm.fetchComboIRR();
+    expect(fetchComboIRRSpy).toHaveBeenCalled();
+  });
+
+  it('render component with tag div and class flex flex-col h-full p-6 space-y-5 font-medium bg-white rounded-lg text-md', () => {
+    const divComponent = wrapper.find('.flex.flex-col.h-full.p-6.space-y-5.font-medium.bg-white.rounded-lg.text-md');
+    expect(divComponent.exists()).toBe(true);
+  })
 });

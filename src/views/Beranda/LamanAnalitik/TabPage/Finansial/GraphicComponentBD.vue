@@ -1,109 +1,118 @@
 <script setup lang="ts">
-import { onMounted, type Ref, ref, watch } from "vue";
 import Empty from "@/components/icons/IconEmptyData.vue";
 import ShimmerLoading from "@/components/ui/ShimmerLoading.vue"
 import ModalWrapper from "@/components/ui/ModalWrapper.vue";
-import GrafikService from "@/services/grafik-service";
+import { onMounted, type Ref, ref, watch } from "vue";
 import type { BaseResponse, ResComponent } from "@/types/LamanAnalitik/TypeFinansial";
 import type { CheckboxValueType } from 'element-plus';
 import DynamicScatterPlotVertiLine from "@/views/Beranda/LamanAnalitik/TabPage/DynamicScatterPlotVertiLine.vue";
-import { notifyError } from "@/services/helper/toast-notification";
+import GrafikService from "@/services/grafik-service";
 import { id } from "date-fns/locale";
+import { notifyError } from "@/services/helper/toast-notification";
 
-const grafikService = new GrafikService();
 const checkAll = ref(false)
 const checkDmn = ref(true)
 const indeterminate = ref(false)
-const indeterminateDmn = ref(false)
+const grafikService = new GrafikService();
 const value = ref<CheckboxValueType[]>([]);
 const dmn = ref<CheckboxValueType[]>([1, 2, 3])
 const showModal = ref<boolean>(false);
+const endYear = new Date().getFullYear()
+const indeterminateDmn = ref(false)
 
 const startYear = new Date().getFullYear() - 5
-const endYear = new Date().getFullYear()
 
 const props = defineProps<{
-  itemsPembangkit: { id: string; name: string, power?: string }[]
-  itemsDayaMampu: { id: string; name: string }[]
-  itemsDaya: { id: string; daya: string; satuan: string }[]
-  title: string
+  itemsPembangkit:
+  { id: string; name: string, power?: string }[]
+  itemsDayaMampu:
+  { id: string; name: string }[]
+  itemsDaya:
+  { id: string; daya: string; satuan: string }[]
+  title: string;
   yearRange: number[]
-}>()
+}>();
 
 const isLoading = ref(false)
 const graphData: Ref<{
-  legends?: { label: string; color: string }[]
-  series: any
-  isEmpty?: boolean
-  years: number[]
-  values: number[]
-  dataZoom: { start: number, type: string, orient: string }
+  legends?: { label: string; color: string }[];
+  series: any;
+  isEmpty?: boolean;
+  years: number[];
+  values: number[];
+  dataZoom: { start: number, type: string, orient: string };
 }> = ref({
   legends: [],
   series: [],
   isEmpty: true,
   years: [],
   values: [],
-  dataZoom: { start: 0, type: 'inside', orient: 'vertical' }
-})
+  dataZoom: {
+    start: 0,
+    type: 'inside',
+    orient: 'vertical'
+  }
+});
 const filter: Ref<{
-  kategoriPembangkit: string[] | null
-  periode: number[] | null
+  kategoriPembangkit: string[] | null;
+  periode: number[] | null;
 }> = ref({
   kategoriPembangkit: [""],
   periode: [startYear, endYear]
-})
+});
 const fetchInitialPembangkit = async () => {
   try {
     const response: any = await grafikService.getInitialPembangkit();
     for (const iterator of response.data) {
       value.value.push(iterator.kode_jenis_pembangkit);
-    }
+    };
   } catch (error) {
     console.error('Fetch Initial Pembangkit Error : ', error);
-  }
-}
+  };
+};
 
 async function getDataGraph() {
   try {
     isLoading.value = true
     // filterChips.value?.setValue()
     const param: any = {
-      komponen: "BD",
+      komponen: 'BD',
       kode_jenis_pembangkit: [],
       id_daya: [],
       tahun_awal: "",
       tahun_akhir: ""
     }
     param.kode_jenis_pembangkit = value.value;
-    param.id_daya = dmn.value;
-    param.tahun_awal = filter.value.periode ? filter.value.periode[0].toString() : "";
+    param.id_daya = dmn.value
+    param.tahun_awal = filter.value.periode ? filter.value.periode[0].toString() : '';
     param.tahun_akhir = filter.value.periode ? filter.value.periode[1].toString() : "";
 
-    const response: BaseResponse<ResComponent> = await grafikService.getGraphicBiaya(param)
+    const response: BaseResponse<ResComponent> = await grafikService.getGraphicBiaya(param);
     if (response.success) {
       const data = response.data
-      graphData.value.isEmpty = data.data.length === 0
       graphData.value.series = []
+      graphData.value.values = [];
       graphData.value.legends = []
+      graphData.value.isEmpty = data.data.length === 0;
       graphData.value.years = []
-      graphData.value.values = []
       data.legend?.map((item) => {
         graphData.value.legends?.push(item)
         const scatterTemplate: {
-          name: string
-          type: string
+          name: string,
+          type: string,
           data: any
-          color: string
+          color: string,
         } = {
           name: item.label,
-          type: 'scatter',
+          type: "scatter",
           data: [],
           color: item.color,
         }
         data.data?.map(graph => {
           graphData.value.years.push(parseInt(graph.data.tahun))
-          graphData.value.values.push(graph.data.value)
+          graphData.value.values.push(
+            graph.data.value
+          );
           if (graph.kode_jenis_kit === item.label) {
             scatterTemplate.data.push([parseInt(graph.data.tahun), graph.data.value, 5, graph.nama_mesin])
           }
@@ -112,10 +121,10 @@ async function getDataGraph() {
       })
       isLoading.value = false
     }
-  } catch (e) {
+  } catch (error) {
     isLoading.value = false
-    console.log(e)
-  }
+    console.log(error)
+  };
 }
 
 async function getDataGraphNoDMN() {
@@ -139,75 +148,75 @@ async function getDataGraphNoDMN() {
       const data = response.data
       graphData.value.isEmpty = data.data.length === 0
       graphData.value.series = []
-      graphData.value.legends = []
-      graphData.value.years = []
+      graphData.value.legends = [];
       graphData.value.values = []
-      data.legend?.map((item) => {
+      graphData.value.years = []
+      data.legend?.map((item: any) => {
         graphData.value.legends?.push(item)
         const scatterTemplate: {
           name: string
-          type: string
+          type: string;
           data: any
           color: string
         } = {
           name: item.label,
-          type: 'scatter',
-          data: [],
+          type: "scatter",
           color: item.color,
+          data: [],
         }
         data.data?.map(graph => {
-          graphData.value.years.push(parseInt(graph.data.tahun))
+          graphData.value.years.push(parseInt(graph.data.tahun));
           graphData.value.values.push(graph.data.value)
           if (graph.kode_jenis_kit === item.label) {
             scatterTemplate.data.push([parseInt(graph.data.tahun), graph.data.value, 5, graph.nama_mesin])
           }
-        })
+        });
         graphData.value.series.push(scatterTemplate)
       })
       isLoading.value = false
-    }
+    };
   } catch (e) {
     isLoading.value = false
     console.log(e)
-  }
+  };
 }
 
 const closeModal = () => {
   if (value.value.length) {
     showModal.value = false
   } else if (value.value.length === 0 && filter.value.periode === null) {
-    notifyError('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000);
+    notifyError('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000)
   } else if (filter.value.periode === null) {
     notifyError('Mohon pilih 1 tahun!', 5000);
   } else {
-    notifyError('Mohon pilih minimal 1 kategori pembangkit!', 5000);
+    notifyError('Mohon pilih minimal 1 kategori pembangkit!', 5000)
   }
-}
+};
 
 const applyFilter = async () => {
   if (value.value.length) {
-    getDataGraph();
-    showModal.value = false;
+    getDataGraph()
+    showModal.value = false
   } else if (value.value.length === 0 && filter.value.periode === null) {
     notifyError('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000);
   } else if (filter.value.periode === null) {
-    notifyError('Mohon pilih 1 tahun!', 5000);
+    notifyError('Mohon pilih 1 tahun!', 5000)
   } else {
-    notifyError('Mohon pilih minimal 1 kategori pembangkit!', 5000);
-  }
+    notifyError('Mohon pilih minimal 1 kategori pembangkit!', 5000)
+  };
 }
 
 const applyFilterNoDMN = async () => {
   if (value.value.length) {
-    getDataGraphNoDMN();
-    showModal.value = false;
+    getDataGraphNoDMN()
+    showModal.value = false
   } else if (value.value.length === 0 && filter.value.periode === null) {
     notifyError('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000);
   } else if (filter.value.periode === null) {
-    notifyError('Mohon pilih 1 tahun!', 5000);
+    notifyError('Mohon pilih 1 tahun!', 5000)
   } else {
-    notifyError('Mohon pilih minimal 1 kategori pembangkit!', 5000);
-  }
+    notifyError('Mohon pilih minimal 1 kategori pembangkit!', 5000)
+  };
 }
 
 watch(value, (val) => {
@@ -215,11 +224,11 @@ watch(value, (val) => {
     checkAll.value = false
     indeterminate.value = false
   } else if (val.length === props.itemsPembangkit.length) {
-    checkAll.value = true
+    checkAll.value = true;
     indeterminate.value = false
   } else {
     indeterminate.value = true
-  }
+  };
 })
 
 const handleCheckAll = (val: CheckboxValueType) => {
@@ -227,7 +236,7 @@ const handleCheckAll = (val: CheckboxValueType) => {
   if (val) {
     value.value = props.itemsPembangkit.map((_) => _.name)
   } else {
-    value.value = []
+    value.value = [];
   }
 }
 
@@ -236,11 +245,11 @@ watch(dmn, (val) => {
     checkDmn.value = false
     indeterminateDmn.value = false
   } else if (val.length === props.itemsDayaMampu.length) {
-    checkDmn.value = true
+    checkDmn.value = true;
     indeterminateDmn.value = false
   } else {
     indeterminateDmn.value = true
-  }
+  };
 })
 
 const handleCheckDmn = (val: CheckboxValueType) => {
@@ -248,14 +257,14 @@ const handleCheckDmn = (val: CheckboxValueType) => {
   if (val) {
     dmn.value = props.itemsDayaMampu.map((_) => _.id)
   } else {
-    dmn.value = []
+    dmn.value = [];
   }
 }
 
 onMounted(async () => {
-  await fetchInitialPembangkit();
-  getDataGraph();
-})
+  await fetchInitialPembangkit()
+  getDataGraph()
+});
 </script>
 
 <template>

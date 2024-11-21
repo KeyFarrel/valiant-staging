@@ -94,87 +94,87 @@ const interestRate = ref<string>('');
 const umurTeknis = ref<string>('');
 const loanTenor = ref<string>('');
 const isIntegrasi = ref<boolean>(false);
-const loanPortion = ref<string>('');
 const nphr = ref<string>('');
-const auxiliary = ref<string>('');
+const loanPortion = ref<string>('');
 const susutTrafo = ref<string>('');
-const pemakaianSendiri = ref<string>('');
+const auxiliary = ref<string>('');
 const electricityPriceA = ref<string>('');
-const electricityPriceB = ref<string>('');
+const pemakaianSendiri = ref<string>('');
 const electricityPriceC = ref<string>('');
-const electricityPriceD = ref<string>('');
+const electricityPriceB = ref<string>('');
 const masaManfaat = ref<any>();
+const electricityPriceD = ref<string>('');
 const pickedParameterValue = ref<string>('auxiliarySusut');
 const asumsiParameterInit = ref<{
   asumsiMakro: {
-    interestRate: string,
     umurTeknis: string,
+    interestRate: string,
+    loanPortion: string,
     loanTenor: string,
-    loanPortion: string
   },
   parameterTeknis: {
-    nphr: string,
     auxiliary: string,
-    susutTrafo: string,
+    nphr: string,
     pemakaianSendiri: string,
-    electricityPriceA: string,
+    susutTrafo: string,
     electricityPriceB: string,
-    electricityPriceC: string,
+    electricityPriceA: string,
     electricityPriceD: string,
+    electricityPriceC: string,
   }
 }>({
   asumsiMakro: {
-    interestRate: '',
     umurTeknis: '',
+    interestRate: '',
+    loanPortion: '',
     loanTenor: '',
-    loanPortion: ''
   },
   parameterTeknis: {
-    nphr: '',
     auxiliary: '',
-    susutTrafo: '',
+    nphr: '',
     pemakaianSendiri: '',
     electricityPriceA: '',
-    electricityPriceB: '',
+    susutTrafo: '',
     electricityPriceC: '',
     electricityPriceD: '',
+    electricityPriceB: '',
   }
 });
 const error = ref<{
   asumsi: {
-    interestRate: boolean,
     umurTeknis: boolean,
-    loanTenor: boolean,
+    interestRate: boolean,
     loanPortion: boolean
+    loanTenor: boolean,
   },
   parameter: {
-    nphr: boolean,
     auxiliary: boolean,
-    susutTrafo: boolean,
+    nphr: boolean,
     pemakaianSendiri: boolean,
-    electricityPriceA: boolean,
+    susutTrafo: boolean,
     electricityPriceB: boolean,
+    electricityPriceA: boolean,
     electricityPriceC: boolean,
-    electricityPriceD: boolean,
     bahanBakar: boolean
+    electricityPriceD: boolean,
   }
 }>({
   asumsi: {
-    interestRate: false,
     umurTeknis: false,
+    interestRate: false,
+    loanPortion: false,
     loanTenor: false,
-    loanPortion: false
   },
   parameter: {
-    nphr: false,
     auxiliary: false,
-    susutTrafo: false,
+    nphr: false,
     pemakaianSendiri: false,
-    electricityPriceA: false,
+    susutTrafo: false,
     electricityPriceB: false,
-    electricityPriceC: false,
+    electricityPriceA: false,
     electricityPriceD: false,
-    bahanBakar: false
+    bahanBakar: false,
+    electricityPriceC: false,
   }
 });
 const comboBahanBakar = ref<any>([]);
@@ -191,6 +191,15 @@ const bahanBakars = ref<any[]>([
   }
 ]);
 
+const fetchCheckIntegrasi = async () => {
+  try {
+    const response: any = await perbaruiDataService.getCheckIntegrasi(tahunBerjalan - 1, idMesin);
+    isIntegrasi.value = response.data[0].status_data_integrasi === "0" ? false : true;
+    console.log(isIntegrasi.value, 'dds');
+  } catch (error) {
+    console.error('Fetch Check Integrasi Error : ' + error)
+  }
+}
 const fetchMesinById = async () => {
   try {
     const response: any = await inputAsumsiParameterService.getMesinById(
@@ -205,15 +214,6 @@ const fetchMesinById = async () => {
     console.error(error);
   }
 };
-const fetchCheckIntegrasi = async () => {
-  try {
-    const response: any = await perbaruiDataService.getCheckIntegrasi(tahunBerjalan - 1, idMesin);
-    isIntegrasi.value = response.data[0].status_data_integrasi === "0" ? false : true;
-    console.log(isIntegrasi.value, 'dds');
-  } catch (error) {
-    console.error('Fetch Check Integrasi Error : ' + error)
-  }
-}
 const fetchStatusRealisasiById = async () => {
   try {
     const response: any = await inputAsumsiParameterService.getStatusRealisasiById(idMesin);
@@ -238,28 +238,28 @@ const fetchAsumsiParameter = async (isCreate: boolean) => {
           newValue.sfc = globalFormat.formatCurrencyNotFixed(newValue.sfc.toString());
           return newValue;
         });
-        interestRate.value = globalFormat.formatCurrencyNotFixed(response.data.asumsi_makro.interest_rate.toString());
         umurTeknis.value = masaManfaat.value.toString();
-        loanTenor.value = response.data.asumsi_makro.loan_tenor.toString();
+        interestRate.value = globalFormat.formatCurrencyNotFixed(response.data.asumsi_makro.interest_rate.toString());
         loanPortion.value = globalFormat.formatCurrencyNotFixed(response.data.asumsi_makro.loan_portion.toString());
-        nphr.value = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.nphr.toString());
+        loanTenor.value = response.data.asumsi_makro.loan_tenor.toString();
         auxiliary.value = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.auxiliary.toString());
-        susutTrafo.value = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.susut_trafo.toString());
+        nphr.value = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.nphr.toString());
         pemakaianSendiri.value = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.ps.toString());
-        electricityPriceA.value = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_a_rp_per_kwbln.toString());
+        susutTrafo.value = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.susut_trafo.toString());
         electricityPriceB.value = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_b_rp_per_kwbln.toString());
-        electricityPriceC.value = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_c_rp_per_kwh.toString());
+        electricityPriceA.value = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_a_rp_per_kwbln.toString());
         electricityPriceD.value = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_d_rp_per_kwh.toString());
-        asumsiParameterInit.value.parameterTeknis.nphr = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.nphr.toString());
+        electricityPriceC.value = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_c_rp_per_kwh.toString());
         asumsiParameterInit.value.parameterTeknis.auxiliary = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.auxiliary.toString());
-        asumsiParameterInit.value.parameterTeknis.susutTrafo = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.susut_trafo.toString());
+        asumsiParameterInit.value.parameterTeknis.nphr = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.nphr.toString());
         asumsiParameterInit.value.parameterTeknis.pemakaianSendiri = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.ps.toString());
-        asumsiParameterInit.value.parameterTeknis.electricityPriceA = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_a_rp_per_kwbln.toString());
+        asumsiParameterInit.value.parameterTeknis.susutTrafo = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.susut_trafo.toString());
         asumsiParameterInit.value.parameterTeknis.electricityPriceB = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_b_rp_per_kwbln.toString());
-        asumsiParameterInit.value.parameterTeknis.electricityPriceC = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_c_rp_per_kwh.toString());
+        asumsiParameterInit.value.parameterTeknis.electricityPriceA = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_a_rp_per_kwbln.toString());
         asumsiParameterInit.value.parameterTeknis.electricityPriceD = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_d_rp_per_kwh.toString());
-        bahanBakars.value = tempBahanBakars;
+        asumsiParameterInit.value.parameterTeknis.electricityPriceC = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_c_rp_per_kwh.toString());
         pickedParameterValue.value = pemakaianSendiri.value === '0,00' ? 'auxiliarySusut' : 'pemakaianSendiri';
+        bahanBakars.value = tempBahanBakars;
       }
     }
     asumsiParameter.value = response.data;
@@ -272,14 +272,6 @@ const fetchAsumsiParameter = async (isCreate: boolean) => {
     console.error('Fetch Asumsi Parameter Error : ', error);
   }
 }
-const fetchComboBahanBakar = async () => {
-  try {
-    const response: any = await inputAsumsiParameterService.getComboBahanBakar(kodeJenisPembangkit.value);
-    comboBahanBakar.value = response.data;
-  } catch (error) {
-    console.error('Fetch Combo Bahan Bakar Error : ' + error);
-  }
-}
 const fetchListPembina = async () => {
   try {
     const response: any = await userService.getPembina('');
@@ -288,27 +280,14 @@ const fetchListPembina = async () => {
     console.error('Fetch Pembina Error : ' + error)
   }
 }
-const fetchUnitPengelola = async () => {
+const fetchComboBahanBakar = async () => {
   try {
-    if (mesin.value) {
-      const kodeSentral = mesin.value.kode_sentral;
-      const pembangkitResponse: any =
-        await inputAsumsiParameterService.getPembangkitByKode(kodeSentral);
-      const kodePengelola = pembangkitResponse.data.kode_pengelola;
-      const pengelolaResponse: any =
-        await inputAsumsiParameterService.getPengelolaData();
-      const pengelola = pengelolaResponse.data.filter(
-        (pengelola: any) => pengelola.kode_pengelola === kodePengelola
-      );
-      namaPengelola.value = pengelola[0].pengelola;
-      const idPembina = pembangkitResponse.data.id_pembina;
-      const pembinaList: any = await fetchListPembina();
-      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina;
-    }
+    const response: any = await inputAsumsiParameterService.getComboBahanBakar(kodeJenisPembangkit.value);
+    comboBahanBakar.value = response.data;
   } catch (error) {
-    console.error("Fetch Unit Pengelola Error : " + error);
+    console.error('Fetch Combo Bahan Bakar Error : ' + error);
   }
-};
+}
 function handleHapusBahanBakar() {
   if (checkedBahanBakar.value.length) {
     checkedBahanBakar.value.forEach((checkedItemId) => {
@@ -320,6 +299,27 @@ function handleHapusBahanBakar() {
     checkedBahanBakar.value = [];
   }
 }
+const fetchUnitPengelola = async () => {
+  try {
+    if (mesin.value) {
+      const kodeSentral = mesin.value.kode_sentral
+      const pembangkitResponse: any =
+        await inputAsumsiParameterService.getPembangkitByKode(kodeSentral)
+      const kodePengelola = pembangkitResponse.data.kode_pengelola
+      const pengelolaResponse: any =
+        await inputAsumsiParameterService.getPengelolaData()
+      const pengelola = pengelolaResponse.data.filter(
+        (pengelola: any) => pengelola.kode_pengelola === kodePengelola
+      )
+      namaPengelola.value = pengelola[0].pengelola
+      const idPembina = pembangkitResponse.data.id_pembina
+      const pembinaList: any = await fetchListPembina()
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina
+    }
+  } catch (error) {
+    console.error("Fetch Unit Pengelola Error : " + error)
+  }
+};
 function handleTambahBahanBakar() {
   bahanBakars.value.push({
     id: i.value++,
@@ -331,149 +331,148 @@ function handleTambahBahanBakar() {
     flag_bahan_bakar: 0,
   })
 }
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 function handleChecked() {
   console.log('Handle Checked ' + checkedBahanBakar.value);
 }
-const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const insertAsumsiParameter = async () => {
   try {
-    isShowModalConfirmation.value = false;
-    const errorAsumsiInput = error.value.asumsi;
-    const errorParameterTeknis = error.value.parameter;
+    isShowModalConfirmation.value = false
+    const errorAsumsiInput = error.value.asumsi
+    const errorParameterTeknis = error.value.parameter
     if (interestRate.value === '') {
-      errorAsumsiInput.interestRate = true;
+      errorAsumsiInput.interestRate = true
     } else {
-      errorAsumsiInput.interestRate = false;
+      errorAsumsiInput.interestRate = false
     }
     if (umurTeknis.value === '') {
-      errorAsumsiInput.umurTeknis = true;
+      errorAsumsiInput.umurTeknis = true
     } else {
-      errorAsumsiInput.umurTeknis = false;
+      errorAsumsiInput.umurTeknis = false
     }
     if (loanTenor.value === '') {
-      errorAsumsiInput.loanTenor = true;
+      errorAsumsiInput.loanTenor = true
     } else {
-      errorAsumsiInput.loanTenor = false;
+      errorAsumsiInput.loanTenor = false
     }
     if (loanPortion.value === '') {
-      errorAsumsiInput.loanPortion = true;
+      errorAsumsiInput.loanPortion = true
     } else {
-      errorAsumsiInput.loanPortion = false;
+      errorAsumsiInput.loanPortion = false
     }
     if (nphr.value === '') {
-      errorParameterTeknis.nphr = true;
+      errorParameterTeknis.nphr = true
     } else {
-      errorParameterTeknis.nphr = false;
+      errorParameterTeknis.nphr = false
     }
     // if (pickedParameterValue.value === 'auxiliarySusut') {
     if (auxiliary.value === '') {
-      errorParameterTeknis.auxiliary = true;
+      errorParameterTeknis.auxiliary = true
     } else {
-      errorParameterTeknis.auxiliary = false;
+      errorParameterTeknis.auxiliary = false
     }
     if (susutTrafo.value === '') {
-      errorParameterTeknis.susutTrafo = true;
+      errorParameterTeknis.susutTrafo = true
     } else {
-      errorParameterTeknis.susutTrafo = false;
+      errorParameterTeknis.susutTrafo = false
     } if (pemakaianSendiri.value === '') {
-      errorParameterTeknis.pemakaianSendiri = true;
+      errorParameterTeknis.pemakaianSendiri = true
     } else {
-      errorParameterTeknis.pemakaianSendiri = false;
+      errorParameterTeknis.pemakaianSendiri = false
     }
     // } else if (pickedParameterValue.value === 'pemakaianSendiri') {
     //   if (pemakaianSendiri.value === '') {
-    //     errorParameterTeknis.pemakaianSendiri = true;
-    //     errorParameterTeknis.auxiliary = false;
-    //     errorParameterTeknis.susutTrafo = false;
+    //     errorParameterTeknis.pemakaianSendiri = true
+    //     errorParameterTeknis.auxiliary = false
+    //     errorParameterTeknis.susutTrafo = false
     //   } else {
-    //     errorParameterTeknis.pemakaianSendiri = false;
-    //     errorParameterTeknis.auxiliary = false;
-    //     errorParameterTeknis.susutTrafo = false;
+    //     errorParameterTeknis.pemakaianSendiri = false
+    //     errorParameterTeknis.auxiliary = false
+    //     errorParameterTeknis.susutTrafo = false
     //   }
     // }
     if (electricityPriceA.value === '') {
-      errorParameterTeknis.electricityPriceA = true;
+      errorParameterTeknis.electricityPriceA = true
     } else {
-      errorParameterTeknis.electricityPriceA = false;
+      errorParameterTeknis.electricityPriceA = false
     }
     if (electricityPriceB.value === '') {
-      errorParameterTeknis.electricityPriceB = true;
+      errorParameterTeknis.electricityPriceB = true
     } else {
-      errorParameterTeknis.electricityPriceB = false;
+      errorParameterTeknis.electricityPriceB = false
     }
     if (electricityPriceC.value === '') {
-      errorParameterTeknis.electricityPriceC = true;
+      errorParameterTeknis.electricityPriceC = true
     } else {
-      errorParameterTeknis.electricityPriceC = false;
+      errorParameterTeknis.electricityPriceC = false
     }
     if (electricityPriceD.value === '') {
-      errorParameterTeknis.electricityPriceD = true;
+      errorParameterTeknis.electricityPriceD = true
     } else {
-      errorParameterTeknis.electricityPriceD = false;
+      errorParameterTeknis.electricityPriceD = false
     }
-    console.log(bahanBakars.value)
     if (bahanBakars.value.some(obj => Object.values(obj).some(value => value === ""))) {
-      errorParameterTeknis.bahanBakar = true;
+      errorParameterTeknis.bahanBakar = true
     } else {
-      errorParameterTeknis.bahanBakar = false;
+      errorParameterTeknis.bahanBakar = false
     }
     if (Object.values(errorAsumsiInput).some(value => value === true) || Object.values(errorParameterTeknis).some(value => value === true)) {
-      isShowModalNotification.value = true;
-      await wait(5000);
-      isShowModalNotification.value = false;
+      isShowModalNotification.value = true
+      await wait(5000)
+      isShowModalNotification.value = false
     } else {
-      isLoading.value = true;
+      isLoading.value = true
       for (let index = 0; index < bahanBakars.value.length; index++) {
-        delete bahanBakars.value[index].id;
+        delete bahanBakars.value[index].id
       }
-      const finalInterestRate = interestRate.value.includes('.') ? interestRate.value.replace(/[.]/g, '') : interestRate.value;
-      const finalLoanPortion = loanPortion.value.includes('.') ? loanPortion.value.replace(/[.]/g, '') : loanPortion.value;
+      const finalInterestRate = interestRate.value.includes('.') ? interestRate.value.replace(/[.]/g, '') : interestRate.value
+      const finalLoanPortion = loanPortion.value.includes('.') ? loanPortion.value.replace(/[.]/g, '') : loanPortion.value
       if (idAsumsi.value !== 0) {
         const formAsumsiUpdate = {
           id_asumsi: idAsumsi.value,
           tahun: tahunBerjalan,
           tahun_realisasi: tahunBerjalan - 1,
           id_mesin: parseInt(idMesin.toString()),
-          interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
           umur_teknis: parseInt(masaManfaat.value),
+          interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
+          loan_portion: parseFloat(finalLoanPortion.replace(/,/g, '.')),
           loan_tenor: parseInt(loanTenor.value),
-          loan_portion: parseFloat(finalLoanPortion.replace(/,/g, '.'))
         }
-        await inputAsumsiParameterService.updateAsumsi(formAsumsiUpdate);
+        await inputAsumsiParameterService.updateAsumsi(formAsumsiUpdate)
         const finalBahanBakars = bahanBakars.value.map(value => {
-          let newValue = { ...value };
-          let finalHargaBahanBakar = newValue.harga_bahan_bakar.includes('.') ? newValue.harga_bahan_bakar.replace(/[.]/g, '') : newValue.harga_bahan_bakar;
-          newValue.harga_bahan_bakar = parseFloat(finalHargaBahanBakar.replace(/,/g, '.'));
-          let finalSFC = newValue.sfc.includes('.') ? newValue.sfc.replace(/[.]/g, '') : newValue.sfc;
-          newValue.sfc = parseFloat(finalSFC.replace(/,/g, '.'));
-          newValue.tahun = (tahunBerjalan - 1).toString();
-          return newValue;
+          let newValue = { ...value }
+          let finalHargaBahanBakar = newValue.harga_bahan_bakar.includes('.') ? newValue.harga_bahan_bakar.replace(/[.]/g, '') : newValue.harga_bahan_bakar
+          newValue.harga_bahan_bakar = parseFloat(finalHargaBahanBakar.replace(/,/g, '.'))
+          let finalSFC = newValue.sfc.includes('.') ? newValue.sfc.replace(/[.]/g, '') : newValue.sfc
+          newValue.sfc = parseFloat(finalSFC.replace(/,/g, '.'))
+          newValue.tahun = (tahunBerjalan - 1).toString()
+          return newValue
         });
-        const finalNPHR = nphr.value.includes('.') ? nphr.value.replace(/[.]/g, '') : nphr.value;
         const finalAuxiliary = auxiliary.value.includes('.') ? auxiliary.value.replace(/[.]/g, '') : auxiliary.value;
-        const finalSusutTrafo = susutTrafo.value.includes('.') ? susutTrafo.value.replace(/[.]/g, '') : susutTrafo.value;
+        const finalNPHR = nphr.value.includes('.') ? nphr.value.replace(/[.]/g, '') : nphr.value;
         const finalPemakaianSendiri = pemakaianSendiri.value.includes('.') ? pemakaianSendiri.value.replace(/[.]/g, '') : pemakaianSendiri.value;
-        const finalElecA = electricityPriceA.value.includes('.') ? electricityPriceA.value.replace(/[.]/g, '') : electricityPriceA.value;
+        const finalSusutTrafo = susutTrafo.value.includes('.') ? susutTrafo.value.replace(/[.]/g, '') : susutTrafo.value;
         const finalElecB = electricityPriceB.value.includes('.') ? electricityPriceB.value.replace(/[.]/g, '') : electricityPriceB.value;
-        const finalElecC = electricityPriceC.value.includes('.') ? electricityPriceC.value.replace(/[.]/g, '') : electricityPriceC.value;
+        const finalElecA = electricityPriceA.value.includes('.') ? electricityPriceA.value.replace(/[.]/g, '') : electricityPriceA.value;
         const finalElecD = electricityPriceD.value.includes('.') ? electricityPriceD.value.replace(/[.]/g, '') : electricityPriceD.value;
-        const formParameterUpdate = {
-          id_asumsi: idAsumsi.value,
-          id_mesin: parseInt(idMesin.toString()),
-          tahun: tahunBerjalan,
-          tahun_realisasi: tahunBerjalan - 1,
-          nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
-          auxiliary: parseFloat(finalAuxiliary.replace(/,/g, '.')),
-          susut_trafo: parseFloat(finalSusutTrafo.replace(/,/g, '.')),
-          ps: parseFloat(finalPemakaianSendiri.replace(/,/g, '.')),
-          electricity_price_a_rp_per_kwbln: parseFloat(finalElecA.replace(/,/g, '.')),
-          electricity_price_b_rp_per_kwbln: parseFloat(finalElecB.replace(/,/g, '.')),
-          electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),
-          electricity_price_d_rp_per_kwh: parseFloat(finalElecD.replace(/,/g, '.')),
-          harga_bahan_bakars: finalBahanBakars
-        }
+        const finalElecC = electricityPriceC.value.includes('.') ? electricityPriceC.value.replace(/[.]/g, '') : electricityPriceC.value;
         console.log(bahanBakars.value, 'BahanBakars');
         console.log(finalBahanBakars, 'Final')
+        const formParameterUpdate = {
+          id_mesin: parseInt(idMesin.toString()),
+          tahun_realisasi: tahunBerjalan - 1,
+          id_asumsi: idAsumsi.value,
+          auxiliary: parseFloat(finalAuxiliary.replace(/,/g, '.')),
+          nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
+          tahun: tahunBerjalan,
+          susut_trafo: parseFloat(finalSusutTrafo.replace(/,/g, '.')),
+          electricity_price_b_rp_per_kwbln: parseFloat(finalElecB.replace(/,/g, '.')),
+          ps: parseFloat(finalPemakaianSendiri.replace(/,/g, '.')),
+          electricity_price_d_rp_per_kwh: parseFloat(finalElecD.replace(/,/g, '.')),
+          harga_bahan_bakars: finalBahanBakars,
+          electricity_price_a_rp_per_kwbln: parseFloat(finalElecA.replace(/,/g, '.')),
+          electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),
+        }
         await inputAsumsiParameterService.createParameter(formParameterUpdate);
         isLoading.value = false;
         isInsertSuccess.value = true;
@@ -492,6 +491,14 @@ const insertAsumsiParameter = async () => {
         }
         await inputAsumsiParameterService.createAsumsi(formAsumsiCreate);
         await fetchAsumsiParameter(true);
+        const finalAuxiliary = auxiliary.value.includes('.') ? auxiliary.value.replace(/[.]/g, '') : auxiliary.value;
+        const finalNPHR = nphr.value.includes('.') ? nphr.value.replace(/[.]/g, '') : nphr.value;
+        const finalPemakaianSendiri = pemakaianSendiri.value.includes('.') ? pemakaianSendiri.value.replace(/[.]/g, '') : pemakaianSendiri.value;
+        const finalSusutTrafo = susutTrafo.value.includes('.') ? susutTrafo.value.replace(/[.]/g, '') : susutTrafo.value;
+        const finalElecB = electricityPriceB.value.includes('.') ? electricityPriceB.value.replace(/[.]/g, '') : electricityPriceB.value;
+        const finalElecA = electricityPriceA.value.includes('.') ? electricityPriceA.value.replace(/[.]/g, '') : electricityPriceA.value;
+        const finalElecD = electricityPriceD.value.includes('.') ? electricityPriceD.value.replace(/[.]/g, '') : electricityPriceD.value;
+        const finalElecC = electricityPriceC.value.includes('.') ? electricityPriceC.value.replace(/[.]/g, '') : electricityPriceC.value;
         const finalBahanBakars = bahanBakars.value.map(value => {
           let newValue = { ...value };
           let finalHargaBahanBakar = newValue.harga_bahan_bakar.includes('.') ? newValue.harga_bahan_bakar.replace(/[.]/g, '') : newValue.harga_bahan_bakar;
@@ -501,28 +508,20 @@ const insertAsumsiParameter = async () => {
           newValue.tahun = (tahunBerjalan - 1).toString();
           return newValue;
         });
-        const finalNPHR = nphr.value.includes('.') ? nphr.value.replace(/[.]/g, '') : nphr.value;
-        const finalAuxiliary = auxiliary.value.includes('.') ? auxiliary.value.replace(/[.]/g, '') : auxiliary.value;
-        const finalSusutTrafo = susutTrafo.value.includes('.') ? susutTrafo.value.replace(/[.]/g, '') : susutTrafo.value;
-        const finalPemakaianSendiri = pemakaianSendiri.value.includes('.') ? pemakaianSendiri.value.replace(/[.]/g, '') : pemakaianSendiri.value;
-        const finalElecA = electricityPriceA.value.includes('.') ? electricityPriceA.value.replace(/[.]/g, '') : electricityPriceA.value;
-        const finalElecB = electricityPriceB.value.includes('.') ? electricityPriceB.value.replace(/[.]/g, '') : electricityPriceB.value;
-        const finalElecC = electricityPriceC.value.includes('.') ? electricityPriceC.value.replace(/[.]/g, '') : electricityPriceC.value;
-        const finalElecD = electricityPriceD.value.includes('.') ? electricityPriceD.value.replace(/[.]/g, '') : electricityPriceD.value;
         const formParameterCreate = {
-          id_asumsi: idAsumsi.value,
           id_mesin: parseInt(idMesin.toString()),
-          tahun: tahunBerjalan,
+          id_asumsi: idAsumsi.value,
           tahun_realisasi: tahunBerjalan - 1,
-          nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
+          tahun: tahunBerjalan,
           auxiliary: parseFloat(finalAuxiliary.replace(/,/g, '.')),
-          susut_trafo: parseFloat(finalSusutTrafo.replace(/,/g, '.')),
+          nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
           ps: parseFloat(finalPemakaianSendiri.replace(/,/g, '.')),
-          electricity_price_a_rp_per_kwbln: parseFloat(finalElecA.replace(/,/g, '.')),
+          susut_trafo: parseFloat(finalSusutTrafo.replace(/,/g, '.')),
           electricity_price_b_rp_per_kwbln: parseFloat(finalElecB.replace(/,/g, '.')),
-          electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),
+          electricity_price_a_rp_per_kwbln: parseFloat(finalElecA.replace(/,/g, '.')),
           electricity_price_d_rp_per_kwh: parseFloat(finalElecD.replace(/,/g, '.')),
-          harga_bahan_bakars: finalBahanBakars
+          harga_bahan_bakars: finalBahanBakars,
+          electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),
         }
         await inputAsumsiParameterService.createParameter(formParameterCreate);
         isLoading.value = false;

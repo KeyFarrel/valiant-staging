@@ -12,6 +12,7 @@ jest.mock('@/services/laman-service', () => {
   }));
 });
 
+
 jest.mock('aos', () => ({ init: jest.fn() }));
 
 describe('PageTeknis.vue', () => {
@@ -82,5 +83,23 @@ describe('PageTeknis.vue', () => {
 
     await wrapper.vm.fetchPeriodeTahun();
     expect(wrapper.vm.periodeTahun).toEqual([]); // Tetap kosong jika error
+  });
+
+  it("is fetching fetchPeriodeTahun", async () => {
+    const fetchPeriodeTahunSpy = jest.spyOn(wrapper.vm, "fetchPeriodeTahun");
+    await wrapper.vm.fetchPeriodeTahun();
+    expect(fetchPeriodeTahunSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching fetchDataTeknis", async () => {
+    const fetchDataTeknisSpy = jest.spyOn(wrapper.vm, "fetchDataTeknis");
+    await wrapper.vm.fetchDataTeknis();
+    expect(fetchDataTeknisSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching fetchListTahun", async () => {
+    const fetchListTahunSpy = jest.spyOn(wrapper.vm, "fetchListTahun");
+    await wrapper.vm.fetchListTahun();
+    expect(fetchListTahunSpy).toHaveBeenCalled();
   });
 });

@@ -26,13 +26,7 @@ jest.mock("vue-router", () => ({
 }));
 
 // Mock services
-jest.mock("@/services/sentral-service.ts", () => {
-  return jest.fn().mockImplementation(() => ({
-    getSuggestionSentral: jest.fn(),
-    getSentralData: jest.fn(),
-    getPhoto: jest.fn(),
-  }));
-});
+jest.mock("@/services/sentral-service.ts");
 
 describe("SentralAdmin.vue", () => {
   let wrapper: any;
@@ -134,5 +128,30 @@ describe("SentralAdmin.vue", () => {
     await nextTick();
     const totalRecordsText = wrapper.find(".font-bold").text();
     expect(totalRecordsText).toBe("");
+  });
+  it("is fetching fetchSuggestionSentral", async () => {
+    const fetchSuggestionSentralSpy = jest.spyOn(wrapper.vm, "fetchSuggestionSentral");
+    await wrapper.vm.fetchSuggestionSentral();
+    expect(fetchSuggestionSentralSpy).toHaveBeenCalled();
+  });
+  it("is fetching downloadExcelFS", async () => {
+    const fetchSentralDataSpy = jest.spyOn(wrapper.vm, "fetchSentralData");
+    await wrapper.vm.fetchSentralData();
+    expect(fetchSentralDataSpy).toHaveBeenCalled();
+  });
+  it("is fetching fetchPengelolaData", async () => {
+    const fetchPengelolaDataSpy = jest.spyOn(wrapper.vm, "fetchPengelolaData");
+    await wrapper.vm.fetchPengelolaData();
+    expect(fetchPengelolaDataSpy).toHaveBeenCalled();
+  });
+  it("is fetching fetchComboJenisKit", async () => {
+    const fetchComboJenisKitSpy = jest.spyOn(wrapper.vm, "fetchComboJenisKit");
+    await wrapper.vm.fetchComboJenisKit();
+    expect(fetchComboJenisKitSpy).toHaveBeenCalled();
+  });
+  it("is fetching fetchNilaiMesin", async () => {
+    const fetchNilaiMesinSpy = jest.spyOn(wrapper.vm, "fetchNilaiMesin");
+    await wrapper.vm.fetchNilaiMesin();
+    expect(fetchNilaiMesinSpy).toHaveBeenCalled();
   });
 });

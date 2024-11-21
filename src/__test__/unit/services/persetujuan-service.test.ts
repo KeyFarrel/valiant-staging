@@ -4,7 +4,7 @@ import axios from "axios";
 jest.mock("axios");
 const mockedAxios = axios as jest.MockedFunction<typeof axios>;
 
-const mockUrl = "https://portalapp.iconpln.co.id:5080/valiant-be/v1/";
+const mockUrl = import.meta.env.VITE_API_URL;
 
 describe("PersetujuanService", () => {
   let service: PersetujuanService;

@@ -635,17 +635,17 @@ const fetchAsumsiFeasibility = async () => {
       daya_terpasang: response.data.parameter_teknis_financial
         .daya_terpasang,
       daya_mampu_netto_mw: response.data.parameter_teknis_financial.daya_mampu_netto_mw,
-      auxiliary: response.data.parameter_teknis_financial.auxiliary,
       susut_trafo: response.data.parameter_teknis_financial.susut_trafo,
-      ps: response.data.parameter_teknis_financial.ps,
+      auxiliary: response.data.parameter_teknis_financial.auxiliary,
       nphr: response.data.parameter_teknis_financial.nphr,
-      total_project_cost: response.data.parameter_teknis_financial.total_project_cost,
+      ps: response.data.parameter_teknis_financial.ps,
       loan: response.data.parameter_teknis_financial.loan,
-      equity: response.data.parameter_teknis_financial.equity,
+      total_project_cost: response.data.parameter_teknis_financial.total_project_cost,
       electricity_price_a_rp_per_kwbln: response.data.parameter_teknis_financial.electricity_price_a_rp_per_kwbln,
-      electricity_price_b_rp_per_kwbln: response.data.parameter_teknis_financial.electricity_price_b_rp_per_kwbln,
+      equity: response.data.parameter_teknis_financial.equity,
       electricity_price_c_rp_per_kwh: response.data.parameter_teknis_financial.electricity_price_c_rp_per_kwh,
       electricity_price_d_rp_per_kwh: response.data.parameter_teknis_financial.electricity_price_d_rp_per_kwh,
+      electricity_price_b_rp_per_kwbln: response.data.parameter_teknis_financial.electricity_price_b_rp_per_kwbln,
     };
     bahanBakars.value = response.data.harga_bahan_bakars;
     umurTeknis.value = response.data.umur_teknis;
@@ -697,37 +697,37 @@ const downloadEvidence = async () => {
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `${finalFileName}`;
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = window.URL.createObjectURL(blob);
+    const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a');
-    link.href = url;
+    link.href = url
     link.setAttribute('download', fileName);
-    document.body.appendChild(link);
+    document.body.appendChild(link)
     link.click();
-    document.body.removeChild(link);
+    document.body.removeChild(link)
     isLoading.value = false;
   } catch (error) {
     console.error('Evidence Error : ' + error)
     isLoading.value = false;
     notifyError('Evidence Tidak Ada', 5000)
-  }
+  };
 }
 
 const fetchDataFinansial = async () => {
   try {
-    dataFinansial.value = undefined;
+    dataFinansial.value = undefined
     finansialMappingResult.value = [];
     const response: any = await feasibilityStudyService.getDataFinansial(
       parseInt(idGrafik)
-    );
+    )
     let currentLevel1: any | null = null;
-    let currentLevel2: any | null = null;
+    let currentLevel2: any | null = null
     let currentLevel3: any | null = null;
     for (const item of response.data.detail) {
       if (item.level === 1) {
         currentLevel1 = {
           ...item,
           level2: [],
-        };
+        }
         finansialMappingResult.value.push(currentLevel1);
       } else if (item.level === 2 && currentLevel1 !== null) {
         currentLevel2 = {
@@ -742,14 +742,14 @@ const fetchDataFinansial = async () => {
         }
         currentLevel2.level3.push(currentLevel3);
       } else if (item.level === 4 && currentLevel1 !== null) {
-        currentLevel3.level4.push({ ...item });
-      }
+        currentLevel3.level4.push({ ...item })
+      };
     }
     dataFinansial.value = response.data;
   } catch (error) {
-    console.error("Fetch Data Finansial Error : " + error);
-  }
-};
+    console.error("Fetch Data Finansial Error : " + error)
+  };
+}
 
 const fetchHasilSimulasi = async () => {
   try {
@@ -778,19 +778,18 @@ const fetchUnitPengelola = async () => {
         await detailRekapService.getPembangkitByKode(kodeSentral);
       const kodePengelola = pembangkitResponse.data.kode_pengelola;
       jumlahMesin.value = pembangkitResponse.data.mesins.length;
-      const pengelolaResponse: any =
-        await detailRekapService.getPengelolaData();
+      const pengelolaResponse: any = await detailRekapService.getPengelolaData()
       const pengelola = pengelolaResponse.data.filter(
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola
       );
-      namaPengelola.value = pengelola[0].pengelola;
+      namaPengelola.value = pengelola[0].pengelola
       const idPembina = pembangkitResponse.data.id_pembina;
-      const pembinaList: any = await fetchListPembina();
+      const pembinaList: any = await fetchListPembina()
       namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina;
     }
   } catch (error) {
     console.error("Fetch Unit Pengelola Error : " + error);
-  }
+  };
 };
 const handleFileChangeEvidence = (event: any) => {
   if (event.target.files.length === 1) {
@@ -854,19 +853,19 @@ const handleDownloadTemplateFS = async () => {
     const fileName = fileNameMatch ? fileNameMatch[1] : `Kertas Kerja FS - ${mesinDataById.value?.mesin}_${globalFormat.formatNumberFiveDigits(parseInt(idGrafik))}.xlsx`;
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
+    const link = document.createElement('a')
+    link.href = url
     link.setAttribute('download', fileName);
     document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    link.click()
+    document.body.removeChild(link)
   } catch (error) {
     notifyError('Download Template FS Gagal', 3000);
     console.error('Handle Download Template Rekap Error : ' + error);
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-}
+};
 
 const fetchTypePeriodic = async () => {
   try {

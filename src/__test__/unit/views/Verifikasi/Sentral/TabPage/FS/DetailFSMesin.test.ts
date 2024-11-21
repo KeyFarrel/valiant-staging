@@ -22,36 +22,15 @@ jest.mock("vue-router", () => ({
   })),
 }));
 
-jest.mock("@/services/rekap-service", () => {
-  return jest.fn().mockImplementation(() => ({
-    uploadEvidence: jest.fn(),
-    getEvidencePath: jest.fn(),
-    downloadEvidence: jest.fn(),
-  }));
-});
+jest.mock("@/services/rekap-service");
 
-jest.mock("@/services/detail-sentral-service", () => {
-  return jest.fn().mockImplementation(() => ({
-    getMesinById: jest.fn(),
-    getPhoto: jest.fn(),
-  }));
-});
+jest.mock("@/services/detail-sentral-service");
 
-jest.mock("@/services/feasibility-study", () => {
-  return jest.fn().mockImplementation(() => ({
-    getAsumsiFeasibility: jest.fn(),
-    getDataTeknis: jest.fn(),
-    getDataFinansial: jest.fn(),
-    getHasilSimulasi: jest.fn(),
-  }));
-});
+jest.mock("@/services/feasibility-study");
 
-jest.mock("@/services/persetujuan-service", () => {
-  return jest.fn().mockImplementation(() => ({
-    getPersetujuanFSSentral: jest.fn(),
-    updateStatusFS: jest.fn(),
-  }));
-});
+jest.mock("@/services/persetujuan-service");
+
+jest.mock("@/services/user-service");
 
 describe("DetailFSMesin.vue Unit Tests", () => {
   let wrapper: any;
@@ -108,5 +87,35 @@ describe("DetailFSMesin.vue Unit Tests", () => {
 
     expect(persetujuanService.updateStatusFS).toHaveBeenCalledTimes(0);
     expect(wrapper.vm.updateMesin).toBeUndefined();
+  });
+
+  it("is fetching fetchMesinById", async () => {
+    const fetchMesinByIdSpy = jest.spyOn(wrapper.vm, "fetchMesinById");
+    await wrapper.vm.fetchMesinById();
+    expect(fetchMesinByIdSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching fetchListPembina", async () => {
+    const fetchListPembinaSpy = jest.spyOn(wrapper.vm, "fetchListPembina");
+    await wrapper.vm.fetchListPembina();
+    expect(fetchListPembinaSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching fetchUnitPengelola", async () => {
+    const fetchUnitPengelolaSpy = jest.spyOn(wrapper.vm, "fetchUnitPengelola");
+    await wrapper.vm.fetchUnitPengelola();
+    expect(fetchUnitPengelolaSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching fetchHasilSimulasi", async () => {
+    const fetchHasilSimulasiSpy = jest.spyOn(wrapper.vm, "fetchHasilSimulasi");
+    await wrapper.vm.fetchHasilSimulasi();
+    expect(fetchHasilSimulasiSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching fetchComboBahanBakar", async () => {
+    const fetchComboBahanBakarSpy = jest.spyOn(wrapper.vm, "fetchComboBahanBakar");
+    await wrapper.vm.fetchComboBahanBakar();
+    expect(fetchComboBahanBakarSpy).toHaveBeenCalled();
   });
 });

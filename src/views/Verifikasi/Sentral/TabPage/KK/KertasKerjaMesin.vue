@@ -174,8 +174,8 @@ const navigation = ref<{
 });
 
 const generatePageList = computed(() => {
-  const pageList = [];
-  const maxPages = 5;
+  const pageList = []
+  const maxPages = 5
   if (navigation.value.totalPages <= maxPages) {
     for (let i = 1; i <= navigation.value.totalPages; i++) {
       pageList.push(i);
@@ -183,30 +183,30 @@ const generatePageList = computed(() => {
   } else {
     if (navigation.value.currentPage <= 3) {
       for (let i = 1; i <= Math.min(navigation.value.totalPages, maxPages - 1); i++) {
-        pageList.push(i);
-      }
+        pageList.push(i)
+      };
       if (navigation.value.totalPages > maxPages) {
-        pageList.push('...');
-        pageList.push(navigation.value.totalPages);
-      }
+        pageList.push('...')
+        pageList.push(navigation.value.totalPages)
+      };
     } else if (navigation.value.currentPage >= navigation.value.totalPages - 2) {
-      pageList.push(1);
-      pageList.push('...');
+      pageList.push(1)
+      pageList.push('...')
       for (let i = navigation.value.totalPages - (maxPages - 2); i <= navigation.value.totalPages; i++) {
         pageList.push(i);
       }
     } else {
-      pageList.push(1);
+      pageList.push(1)
       pageList.push('...');
       for (let i = navigation.value.currentPage - 1; i <= navigation.value.currentPage + 1; i++) {
-        pageList.push(i);
+        pageList.push(i)
       }
       pageList.push('...');
-      pageList.push(navigation.value.totalPages);
+      pageList.push(navigation.value.totalPages)
     }
-  }
-  return pageList;
-});
+  };
+  return pageList
+})
 
 const goToPage = async (page: any) => {
   try {

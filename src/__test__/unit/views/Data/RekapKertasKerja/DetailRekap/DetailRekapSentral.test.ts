@@ -79,6 +79,24 @@ describe("DetailRekapSentral.vue", () => {
     expect(wrapper.vm.sentral.daya_terpasang).toBe(1000);
   });
 
+  it("is fetching fetchSentralById", async () => {
+    const fetchSentralByIdSpy = jest.spyOn(wrapper.vm, "fetchSentralById");
+    await wrapper.vm.fetchSentralById();
+    expect(fetchSentralByIdSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching fetchAsumsiParameter", async () => {
+    const fetchAsumsiParameterSpy = jest.spyOn(wrapper.vm, "fetchAsumsiParameter");
+    await wrapper.vm.fetchAsumsiParameter();
+    expect(fetchAsumsiParameterSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching fetchDataTeknis", async () => {
+    const fetchDataTeknisSpy = jest.spyOn(wrapper.vm, "fetchDataTeknis");
+    await wrapper.vm.fetchDataTeknis();
+    expect(fetchDataTeknisSpy).toHaveBeenCalled();
+  });
+
   // it('should display AsumsiMakro component with correct props', async () => {
   //   wrapper.vm.asumsiParameter = {
   //     asumsi_makro: {

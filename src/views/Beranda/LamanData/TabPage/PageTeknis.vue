@@ -357,17 +357,17 @@ const handleExport = async () => {
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `Laman Data - Teknis - ${yearRangePicked.value[0]}_${yearRangePicked.value[1]}.xlsx`;
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement("a");
+    link.href = url
     link.setAttribute('download', fileName);
-    document.body.appendChild(link);
+    document.body.appendChild(link)
     link.click();
-    document.body.removeChild(link);
+    document.body.removeChild(link)
     isLoading.value = false;
   } catch (error) {
-    console.error('Handle Download Template Rekap Error : ' + error);
-  }
+    console.error('Handle Download Template Rekap Error : ' + error)
+  };
 }
 
 watch(store, async (store) => {

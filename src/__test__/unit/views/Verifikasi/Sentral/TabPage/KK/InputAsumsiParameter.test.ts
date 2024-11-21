@@ -107,4 +107,19 @@ describe("InputAsumsiParameter.vue", () => {
     wrapper.vm.handleTambahBahanBakar();
     expect(wrapper.vm.bahanBakars).toHaveLength(1);
   });
+  it("is fetching fetchPersetujuanKK", async () => {
+    const fetchPersetujuanKKSpy = jest.spyOn(wrapper.vm, "fetchPersetujuanKK");
+    await wrapper.vm.fetchPersetujuanKK();
+    expect(fetchPersetujuanKKSpy).toHaveBeenCalled();
+  });
+  it("is fetching fetchMesinById", async () => {
+    const fetchMesinByIdSpy = jest.spyOn(wrapper.vm, "fetchMesinById");
+    await wrapper.vm.fetchMesinById();
+    expect(fetchMesinByIdSpy).toHaveBeenCalled();
+  });
+  it("is fetching handleDownloadTemplateRekap", async () => {
+    const handleDownloadTemplateRekapSpy = jest.spyOn(wrapper.vm, "handleDownloadTemplateRekap");
+    await wrapper.vm.handleDownloadTemplateRekap();
+    expect(handleDownloadTemplateRekapSpy).toHaveBeenCalled();
+  });
 });

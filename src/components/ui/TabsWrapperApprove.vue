@@ -381,38 +381,38 @@ const showModalWlcAll = ref(false);
 const showModalWlcKom = ref(false);
 // chart WlC All Mesin
 const profitLoss = ref<any[]>([]);
-const chartWLCAllMesin = ref();
-const updateWLCAllMesin = ref(true);
-const tahunWLCAllMesin = ref<any>([]);
-const revWLCMesin = ref<any>([]);
-const sumLccWLCMesin = ref<any>([]);
-const capexWLCMesin = ref<any>([]);
-const comBDWLCMesin = ref<any>([]);
-const fuelComWLCMesin = ref<any>([]);
-const yAxisWlc = ref<any>([]);
-const maxWlcBep = ref<any>([]);
-const maxWlcOpt = ref<any>([]);
+const chartWLCAllMesin = ref()
+const updateWLCAllMesin = ref(true)
+const tahunWLCAllMesin = ref<any>([])
+const revWLCMesin = ref<any>([])
+const sumLccWLCMesin = ref<any>([])
+const capexWLCMesin = ref<any>([])
+const comBDWLCMesin = ref<any>([])
+const fuelComWLCMesin = ref<any>([])
+const yAxisWlc = ref<any>([])
+const maxWlcBep = ref<any>([])
+const maxWlcOpt = ref<any>([])
 
-const chartDetailWLCAllMesin = ref();
-const updateDetailWLCAllMesin = ref(true);
-const judulDetWlcAll = ref<any>([]);
-const realDetWlcAll = ref<any>([]);
-const planDetWlcAll = ref<any>([]);
+const chartDetailWLCAllMesin = ref()
+const updateDetailWLCAllMesin = ref(true)
+const judulDetWlcAll = ref<any>([])
+const realDetWlcAll = ref<any>([])
+const planDetWlcAll = ref<any>([])
 
 // chart WLC Komponen Mesin
-const chartWLCKomMesin = ref();
-const updateWLCKomMesin = ref(true);
-const tahunWLCKomMesin = ref<any>([]);
-const costCompAMesin = ref<any>([]);
-const costCompCMesin = ref<any>([]);
-const costCompBDMesin = ref<any>([]);
-const sumCostCompMesin = ref<any>([]);
+const chartWLCKomMesin = ref()
+const updateWLCKomMesin = ref(true)
+const tahunWLCKomMesin = ref<any>([])
+const costCompAMesin = ref<any>([])
+const costCompCMesin = ref<any>([])
+const costCompBDMesin = ref<any>([])
+const sumCostCompMesin = ref<any>([])
 
-const chartDetailWLCKomMesin = ref();
-const updateDetailWLCKomMesin = ref(true);
-const judulDetWlcKom = ref<any>([]);
-const realDetWlcKom = ref<any>([]);
-const planDetWlcKom = ref<any>([]);
+const chartDetailWLCKomMesin = ref()
+const updateDetailWLCKomMesin = ref(true)
+const judulDetWlcKom = ref<any>([])
+const realDetWlcKom = ref<any>([])
+const planDetWlcKom = ref<any>([])
 
 
 let forceRender = async () => {
@@ -436,53 +436,52 @@ let forceRender3 = async () => {
   updateDetailWLCKomMesin.value = false;
   await nextTick();
   updateDetailWLCKomMesin.value = true;
-};
-
+}
 
 interface Props {
   // kodeSentral?: string
-  idMesin: number | string
   tahunGrafik: number
-  irrOnProject: number | string
+  idMesin: number | string
   irrOnEquity: number | string
-  waccOnProject: number
+  irrOnProject: number | string
   waccOnEquity: number
-  npvOnEquity: number
+  waccOnProject: number
   npvOnProject: number
-  averageNcf: number
+  npvOnEquity: number
   averageEaf: number
-  namaMesin: string
+  averageNcf: number
   namaPengelola: string
-  namaPembina: string
+  namaMesin: string
   tahunOperasi: string
-  dayaTerpasang: number
+  namaPembina: string
   dayaMampu: number
-  tahun: number | string
+  dayaTerpasang: number
   isLihatGrafik?: boolean
-  lamanData: boolean
+  tahun: number | string
   nilaiAssetAwal: number
-  tahunPerolehanData: string
+  lamanData: boolean
   jumlahMesin: number
-  statusGrafik: string
+  tahunPerolehanData: string
   photo: any
+  statusGrafik: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  isLihatGrafik: false,
   lamanData: false,
+  isLihatGrafik: false,
 })
 
 interface Grafik1 {
-  tahun: number;
-  revenue_annualized: number;
-  total_wlcc_annualized: number;
-  capex_annualized: number;
-  cost_component_bd: number;
-  cost_component_c_annualized: number;
-  optimum_life_fs: number;
-  bep_fs: number;
-  total_revenue: number;
-  revenue_komp_bd: number;
+  tahun: number
+  revenue_annualized: number
+  total_wlcc_annualized: number
+  capex_annualized: number
+  cost_component_bd: number
+  cost_component_c_annualized: number
+  optimum_life_fs: number
+  bep_fs: number
+  total_revenue: number
+  revenue_komp_bd: number
 }
 
 interface table {
@@ -539,65 +538,65 @@ onMounted(async () => {
           maxWlcBep.value = Math.max.apply(Math, yAxisWlc.value) * 1.1;
           maxWlcOpt.value = Math.max.apply(Math, yAxisWlc.value);
 
-          wlcAnnu.push(res.data[i].total_wlcc_annualized);
-          revenAnnu.push(res.data[i].revenue_annualized);
-          capexAnnu.push(res.data[i].capex_annualized);
-          comBDAnnu.push(res.data[i].cost_component_bd);
-          fuelComAnnu.push(res.data[i].cost_component_c_annualized);
+          wlcAnnu.push(res.data[i].total_wlcc_annualized)
+          revenAnnu.push(res.data[i].revenue_annualized)
+          capexAnnu.push(res.data[i].capex_annualized)
+          comBDAnnu.push(res.data[i].cost_component_bd)
+          fuelComAnnu.push(res.data[i].cost_component_c_annualized)
 
           if (i > 0 && !isBepFounded && res.data[i].revenue_annualized >= res.data[i].total_wlcc_annualized) {
-            const selisihNow = res.data[i].revenue_annualized - res.data[i].total_wlcc_annualized
-            const selisihMinus1 = res.data[i - 1].revenue_annualized - res.data[i - 1].total_wlcc_annualized
+            const selisihNow = res.data[i].revenue_annualized - res.data[i].total_wlcc_annualized;
+            const selisihMinus1 = res.data[i - 1].revenue_annualized - res.data[i - 1].total_wlcc_annualized;
             if (Math.abs(selisihNow) > Math.abs(selisihMinus1)) {
-              indexTerdekat = i - 1;
-              indexBEP = i;
-              tahunBEP = res.data[i - 1].tahun;
+              indexTerdekat = i - 1
+              indexBEP = i
+              tahunBEP = res.data[i - 1].tahun
             } else {
-              indexTerdekat = i;
-              indexBEP = i + 1;
-              tahunBEP = res.data[i].tahun;
+              indexTerdekat = i
+              indexBEP = i + 1
+              tahunBEP = res.data[i].tahun
             }
-            isBepFounded = true;
+            isBepFounded = true
           }
 
-          const finalOptimum = Math.max.apply(Math, profitLoss.value)
+          const finalOptimum = Math.max.apply(Math, profitLoss.value);
           if (finalOptimum == res.data[i].profit_loss) {
-            indexOptimum = i
-            indexOpt = i + 1
-            tahunOptimum = res.data[i].tahun
+            indexOptimum = i;
+            indexOpt = i + 1;
+            tahunOptimum = res.data[i].tahun;
           }
         }
-        var maxWlc = Math.max.apply(Math, wlcAnnu);
-        var maxRev = Math.max.apply(Math, revenAnnu);
-        var maxCapex = Math.max.apply(Math, capexAnnu);
-        var maxComBD = Math.max.apply(Math, comBDAnnu);
-        var maxFuelCom = Math.max.apply(Math, fuelComAnnu);
+        var maxWlc = Math.max.apply(Math, wlcAnnu)
+        var maxRev = Math.max.apply(Math, revenAnnu)
+        var maxCapex = Math.max.apply(Math, capexAnnu)
+        var maxComBD = Math.max.apply(Math, comBDAnnu)
+        var maxFuelCom = Math.max.apply(Math, fuelComAnnu)
 
-        var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxWlc, maxRev];
-        finalMax = Math.max.apply(Math, listOfMax);
+        var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxWlc, maxRev]
+        finalMax = Math.max.apply(Math, listOfMax)
       } else {
-        dataWLCAllMesin == null;
+        dataWLCAllMesin == null
       }
 
       chartWLCAllMesin.value = isBepFounded ? {
         title: {
-          show: false,
+          show: false
         },
         tooltip: {
-          trigger: "axis",
           axisPointer: {
             type: "shadow",
           },
+          trigger: "axis",
         },
         legend: {
-          bottom: "bottom",
           data: [
             "Revenue Annualized",
             "Total LCC Annualized",
             "Cost Component A (Capex) Annualized",
             "Cost Component B + D Annualized",
-            "Cost Component C Annualized",
+            "Cost Component C Annualized"
           ],
+          bottom: "bottom",
         },
         grid: {
           top: "8%",
@@ -773,15 +772,14 @@ onMounted(async () => {
           ],
         },
         grid: {
-          top: "8%",
           left: "3%",
-          right: "3%",
+          top: "8%",
           bottom: "15%",
+          right: "3%",
           containLabel: true,
         },
         xAxis: [
           {
-            type: "category",
             data: tahunWLCAllMesin,
             axisLabel: {
               fontSize: 10,
@@ -798,14 +796,14 @@ onMounted(async () => {
               formatter: function (value: any, index: number) {
                 return index + 1 + `\n${value}`;
               },
-            }
+            },
+            type: "category",
           },
         ],
         yAxis: [
           {
-            type: "value",
             name: "Triliun Rupiah",
-            nameLocation: "center",
+            type: "value",
             nameTextStyle: {
               align: "left",
               padding: [30, 20, 30, -25],
@@ -813,101 +811,102 @@ onMounted(async () => {
               color: "#4D5E80",
               fontWeight: "bold",
             },
+            nameLocation: "center",
             axisLabel: {
               fontSize: 10,
               formatter: function (value: any) {
                 return globalFormat.formatRupiah((value * 1000000) / 1000000000000);
               },
             },
-            splitNumber: 20,
             min: 0,
-            max: finalMax ? finalMax * 1.1 : finalMax
+            max: finalMax ? finalMax * 1.1 : finalMax,
+            splitNumber: 20,
           },
         ],
         series: [
           {
+            type: "line",
             name: "Revenue Annualized",
-            type: "line",
-            smooth: true,
             showSymbol: false,
-            data: revWLCMesin,
+            smooth: true,
             color: "#0099AD",
+            data: revWLCMesin,
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
+            }
           },
           {
-            name: "Total LCC Annualized",
             type: "line",
-            smooth: true,
+            name: "Total LCC Annualized",
             showSymbol: false,
-            data: sumLccWLCMesin,
+            smooth: true,
             color: "#1E1F4E",
+            data: sumLccWLCMesin,
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
+            }
           },
           {
+            type: "bar",
             name: "Cost Component A (Capex) Annualized",
-            type: "bar",
-            stack: "Ad",
             emphasis: {
               focus: "series",
             },
-            data: capexWLCMesin,
+            stack: "Ad",
             color: "#0D5A71",
+            data: capexWLCMesin,
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
-            },
+            }
           },
           {
-            name: "Cost Component B + D Annualized",
-            type: "bar",
+            name: 'Cost Component B + D Annualized',
             stack: "Ad",
-            emphasis: {
-              focus: "series",
-            },
+            type: 'bar',
             data: comBDWLCMesin,
+            emphasis: {
+              focus: 'series'
+            },
             markPoint: {
-              silent: true,
               symbol: 'rect',
               symbolSize: [85, 30],
+              symbolOffset: [0, 20],
               itemStyle: { color: '#295C02' },
-              label: { fontSize: 10, fontWeight: 'bold' },
-              data: [{ name: 'Min', value: `Optimum life : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: finalMax }],
-              symbolOffset: [0, 20]
-            },
-            markArea: {
               silent: true,
-              itemStyle: { color: '#D9EBC1' },
-              label: { show: false },
-              data: [[{ name: 'Optimum Life', xAxis: indexOptimum }, { xAxis: indexOptimum }]]
+              data: [{ name: 'Min', value: `Optimum life : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: finalMax }],
+              label: { fontSize: 10, fontWeight: 'bold' },
             },
             color: "#37B1D5",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            markArea: {
+              itemStyle: { color: '#D9EBC1' },
+              label: { show: false },
+              data: [[{ name: 'Optimum Life', xAxis: indexOptimum }, { xAxis: indexOptimum }]],
+              silent: true
+            }
           },
           {
-            name: "Cost Component C Annualized",
-            type: "bar",
             stack: "Ad",
+            type: "bar",
             emphasis: {
               focus: "series",
             },
+            data: fuelComWLCMesin,
             itemStyle: {
               borderRadius: [5, 5, 0, 0],
             },
-            data: fuelComWLCMesin,
             color: "#CCF2FF",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            name: "Cost Component C Annualized",
           },
         ],
       };
@@ -970,7 +969,6 @@ onMounted(async () => {
         xAxis: [
           {
             type: "category",
-            data: tahunWLCKomMesin,
             axisLabel: {
               fontSize: 10,
               color: function (value: any, index: number) {
@@ -986,20 +984,21 @@ onMounted(async () => {
               formatter: function (value: any, index: number) {
                 return index + 1 + `\n${value}`;
               },
-            }
+            },
+            data: tahunWLCKomMesin
           },
         ],
         yAxis: [
           {
-            type: "value",
             name: "Triliun Rupiah",
             nameLocation: "center",
+            type: "value",
             nameTextStyle: {
-              align: "left",
               padding: [30, 20, 30, -25],
               fontSize: 14,
-              color: "#4D5E80",
+              align: "left",
               fontWeight: "bold",
+              color: "#4D5E80",
             },
             axisLabel: {
               fontSize: 10,
@@ -1008,37 +1007,37 @@ onMounted(async () => {
               },
             },
             splitNumber: 20,
-            min: 0,
+            min: 0
           },
         ],
         series: [
           {
-            name: "Cost Component A",
             type: "bar",
             stack: "Ad",
-            emphasis: {
-              focus: "series",
-            },
+            name: "Cost Component A",
             data: costCompAMesin,
             color: "#068D9D",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
-          },
-          {
-            name: "Cost Component B + D",
-            type: "bar",
-            stack: "Ad",
             emphasis: {
               focus: "series",
             },
+          },
+          {
+            type: "bar",
+            stack: "Ad",
+            name: "Cost Component B + D",
             data: costCompBDMesin,
             color: "#6D9DC5",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatDecimal(value) + " Rp(Juta)",
             },
+            emphasis: {
+              focus: "series",
+            }
           },
           {
             name: "Cost Component C",

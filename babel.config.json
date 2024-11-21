@@ -1,7 +1,7 @@
 {
   "presets": [
     ["@babel/preset-env", { "targets": { "esmodules": true } }], // Untuk mendukung ESModules
-    "@babel/preset-typescript" ,// Untuk mendukung TypeScript
+    "@babel/preset-typescript",// Untuk mendukung TypeScript
     [
       "babel-preset-vite",
       {
@@ -9,10 +9,10 @@
         "glob": false
       }
     ]
-  ],
-  "plugins": [
-    "@babel/plugin-transform-runtime", // Opsional: Membantu dengan async/await dan transformasi runtime lainnya
-    "@babel/plugin-proposal-export-default-from"
-    // "@babel/plugin-syntax-import-meta" // Plugin untuk mendukung import.meta
   ]
+  // "plugins": [
+  //   "@babel/plugin-transform-runtime", // Opsional: Membantu dengan async/await dan transformasi runtime lainnya
+  //   // "@babel/plugin-proposal-export-default-from",
+  //   "@babel/plugin-syntax-import-meta" // Plugin untuk mendukung import.meta
+  // ]
 }

@@ -957,39 +957,19 @@ function handleClickWlcKom(param: any) {
         },
         xAxis: [
           {
-            type: "category",
-            data: judulDetWlcKom,
             axisLabel: {
               fontSize: 10,
               rotate: 25
             },
-          },
-        ],
-        yAxis: [
-          {
-            type: "value",
-            name: "Triliun Rupiah",
-            nameLocation: "center",
-            nameTextStyle: {
-              align: "left",
-              padding: [30, 20, 20, -25],
-              fontSize: 14,
-              color: "#4D5E80",
-              fontWeight: "bold",
-            },
-            axisLabel: {
-              fontSize: 10,
-              formatter: function (value: any) {
-                return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
-              },
-            },
-          },
+            type: 'category',
+            data: judulDetWlcKom,
+          }
         ],
         series: [
           {
-            name: "Planning",
             type: "bar",
             stack: "Ad",
+            name: "Planning",
             emphasis: {
               focus: "series",
             },
@@ -1000,9 +980,9 @@ function handleClickWlcKom(param: any) {
             },
           },
           {
-            name: "Realisasi + Proyeksi",
             type: "bar",
             stack: "Ad",
+            name: "Realisasi + Proyeksi",
             emphasis: {
               focus: "series",
             },
@@ -1010,6 +990,26 @@ function handleClickWlcKom(param: any) {
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatRupiah(value) + " Rp(Juta)",
+            },
+          },
+        ],
+        yAxis: [
+          {
+            nameLocation: "center",
+            type: "value",
+            name: "Triliun Rupiah",
+            nameTextStyle: {
+              padding: [30, 20, 20, -25],
+              fontSize: 14,
+              color: "#4D5E80",
+              align: "left",
+              fontWeight: "bold"
+            },
+            axisLabel: {
+              fontSize: 10,
+              formatter: function (value: any) {
+                return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
+              },
             },
           },
         ],
@@ -1069,12 +1069,12 @@ function handleClickPlan(param: any) {
         },
         xAxis: [
           {
-            type: "category",
-            data: judulDetPlan,
             axisLabel: {
               fontSize: 10,
               rotate: 25
             },
+            type: "category",
+            data: judulDetPlan
           },
         ],
         yAxis: [
@@ -1082,30 +1082,30 @@ function handleClickPlan(param: any) {
             type: "value",
             name: "Triliun Rupiah",
             nameLocation: "center",
+            axisLabel: {
+              fontSize: 10,
+              formatter: function (value: any) {
+                return globalFormat.formatRupiah(value.toFixed(2) / 1000000)
+              },
+            },
             nameTextStyle: {
               align: "left",
               padding: [30, 20, 20, -25],
               fontSize: 14,
               color: "#4D5E80",
-              fontWeight: "bold",
-            },
-            axisLabel: {
-              fontSize: 10,
-              formatter: function (value: any) {
-                return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
-              },
-            },
+              fontWeight: "bold"
+            }
           },
         ],
         series: [
           {
-            name: "Planning",
-            type: "bar",
+            name: 'Planning',
             stack: "Ad",
+            type: "bar",
+            data: planDetPlan,
             emphasis: {
               focus: "series",
             },
-            data: planDetPlan,
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatRupiah(value) + " Rp(Juta)",
@@ -1182,48 +1182,48 @@ function handleClickPRP(param: any) {
             bottom: "3%",
             containLabel: true,
           },
+          yAxis: [
+            {
+              type: "value",
+              name: 'Triliun Rupiah',
+              nameLocation: "center",
+              nameTextStyle: {
+                color: "#4D5E80",
+                fontWeight: "bold",
+                align: "left",
+                padding: [30, 20, 20, -25],
+                fontSize: 14
+              },
+              axisLabel: {
+                fontSize: 10,
+                formatter: function (value: any) {
+                  return globalFormat.formatRupiah(value.toFixed(2) / 1000000)
+                }
+              },
+            },
+          ],
           xAxis: [
             {
-              type: "category",
               data: judulDetPRP,
               axisLabel: {
                 fontSize: 10,
                 rotate: 25
               },
-            },
-          ],
-          yAxis: [
-            {
-              type: "value",
-              name: "Triliun Rupiah",
-              nameLocation: "center",
-              nameTextStyle: {
-                align: "left",
-                padding: [30, 20, 20, -25],
-                fontSize: 14,
-                color: "#4D5E80",
-                fontWeight: "bold",
-              },
-              axisLabel: {
-                fontSize: 10,
-                formatter: function (value: any) {
-                  return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
-                },
-              },
-            },
+              type: 'category'
+            }
           ],
           series: [
             {
+              data: planDetPRP,
+              tooltip: {
+                valueFormatter: (value: any) =>
+                  globalFormat.formatRupiah(value) + " Rp(Juta)",
+              },
               name: "Planning",
               type: "bar",
               stack: "Ad",
               emphasis: {
                 focus: "series",
-              },
-              data: planDetPRP,
-              tooltip: {
-                valueFormatter: (value: any) =>
-                  globalFormat.formatRupiah(value) + " Rp(Juta)",
               },
             },
             {
@@ -1297,47 +1297,47 @@ function handleClickLastY(param: any) {
         },
         xAxis: [
           {
-            type: "category",
             data: judulDetLastY,
+            type: "category",
             axisLabel: {
-              fontSize: 10,
-              rotate: 25
-            },
-          },
+              rotate: 25,
+              fontSize: 10
+            }
+          }
         ],
         yAxis: [
           {
             type: "value",
-            name: "Triliun Rupiah",
-            nameLocation: "center",
-            nameTextStyle: {
-              align: "left",
-              padding: [30, 20, 20, -25],
-              fontSize: 14,
-              color: "#4D5E80",
-              fontWeight: "bold",
-            },
             axisLabel: {
               fontSize: 10,
               formatter: function (value: any) {
                 return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
               },
             },
+            name: "Triliun Rupiah",
+            nameLocation: 'center',
+            nameTextStyle: {
+              padding: [30, 20, 20, -25],
+              fontSize: 14,
+              align: 'left',
+              fontWeight: "bold",
+              color: "#4D5E80",
+            },
           },
         ],
         series: [
           {
-            name: "Planning",
-            type: "bar",
-            stack: "Ad",
             emphasis: {
               focus: "series",
             },
+            type: "bar",
+            name: "Planning",
+            stack: "Ad",
             data: planDetLastY,
             tooltip: {
               valueFormatter: (value: any) =>
-                globalFormat.formatRupiah(value) + " Rp(Juta)",
-            },
+                globalFormat.formatRupiah(value) + " Rp(Juta)"
+            }
           },
           {
             name: "Realisasi + Proyeksi",
@@ -1702,8 +1702,6 @@ watch(tahunData, async (tahun) => {
         ],
         yAxis: [
           {
-            type: "value",
-            name: "Triliun Rupiah",
             nameLocation: "center",
             nameTextStyle: {
               align: "left",
@@ -1712,18 +1710,20 @@ watch(tahunData, async (tahun) => {
               color: "#4D5E80",
               fontWeight: "bold",
             },
+            type: "value",
+            name: "Triliun Rupiah",
             axisLabel: {
               fontSize: 10,
               formatter: function (value: any) {
                 return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
               },
-            },
-          },
+            }
+          }
         ],
         series: [
           {
-            name: "Cost Component A",
             type: "bar",
+            name: "Cost Component A",
             stack: "Ad",
             emphasis: {
               focus: "series",
@@ -1882,9 +1882,8 @@ watch(tahunData, async (tahun) => {
         ],
         yAxis: [
           {
-            type: "value",
             name: "Triliun Rupiah",
-            nameLocation: "center",
+            type: "value",
             nameTextStyle: {
               align: "left",
               padding: [30, 20, 15, -25],
@@ -1892,23 +1891,24 @@ watch(tahunData, async (tahun) => {
               color: "#4D5E80",
               fontWeight: "bold",
             },
+            nameLocation: "center",
             axisLabel: {
-              fontSize: 10,
               formatter: function (value: any) {
                 return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
               },
+              fontSize: 10
             },
-          },
+          }
         ],
         series: [
           {
-            name: "FS: Cost Component A (Capex) Annualized",
-            type: "bar",
             stack: "Ad",
             emphasis: {
               focus: "series",
             },
             data: capexPlan,
+            name: "FS: Cost Component A (Capex) Annualized",
+            type: "bar",
             markPoint: {
               silent: true,
               symbol: 'rect',
@@ -1919,11 +1919,9 @@ watch(tahunData, async (tahun) => {
               ]
             },
             markArea: {
-              silent: true,
               itemStyle: {
                 color: '#E2EAF2'
               },
-              label: { show: false },
               data: [
                 [
                   {
@@ -1934,21 +1932,20 @@ watch(tahunData, async (tahun) => {
                     xAxis: indexTerdekat
                   }
                 ],
-              ]
+              ],
+              label: { show: false },
+              silent: true
             },
-            color: "#0D5A71",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatRupiah(value) + " Rp(Juta)",
             },
+            color: "#0D5A71",
           },
           {
+            stack: "Ad",
             name: "FS: Cost Component B + D Annualized",
             type: "bar",
-            stack: "Ad",
-            emphasis: {
-              focus: "series",
-            },
             data: comBDPlan,
             markPoint: {
               silent: true,
@@ -1958,8 +1955,16 @@ watch(tahunData, async (tahun) => {
               label: { fontSize: 10, fontWeight: 'bold' },
               data: [
                 { name: 'Min', value: `Optimum life FS: \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: maxPlan },
-              ]
+              ],
             },
+            emphasis: {
+              focus: "series",
+            },
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatRupiah(value) + " Rp(Juta)",
+            },
+            color: "#37B1D5",
             markArea: {
               silent: true,
               itemStyle: {
@@ -1970,30 +1975,25 @@ watch(tahunData, async (tahun) => {
                 [
                   {
                     name: 'Optimum Life FS',
-                    xAxis: indexOptimum
+                    xAxis: indexOptimum,
                   },
                   {
-                    xAxis: indexOptimum
+                    xAxis: indexOptimum,
                   }
                 ],
               ]
-            },
-            color: "#37B1D5",
-            tooltip: {
-              valueFormatter: (value: any) =>
-                globalFormat.formatRupiah(value) + " Rp(Juta)",
-            },
+            }
           },
           {
-            name: "FS: Cost Component C Annualized",
-            type: "bar",
-            stack: "Ad",
             emphasis: {
               focus: "series",
             },
+            type: "bar",
+            name: "FS: Cost Component C Annualized",
             itemStyle: {
               borderRadius: [5, 5, 0, 0],
             },
+            stack: "Ad",
             data: fuelComPlan,
             color: "#CCF2FF",
             tooltip: {
@@ -2159,58 +2159,78 @@ watch(tahunData, async (tahun) => {
       }
 
       chartPRP.value = {
-        title: {
-          show: false,
-        },
         tooltip: {
           trigger: "axis",
           axisPointer: {
             type: "shadow",
           },
         },
+        title: {
+          show: false,
+        },
+        selected: {
+          'Revenue A': false,
+          'Revenue B': false,
+          'Revenue C': false,
+          "Revenue D": false,
+          "Total Revenue": false,
+          "FS: Revenue A": false,
+          'FS: Revenue B': false,
+          'FS: Revenue C': false,
+          'FS: Revenue D': false,
+          "FS: Total Revenue": false,
+        },
+        grid: {
+          top: "3%",
+          containLabel: true,
+          left: "2%",
+          right: '2%',
+          bottom: '18%',
+        },
+        yAxis: [
+          {
+            type: "value",
+            nameTextStyle: {
+              fontSize: 14,
+              align: "left",
+              padding: [30, 20, 15, -25],
+              fontWeight: "bold",
+              color: "#4D5E80",
+            },
+            axisLabel: {
+              fontSize: 10,
+              formatter: function (value: any) {
+                return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
+              },
+            },
+            nameLocation: "center",
+            name: "Triliun Rupiah",
+          },
+        ],
         legend: {
           bottom: "bottom",
           data: [
             "Revenue Annualized",
             "Total LCC",
-            "Cost Component A (Capex) Annualized",
-            "Cost Component B + D Annualized",
-            "Cost Component C Annualized",
+            'Cost Component A (Capex) Annualized',
+            'Cost Component B + D Annualized',
+            'Cost Component C Annualized',
             "FS: Revenue Annualized",
             "FS: Total LCC",
             "FS: Cost Component A (Capex) Annualized",
-            "FS: Cost Component B + D Annualized",
-            "FS: Cost Component C Annualized",
-            "Total Revenue",
+            'FS: Cost Component B + D Annualized',
+            'FS: Cost Component C Annualized',
+            'Total Revenue',
             "Revenue A",
             "Revenue B",
             "Revenue C",
-            "Revenue D",
-            "FS: Total Revenue",
-            "FS: Revenue A",
+            'Revenue D',
+            'FS: Total Revenue',
+            'FS: Revenue A',
             "FS: Revenue B",
             "FS: Revenue C",
             "FS: Revenue D",
           ],
-          selected: {
-            "Revenue A": false,
-            "Revenue B": false,
-            "Revenue C": false,
-            "Revenue D": false,
-            "Total Revenue": false,
-            "FS: Revenue A": false,
-            "FS: Revenue B": false,
-            "FS: Revenue C": false,
-            "FS: Revenue D": false,
-            "FS: Total Revenue": false,
-          }
-        },
-        grid: {
-          top: "3%",
-          left: "2%",
-          right: "2%",
-          bottom: "18%",
-          containLabel: true,
         },
         xAxis: [
           {
@@ -2234,33 +2254,13 @@ watch(tahunData, async (tahun) => {
             }
           },
         ],
-        yAxis: [
-          {
-            type: "value",
-            name: "Triliun Rupiah",
-            nameLocation: "center",
-            nameTextStyle: {
-              align: "left",
-              padding: [30, 20, 15, -25],
-              fontSize: 14,
-              color: "#4D5E80",
-              fontWeight: "bold",
-            },
-            axisLabel: {
-              fontSize: 10,
-              formatter: function (value: any) {
-                return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
-              },
-            },
-          },
-        ],
         series: [
           {
+            zlevel: 1,
             name: "Revenue Annualized",
             type: "line",
             smooth: true,
             showSymbol: false,
-            zlevel: 1,
             data: revPRP,
             color: "#489FB7",
             tooltip: {
@@ -2802,17 +2802,16 @@ watch(tahunData, async (tahun) => {
       }
 
       chartLastYear.value = {
-        title: {
-          show: false,
-        },
         tooltip: {
           trigger: "axis",
           axisPointer: {
-            type: "shadow",
-          },
+            type: "shadow"
+          }
+        },
+        title: {
+          show: false
         },
         legend: {
-          bottom: "bottom",
           data: [
             "Revenue Annualized",
             "Total LCC",
@@ -2833,7 +2832,7 @@ watch(tahunData, async (tahun) => {
             "FS: Revenue A",
             "FS: Revenue B",
             "FS: Revenue C",
-            "FS: Revenue D",
+            "FS: Revenue D"
           ],
           selected: {
             "Revenue A": false,
@@ -2845,15 +2844,9 @@ watch(tahunData, async (tahun) => {
             "FS: Revenue B": false,
             "FS: Revenue C": false,
             "FS: Revenue D": false,
-            "FS: Total Revenue": false,
-          }
-        },
-        grid: {
-          top: "3%",
-          left: "2%",
-          right: "2%",
-          bottom: "18%",
-          containLabel: true,
+            "FS: Total Revenue": false
+          },
+          bottom: "bottom",
         },
         xAxis: [
           {
@@ -2875,12 +2868,25 @@ watch(tahunData, async (tahun) => {
                 return index + 1 + `\n${value}`;
               },
             }
-          },
+          }
         ],
+        grid: {
+          containLabel: true,
+          top: "3%",
+          left: "2%",
+          right: "2%",
+          bottom: "18%"
+        },
         yAxis: [
           {
             type: "value",
             name: "Triliun Rupiah",
+            axisLabel: {
+              fontSize: 10,
+              formatter: function (value: any) {
+                return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
+              },
+            },
             nameLocation: "center",
             nameTextStyle: {
               align: "left",
@@ -2889,19 +2895,13 @@ watch(tahunData, async (tahun) => {
               color: "#4D5E80",
               fontWeight: "bold",
             },
-            axisLabel: {
-              fontSize: 10,
-              formatter: function (value: any) {
-                return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
-              },
-            },
-          },
+          }
         ],
         series: [
           {
-            name: "Revenue Annualized",
-            type: "line",
+            type: 'line',
             smooth: true,
+            name: 'Revenue Annualized',
             showSymbol: false,
             zlevel: 1,
             data: revLastYear,
@@ -2943,6 +2943,11 @@ watch(tahunData, async (tahun) => {
                 { name: 'Max', value: `BEP : ${tahunBEP} (${indexBEP})`, xAxis: indexTerdekat, yAxis: maxLastYear },
               ]
             },
+            color: "#A8E2FC",
+            tooltip: {
+              valueFormatter: (value: any) =>
+                globalFormat.formatRupiah(value) + " Rp(Juta)",
+            },
             markArea: {
               silent: true,
               itemStyle: {
@@ -2961,22 +2966,16 @@ watch(tahunData, async (tahun) => {
                 ],
               ]
             },
-            color: "#A8E2FC",
-            tooltip: {
-              valueFormatter: (value: any) =>
-                globalFormat.formatRupiah(value) + " Rp(Juta)",
-            },
           },
           {
+            stack: "Ad",
             name: "Cost Component B + D Annualized",
             type: "bar",
-            stack: "Ad",
 
-            zlevel: 2,
             emphasis: {
               focus: "series",
             },
-            data: comBDLastYear,
+            zlevel: 2,
             markPoint: {
               silent: true,
               symbol: 'rect',
@@ -3010,21 +3009,22 @@ watch(tahunData, async (tahun) => {
               valueFormatter: (value: any) =>
                 globalFormat.formatRupiah(value) + " Rp(Juta)",
             },
+            data: comBDLastYear,
           },
           {
-            name: "Cost Component C Annualized",
-            type: "bar",
-            stack: "Ad",
 
             zlevel: 2,
             emphasis: {
               focus: "series",
             },
+            name: "Cost Component C Annualized",
+            type: "bar",
+            stack: "Ad",
+            data: fuelComLastYear,
+            color: "#4EB180",
             itemStyle: {
               borderRadius: [2, 2, 0, 0],
             },
-            data: fuelComLastYear,
-            color: "#4EB180",
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatRupiah(value) + " Rp(Juta)",
@@ -3147,11 +3147,10 @@ watch(tahunData, async (tahun) => {
               ]
             },
             markArea: {
-              silent: true,
               itemStyle: {
                 color: '#E2EAF2'
               },
-              label: { show: false },
+              silent: true,
               data: [
                 [
                   {
@@ -3162,22 +3161,23 @@ watch(tahunData, async (tahun) => {
                     xAxis: indexTerdekatPlan
                   }
                 ],
-              ]
+              ],
+              label: { show: false },
             },
-            zlevel: 2,
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatRupiah(value) + " Rp(Juta)",
             },
+            zlevel: 2,
           },
           {
+            stack: "Ab",
             name: "FS: Cost Component B + D Annualized",
             type: "bar",
-            stack: "Ab",
+            data: comBDLastYearPlan,
             emphasis: {
               focus: "series",
             },
-            data: comBDLastYearPlan,
             markPoint: {
               silent: true,
               symbol: 'rect',

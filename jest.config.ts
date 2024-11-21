@@ -4,16 +4,17 @@ const config: Config = {
   preset: "ts-jest/presets/default-esm",
   testEnvironment: "jest-environment-jsdom",
   verbose: true,
+  moduleFileExtensions: ["js", "ts", "vue", "json", "mjs"],
+  // collectCoverage: true,
   // maxWorkers: 2,
   // watchman: false,
   // forceExit: true,
   // testTimeout: 30000,
-  moduleFileExtensions: ["js", "ts", "vue", "json", "mjs"],
   transform: {
     "^.+\\.vue$": "@vue/vue3-jest",
-    // "^.+\\.json$": "jest-transform-stub",
     "^.+\\.json$": "ts-jest",
-    "^.+\\.(js|jsx|ts|tsx)$": "babel-jest"
+    "^.+\\.(js|jsx|ts|tsx)$": "babel-jest",
+    // "^.+\\.json$": "jest-transform-stub",
     // {
     //   useESM: true,
     //   diagnostics: {
@@ -37,12 +38,12 @@ const config: Config = {
     //   },
     // },
   },
-  // collectCoverage: true,
-  // collectCoverageFrom: [
-  //   'src/**/*.{js,ts,vue}',  // Pastikan semua file di src diambil untuk coverage
-  //   '!src/main.ts',           // Abaikan file yang tidak perlu, seperti main.ts
-  //   '!src/router/**',         // Abaikan file router jika tidak perlu
-  // ],
+  collectCoverage: true,
+  collectCoverageFrom: [
+    'src/**/*.{js,ts,vue}',  // Pastikan semua file di src diambil untuk coverage
+    '!src/main.ts',           // Abaikan file yang tidak perlu, seperti main.ts
+    '!src/router/**',         // Abaikan file router jika tidak perlu
+  ],
   setupFiles: ["<rootDir>/jest.setup.ts"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
@@ -58,19 +59,19 @@ const config: Config = {
   coveragePathIgnorePatterns: ["/node_modules/", "/tests/"],
   coverageReporters: ["text", "json-summary", "lcov"],
   transformIgnorePatterns: [
-    // "/node_modules/(?!.*\\.mjs$)", // Jangan abaikan file .mjs dalam node_modules
     "/node_modules/(?!vue-router|echarts|vue-echarts|zrender)/",
+    // "/node_modules/(?!.*\\.mjs$)", // Jangan abaikan file .mjs dalam node_modules
   ],
-  reporters: [
-    "default",
-    [
-      "jest-junit",
-      {
-        outputDirectory: "./reports/junit",
-        outputName: "junit.xml",
-      },
-    ],
-  ],
+  // reporters: [
+  //   "default",
+  //   [
+  //     "jest-junit",
+  //     {
+  //       outputDirectory: "./reports/junit",
+  //       outputName: "junit.xml",
+  //     },
+  //   ],
+  // ],
 };
 
 export default config;

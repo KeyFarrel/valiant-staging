@@ -130,17 +130,17 @@ async function getDataGraphNoDMN() {
       periode: filter.value.tahun.toString()
     })
     if (response.success) {
-      const data = response.data[0]
-      graphData.value.isEmpty = data.grafik === null
-      graphData.value.series = []
-      graphData.value.legends = []
-      graphData.value.source = []
-      graphData.value.pln.x = data.average_daya_terpasang
-      graphData.value.pln.y = data.average_opex
-      graphData.value.ipp.x = Math.min.apply(Math, data.grafik?.map(graph => graph.data.daya_terpasang)) // min daya
-      graphData.value.ipp.y = data.average_ipp_opex
+      const data = response.data[0];
+      graphData.value.isEmpty = data.grafik === null;
+      graphData.value.series = [];
+      graphData.value.legends = [];
+      graphData.value.source = [];
+      graphData.value.pln.x = data.average_daya_terpasang;
+      graphData.value.pln.y = data.average_opex;
+      graphData.value.ipp.x = Math.min.apply(Math, data.grafik?.map(graph => graph.data.daya_terpasang)); // min daya
+      graphData.value.ipp.y = data.average_ipp_opex;
       data.legend?.map((item, index) => {
-        graphData.value.legends?.push(item)
+        graphData.value.legends?.push(item);
         const scatterTemplate: {
           name: string
           type: string
@@ -151,22 +151,22 @@ async function getDataGraphNoDMN() {
           type: 'scatter',
           data: [],
           color: item.color,
-        }
+        };
         data.grafik?.map(graph => {
           if (graph.kode_jenis_kit === item.label) {
-            scatterTemplate.data.push([graph.data.daya_terpasang, graph.data.value_b + graph.data.value_d, 5, graph.nama_mesin])
-            graphData.value.source?.push([graph.data.daya_terpasang, graph.data.value_b + graph.data.value_d])
-          }
-        })
-        graphData.value.series.push(scatterTemplate)
-      })
-      isLoading.value = false
-    }
+            scatterTemplate.data.push([graph.data.daya_terpasang, graph.data.value_b + graph.data.value_d, 5, graph.nama_mesin]);
+            graphData.value.source?.push([graph.data.daya_terpasang, graph.data.value_b + graph.data.value_d]);
+          };
+        });
+        graphData.value.series.push(scatterTemplate);
+      });
+      isLoading.value = false;
+    };
   } catch (e) {
-    isLoading.value = false
-    console.log(e)
-  }
-}
+    isLoading.value = false;
+    console.log(e);
+  };
+};
 
 const closeModal = () => {
   if (value.value.length) {

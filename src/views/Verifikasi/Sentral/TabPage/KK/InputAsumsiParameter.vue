@@ -601,17 +601,17 @@ const insertAsumsiParameter = async () => {
         const finalElecD = electricityPriceD.value.includes('.') ? electricityPriceD.value.replace(/[.]/g, '') : electricityPriceD.value;
         const formParameterUpdate = {
           id_asumsi: idAsumsi.value,
-          id_mesin: idMesin,
-          tahun: tahunBerjalan,
           tahun_realisasi: tahunBerjalan - 1,
+          tahun: tahunBerjalan,
+          id_mesin: idMesin,
           nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
-          auxiliary: parseFloat(finalAuxiliary.replace(/,/g, '.')),
-          susut_trafo: parseFloat(finalSusutTrafo.replace(/,/g, '.')),
           ps: parseFloat(finalPemakaianSendiri.replace(/,/g, '.')),
+          susut_trafo: parseFloat(finalSusutTrafo.replace(/,/g, '.')),
+          auxiliary: parseFloat(finalAuxiliary.replace(/,/g, '.')),
           electricity_price_a_rp_per_kwbln: parseFloat(finalElecA.replace(/,/g, '.')),
-          electricity_price_b_rp_per_kwbln: parseFloat(finalElecB.replace(/,/g, '.')),
-          electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),
           electricity_price_d_rp_per_kwh: parseFloat(finalElecD.replace(/,/g, '.')),
+          electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),
+          electricity_price_b_rp_per_kwbln: parseFloat(finalElecB.replace(/,/g, '.')),
           harga_bahan_bakars: finalBahanBakars
         }
         console.log(idAsumsi.value, 'Update');

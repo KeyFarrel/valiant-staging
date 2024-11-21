@@ -2,26 +2,32 @@
   <Loading v-if="isLoading" />
   <!-- Grafik RNFA -->
   <template v-else-if="itemsCategory.length !== 0">
-    <GraphicRnfa_Ebitda title="Grafik RNFA - EBITDA MARGIN" :items-pembangkit="itemsCategory" :year-range="yearRange" :items-daya-mampu="childDmn"/>
+    <GraphicRnfa_Ebitda title="Grafik RNFA - EBITDA MARGIN" :items-pembangkit="itemsCategory" :year-range="yearRange"
+      :items-daya-mampu="childDmn" />
     <!-- Grafik CAPEX - EAF -->
-    <GraphicCapex_Eaf title="Grafik CAPEX - EAF" :items-pembangkit="itemsCategory" :year-range="yearRange" :items-daya-mampu="childDmn"/>
+    <GraphicCapex_Eaf title="Grafik CAPEX - EAF" :items-pembangkit="itemsCategory" :year-range="yearRange"
+      :items-daya-mampu="childDmn" />
     <!-- Grafik CAPEX - CF -->
-    <GraphicCapex_Ncf title="Grafik CAPEX - NCF" :items-pembangkit="itemsCategory" :year-range="yearRange" :items-daya-mampu="childDmn"/>
+    <GraphicCapex_Ncf title="Grafik CAPEX - NCF" :items-pembangkit="itemsCategory" :year-range="yearRange"
+      :items-daya-mampu="childDmn" />
     <!-- Grafik CAPEX - EFOR -->
-    <GraphicCapex_Efor title="Grafik CAPEX - EFOR" :items-pembangkit="itemsCategory" :year-range="yearRange" :items-daya-mampu="childDmn"/>
+    <GraphicCapex_Efor title="Grafik CAPEX - EFOR" :items-pembangkit="itemsCategory" :year-range="yearRange"
+      :items-daya-mampu="childDmn" />
     <!-- Grafik B+D Daya Terpasang -->
-    <GraphicOpexBd title="Grafik OPEX B+D - Daya Terpasang" :items-pembangkit="itemsCategory" :year-range="yearRange" :items-daya-mampu="childDmn"/>
+    <GraphicOpexBd title="Grafik OPEX B+D - Daya Terpasang" :items-pembangkit="itemsCategory" :year-range="yearRange"
+      :items-daya-mampu="childDmn" />
     <!-- Grafik NPHR -->
-    <GraphicOpexc_Nphr title="Grafik OPEX C - NPHR" :items-pembangkit="itemsCategory" :year-range="yearRange" :items-daya-mampu="childDmn"/>
+    <GraphicOpexc_Nphr title="Grafik OPEX C - NPHR" :items-pembangkit="itemsCategory" :year-range="yearRange"
+      :items-daya-mampu="childDmn" />
     <!-- Grafik Biaya Komponen A -->
     <GraphicComponentA title="Grafik Biaya Komponen A" :items-pembangkit="itemsCategory" :items-daya="itemsDaya"
-      :year-range="yearRange" :items-daya-mampu="childDmn"/>
+      :year-range="yearRange" :items-daya-mampu="childDmn" />
     <!-- Grafik Biaya Komponen B+D -->
     <GraphicComponentBD title="Grafik Biaya Komponen B + D" :items-pembangkit="itemsCategory" :items-daya="itemsDaya"
-      :year-range="yearRange" :items-daya-mampu="childDmn"/>
+      :year-range="yearRange" :items-daya-mampu="childDmn" />
     <!-- Grafik Biaya Komponen C -->
     <GraphicComponentC title="Grafik Biaya Komponen C" :items-pembangkit="itemsCategory" :items-daya="itemsDaya"
-      :year-range="yearRange" :items-daya-mampu="childDmn"/>
+      :year-range="yearRange" :items-daya-mampu="childDmn" />
   </template>
 </template>
 
@@ -46,7 +52,7 @@ const isLoading = ref();
 const itemsCategory = ref<{ id: string; name: string; power?: string }[]>([])
 const itemsDaya = ref<{ id: string; daya: string; satuan: string }[]>([])
 const itemsDmn = ref<{
-[x: string]: any; id: string; name: string;
+  [x: string]: any; id: string; name: string;
 }[]>([])
 const childDmn = ref<any[]>([])
 const yearRange = ref<number[]>([])
@@ -73,15 +79,6 @@ async function getCategory() {
             })
           }
         })
-          // itemsDmn.value = response.data[11].dmn
-          // for(var i = 0; i < itemsDmn.value.length; i++) {
-          //     if(itemsDmn.value[i].daya_mampu !== ""){
-          //       childDmn.value.push({
-          //         id: itemsDmn.value[i].id_daya,
-          //         name: 'PLTU ' + itemsDmn.value[i].daya_mampu
-          //       })
-          //     }
-          //   }
       }
     }
     itemsCategory.value.reverse()
@@ -89,19 +86,6 @@ async function getCategory() {
     console.log("Fetch items filter Kategori Error : " + e)
   }
 }
-
-// async function getDaya() {
-//   try {
-//     const response: any = await grafikService.getFilterDaya()
-//     if (response.success) {
-//       if (response.data.length > 0) {
-//         itemsDaya.value = response.data
-//       }
-//     }
-//   } catch (e) {
-//     console.log("Fetch items filter Daya Error : " + e)
-//   }
-// }
 
 const fetchYearRange = async () => {
   try {

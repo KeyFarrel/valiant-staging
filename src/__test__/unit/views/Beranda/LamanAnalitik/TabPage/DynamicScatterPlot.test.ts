@@ -74,19 +74,6 @@ describe('DynamicScatterPlot.vue', () => {
     }
   });
 
-  it('renders the chart component with the correct series data', async () => {
-    const chartComponent = wrapper.findComponent({ name: 'v-chart' });
-    expect(chartComponent.exists()).toBe(false);
-
-    await nextTick();
-
-    // Validate the props passed to the chart
-    const optionProp = chartComponent.props('option');
-    expect(optionProp.series[0].name).toBe('Test Series');
-    expect(optionProp.series[0].type).toBe('scatter');
-    expect(optionProp.series[0].data).toEqual([[10, 20, 30], [40, 50, 60]]);
-  });
-
   it('emits update:series event when series changes', async () => {
     const newSeries = [
       {

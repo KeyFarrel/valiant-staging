@@ -4,13 +4,7 @@ import LamanService from '@/services/laman-service';
 import { createPinia, setActivePinia } from 'pinia'; // Untuk Pinia
 
 // Mocking LamanService dan AOS
-jest.mock('@/services/laman-service', () => {
-  return jest.fn().mockImplementation(() => ({
-      getDataFinansial: jest.fn(),
-      getListTahun: jest.fn(),
-      downloadExcelFinansial: jest.fn()
-  }));
-});
+jest.mock('@/services/laman-service');
 
 
 jest.mock('aos', () => ({ init: jest.fn() }));
@@ -79,5 +73,28 @@ describe('PageFinansial.vue', () => {
     LamanService.prototype.getListTahun = jest.fn(() => Promise.reject(new Error('API Error')));
     await wrapper.vm.fetchListTahun();
     expect(wrapper.vm.periodeTahun).toEqual([]); // Tahun harus kosong saat error
+  });
+
+  it("is fetching fetchTahunSelected", async () => {
+    const fetchTahunSelectedSpy = jest.spyOn(wrapper.vm, "fetchTahunSelected");
+    await wrapper.vm.fetchTahunSelected();
+    expect(fetchTahunSelectedSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching fetchListTahun", async () => {
+    const fetchListTahunSpy = jest.spyOn(wrapper.vm, "fetchListTahun");
+    await wrapper.vm.fetchListTahun();
+    expect(fetchListTahunSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching fetchDataFinansial", async () => {
+    const fetchDataFinansialSpy = jest.spyOn(wrapper.vm, "fetchDataFinansial");
+    await wrapper.vm.fetchDataFinansial();
+    expect(fetchDataFinansialSpy).toHaveBeenCalled();
+  });
+  it("is fetching handleExport", async () => {
+    const handleExportSpy = jest.spyOn(wrapper.vm, "handleExport");
+    await wrapper.vm.handleExport();
+    expect(handleExportSpy).toHaveBeenCalled();
   });
 });

@@ -4,8 +4,6 @@ import TabsWrapper from "@/components/ui/TabsWrapper.vue";
 import InfoHeader from "@/components/ui/InfoHeader.vue";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
-import { flushPromises } from '@vue/test-utils'; // Import flushPromises untuk membantu dengan rendering async
-
 
 // Mock the services
 jest.mock("@/services/rekap-service", () => {
@@ -79,7 +77,7 @@ describe("DetailRekap.vue", () => {
     expect(wrapper.findComponent(Loading).exists()).toBe(true);
   });
 
-  it("renders InfoHeader when mesin data is available", async () => {
+  it("renders InfoHeader with correct props when mesin data is available", async () => {
     wrapper.vm.mesin = {
       mesin: "Mesin A",
       kondisi_unit: "Baik",
@@ -91,9 +89,60 @@ describe("DetailRekap.vue", () => {
     };
     wrapper.vm.namaPengelola = "Pengelola A";
     wrapper.vm.namaPembina = "Pembina A";
+    wrapper.vm.selectedYear = 2022;
+    wrapper.vm.listYear = [2020, 2023];
+    wrapper.vm.listtahunRealisasi = [2020, 2021, 2022];
 
     await wrapper.vm.$nextTick();
     const infoHeader = wrapper.findComponent(InfoHeader);
     expect(infoHeader.exists()).toBe(true);
+    expect(infoHeader.props("namaMesin")).toBe("Mesin A");
+    expect(infoHeader.props("namaPengelola")).toBe("Pengelola A");
+    expect(infoHeader.props("kondisiUnit")).toBe("Baik");
+    expect(infoHeader.props("kodeJenisPembangkit")).toBe("PLTU");
+    expect(infoHeader.props("dayaTerpasang")).toBe("1000");
+    expect(infoHeader.props("dayaMampu")).toBe("900");
+    expect(infoHeader.props("tahunOperasi")).toBe("2020");
+    expect(infoHeader.props("umurTeknis")).toBe("20");
+    expect(infoHeader.props("namaPembina")).toBe("Pembina A");
+  });
+
+  it("is fetching downloadEvidence", async () => {
+    const downloadEvidenceSpy = jest.spyOn(wrapper.vm, "downloadEvidence");
+    await wrapper.vm.downloadEvidence();
+    expect(downloadEvidenceSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching fetchMesinById", async () => {
+    const fetchMesinByIdSpy = jest.spyOn(wrapper.vm, "fetchMesinById");
+    await wrapper.vm.fetchMesinById();
+    expect(fetchMesinByIdSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching reloadDataFinansial", async () => {
+    const reloadDataFinansialSpy = jest.spyOn(
+      wrapper.vm,
+      "reloadDataFinansial"
+    );
+    await wrapper.vm.reloadDataFinansial();
+    expect(reloadDataFinansialSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching fetchHasilSimulasi", async () => {
+    const fetchHasilSimulasiSpy = jest.spyOn(wrapper.vm, "fetchHasilSimulasi");
+    await wrapper.vm.fetchHasilSimulasi();
+    expect(fetchHasilSimulasiSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching fetchUnitPengelola", async () => {
+    const fetchUnitPengelolaSpy = jest.spyOn(wrapper.vm, "fetchUnitPengelola");
+    await wrapper.vm.fetchUnitPengelola();
+    expect(fetchUnitPengelolaSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching fetchTypePeriodic", async () => {
+    const fetchTypePeriodicSpy = jest.spyOn(wrapper.vm, "fetchTypePeriodic");
+    await wrapper.vm.fetchTypePeriodic();
+    expect(fetchTypePeriodicSpy).toHaveBeenCalled();
   });
 });

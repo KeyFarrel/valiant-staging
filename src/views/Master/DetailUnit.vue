@@ -635,17 +635,17 @@ const fetchUnitPengelola = async () => {
         await perbaruiDataService.getPembangkitByKode(kodeSentral);
       kodePengelola.value = pembangkitResponse.data.kode_pengelola;
       const pengelolaResponse: any =
-        await perbaruiDataService.getPengelolaData();
+        await perbaruiDataService.getPengelolaData()
       const pengelola = pengelolaResponse.data.filter(
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola.value
       );
-      namaPengelola.value = pengelola[0].pengelola;
+      namaPengelola.value = pengelola[0].pengelola
       const idPembina = pembangkitResponse.data.id_pembina;
-      const pembinaList: any = await fetchListPembina();
+      const pembinaList: any = await fetchListPembina()
       namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina;
     }
   } catch (error) {
-    console.error("Fetch Unit Pengelola Error : " + error);
+    console.error("Fetch Unit Pengelola Error : " + error)
   }
 };
 

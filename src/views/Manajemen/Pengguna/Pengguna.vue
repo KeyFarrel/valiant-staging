@@ -998,20 +998,20 @@ const editUserDataAndCloseModal = async () => {
       }
       else if (hiddenPembina.includes(formData.value.level_id)) {
         dataToPost = {
-          nama_pegawai: formData.value.nama_pegawai,
           nip: formData.value.nip,
-          email: formData.value.email,
+          nama_pegawai: formData.value.nama_pegawai,
           password: formData.value.password,
-          konfirmasi_password: formData.value.konfirmasi_password,
+          email: formData.value.email,
           role_id: parseInt(formData.value.role_id),
-          level_id: parseInt(formData.value.level_id),
+          konfirmasi_password: formData.value.konfirmasi_password,
           id_ranting: formData.value.id_ranting,
-          id_mesin: parseInt(formData.value.id_mesin),
+          level_id: parseInt(formData.value.level_id),
           id_cabang: parseInt(formData.value.id_cabang),
-          id_pembina: null,
+          id_mesin: parseInt(formData.value.id_mesin),
           id_sentral: null,
-          id_pengelola: parseInt(formData.value.id_pengelola),
+          id_pembina: null,
           status: formData.value.status,
+          id_pengelola: parseInt(formData.value.id_pengelola),
           is_locked: formData.value.isLocked
         }
       } else if (hiddenSentral.includes(formData.value.level_id)) {
@@ -1035,18 +1035,18 @@ const editUserDataAndCloseModal = async () => {
       } else {
         dataToPost = {
           nama_pegawai: formData.value.nama_pegawai,
-          nip: formData.value.nip,
           email: formData.value.email,
-          password: formData.value.password,
+          nip: formData.value.nip,
           konfirmasi_password: formData.value.konfirmasi_password,
-          role_id: parseInt(formData.value.role_id),
+          password: formData.value.password,
           level_id: parseInt(formData.value.level_id),
-          id_ranting: formData.value.id_ranting,
+          role_id: parseInt(formData.value.role_id),
           id_mesin: parseInt(formData.value.id_mesin),
-          id_cabang: parseInt(formData.value.id_cabang),
+          id_ranting: formData.value.id_ranting,
           id_pembina: parseInt(formData.value.id_pembina),
-          id_sentral: parseInt(formData.value.id_sentral),
+          id_cabang: parseInt(formData.value.id_cabang),
           id_pengelola: parseInt(formData.value.id_pengelola),
+          id_sentral: parseInt(formData.value.id_sentral),
           status: formData.value.status,
           is_locked: formData.value.isLocked
         }
@@ -1111,18 +1111,18 @@ const saveUserDataAndCloseModal = async () => {
   if (errors.value.length === 0) {
     try {
       const dataToPost = {
-        nama_pegawai: formData.value.nama_pegawai,
         nip: formData.value.nip,
         email: formData.value.email,
-        password: formData.value.password,
+        nama_pegawai: formData.value.nama_pegawai,
         konfirmasi_password: formData.value.konfirmasi_password,
         role_id: parseInt(formData.value.role_id),
-        level_id: parseInt(formData.value.level_id),
+        password: formData.value.password,
         id_ranting: formData.value.id_ranting,
         id_mesin: parseInt(formData.value.id_mesin),
-        id_cabang: parseInt(formData.value.id_cabang),
+        level_id: parseInt(formData.value.level_id),
         id_pembina: parseInt(formData.value.id_pembina),
         id_sentral: parseInt(formData.value.id_sentral),
+        id_cabang: parseInt(formData.value.id_cabang),
         id_pengelola: parseInt(formData.value.id_pengelola),
         status: formData.value.status,
       };

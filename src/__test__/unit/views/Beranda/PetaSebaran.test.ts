@@ -181,4 +181,22 @@ describe("PetaSebaran.vue", () => {
     const modalWrapper = wrapper.findComponent({ name: 'ModalWrapper' });
     expect(modalWrapper.exists()).toBe(false);
   });  
+
+  it("is fetching fetchPetaSentral", async () => {
+    const fetchPetaSentralSpy = jest.spyOn(wrapper.vm, "fetchPetaSentral");
+    await wrapper.vm.fetchPetaSentral();
+    expect(fetchPetaSentralSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching getDetailSentral", async () => {
+    const getDetailSentralSpy = jest.spyOn(wrapper.vm, "getDetailSentral");
+    await wrapper.vm.getDetailSentral();
+    expect(getDetailSentralSpy).toHaveBeenCalled();
+  });
+
+  it("is fetching getDataPengelola", async () => {
+    const getDataPengelolaSpy = jest.spyOn(wrapper.vm, "getDataPengelola");
+    await wrapper.vm.getDataPengelola();
+    expect(getDataPengelolaSpy).toHaveBeenCalled();
+  });
 });

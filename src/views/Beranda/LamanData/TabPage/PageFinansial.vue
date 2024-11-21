@@ -251,31 +251,31 @@ const fetchTahunSelected = async () => {
 }
 const fetchListTahun = async () => {
   try {
-    const response: any = await lamanService.getListTahun();
+    const response: any = await lamanService.getListTahun()
     periodeTahun.value = [response.data[0].tahun, response.data[response.data.length - 1].tahun];
   } catch (error) {
-    console.error('Fetch List Tahun Error : ' + error);
+    console.error('Fetch List Tahun Error : ' + error)
   }
-}
+};
 const toggleUp = (itemKode: string) => {
   if (isUpOpen(itemKode)) {
-    isUpTabOpen.value = isUpTabOpen.value.filter((Kode) => Kode !== itemKode);
+    isUpTabOpen.value = isUpTabOpen.value.filter((Kode) => Kode !== itemKode)
   } else {
     isUpTabOpen.value.push(itemKode);
   }
-};
+}
 const isUpOpen = (itemKode: string) => {
-  return isUpTabOpen.value.includes(itemKode);
+  return isUpTabOpen.value.includes(itemKode)
 };
 const togglePembangkit = (itemId: number) => {
   if (isPembangkitOpen(itemId)) {
     isPembangkitTabOpen.value = isPembangkitTabOpen.value.filter(
       (Id) => Id !== itemId
-    );
+    )
   } else {
     isPembangkitTabOpen.value.push(itemId);
   }
-};
+}
 const isPembangkitOpen = (itemId: number) => {
   return isPembangkitTabOpen.value.includes(itemId);
 };
@@ -291,19 +291,19 @@ const handleExport = async () => {
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `Laman Data - Finansial - ${year}.xlsx`;
-    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
     const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement('a')
     link.href = url;
-    link.setAttribute('download', fileName);
+    link.setAttribute("download", fileName)
     document.body.appendChild(link);
-    link.click();
+    link.click()
     document.body.removeChild(link);
-    isLoading.value = false;
+    isLoading.value = false
   } catch (error) {
     console.error('Handle Download Template Rekap Error : ' + error);
   }
-}
+};
 
 watch(store, async (store) => {
   if (store.currentTab === 'Finansial') {

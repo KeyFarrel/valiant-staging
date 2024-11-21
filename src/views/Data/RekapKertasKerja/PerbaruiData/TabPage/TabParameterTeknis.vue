@@ -269,11 +269,11 @@ const comboBahanBakar = () => {
   }
 };
 const labelBahanBakar = (kodeBahanBakar: any) => {
-  const result = props.comboBahanBakar.filter((val: any) => val.kode_bahan_bakar === kodeBahanBakar);
+  const result = props.comboBahanBakar.filter((val: any) => val.kode_bahan_bakar === kodeBahanBakar)
   if (result.length !== 0) {
     return result[0].satuan_harga_bahan_bakar.replace('Rupiah', 'Rp').replace(/ /g, '');
   }
-  return '';
+  return ''
 }
 const labelSFC = (kodeBahanBakar: any) => {
   const result = props.comboBahanBakar.filter((val: any) => val.kode_bahan_bakar === kodeBahanBakar);

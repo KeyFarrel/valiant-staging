@@ -217,4 +217,29 @@ describe("LogActivity.vue", () => {
     expect(button.classes()).toContain("hover:border-primaryColor");
     expect(button.classes()).toContain("hover:bg-primaryColor");
   });
+  it("is fetching fetchLogActivity", async () => {
+    const fetchLogActivitySpy = jest.spyOn(wrapper.vm, "fetchLogActivity");
+    await wrapper.vm.fetchLogActivity();
+    expect(fetchLogActivitySpy).toHaveBeenCalled();
+  });
+  it("is fetching downloadEvidenceKK", async () => {
+    const downloadEvidenceKKSpy = jest.spyOn(wrapper.vm, "downloadEvidenceKK");
+    await wrapper.vm.downloadEvidenceKK();
+    expect(downloadEvidenceKKSpy).toHaveBeenCalled();
+  });
+  it("is fetching downloadEvidenceFS", async () => {
+    const downloadEvidenceFSSpy = jest.spyOn(wrapper.vm, "downloadEvidenceFS");
+    await wrapper.vm.downloadEvidenceFS();
+    expect(downloadEvidenceFSSpy).toHaveBeenCalled();
+  });
+  it("is fetching downloadExcelKK", async () => {
+    const downloadExcelKKSpy = jest.spyOn(wrapper.vm, "downloadExcelKK");
+    await wrapper.vm.downloadExcelKK();
+    expect(downloadExcelKKSpy).toHaveBeenCalled();
+  });
+  it("is fetching downloadExcelFS", async () => {
+    const downloadExcelFSSpy = jest.spyOn(wrapper.vm, "downloadExcelFS");
+    await wrapper.vm.downloadExcelFS();
+    expect(downloadExcelFSSpy).toHaveBeenCalled();
+  });
 });

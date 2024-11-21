@@ -16,19 +16,9 @@ jest.mock("vue-router", () => ({
   createWebHistory: jest.fn(() => ({})), // Mock createWebHistory
 }));
 
-jest.mock("@/services/feasibility-study", () => {
-  return jest.fn().mockImplementation(() => ({
-    getMesinById: jest.fn(),
-    getAsumsiFeasibility: jest.fn(),
-  }));
-});
+jest.mock("@/services/feasibility-study");
 
-jest.mock("@/services/persetujuan-service", () => {
-  return jest.fn().mockImplementation(() => ({
-    getPersetujuanFSSentral: jest.fn(),
-    updateStatusFS: jest.fn(),
-  }));
-});
+jest.mock("@/services/persetujuan-service");
 
 describe("DetailFSMesin.vue", () => {
   let wrapper: any;
@@ -65,6 +55,32 @@ describe("DetailFSMesin.vue", () => {
     const infoHeader = wrapper.findComponent({ name: "InfoHeader" });
     expect(infoHeader.exists()).toBe(true);
     expect(infoHeader.props("namaMesin")).toBe("Mesin Test");
+  });
+
+  it("is fetching fetchDataTeknis", async () => {
+    const fetchDataTeknisSpy = jest.spyOn(wrapper.vm, "fetchDataTeknis");
+    await wrapper.vm.fetchDataTeknis();
+    expect(fetchDataTeknisSpy).toHaveBeenCalled();
+  });
+  it("is fetching fetchDataFinansial", async () => {
+    const fetchDataFinansialSpy = jest.spyOn(wrapper.vm, "fetchDataFinansial");
+    await wrapper.vm.fetchDataFinansial();
+    expect(fetchDataFinansialSpy).toHaveBeenCalled();
+  });
+  it("is fetching fetchListPembina", async () => {
+    const fetchListPembinaSpy = jest.spyOn(wrapper.vm, "fetchListPembina");
+    await wrapper.vm.fetchListPembina();
+    expect(fetchListPembinaSpy).toHaveBeenCalled();
+  });
+  it("is fetching fetchUnitPengelola", async () => {
+    const fetchUnitPengelolaSpy = jest.spyOn(wrapper.vm, "fetchUnitPengelola");
+    await wrapper.vm.fetchUnitPengelola();
+    expect(fetchUnitPengelolaSpy).toHaveBeenCalled();
+  });
+  it("is fetching fetchComboBahanBakar", async () => {
+    const fetchComboBahanBakarSpy = jest.spyOn(wrapper.vm, "fetchComboBahanBakar");
+    await wrapper.vm.fetchComboBahanBakar();
+    expect(fetchComboBahanBakarSpy).toHaveBeenCalled();
   });
 
   // it('should show modal when "Tolak Laporan" button is clicked', async () => {

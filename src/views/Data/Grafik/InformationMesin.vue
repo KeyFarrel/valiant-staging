@@ -444,88 +444,88 @@ const tahunData = computed(() => props.tahunData);
 // const idMesin = computed(() => props.idMesin);
 
 interface Mesin {
-  idMesin: number;
-  tahunData: number;
+  idMesin: number
+  tahunData: number
 }
 
 interface PlanningItem {
-  data: any;
-  mesin: string;
-  fs_wacc_on_project: string;
-  fs_wacc_on_equity: string;
-  fs_average_cf: string;
-  fs_average_eaf: string;
-  fs_irr_equity: string;
-  fs_irr_project: string;
-  fs_npv_equity: string;
-  fs_npv_project: string;
+  data: any
+  mesin: string
+  fs_wacc_on_project: string
+  fs_wacc_on_equity: string
+  fs_average_cf: string
+  fs_average_eaf: string
+  fs_irr_equity: string
+  fs_irr_project: string
+  fs_npv_equity: string
+  fs_npv_project: string
 }
 
 interface RelProyItem {
-  data: any;
-  mesin: string;
-  wacc_on_project: string;
-  wacc_on_equity: string;
-  average_cf: string;
-  average_eaf: string;
-  irr_equity: string;
-  irr_project: string;
-  npv_equity: string;
-  npv_project: string;
+  data: any
+  mesin: string
+  wacc_on_project: string
+  wacc_on_equity: string
+  average_cf: string
+  average_eaf: string
+  irr_equity: string
+  irr_project: string
+  npv_equity: string
+  npv_project: string
 }
 
 interface RelYoyItem {
-  data: any;
-  mesin: string;
-  wacc_on_project: string;
-  wacc_on_equity: string;
-  average_cf: string;
-  average_eaf: string;
-  irr_equity: string;
-  irr_project: string;
-  npv_equity: string;
-  npv_project: string;
+  data: any
+  mesin: string
+  wacc_on_project: string
+  wacc_on_equity: string
+  average_cf: string
+  average_eaf: string
+  irr_equity: string
+  irr_project: string
+  npv_equity: string
+  npv_project: string
 }
 
 const fetchPlanningMesin = async () => {
   try {
     const response: any = await grafikService.getPlanningMesin({ id_mesin: props.idMesin })
-    dataPlanningMesin.value = response.data;
+    dataPlanningMesin.value = response.data
   } catch (error) {
-    console.error('Fetch Planning Mesin Error :', error);
+    console.error('Fetch Planning Mesin Error :', error)
   }
 }
 
 const fetchRealisasiProyeksiMesin = async () => {
   try {
     const response: any = await grafikService.getRealisasiProyeksiMesin({ tahun: tahunData.value, id_mesin: props.idMesin })
-    dataRealisasiMesin.value = response.data;
+    dataRealisasiMesin.value = response.data
   } catch (error) {
-    console.error('Fetch Planning Mesin Error :', error);
+    console.error('Fetch Planning Mesin Error :', error)
   }
 }
 const fetchRealisasiYoyMesin = async () => {
   try {
     const response: any = await grafikService.getRealisasiYoyMesin({ id_mesin: props.idMesin, tahun: tahunData.value - 1 })
-    dataYoyMesin.value = response.data;
+    dataYoyMesin.value = response.data
   } catch (error) {
-    console.error('Fetch Planning Mesin Error :', error);
+    console.error('Fetch Planning Mesin Error :', error)
   }
 }
 
 watch(tahunData, async (tahun) => {
-  isLoading.value = true;
-  await fetchPlanningMesin();
-  await fetchRealisasiProyeksiMesin();
-  await fetchRealisasiYoyMesin();
-  isLoading.value = false;
+  isLoading.value = true
+  await fetchPlanningMesin()
+  await fetchRealisasiProyeksiMesin()
+  await fetchRealisasiYoyMesin()
+  isLoading.value = false
 })
 
 onMounted(async () => {
-  isLoading.value = true;
-  await fetchPlanningMesin();
-  await fetchRealisasiProyeksiMesin();
-  await fetchRealisasiYoyMesin();
-  isLoading.value = false;
+  isLoading.value = true
+  await fetchPlanningMesin()
+  await fetchRealisasiProyeksiMesin()
+  await fetchRealisasiYoyMesin()
+  isLoading.value = false
 })
 </script>
