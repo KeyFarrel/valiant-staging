@@ -1415,8 +1415,6 @@ watch(tahunData, async (tahun) => {
             tahunOptimum = res.data[i].tahun
           }
         }
-      } else {
-        dataWLCAll == null;
       }
 
       chartWLCAll.value = {
@@ -1647,8 +1645,6 @@ watch(tahunData, async (tahun) => {
             res.data[i].cost_komp_d
           );
         }
-      } else {
-        dataWLCKom == null;
       }
 
       chartWLCKom.value = {
@@ -1836,8 +1832,6 @@ watch(tahunData, async (tahun) => {
             tahunOptimum = res.data[i].tahun
           }
         }
-      } else {
-        dataPlanning == null;
       }
 
       chartPlanning.value = {
@@ -2103,8 +2097,6 @@ watch(tahunData, async (tahun) => {
             tahunOptimum = res.data[0].realisasi_proyeksi[i].tahun
           }
         }
-      } else {
-        dataPRP == null;
       }
 
       dataPRPPlan.value = res.data[0].planning;
@@ -2154,8 +2146,6 @@ watch(tahunData, async (tahun) => {
             tahunOptimumPlan = res.data[0].planning[j].tahun
           }
         }
-      } else {
-        dataPRPPlan == null;
       }
 
       chartPRP.value = {
@@ -2744,8 +2734,6 @@ watch(tahunData, async (tahun) => {
             tahunOptimum = res.data[0].realisasi_proyeksi[i].tahun
           }
         }
-      } else {
-        dataPRPLastYear == null;
       }
 
       dataPRPLastYearPlan.value = res.data[0].planning;
@@ -2797,8 +2785,6 @@ watch(tahunData, async (tahun) => {
             tahunOptimumPlan = res.data[0].planning[j].tahun
           }
         }
-      } else {
-        dataPRPLastYearPlan == null;
       }
 
       chartLastYear.value = {

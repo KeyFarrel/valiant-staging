@@ -851,7 +851,7 @@ const dataFinansialDetail = ref();
 const biayaKepegawaian = ref('');
 const costComponentA = ref('');
 const costComponentADetail = ref<any[]>([]);
-const costComponentB = ref(picked.value === 'pisah' ? '' : '');
+const costComponentB = ref('');
 const biayaPemeliharaanRutin = ref('');
 const biayaAdministrasiUmum = ref('');
 const biayaPembelianTenagaListrik = ref('');

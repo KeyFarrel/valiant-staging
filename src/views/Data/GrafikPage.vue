@@ -599,7 +599,6 @@ const handleChangeSentral = async () => {
     await fetchPetaSentral();
     await fetchDataSentral();
     await fetchPeriodeTahunSentral();
-    selectedTitle.value = selectedTitle.value;
     replaceSentral();
   } catch (error) {
     console.error('Handle Change Sentral Error : ' + error);

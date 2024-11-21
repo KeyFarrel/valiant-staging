@@ -303,7 +303,7 @@
             </label>
             <div>
               <div>
-                <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" class="w-6 ml-5" />
+                <img alt="Preview" src="https://www.gstatic.com/recaptcha/api2/logo_48.png" class="w-6 ml-5" />
                 <span class="text-[9px] mr-1 ml-2">reCAPTCHA</span>
                 <div class="flex">
                   <a href="#" class="text-[9px] mr-1">Privacy</a>
@@ -651,17 +651,11 @@ const onSubmitLogin = async () => {
       valEmail.value = valEmail.value.replace(/\s+/g, '');
       valPassword.value = valPassword.value.replace(/\s+/g, '');
 
-      if (emailRegex.test(valEmail.value)) {
-        param = {
-          email: valEmail.value,
-          password: valPassword.value,
-        };
-      } else {
-        param = {
-          email: valEmail.value,
-          password: valPassword.value,
-        };
-      }
+      param = {
+        email: valEmail.value,
+        password: valPassword.value,
+      };
+
       try {
         const response: any = await loginService.login(param);
         const token = response.data.token;

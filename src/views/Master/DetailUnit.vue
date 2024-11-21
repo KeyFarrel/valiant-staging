@@ -135,7 +135,7 @@
                 <ol-source-osm />
               </ol-tile-layer>
               <ol-overlay :position="[sentralDataById.longitude, sentralDataById.latitude]">
-                <img class="w-4 h-4" src="../../assets/img/Non-EBT.png" />
+                <img alt="Preview" class="w-4 h-4" src="../../assets/img/Non-EBT.png" />
               </ol-overlay>
             </ol-map>
           </div>
@@ -347,7 +347,7 @@
               </ol-tile-layer>
               <ol-overlay
                 :position="[mesinItem.longitude !== '' ? mesinItem.longitude : sentralDataById.longitude, mesinItem.latitude !== '' ? mesinItem.latitude : sentralDataById.latitude]">
-                <img class="w-4 h-4" src="../../assets/img/Non-EBT.png" />
+                <img alt="Preview" class="w-4 h-4" src="../../assets/img/Non-EBT.png" />
               </ol-overlay>
             </ol-map>
           </div>

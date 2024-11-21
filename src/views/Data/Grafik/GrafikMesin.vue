@@ -1666,8 +1666,6 @@ const fetchGrafikWLCAllMesin = async () => {
 
       var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxWlc, maxRev]
       finalMax = Math.max.apply(Math, listOfMax);
-    } else {
-      dataWLCAllMesin == null;
     }
 
     chartWLCAllMesin.value = isBepFounded ? {
@@ -2032,9 +2030,7 @@ const fetchGrafikWLCKomMesin = async () => {
           response.data[i].cost_komp_d
         );
       };
-    } else {
-      dataWLCKomMesin == null;
-    };
+    }
 
     chartWLCKomMesin.value = {
       tooltip: {
@@ -2255,9 +2251,7 @@ const fetchGrafikPlanMesin = async () => {
 
       var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxWlc, maxRev]
       finalMax = Math.max.apply(Math, listOfMax);
-    } else {
-      dataPlanMesin == null
-    };
+    }
 
     chartPlanningMesin.value = isBepFounded ? {
       title: {
@@ -2607,8 +2601,6 @@ const fetchGrafikPlanKomMesin = async () => {
           response.data[i].cost_komp_d
         );
       }
-    } else {
-      dataPlanKomMesin == null
     }
 
     chartPlanKomMesin.value = {
@@ -2854,8 +2846,6 @@ const fetchGrafikPRPMesin = async () => {
 
       var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxsumRev, maxWlc, maxRev, maxRevA, maxRevB, maxRevC, maxRevD];
       finalMax = Math.max.apply(Math, listOfMax);
-    } else {
-      dataPRPMesin == null;
     }
 
     dataPRPPlanMesin.value = response.data[0].planning;
@@ -2953,8 +2943,6 @@ const fetchGrafikPRPMesin = async () => {
       var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxsumRev, maxWlc, maxRev, maxRevA, maxRevB, maxRevC, maxRevD];
       finalMaxPlan = Math.max.apply(Math, listOfMax)
       // console.log(profitLoss)
-    } else {
-      dataPRPPlanMesin == null;
     }
 
     if (isBepKKFounded && isBepFSFounded) {
@@ -5711,8 +5699,6 @@ const fetchGrafikPRPLastYearMesin = async () => {
         //   tahunOptimum = response.data[0].realisasi_proyeksi[i].tahun
         // }
       }
-    } else {
-      dataPRPLastYearMesin == null;
     }
 
     dataPRPLastYearPlanMesin.value = response.data[0].planning;
@@ -5783,8 +5769,6 @@ const fetchGrafikPRPLastYearMesin = async () => {
         //   tahunOptimumPlan = response.data[0].planning[j].tahun
         // }
       }
-    } else {
-      dataPRPLastYearPlanMesin == null;
     }
 
     chartLastYearMesin.value = {
