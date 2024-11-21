@@ -846,7 +846,9 @@ const fetchPersetujuanKK = async (page?: number) => {
       tahun: yearPicked.value.toString(),
       search: searchQKK.value.toUpperCase(),
     });
-    page ? (navigationKK.value.currentPage = 1) : null;
+    if (page) {
+      navigationKK.value.currentPage = 1;
+    }
     persetujuanKK.value = response.data;
     navigationKK.value.totalPages = response.meta.totalPages;
     navigationKK.value.totalRecords = response.meta.totalRecords;
@@ -867,7 +869,9 @@ const fetchPersetujuanFS = async (page?: number) => {
       limit: navigationFS.value.limit,
       search: searchQFS.value.toUpperCase(),
     });
-    page ? (navigationFS.value.currentPage = 1) : null;
+    if (page) {
+      (navigationFS.value.currentPage = 1)
+    }
     persetujuanFS.value = response.data;
     navigationFS.value.totalPages = response.meta.totalPages;
     navigationFS.value.totalRecords = response.meta.totalRecords;
