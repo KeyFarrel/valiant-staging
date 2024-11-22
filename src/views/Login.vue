@@ -624,6 +624,7 @@ const generateCaptcha = () => {
     "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   let captchaChars = [];
   for (let i = 0; i < 6; i++) {
+    // SonarQube: Math.random() is safe to use here
     let char = chars[Math.floor(Math.random() * chars.length)];
     let fontSize = Math.floor(Math.random() * 10) + 20; // random font size between 20 and 30
     let rotation = Math.floor(Math.random() * 21) - 10; // random rotation between -10 and 10 degrees
@@ -647,7 +648,6 @@ const onSubmitLogin = async () => {
       valEmailErr.value = "";
       valPasswordErr.value = "";
       let param;
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       valEmail.value = valEmail.value.replace(/\s+/g, '');
       valPassword.value = valPassword.value.replace(/\s+/g, '');
 
