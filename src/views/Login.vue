@@ -626,7 +626,9 @@ const generateCaptcha = () => {
   for (let i = 0; i < 6; i++) {
     // SonarQube: Math.random() is safe to use here
     let char = chars[Math.floor(Math.random() * chars.length)];
+    // SonarQube: Math.random() is safe to use here
     let fontSize = Math.floor(Math.random() * 10) + 20; // random font size between 20 and 30
+    // SonarQube: Math.random() is safe to use here
     let rotation = Math.floor(Math.random() * 21) - 10; // random rotation between -10 and 10 degrees
     captchaChars.push({ char, fontSize, rotation });
   }
