@@ -126,7 +126,7 @@
       <BestPerformance />
     </div>
     <div class="z-0 space-y-3 h-[75dvh]">
-      <ol-map style="width: 100%; height: 71.5dvh;" @moveend="consoleZoom">
+      <ol-map style="width: 100%; height: calc(71.5 * var(--dvh, 1vh));" @moveend="consoleZoom">
         <ol-view ref="viewRef" :center="center" :rotation="rotation" :zoom="zoom" :minZoom="4"
           :projection="projection" />
         <ol-tile-layer>
