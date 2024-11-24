@@ -1,7 +1,7 @@
 <template>
   <ModalWrapper :show-modal="isShowModalConfirmation" :width="'w-auto'" :height="'h-auto'">
     <ConfirmationDialog :title="'Konfirmasi'"
-      :subtitle="'Apakah anda yakin menyimpan? <br>Inputan tidak dapat diubah jika sudah disimpan'"
+      :subtitle="'Apakah anda yakin menyimpan? \nInputan tidak dapat diubah jika sudah disimpan'"
       :button-title="'Kirim'" @on-batal-click="isShowModalConfirmation = false"
       @on-accept-click="isShowModalConfirmation = false; emit('on-save'); selectedTitle = 'Opsi Simulasi'" />
   </ModalWrapper>

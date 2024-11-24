@@ -1,12 +1,12 @@
 <template>
   <Loading v-if="isLoading" />
   <ModalWrapper :show-modal="isConfirmationOpen" :width="'w-auto'" :height="'h-auto'">
-    <ConfirmationDialog :title="'Konfirmasi'" :subtitle="'Apakah anda yakin menyimpan data mesin tersebut? <br>'"
+    <ConfirmationDialog :title="'Konfirmasi'" :subtitle="'Apakah anda yakin menyimpan data mesin tersebut? \n'"
       :button-title="'Kirim'" @on-batal-click="isConfirmationOpen = false"
       @on-accept-click="updateMesinById(selectedMesin.idMesin, selectedMesin.mesinIndex, selectedMesin.namaMesin)" />
   </ModalWrapper>
   <ModalWrapper :show-modal="isConfirmationOpenSentral" :width="'w-auto'" :height="'h-auto'">
-    <ConfirmationDialog :title="'Konfirmasi'" :subtitle="'Apakah anda yakin menyimpan data sentral tersebut? <br>'"
+    <ConfirmationDialog :title="'Konfirmasi'" :subtitle="'Apakah anda yakin menyimpan data sentral tersebut? \n'"
       :button-title="'Kirim'" @on-batal-click="isConfirmationOpenSentral = false" @on-accept-click="updateSentral" />
   </ModalWrapper>
   <ModalNotification :showModal="showModal" :animation-data="jsonData" :title="'Data Berhasil Disimpan'"
