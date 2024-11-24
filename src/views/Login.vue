@@ -624,12 +624,9 @@ const generateCaptcha = () => {
     "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   let captchaChars = [];
   for (let i = 0; i < 6; i++) {
-    // SonarQube: Math.random() is safe to use here
-    let char = chars[Math.floor(Math.random() * chars.length)];
-    // SonarQube: Math.random() is safe to use here
-    let fontSize = Math.floor(Math.random() * 10) + 20; // random font size between 20 and 30
-    // SonarQube: Math.random() is safe to use here
-    let rotation = Math.floor(Math.random() * 21) - 10; // random rotation between -10 and 10 degrees
+    let char = chars[Math.floor(crypto.getRandomValues(new Uint32Array(1))[0] / (0xFFFFFFFF + 1) * chars.length)];
+    let fontSize = Math.floor(crypto.getRandomValues(new Uint32Array(1))[0] / (0xFFFFFFFF + 1) * 10) + 20; // random font size between 20 and 30
+    let rotation = Math.floor(crypto.getRandomValues(new Uint32Array(1))[0] / (0xFFFFFFFF + 1) * 21) - 10; // random rotation between -10 and 10 degrees
     captchaChars.push({ char, fontSize, rotation });
   }
   captcha.value = captchaChars;
