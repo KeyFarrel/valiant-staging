@@ -5,6 +5,6 @@ export default class DateFormat{
     const datePart = `${date.getUTCDate()} ${date.toLocaleString('id-ID', { month: 'long' })} ${date.getUTCFullYear()}`;
   const timePart = `${date.getUTCHours().toString().padStart(2, '0')}:${date.getUTCMinutes().toString().padStart(2, '0')}`;
 
-  return `${datePart}<br>${timePart} WIB`;
+  return `${datePart}\n${timePart} WIB`;
   }
 }

@@ -24,7 +24,7 @@ const nodeMode: any = import.meta.env.MODE;
 const store = useConnectionStatusStore();
 watch(idle, (isTimeout) => {
   if (isTimeout) {
-    if (nodeMode === 'production' || nodeMode === 'staging') {
+    if (nodeMode === 'production') {
       authService.logOut();
     }
   }

@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col space-y-5">
     <p class="text-xl font-semibold text-primaryTextColor">{{ props.title }}</p>
-    <p class="text-base text-textDisabledColor" v-html="props.subtitle"></p>
+    <p class="text-base whitespace-pre-line text-textDisabledColor">{{ props.subtitle }}</p>
     <div class="w-full h-0.5 bg-strokeColor"></div>
     <div class="flex flex-row justify-end space-x-3">
       <button

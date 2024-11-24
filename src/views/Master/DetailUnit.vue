@@ -1,12 +1,12 @@
 <template>
   <Loading v-if="isLoading" />
   <ModalWrapper :show-modal="isConfirmationOpen" :width="'w-auto'" :height="'h-auto'">
-    <ConfirmationDialog :title="'Konfirmasi'" :subtitle="'Apakah anda yakin menyimpan data mesin tersebut? <br>'"
+    <ConfirmationDialog :title="'Konfirmasi'" :subtitle="'Apakah anda yakin menyimpan data mesin tersebut? \n'"
       :button-title="'Kirim'" @on-batal-click="isConfirmationOpen = false"
       @on-accept-click="updateMesinById(selectedMesin.idMesin, selectedMesin.mesinIndex, selectedMesin.namaMesin)" />
   </ModalWrapper>
   <ModalWrapper :show-modal="isConfirmationOpenSentral" :width="'w-auto'" :height="'h-auto'">
-    <ConfirmationDialog :title="'Konfirmasi'" :subtitle="'Apakah anda yakin menyimpan data sentral tersebut? <br>'"
+    <ConfirmationDialog :title="'Konfirmasi'" :subtitle="'Apakah anda yakin menyimpan data sentral tersebut? \n'"
       :button-title="'Kirim'" @on-batal-click="isConfirmationOpenSentral = false" @on-accept-click="updateSentral" />
   </ModalWrapper>
   <ModalNotification :showModal="showModal" :animation-data="jsonData" :title="'Data Berhasil Disimpan'"
@@ -135,7 +135,7 @@
                 <ol-source-osm />
               </ol-tile-layer>
               <ol-overlay :position="[sentralDataById.longitude, sentralDataById.latitude]">
-                <img class="w-4 h-4" src="../../assets/img/Non-EBT.png" />
+                <img alt="Preview" class="w-4 h-4" src="../../assets/img/Non-EBT.png" />
               </ol-overlay>
             </ol-map>
           </div>
@@ -347,7 +347,7 @@
               </ol-tile-layer>
               <ol-overlay
                 :position="[mesinItem.longitude !== '' ? mesinItem.longitude : sentralDataById.longitude, mesinItem.latitude !== '' ? mesinItem.latitude : sentralDataById.latitude]">
-                <img class="w-4 h-4" src="../../assets/img/Non-EBT.png" />
+                <img alt="Preview" class="w-4 h-4" src="../../assets/img/Non-EBT.png" />
               </ol-overlay>
             </ol-map>
           </div>

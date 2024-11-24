@@ -11,7 +11,7 @@
     :title="'Data berhasil disimpan'" :subtitle="'Data telah berhasil disimpan'" />
   <ModalWrapper :show-modal="isShowFinalConfirmation" :z-index="'z-[55]'" :width="'w-auto'" :height="'h-auto'">
     <ConfirmationDialog :title="'Konfirmasi'"
-      :subtitle="'Apakah anda yakin menyimpan? <br>Inputan tidak dapat diubah jika sudah disimpan'"
+      :subtitle="'Apakah anda yakin menyimpan? \nInputan tidak dapat diubah jika sudah disimpan'"
       :button-title="'Simpan'" @on-batal-click="isShowFinalConfirmation = false" @on-accept-click="handleFinalSubmit" />
   </ModalWrapper>
   <ModalNotification :show-modal="isFinalSubmitSuccess" :animation-data="successJsonData"
@@ -851,7 +851,7 @@ const dataFinansialDetail = ref();
 const biayaKepegawaian = ref('');
 const costComponentA = ref('');
 const costComponentADetail = ref<any[]>([]);
-const costComponentB = ref(picked.value === 'pisah' ? '' : '');
+const costComponentB = ref('');
 const biayaPemeliharaanRutin = ref('');
 const biayaAdministrasiUmum = ref('');
 const biayaPembelianTenagaListrik = ref('');

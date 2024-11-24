@@ -574,8 +574,6 @@ onMounted(async () => {
 
         var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxWlc, maxRev]
         finalMax = Math.max.apply(Math, listOfMax)
-      } else {
-        dataWLCAllMesin == null
       }
 
       chartWLCAllMesin.value = isBepFounded ? {
@@ -940,8 +938,6 @@ onMounted(async () => {
             res.data[i].cost_komp_d
           );
         }
-      } else {
-        dataWLCKomMesin == null;
       }
 
       chartWLCKomMesin.value = {

@@ -126,7 +126,7 @@
       <BestPerformance />
     </div>
     <div class="z-0 space-y-3 h-[75dvh]">
-      <ol-map style="width: 100%; height: 71.5dvh;" @moveend="consoleZoom">
+      <ol-map style="width: 100%; height: calc(71.5 * var(--dvh, 1vh));" @moveend="consoleZoom">
         <ol-view ref="viewRef" :center="center" :rotation="rotation" :zoom="zoom" :minZoom="4"
           :projection="projection" />
         <ol-tile-layer>
@@ -134,10 +134,10 @@
         </ol-tile-layer>
         <ol-overlay v-for="( item, i ) in dataPeta " :key="i" :position="[item.lng, item.lat]">
           <img v-if="item.kode_jenis_energi === 'EBT'" @mouseenter="showByIndex = i"
-            @click="getDetailSentral(item.kode_sentral)" src="../../assets/img/ebt.png"
+            @click="getDetailSentral(item.kode_sentral)" alt="Preview" src="../../assets/img/ebt.png"
             class="rounded-full cursor-pointer" :class="zoom >= 15 ? 'w-5 h-5' : 'w-3 h-3'">
           <img v-else @mouseenter="showByIndex = i" @click="getDetailSentral(item.kode_sentral)"
-            src="../../assets/img/Non-EBT.png" class="rounded-full cursor-pointer"
+            src="../../assets/img/Non-EBT.png" alt="Preview" class="rounded-full cursor-pointer"
             :class="zoom >= 15 ? 'w-5 h-5' : 'w-3 h-3'">
         </ol-overlay>
         <ol-overlay v-for="( item, i ) in dataPeta " :position="[item.lng, item.lat]" :key="i">

@@ -303,7 +303,7 @@
             </label>
             <div>
               <div>
-                <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" class="w-6 ml-5" />
+                <img alt="Preview" src="https://www.gstatic.com/recaptcha/api2/logo_48.png" class="w-6 ml-5" />
                 <span class="text-[9px] mr-1 ml-2">reCAPTCHA</span>
                 <div class="flex">
                   <a href="#" class="text-[9px] mr-1">Privacy</a>
@@ -624,9 +624,9 @@ const generateCaptcha = () => {
     "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   let captchaChars = [];
   for (let i = 0; i < 6; i++) {
-    let char = chars[Math.floor(Math.random() * chars.length)];
-    let fontSize = Math.floor(Math.random() * 10) + 20; // random font size between 20 and 30
-    let rotation = Math.floor(Math.random() * 21) - 10; // random rotation between -10 and 10 degrees
+    let char = chars[Math.floor(crypto.getRandomValues(new Uint32Array(1))[0] / (0xFFFFFFFF + 1) * chars.length)];
+    let fontSize = Math.floor(crypto.getRandomValues(new Uint32Array(1))[0] / (0xFFFFFFFF + 1) * 10) + 20; // random font size between 20 and 30
+    let rotation = Math.floor(crypto.getRandomValues(new Uint32Array(1))[0] / (0xFFFFFFFF + 1) * 21) - 10; // random rotation between -10 and 10 degrees
     captchaChars.push({ char, fontSize, rotation });
   }
   captcha.value = captchaChars;
@@ -647,21 +647,14 @@ const onSubmitLogin = async () => {
       valEmailErr.value = "";
       valPasswordErr.value = "";
       let param;
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       valEmail.value = valEmail.value.replace(/\s+/g, '');
       valPassword.value = valPassword.value.replace(/\s+/g, '');
 
-      if (emailRegex.test(valEmail.value)) {
-        param = {
-          email: valEmail.value,
-          password: valPassword.value,
-        };
-      } else {
-        param = {
-          email: valEmail.value,
-          password: valPassword.value,
-        };
-      }
+      param = {
+        email: valEmail.value,
+        password: valPassword.value,
+      };
+
       try {
         const response: any = await loginService.login(param);
         const token = response.data.token;

@@ -59,7 +59,8 @@
         <div v-for="(itemData, itemIndex) in logData" class="flex space-x-3 text-sm"
           :class="{ 'items-center': itemData.action === 'Login' || itemData.action === 'Logout' || itemData.action === 'Unduh Data' || itemData.action === 'Tambah' || itemData.action === 'Setujui Data' || itemData.action === 'Kirim Data' }">
           <div class="flex flex-col flex-shrink-0 text-xs">
-            <p class="text-textFieldColor text-end" v-html="dateFormat.formatDate(itemData.created_at)"></p>
+            <p class="whitespace-pre-line text-textFieldColor text-end">{{ dateFormat.formatDate(itemData.created_at) }}
+            </p>
           </div>
           <div class="flex items-center justify-center flex-shrink-0 w-12 h-12 rounded-full"
             :class="{ 'bg-[#EBF6FF]': itemData.action === 'Login', 'bg-[#FCEEF2]': itemData.action === 'Logout', 'bg-[#E7F1FD]': itemData.action === 'Draft Data', 'bg-[#FFF2FF]': itemData.action === 'Revisi Data', 'bg-[#EFF3F4]': itemData.action === 'Kirim Data', 'bg-[#FFE5E6]': itemData.action.includes('Tolak'), 'bg-[#E5E5E5]': itemData.action === 'Unduh Data', 'bg-[#E2FCF3]': itemData.action === 'Setujui Data', 'bg-[#FFF8EB]': itemData.action === 'Tambah', 'bg-[#F5F5FF]': itemData.action === 'Edit' }">
