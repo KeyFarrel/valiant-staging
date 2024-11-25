@@ -412,20 +412,20 @@ const isVerified = ref<boolean>(false)
 const isShowCounter = ref<boolean>(false);
 const remainingAttempt = ref<number>(0);
 const isShowLocked = ref<boolean>(false);
-const isModalChangePasswordShow = ref<boolean>(false);
+const isModalChangePasswordShow = ref<boolean>(false)
 const showOldPassword = ref<boolean>(false);
-const showNewPassword = ref<boolean>(false);
+const showNewPassword = ref<boolean>(false)
 const showConfirmNewPassword = ref<boolean>(false);
-const oldPassword = ref<string>("");
+const oldPassword = ref<string>("")
 const newPassword = ref<string>("");
-const confirmNewPassword = ref<string>("");
+const confirmNewPassword = ref<string>("")
 const hasMinLength = ref<boolean>(false);
-const hasNumber = ref<boolean>(false);
+const hasNumber = ref<boolean>(false)
 const hasUppercase = ref<boolean>(false);
-const hasLowercase = ref<boolean>(false);
+const hasLowercase = ref<boolean>(false)
 const hasSymbol = ref<boolean>(false);
-const isNewPasswordSameAsOld = ref<boolean>(false);
-const isPasswordMatched = ref<boolean>(false);
+const isNewPasswordSameAsOld = ref<boolean>(false)
+const isPasswordMatched = ref<boolean>(false)
 const isOldPasswordWrong = ref<boolean>(false);
 const isShowCompletePassword = ref<boolean>(false);
 const url = import.meta.env.VITE_API_URL;
@@ -522,6 +522,16 @@ const fetchDataProfile = async () => {
 //   event.preventDefault();
 // };
 
+
+const verifyMatchPassword = () => {
+  if (newPassword.value !== confirmNewPassword.value) {
+    isPasswordMatched.value = false;
+    console.log("Password tidak sama");
+  } else {
+    isPasswordMatched.value = true;
+    console.log("Password sama");
+  }
+}
 const verifyRequirementPassword = () => {
   const password = newPassword.value;
   hasMinLength.value = password.length >= 8;
@@ -533,33 +543,25 @@ const verifyRequirementPassword = () => {
   verifyMatchPassword();
 };
 
-const verifyMatchPassword = () => {
-  if (newPassword.value !== confirmNewPassword.value) {
-    isPasswordMatched.value = false;
-    console.log("Password tidak sama");
-  } else {
-    isPasswordMatched.value = true;
-    console.log("Password sama");
-  }
-}
 const resetInputAndAttribute = () => {
-  oldPassword.value = "";
+  oldPassword.value = ""
   newPassword.value = "";
   confirmNewPassword.value = "";
-  hasMinLength.value = false;
+  hasMinLength.value = false
   hasNumber.value = false;
-  hasUppercase.value = false;
+  hasUppercase.value = false
   hasLowercase.value = false;
-  hasSymbol.value = false;
+  hasSymbol.value = false
   isNewPasswordSameAsOld.value = false;
-  isPasswordMatched.value = false;
+  isPasswordMatched.value = false
   showOldPassword.value = false;
-  showNewPassword.value = false;
+  showNewPassword.value = false
   showConfirmNewPassword.value = false;
-};
+}
+
 const changePassword = async () => {
   if (!isPasswordMatched.value || !hasMinLength.value || !hasNumber.value || !hasUppercase.value || !hasLowercase.value || !hasSymbol.value) {
-    notifyError("Password tidak memenuhi persyaratan, mohon lengkapi persyaratan tersebut!", 7000);
+    notifyError("Password tidak memenuhi persyaratan, mohon lengkapi persyaratan tersebut!", 7000)
   } else if (isNewPasswordSameAsOld.value) {
     notifyError("Password baru tidak boleh sama dengan password lama yang anda masukkan!", 7000);
   } else {
