@@ -907,8 +907,8 @@ const openEditModals = async (id: number) => {
     formData.value.isLocked = response.data.is_locked;
     resetPasswordVal.value.emailReset = response.data.email;
     const responseSentral: any = await userService.getSentralByPengelola(
-      parseInt(formData.value.id_pengelola),
-      parseInt(formData.value.id_pembina)
+      formData.value.id_pengelola === null ? 0 : parseInt(formData.value.id_pengelola),
+      formData.value.id_pembina === null ? 0 : parseInt(formData.value.id_pembina)
     );
     handleChangeLevel(response.data.level_id);
     comboSentral.value = responseSentral.data;
@@ -938,7 +938,7 @@ const fetchPembina = async () => {
 
 const userPembina = (idPembina: number) => {
   if (listPembina.value.length > 0) {
-    if (idPembina !== 0) {
+    if (idPembina !== 0 && idPembina !== null) {
       return listPembina.value.find((pembina: any) => pembina.id_pembina === idPembina).pembina;
     }
     return 'Tidak Tersedia'
@@ -977,13 +977,11 @@ const editUserDataAndCloseModal = async () => {
   if (errorsEdit.value.length === 0) {
     try {
       var dataToPost = {};
-      if (formData.value.level_id === '1') {
+      if (formData.value.level_id === '1' || formData.value.level_id === '5') {
         dataToPost = {
           nama_pegawai: formData.value.nama_pegawai,
           nip: formData.value.nip,
           email: formData.value.email,
-          password: formData.value.password,
-          konfirmasi_password: formData.value.konfirmasi_password,
           role_id: parseInt(formData.value.role_id),
           level_id: parseInt(formData.value.level_id),
           id_ranting: formData.value.id_ranting,
@@ -1000,10 +998,8 @@ const editUserDataAndCloseModal = async () => {
         dataToPost = {
           nip: formData.value.nip,
           nama_pegawai: formData.value.nama_pegawai,
-          password: formData.value.password,
           email: formData.value.email,
           role_id: parseInt(formData.value.role_id),
-          konfirmasi_password: formData.value.konfirmasi_password,
           id_ranting: formData.value.id_ranting,
           level_id: parseInt(formData.value.level_id),
           id_cabang: parseInt(formData.value.id_cabang),
@@ -1019,8 +1015,6 @@ const editUserDataAndCloseModal = async () => {
           nama_pegawai: formData.value.nama_pegawai,
           nip: formData.value.nip,
           email: formData.value.email,
-          password: formData.value.password,
-          konfirmasi_password: formData.value.konfirmasi_password,
           role_id: parseInt(formData.value.role_id),
           level_id: parseInt(formData.value.level_id),
           id_ranting: formData.value.id_ranting,
@@ -1037,8 +1031,6 @@ const editUserDataAndCloseModal = async () => {
           nama_pegawai: formData.value.nama_pegawai,
           email: formData.value.email,
           nip: formData.value.nip,
-          konfirmasi_password: formData.value.konfirmasi_password,
-          password: formData.value.password,
           level_id: parseInt(formData.value.level_id),
           role_id: parseInt(formData.value.role_id),
           id_mesin: parseInt(formData.value.id_mesin),

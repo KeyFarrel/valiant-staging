@@ -70,4 +70,9 @@ ul li.selected {
   border-color: #0099AD;
   color: #0099AD;
 }
+
+button:hover svg path {
+  fill: white;
+  transition-duration: 300ms;
+}
 </style>
