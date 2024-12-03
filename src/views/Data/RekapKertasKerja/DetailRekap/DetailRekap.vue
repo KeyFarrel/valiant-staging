@@ -9,7 +9,7 @@
       <div class="flex flex-row items-center space-x-3">
         <VueDatePicker class="date-picker" v-model="selectedYear" @update:model-value="handleYearChange" year-picker
           teleport :clearable="false" :yearRange="listYear"
-          :filters="yearPickerService.filterYears(listtahunRealisasi, listYear[0], listYear[1])" />
+          :filters="yearPickerService.filterYears(listtahunRealisasi, parseInt(listYear[0]), parseInt(listYear[1]))" />
         <button
           class="flex items-center border border-[#0099AD] hover:border-hoverColor px-3 py-2 rounded-lg text-[#0099AD] hover:text-white hover:bg-hoverColor duration-300">
           <span class="mr-2 font-semibold"
