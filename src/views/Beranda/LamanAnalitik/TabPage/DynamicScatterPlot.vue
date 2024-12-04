@@ -92,7 +92,7 @@ const option = computed({
           padding: [2, 0, 0, -80],
         },
         splitNumber: 10,
-        // min: Math.min.apply(Math, props.source.map(item => item[0])) - Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10),
+        min: Math.min.apply(Math, props.source.map(item => item[0])) - Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10),
         max: props.xData.satuan === '%' ? 100 : Math.max.apply(Math, props.source.map(item => item[0])) + Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10),
       },
       yAxis: {
@@ -108,7 +108,7 @@ const option = computed({
           fontWeight: "bold",
         },
         splitNumber: 10,
-        // min: Math.min.apply(Math, props.source.map(item => item[1])) - Math.round((Math.max.apply(Math, props.source.map(item => item[1])) - Math.min.apply(Math, props.source.map(item => item[1]))) / 10),
+        min: Math.min.apply(Math, props.source.map(item => item[1])) < 0 ? Math.floor(Math.min.apply(Math, props.source.map(item => item[1])) * 1.1) : Math.ceil(Math.min.apply(Math, props.source.map(item => item[1]))),
         max: Math.max.apply(Math, props.source.map(item => item[1])) + Math.round((Math.max.apply(Math, props.source.map(item => item[1])) - Math.min.apply(Math, props.source.map(item => item[1]))) / 10)
       },
       visualMap: {
@@ -147,8 +147,8 @@ const option = computed({
           name: "PLNX",
           smooth: false,
           data: [
-            [0, props.pln?.y],
-            [props.xData.satuan === '%' ? 100 : Math.max.apply(Math, props.source.map(item => item[0])) == 0 ? 1 : Math.max.apply(Math, props.source.map(item => item[0])) + Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10), props.pln?.y],
+            [Math.min.apply(Math, props.source.map(item => item[0])) - Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10), props.pln?.y],
+            [props.xData.satuan === '%' ? 100 : Math.max.apply(Math, props.source.map(item => item[0])) + Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10), props.pln?.y],
           ],
           color: "#FF5656",
         },
@@ -158,7 +158,7 @@ const option = computed({
           name: "PLNY",
           smooth: false,
           data: [
-            [props.pln?.x, props.yData.satuan === '%' ? Math.min.apply(Math, props.source.map(item => item[1])) < 0 ? Math.floor(Math.min.apply(Math, props.source.map(item => item[1])) / 10) * 10 : 0 : 0],
+            [props.pln?.x, Math.min.apply(Math, props.source.map(item => item[1])) < 0 ? Math.floor(Math.min.apply(Math, props.source.map(item => item[1])) * 1.1) : Math.ceil(Math.min.apply(Math, props.source.map(item => item[1])))],
             [props.pln?.x, Math.max.apply(Math, props.source.map(item => item[1])) + Math.round((Math.max.apply(Math, props.source.map(item => item[1])) - Math.min.apply(Math, props.source.map(item => item[1]))) / 10)],
           ],
           color: "#FF5656",
@@ -169,8 +169,8 @@ const option = computed({
           name: "IPPX",
           smooth: false,
           data: [
-            [0, props.ipp?.y],
-            [props.xData.satuan === '%' ? 100 : props.xData.satuan === 'kcal/KWh' ? 10 : Math.max.apply(Math, props.source.map(item => item[0])) + Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10), props.ipp?.y],
+            [Math.min.apply(Math, props.source.map(item => item[0])) - Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10), props.ipp?.y],
+            [props.xData.satuan === '%' ? 100 : Math.max.apply(Math, props.source.map(item => item[0])) + Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10), props.ipp?.y],
           ],
           color: "#0EA976",
         },
@@ -180,7 +180,7 @@ const option = computed({
           name: "IPPY",
           smooth: false,
           data: [
-            [props.ipp?.x, 0],
+            [props.ipp?.x, Math.min.apply(Math, props.source.map(item => item[1])) < 0 ? Math.floor(Math.min.apply(Math, props.source.map(item => item[1])) * 1.1) : Math.ceil(Math.min.apply(Math, props.source.map(item => item[1]))),],
             [props.ipp?.x, Math.max.apply(Math, props.source.map(item => item[1])) + Math.round((Math.max.apply(Math, props.source.map(item => item[1])) - Math.min.apply(Math, props.source.map(item => item[1]))) / 10)],
           ],
           color: "#0EA976",
