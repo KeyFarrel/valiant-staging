@@ -30,12 +30,14 @@ const verifikasiSSO = async () => {
       const levelSentral = response.data.id_sentral === '' ? 0 : response.data.id_sentral;
       const idPembina = response.data.id_pembina === '' ? 0 : response.data.id_pembina;
       const kodePengelola = response.data.kode_pengelola === '' ? 0 : response.data.kode_pengelola;
+      const roleId = response.data.role_id === '' ? 0 : response.data.role_id;
       if (nodeMode === 'production') {
         encryptStorage.setItem('token', token);
         encryptStorage.setItem('nama_pegawai', namaPegawai);
         encryptStorage.setItem('level_id', levelID);
         encryptStorage.setItem('level_sentral', levelSentral);
         encryptStorage.setItem('id_pembina', idPembina);
+        encryptStorage.setItem('role_id', roleId);
         encryptStorage.setItem('kode_pengelola', kodePengelola);
       } else {
         localStorage.setItem('token', token);
@@ -43,6 +45,7 @@ const verifikasiSSO = async () => {
         localStorage.setItem('level_id', levelID);
         localStorage.setItem('level_sentral', levelSentral);
         localStorage.setItem('id_pembina', idPembina);
+        localStorage.setItem('role_id', roleId);
         localStorage.setItem('kode_pengelola', kodePengelola);
       }
       router.push('/peta');
