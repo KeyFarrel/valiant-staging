@@ -148,7 +148,7 @@
           <td>
             <div class="flex items-center justify-center" v-if="user.level_id != 1">
               <button type="button" @click="openEditModals(user.id)"
-                class="flex items-center justify-center hover:bg-blue-100 dark:hover:bg-blue-600 dark:hover:text-blue-500">
+                class="flex items-center justify-center hover:bg-blue-100">
                 <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <g clip-path="url(#clip0_14293_14997)">
                     <path fill-rule="evenodd" clip-rule="evenodd"
@@ -171,7 +171,8 @@
       <div class="flex items-center space-x-2 text-sm">
         <span>Menampilkan</span>
         <select v-model="navigation.limit" name="" id=""
-          class="text-sm text-gray-500 border-gray-300 rounded-lg cursor-pointer" @change="changePageLimit($event)">
+          class="p-2 text-sm text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
+          @change="changePageLimit($event)">
           <option value="10">10</option>
           <option value="20">20</option>
           <option value="30">30</option>
@@ -218,7 +219,7 @@
   <!-- Modal Tambah -->
   <ModalWrapper :showModal="showModalCreate" :width="'w-[750px]'" :height="'h-auto'">
     <div class="flex flex-row items-center justify-between">
-      <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+      <h3 class="text-xl font-bold text-gray-900">
         Tambah Pengguna
       </h3>
       <div>
@@ -242,7 +243,7 @@
         <!-- Kolom Kiri -->
         <div class="w-1/2 px-2">
           <div>
-            <label for="nama" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Nama
+            <label for="nama" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Nama
               Lengkap <span class="text-warningColor">*</span></label>
             <TextField id="nama" placeholder="Masukkan Nama Lengkap" class="text-xs" v-model="formData.nama_pegawai" />
           </div>
@@ -250,20 +251,20 @@
         <!-- Kolom Kanan -->
         <div class="w-1/2 px-2">
           <div>
-            <label for="nip" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">NIP <span
+            <label for="nip" class="block mb-2 text-xs font-semibold text-[#4D5E80]">NIP <span
                 class="text-warningColor">*</span></label>
             <TextField id="nip" placeholder="Masukkan NIP" class="text-xs" v-model="formData.nip" />
           </div>
         </div>
       </div>
       <div>
-        <label for="email" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Email <span
+        <label for="email" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Email <span
             class="text-warningColor">*</span></label>
         <TextField id="email" placeholder="Masukkan Email" class="text-xs" v-model="formData.email" />
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div class="relative">
-          <label for="password" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Password <span
+          <label for="password" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Password <span
               class="text-warningColor">*</span></label>
           <input id="password" :type="showPassword ? 'text' : 'password'" v-model="formData.password"
             class="w-full text-xs h-[38px] text-gray-500 border-gray-300 rounded-lg" placeholder="Masukkan Password" />
@@ -286,9 +287,8 @@
           </button>
         </div>
         <div class="relative">
-          <label for="konfirmasiPassword"
-            class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Konfirmasi Password <span
-              class="text-warningColor">*</span></label>
+          <label for="konfirmasiPassword" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Konfirmasi Password
+            <span class="text-warningColor">*</span></label>
           <input id="konfirmasiPassword" :type="showConfirmPassword ? 'text' : 'password'"
             v-model="formData.konfirmasi_password"
             class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg" placeholder="Masukkan Password" />
@@ -311,7 +311,7 @@
           </button>
         </div>
         <div>
-          <label for="level" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Level <span
+          <label for="level" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Level <span
               class="text-warningColor">*</span></label>
           <select v-model="formData.level_id"
             class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer"
@@ -323,7 +323,7 @@
           </select>
         </div>
         <div v-if="formData.level_id !== '1' && formData.level_id !== '5'">
-          <label for="unitInduk" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Unit
+          <label for="unitInduk" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Unit
             Pengelola <span class="text-warningColor">*</span></label>
           <select v-model="formData.id_pengelola" :disabled="formData.level_id == ''"
             class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer"
@@ -335,7 +335,7 @@
           </select>
         </div>
         <div>
-          <label for="role" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Role <span
+          <label for="role" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Role <span
               class="text-warningColor">*</span></label>
           <select v-model="formData.role_id" :disabled="formData.level_id == ''"
             class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer">
@@ -346,7 +346,7 @@
           </select>
         </div>
         <div v-if="!hiddenPembina.includes(formData.level_id)">
-          <label for="unitPembina" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Unit
+          <label for="unitPembina" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Unit
             Pembina <span class="text-warningColor">*</span></label>
           <select v-model="formData.id_pembina" :disabled="formData.id_pengelola === ''"
             class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer"
@@ -359,7 +359,7 @@
         </div>
       </div>
       <div v-if="!hiddenSentral.includes(formData.level_id)" class="w-full">
-        <label for="unitSentral" class="block mb-3 text-xs font-semibold text-[#4D5E80] dark:text-white">Unit
+        <label for="unitSentral" class="block mb-3 text-xs font-semibold text-[#4D5E80]">Unit
           Sentral <span class="text-warningColor">*</span></label>
         <select v-model="formData.id_sentral" :disabled="formData.id_pengelola === ''"
           class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer">
@@ -371,14 +371,14 @@
       </div>
       <div class="grid items-center grid-cols-2 gap-x-4">
         <div>
-          <p class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">
+          <p class="block mb-2 text-xs font-semibold text-[#4D5E80]">
             Status
           </p>
           <div class="flex">
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" class="sr-only peer" v-model="isActive" />
               <div
-                class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-[#9de5a8] dark:peer-focus:ring-[#21CD3C] dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#21CD3C]">
+                class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-[#9de5a8] peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#21CD3C]">
               </div>
               <span class="pl-3 text-xs font-medium text-[#333333]">
                 {{ isActive ? "Aktif" : "Tidak Aktif" }}
@@ -405,7 +405,7 @@
   <!-- Modal Edit -->
   <ModalWrapper :show-modal="isModalEdit" :width="'w-[800px]'" :height="'h-auto'">
     <div class="flex">
-      <h3 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">
+      <h3 class="mb-4 text-xl font-bold text-gray-900">
         Edit Pengguna
       </h3>
       <div class="mt-2 ml-auto">
@@ -429,7 +429,7 @@
         <!-- Kolom Kiri -->
         <div class="w-1/2 px-2">
           <div>
-            <label for="nama" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Nama
+            <label for="nama" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Nama
               Lengkap <span class="text-warningColor">*</span></label>
             <TextField id="nama" placeholder="Masukkan Nama Lengkap" class="text-xs" v-model="formData.nama_pegawai" />
           </div>
@@ -437,20 +437,20 @@
         <!-- Kolom Kanan -->
         <div class="w-1/2 px-2">
           <div>
-            <label for="nip" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">NIP <span
+            <label for="nip" class="block mb-2 text-xs font-semibold text-[#4D5E80]">NIP <span
                 class="text-warningColor">*</span></label>
             <TextField id="nip" placeholder="Masukkan NIP" class="text-xs" v-model="formData.nip" />
           </div>
         </div>
       </div>
       <div>
-        <label for="email" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Email <span
+        <label for="email" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Email <span
             class="text-warningColor">*</span></label>
         <TextField id="email" placeholder="Masukkan Email" class="text-xs" v-model="formData.email" />
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label for="level" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Level <span
+          <label for="level" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Level <span
               class="text-warningColor">*</span></label>
           <select v-model="formData.level_id"
             class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer"
@@ -462,7 +462,7 @@
           </select>
         </div>
         <div v-if="formData.level_id !== '1' && formData.level_id !== '5'">
-          <label for="unitInduk" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Unit
+          <label for="unitInduk" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Unit
             Pengelola <span class="text-warningColor">*</span></label>
           <select v-model="formData.id_pengelola" :disabled="formData.level_id == ''"
             class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer"
@@ -474,7 +474,7 @@
           </select>
         </div>
         <div>
-          <label for="role" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Role <span
+          <label for="role" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Role <span
               class="text-warningColor">*</span></label>
           <select v-model="formData.role_id" :disabled="formData.level_id === ''"
             class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer">
@@ -485,7 +485,7 @@
           </select>
         </div>
         <div v-if="!hiddenPembina.includes(formData.level_id)">
-          <label for="unitPembina" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Unit
+          <label for="unitPembina" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Unit
             Pembina <span class="text-warningColor">*</span></label>
           <select v-model="formData.id_pembina" :disabled="formData.id_pengelola === ''"
             class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer"
@@ -498,7 +498,7 @@
         </div>
       </div>
       <div v-if="!hiddenSentral.includes(formData.level_id)" class="w-full">
-        <label for="unitSentral" class="block mb-3 text-xs font-semibold text-[#4D5E80] dark:text-white">Unit
+        <label for="unitSentral" class="block mb-3 text-xs font-semibold text-[#4D5E80]">Unit
           Sentral <span class="text-warningColor">*</span></label>
         <select v-model="formData.id_sentral" :disabled="formData.id_pengelola === ''"
           class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer">
@@ -510,14 +510,14 @@
       </div>
       <div class="grid items-center grid-cols-2 gap-x-4">
         <div>
-          <p class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">
+          <p class="block mb-2 text-xs font-semibold text-[#4D5E80]">
             Status
           </p>
           <div class="flex">
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" class="sr-only peer" v-model="isActive" />
               <div
-                class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-[#9de5a8] dark:peer-focus:ring-[#21CD3C] dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#21CD3C]">
+                class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-[#9de5a8] peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#21CD3C]">
               </div>
               <span class="pl-3 text-xs font-medium text-[#333333]">
                 {{ isActive ? "Aktif" : "Tidak Aktif" }}
@@ -526,14 +526,14 @@
           </div>
         </div>
         <div>
-          <p class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">
+          <p class="block mb-2 text-xs font-semibold text-[#4D5E80]">
             Kunci Akun
           </p>
           <div class="flex">
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" class="sr-only peer" v-model="formData.isLocked" />
               <div
-                class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-[#9de5a8] dark:peer-focus:ring-[#21CD3C] dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#21CD3C]">
+                class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-[#9de5a8] peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#21CD3C]">
               </div>
               <span class="pl-3 text-xs font-medium text-[#333333]">
                 {{ formData.isLocked ? "Terkunci" : "Tidak Terkunci" }}
@@ -856,6 +856,7 @@ const fetchData = async () => {
     const { data, meta } = response;
     if (!data) pengguna.value = [];
     else pengguna.value = data;
+    console.log(pengguna.value)
     filteredPengguna.value = pengguna.value;
     navigation.value.totalPages = meta.totalPages;
     navigation.value.totalRecords = meta.totalRecords;

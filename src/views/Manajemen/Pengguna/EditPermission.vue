@@ -1,6 +1,6 @@
 <template>
   <Loading v-if="isLoading" />
-  <div class="bg-white p-6 rounded-lg h-full flex flex-col">
+  <div class="flex flex-col h-full p-6 bg-white rounded-lg">
     <form>
       <div class="flex flex-col w-full space-y-5">
         <div class="flex flex-row space-x-2">
@@ -14,7 +14,7 @@
               Level :
               <span class="text-primaryTextColor">{{
                 levelMappings[roleData.kode_level]
-                }}</span>
+              }}</span>
             </h5>
           </div>
         </div>
@@ -34,7 +34,7 @@
           </template>
           <template v-slot:table-body>
             <tr class="border" v-for="(permission, index) in combinedPermissions" :key="permission.id">
-              <td scope="row" class="whitespace-nowrap text-center">
+              <td scope="row" class="text-center whitespace-nowrap">
                 {{ index + 1 }}
               </td>
               <td class="text-center">
@@ -45,7 +45,7 @@
                   <input type="checkbox" v-model="permission.create" @change="updatePermission(permission)"
                     class="sr-only peer" />
                   <div
-                    class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-[#9de5a8] dark:peer-focus:ring-[#21CD3C] dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#21CD3C]">
+                    class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-[#9de5a8] peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#21CD3C]">
                   </div>
                 </label>
               </td>
@@ -54,7 +54,7 @@
                   <input type="checkbox" v-model="permission.read" @change="updatePermission(permission)"
                     class="sr-only peer" />
                   <div
-                    class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-[#9de5a8] dark:peer-focus:ring-[#21CD3C] dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#21CD3C]">
+                    class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-[#9de5a8] peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#21CD3C]">
                   </div>
                 </label>
               </td>
@@ -63,7 +63,7 @@
                   <input type="checkbox" v-model="permission.update" @change="updatePermission(permission)"
                     class="sr-only peer" />
                   <div
-                    class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-[#9de5a8] dark:peer-focus:ring-[#21CD3C] dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#21CD3C]">
+                    class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-[#9de5a8] peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#21CD3C]">
                   </div>
                 </label>
               </td>
@@ -72,25 +72,26 @@
                   <input type="checkbox" v-model="permission.delete" @change="updatePermission(permission)"
                     class="sr-only peer" />
                   <div
-                    class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-[#9de5a8] dark:peer-focus:ring-[#21CD3C] dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#21CD3C]">
+                    class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-[#9de5a8] peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#21CD3C]">
                   </div>
                 </label>
               </td> -->
             </tr>
           </template>
         </TableComponent>
-        <!-- <table class="w-full text-sm text-left text-gray-500 rounded overflow-hidden">
+        <!-- <table class="w-full overflow-hidden text-sm text-left text-gray-500 rounded">
           <thead class="pt-4 pb-4 border font-bold text-sm text-[#0099AD] sticky top-0">
             
           </thead>
-          <tbody class="overflow-y-auto text-gray-900 text-xs">
+          <tbody class="overflow-y-auto text-xs text-gray-900">
             
           </tbody>
         </table> -->
-        <nav class="bg-white flex items-center justify-between rounded-b-lg" aria-label="Table navigation">
+        <nav class="flex items-center justify-between bg-white rounded-b-lg" aria-label="Table navigation">
           <div class="flex items-center">
-            <span class="text-sm font-normal text-gray-500 inline-block pr-2">Menampilkan</span>
-            <select class="float-right border border-gray-300 text-sm font-semibold rounded block">
+            <span class="inline-block pr-2 text-sm font-normal text-gray-500">Menampilkan</span>
+            <select
+              class="p-2 text-sm text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300">
               <option selected value="-1">All</option>
               <option value="20">20</option>
               <option value="40">40</option>

@@ -74,7 +74,7 @@ export default {
   variants: {
     fill: ['hover', 'focus'],
   },
-  plugins: [daisyui, require('flowbite/plugin')],
+  plugins: [daisyui],
   daisyui: {
     themes: [
       'light',

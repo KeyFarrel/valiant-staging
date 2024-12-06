@@ -104,18 +104,18 @@
           <div class="flex justify-end">
             <div class="flex items-start">
               <button type="submit" @click="umur = []; pembangkit = []; dmn = [], pengelola = []"
-                class="w-full text-[#0099AD] bg-white border-2 hover:text-white duration-300 border-primaryColor hover:border-hoverColor hover:bg-hoverColor active:ring-2 active:outline-none active:ring-[#0099AD] font-medium rounded-lg text-xs mr-2 px-5 py-2.5 text-center dark:bg-[#007E8F] dark:hover:bg-white dark:active:ring-bg-[#80C1CD]">
+                class="w-full text-[#0099AD] bg-white border-2 hover:text-white duration-300 border-primaryColor hover:border-hoverColor hover:bg-hoverColor active:ring-2 active:outline-none active:ring-[#0099AD] font-medium rounded-lg text-xs mr-2 px-5 py-2.5 text-center">
                 Reset
               </button>
               <div v-if="pembangkit.includes('PLTU')">
                 <button type="submit" @click="changeData()"
-                  class="w-full text-white bg-[#0099AD] hover:bg-hoverColor duration-300 active:ring-2 active:outline-none active:ring-[#80C1CD] font-medium rounded-lg text-xs px-5 py-3 text-center dark:bg-[#007E8F] dark:hover:bg-[#0099AD] dark:active:ring-[#005A66]">
+                  class="w-full text-white bg-[#0099AD] hover:bg-hoverColor duration-300 active:ring-2 active:outline-none active:ring-[#80C1CD] font-medium rounded-lg text-xs px-5 py-3 text-center">
                   Terapkan
                 </button>
               </div>
               <div v-else>
                 <button type="submit" @click="changeDataNoDMN()"
-                  class="w-full text-white bg-[#0099AD] hover:bg-hoverColor duration-300 active:ring-2 active:outline-none active:ring-[#80C1CD] font-medium rounded-lg text-xs px-5 py-3 text-center dark:bg-[#007E8F] dark:hover:bg-[#0099AD] dark:active:ring-[#005A66]">
+                  class="w-full text-white bg-[#0099AD] hover:bg-hoverColor duration-300 active:ring-2 active:outline-none active:ring-[#80C1CD] font-medium rounded-lg text-xs px-5 py-3 text-center">
                   Terapkan
                 </button>
               </div>
@@ -140,91 +140,54 @@
             src="../../assets/img/Non-EBT.png" alt="Preview" class="rounded-full cursor-pointer"
             :class="zoom >= 15 ? 'w-5 h-5' : 'w-3 h-3'">
         </ol-overlay>
-        <ol-overlay v-for="( item, i ) in dataPeta " :position="[item.lng, item.lat]" :key="i">
-          <template v-slot="">
-            <div v-if="showByIndex === i" @mouseenter="showByIndex = i, showByIndexModal = i"
-              @mouseleave="showByIndex = null, showByIndexModal = null"
-              :class="parseFloat(item.lat) < 0 || parseFloat(item.lng) > 138 ? 'bottom-0 right-0' : 'top-0 left-0'"
-              class="bg-white absolute z-50 w-[18rem] rounded-md">
-              <div class="flex justify-between px-2 py-2">
-                <div>
-                  <div class="flex mb-1">
-                    <div class="h-3 w-3 rounded-full shadow-md mx-2 mt-1.5 flex-shrink-0"
-                      :class="item.kode_warna === '#00FF00' ? 'bg-[#10A976]' : 'bg-[#FF6362]'"></div>
-                    <h1 class="font-medium">{{ item.sentral }}</h1>
-                  </div>
-                  <p class="text-[11px] ml-7">
-                    {{ item.kode_jenis_energi }}
-                  </p>
+        <ol-overlay v-for="( item, i ) in dataPeta " :position="[item.lng, item.lat]" :key="i" :insertFirst="false">
+          <div v-if="showByIndex === i" @mouseenter="showByIndex = i, showByIndexModal = i"
+            @mouseleave="showByIndex = null, showByIndexModal = null"
+            :class="parseFloat(item.lat) < 0 || parseFloat(item.lng) > 138 ? 'bottom-0 right-0' : 'top-2.5 left-2'"
+            class="bg-white absolute z-50 w-[18rem] rounded-md">
+            <div class="flex justify-between px-2 py-2">
+              <div>
+                <div class="flex mb-1">
+                  <div class="h-3 w-3 rounded-full shadow-md mx-2 mt-1.5 flex-shrink-0"
+                    :class="item.kode_warna === '#00FF00' ? 'bg-[#10A976]' : 'bg-[#FF6362]'"></div>
+                  <h1 class="font-medium">{{ item.sentral }}</h1>
                 </div>
-                <div class="mx-2 mt-1">
-                  <button
-                    class="text-white bg-white hover:bg-white focus:ring-4 focus:outline-none focus:ring-white dark:bg-white dark:hover:bg-white dark:focus:ring-white"
-                    type="button">
-                    <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg"
-                      @click="getDetailSentral(item.kode_sentral)">
-                      <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M11.2071 7.79289C11.5976 8.18342 11.5976 8.81658 11.2071 9.20711L6.20711 14.2071C5.81658 14.5976 5.18342 14.5976 4.79289 14.2071C4.40237 13.8166 4.40237 13.1834 4.79289 12.7929L9.08579 8.5L4.79289 4.20711C4.40237 3.81658 4.40237 3.18342 4.79289 2.79289C5.18342 2.40237 5.81658 2.40237 6.20711 2.79289L11.2071 7.79289Z"
-                        fill="#0099AD" />
-                    </svg>
-                  </button>
-                </div>
+                <p class="text-[11px] ml-7">
+                  {{ item.kode_jenis_energi }}
+                </p>
               </div>
-              <div class="flex justify-between px-4 py-1 text-xs">
-                <p class="text-slate-400">Jenis Bahan Bakar</p>
-                <p>{{ item.bbm }}</p>
+              <div class="mx-2 mt-1">
+                <button
+                  class="text-white bg-white hover:bg-white focus:ring-4 focus:outline-none focus:ring-white dark:bg-white dark:hover:bg-white dark:focus:ring-white"
+                  type="button">
+                  <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    @click="getDetailSentral(item.kode_sentral)">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M11.2071 7.79289C11.5976 8.18342 11.5976 8.81658 11.2071 9.20711L6.20711 14.2071C5.81658 14.5976 5.18342 14.5976 4.79289 14.2071C4.40237 13.8166 4.40237 13.1834 4.79289 12.7929L9.08579 8.5L4.79289 4.20711C4.40237 3.81658 4.40237 3.18342 4.79289 2.79289C5.18342 2.40237 5.81658 2.40237 6.20711 2.79289L11.2071 7.79289Z"
+                      fill="#0099AD" />
+                  </svg>
+                </button>
               </div>
-              <div class="flex justify-between px-4 py-1 text-xs">
-                <p class="text-slate-400">Unit Aktif</p>
-                <div class="flex">
-                  <p>{{ item.jumlah_mesin }}</p>
-                  <p class="pl-2 text-slate-400">Unit</p>
-                </div>
-              </div>
-              <div class="flex justify-between px-4 py-1 mb-2 text-xs">
-                <p class="text-slate-400">Daya Terpasang</p>
-                <div class="flex">
-                  <p>{{ globalFormat.formatRupiah(item.daya_terpasang) }}</p>
-                  <p class="pl-2 text-slate-400">MW</p>
-                </div>
-              </div>
-              <!-- <div class="flex justify-between px-4 py-1 text-xs">
-                <p class="text-slate-400">IRR on Project</p>
-                <div class="flex">
-                  <p>{{ item.irr_project
-                    ? globalFormat.formatRupiah(item.irr_project)
-                    : "-" }}</p>
-                  <p class="pl-2 text-slate-400">%</p>
-                </div>
-              </div>
-              <div class="flex justify-between px-4 py-1 text-xs">
-                <p class="text-slate-400">IRR on Equity</p>
-                <div class="flex">
-                  <p>{{ item.irr_equity
-                    ? globalFormat.formatRupiah(item.irr_equity)
-                    : "-" }}</p>
-                  <p class="pl-2 text-slate-400">%</p>
-                </div>
-              </div>
-              <div class="flex justify-between px-4 py-1 text-xs">
-                <p class="text-slate-400">Average NCF</p>
-                <div class="flex">
-                  <p>{{ item.average_cf
-                    ? globalFormat.formatRupiah(item.average_cf)
-                    : "-" }}</p>
-                  <p class="pl-2 text-slate-400">%</p>
-                </div>
-              </div>
-              <div class="flex justify-between px-4 py-1 mb-3 text-xs">
-                <p class="text-slate-400">Average EAF</p>
-                <div class="flex">
-                  <p>-</p>
-                  <p class="pl-2 text-slate-400">%</p>
-                </div>
-              </div>
-            </div> -->
             </div>
-          </template>
+            <div class="flex justify-between px-4 py-1 text-xs">
+              <p class="text-slate-400">Jenis Bahan Bakar</p>
+              <p>{{ item.bbm }}</p>
+            </div>
+            <div class="flex justify-between px-4 py-1 text-xs">
+              <p class="text-slate-400">Unit Aktif</p>
+              <div class="flex">
+                <p>{{ item.jumlah_mesin }}</p>
+                <p class="pl-2 text-slate-400">Unit</p>
+              </div>
+            </div>
+            <div class="flex justify-between px-4 py-1 mb-2 text-xs">
+              <p class="text-slate-400">Daya Terpasang</p>
+              <div class="flex">
+                <p>{{ globalFormat.formatRupiah(item.daya_terpasang) }}</p>
+                <p class="pl-2 text-slate-400">MW</p>
+              </div>
+            </div>
+          </div>
         </ol-overlay>
       </ol-map>
       <div class="flex items-center justify-center">

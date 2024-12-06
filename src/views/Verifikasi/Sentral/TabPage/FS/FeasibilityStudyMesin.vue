@@ -94,7 +94,8 @@
   <div class="flex items-center justify-between w-full mt-3 mb-6">
     <div class="flex items-center space-x-2 text-sm">
       <span>Menampilkan</span>
-      <select name="" id="" class="text-sm text-gray-500 border-gray-300 rounded-lg cursor-pointer">
+      <select name="" id=""
+        class="p-2 text-sm text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300">
         <option value="10">10</option>
         <option value="20">20</option>
         <option value="30">30</option>

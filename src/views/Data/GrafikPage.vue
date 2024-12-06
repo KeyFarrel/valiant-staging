@@ -141,26 +141,22 @@
                     </svg>
                   </div>
                   <div>
-                    <button @click="changeTab(2)"
-                      class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD] dark:hover:bg-[#80C1CD] dark:hover:text-[#80C1CD]">
+                    <button @click="changeTab(2)" class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD]">
                       Planning / Feasibility Study
                     </button>
                   </div>
                   <div>
-                    <button @click="changeTab(1)"
-                      class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD] dark:hover:bg-[#80C1CD] dark:hover:text-[#80C1CD]">
+                    <button @click="changeTab(1)" class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD]">
                       WLC (Realisasi & Proyeksi)
                     </button>
                   </div>
                   <div>
-                    <button @click="changeTab(3)"
-                      class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD] dark:hover:bg-[#80C1CD] dark:hover:text-[#80C1CD]">
+                    <button @click="changeTab(3)" class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD]">
                       Planning & Realisasi + Proyeksi
                     </button>
                   </div>
                   <div>
-                    <button @click="changeTab(4)"
-                      class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD] dark:hover:bg-[#80C1CD] dark:hover:text-[#80C1CD]">
+                    <button @click="changeTab(4)" class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD]">
                       Planning vs Realisasi s/d Tahun Berjalan
                     </button>
                   </div>
@@ -331,25 +327,25 @@
                     </div>
                     <div>
                       <button @click="changeTab(2)"
-                        class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD] dark:hover:bg-[#80C1CD] dark:hover:text-[#80C1CD]">
+                        class="block text-left px-2 w-full py-1.5 hover:bg-primaryColor hover:text-white duration-100">
                         Planning / Feasibility Study
                       </button>
                     </div>
                     <div>
                       <button @click="changeTab(1)"
-                        class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD] dark:hover:bg-[#80C1CD] dark:hover:text-[#80C1CD]">
+                        class="block text-left px-2 w-full py-1.5 hover:bg-primaryColor  hover:text-white duration-100">
                         WLC (Realisasi & Proyeksi)
                       </button>
                     </div>
                     <div>
                       <button @click="changeTab(3)"
-                        class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD] dark:hover:bg-[#80C1CD] dark:hover:text-[#80C1CD]">
+                        class="block text-left px-2 w-full py-1.5 hover:bg-primaryColor  hover:text-white duration-100">
                         Planning & Realisasi + Proyeksi
                       </button>
                     </div>
                     <div>
                       <button @click="changeTab(4)"
-                        class="block text-left px-2 w-full py-1.5 hover:bg-[#80C1CD] dark:hover:bg-[#80C1CD] dark:hover:text-[#80C1CD]">
+                        class="block text-left px-2 w-full py-1.5 hover:bg-primaryColor  hover:text-white duration-100">
                         Planning vs Realisasi s/d Tahun Berjalan
                       </button>
                     </div>

@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-start mt-2">
-    <input type="text" name="" :id="props.id" class="w-full h-10 pl-20 text-sm border-gray-300 rounded-lg"
+    <input type="text" name="" :id="props.id" class="w-full h-10 pl-20 text-sm border border-gray-300 rounded-lg"
       v-model="inputValue" @input="handleInput">
     <label for="" class="text-[#0099AD] text-sm pl-3 absolute">Rp (Juta)</label>
   </div>

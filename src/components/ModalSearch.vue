@@ -13,8 +13,8 @@
       </div>
       <div class="flex justify-between">
         <input ref="searchInput" type="search" name="" placeholder="Cari..."
-          class="w-full text-sm rounded-md text-primaryTextColor" v-model="searchQuery"
-          @input="setSelected(searchResults[0] ? searchResults[0].sentral : null, 0)"
+          class="w-full px-3 py-2 text-sm border rounded-md text-primaryTextColor border-labelColor"
+          v-model="searchQuery" @input="setSelected(searchResults[0] ? searchResults[0].sentral : null, 0)"
           @keydown.down.prevent="selectNextItem" @keydown.up.prevent="selectPreviousItem"
           @keyup.enter="handleKeyEnter" />
       </div>
