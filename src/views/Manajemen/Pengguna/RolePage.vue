@@ -25,6 +25,7 @@
             :class="{ 'border-b': selectedTabMenu === listItem, 'border-b-[3px]': selectedTabMenu === listItem, 'border-primaryColor': selectedTabMenu === listItem, 'pb-1': selectedTabMenu === listItem, 'text-primaryColor': selectedTabMenu === listItem, 'text-textDisabledColor': selectedTabMenu !== listItem }">
             {{ listItem }}</li>
         </ul>
+        <!-- dfdfd -->
         <Table>
           <template v-slot:table-header>
             <tr>
