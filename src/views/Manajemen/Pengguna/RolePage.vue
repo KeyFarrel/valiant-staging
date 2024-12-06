@@ -25,7 +25,6 @@
             :class="{ 'border-b': selectedTabMenu === listItem, 'border-b-[3px]': selectedTabMenu === listItem, 'border-primaryColor': selectedTabMenu === listItem, 'pb-1': selectedTabMenu === listItem, 'text-primaryColor': selectedTabMenu === listItem, 'text-textDisabledColor': selectedTabMenu !== listItem }">
             {{ listItem }}</li>
         </ul>
-        <!-- dfdfd -->
         <Table>
           <template v-slot:table-header>
             <tr>
@@ -48,7 +47,8 @@
         <div class="flex items-center space-x-2 text-sm text-primaryTextColor">
           <span>Menampilkan</span>
           <select v-model="navigation.limit" name="" id=""
-            class="text-sm text-gray-500 border-gray-300 rounded-lg cursor-pointer" @change="changePageLimit($event)">
+            class="p-2 text-sm text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
+            @change="changePageLimit($event)">
             <option value="10">10</option>
             <option value="20">20</option>
             <option value="30">30</option>

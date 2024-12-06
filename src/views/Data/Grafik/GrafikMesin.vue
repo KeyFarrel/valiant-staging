@@ -116,7 +116,7 @@
           <RouterLink
             :to="{ name: 'feasibility-study', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(props.idMesin) : props.idMesin } }">
             <button type="button" id="lihat-data-button" :disabled="statusApprovePlanning === 'Data belum terisi'"
-              class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center dark:bg-[#005A66] dark:hover:bg-[#0099AD] focus:outline-none dark:focus:ring-[#007E8F]">
+              class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center focus:outline-none">
               <svg id="lihat-data-svg" width="8" height="12" viewBox="0 0 8 12" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -184,7 +184,7 @@
           <RouterLink
             :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(props.idMesin) : props.idMesin }, query: { tahun: props.tahunData } }">
             <button type="button" id="lihat-data-button" :disabled="statusApprove === 'Data belum terisi'"
-              class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center dark:bg-[#005A66] dark:hover:bg-[#0099AD] focus:outline-none dark:focus:ring-[#007E8F]">
+              class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center focus:outline-none">
               <svg id="lihat-data-svg" width="8" height="12" viewBox="0 0 8 12" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -242,7 +242,7 @@
           <RouterLink
             :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(props.idMesin) : props.idMesin }, query: { tahun: props.tahunData } }">
             <button id="lihat-data-button" type="button" :disabled="statusApprove === 'Data belum terisi'"
-              class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center dark:bg-[#005A66] dark:hover:bg-[#0099AD] focus:outline-none dark:focus:ring-[#007E8F]">
+              class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center focus:outline-none">
               <svg id="lihat-data-svg" width="8" height="12" viewBox="0 0 8 12" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd"
@@ -279,7 +279,7 @@
 
   <!-- Modal -->
   <ModalWrapper :showModal="showModalWlcAll" :width="'w-[1000px]'" :height="'h-auto'">
-    <div class="flex justify-between text-gray-950 ">
+    <div class="flex justify-between text-primaryTextColor ">
       <div>
         <p class="px-2 text-lg font-semibold">
           Detail Perkembangan Unit Pertahun
@@ -308,31 +308,31 @@
     <div>
       <vue-echarts :option="chartDetailWLCAllMesin" style="height: 350px" />
     </div>
-    <div class="py-4 text-gray-950">
+    <div class="py-4 text-primaryTextColor">
       <p class="px-2 font-semibold">Detail Data</p>
-      <div class="mt-5 overflow-x-auto border rounded-md">
-        <table class="w-full text-sm rounded-md table-auto">
-          <thead class="text-[#0099AD] text-xs border-b">
+      <div class="mt-5 overflow-x-auto rounded-md">
+        <TableComponent>
+          <template v-slot:table-header>
             <tr>
               <th class="px-8 py-2 text-left">Deskripsi</th>
               <th class="px-1 py-2 text-right">Realisasi + Proyeksi (Rp (Juta))</th>
               <th class="px-1 py-2 text-right">Planning (Rp (Juta))</th>
             </tr>
-          </thead>
-          <tbody v-for="(item, i) in datatableWlcAllMesin" :key="i" class="text-xs">
-            <tr class="border-b bg-[#E5E7E9]">
+          </template>
+          <template v-slot:table-body>
+            <tr class="border-b" v-for="(item, i) in datatableWlcAllMesin" :key="i">
               <td class="px-8 py-2 text-left">{{ item.name }}</td>
               <td class="px-1 py-2 text-right">{{ globalFormat.formatDecimal(item.realisasi) }}</td>
               <td class="px-1 py-2 text-right">{{ globalFormat.formatDecimal(item.planning) }}</td>
             </tr>
-          </tbody>
-        </table>
+          </template>
+        </TableComponent>
       </div>
     </div>
   </ModalWrapper>
 
   <ModalWrapper :showModal="showModalWlcKom" :width="'w-[700px]'" :height="'h-auto'">
-    <div class="flex justify-between text-gray-950">
+    <div class="flex justify-between text-primaryTextColor">
       <div>
         <p class="px-2 text-lg font-semibold">
           Detail Perkembangan Unit Pertahun
@@ -361,31 +361,31 @@
     <div>
       <vue-echarts :option="chartDetailWLCKomMesin" style="height: 350px" />
     </div>
-    <div class="py-4 text-gray-950">
+    <div class="py-4 text-primaryTextColor">
       <p class="px-2 font-semibold">Detail Data</p>
-      <div class="mt-5 overflow-x-auto border rounded-md">
-        <table class="w-full text-sm rounded-md table-auto">
-          <thead class="text-[#0099AD] text-xs border-b">
+      <div class="mt-5 overflow-x-auto rounded-md">
+        <TableComponent>
+          <template v-slot:table-header>
             <tr>
               <th class="px-8 py-2 text-left">Deskripsi</th>
               <th class="px-1 py-2 text-right">Realisasi + Proyeksi (Rp (Juta))</th>
               <th class="px-1 py-2 text-right">Planning (Rp (Juta))</th>
             </tr>
-          </thead>
-          <tbody v-for="(item, i) in datatableWlcKomMesin" :key="i" class="text-xs">
-            <tr class="border-b bg-[#E5E7E9]">
+          </template>
+          <template v-slot:table-body>
+            <tr class="border-b" v-for="(item, i) in datatableWlcKomMesin" :key="i">
               <td class="px-8 py-2 text-left">{{ item.name }}</td>
               <td class="px-1 py-2 text-right">{{ globalFormat.formatDecimal(item.realisasi) }}</td>
               <td class="px-1 py-2 text-right">{{ globalFormat.formatDecimal(item.planning) }}</td>
             </tr>
-          </tbody>
-        </table>
+          </template>
+        </TableComponent>
       </div>
     </div>
   </ModalWrapper>
 
   <ModalWrapper :showModal="showModalPlan" :width="'w-[1000px]'" :height="'h-auto'">
-    <div class="flex justify-between text-gray-950">
+    <div class="flex justify-between text-primaryTextColor">
       <div>
         <p class="px-2 text-lg font-semibold">
           Detail Perkembangan Unit Pertahun
@@ -414,29 +414,29 @@
     <div>
       <vue-echarts :option="chartDetailPlanMesin" style="height: 350px" />
     </div>
-    <div class="py-4 text-gray-950">
+    <div class="py-4 text-primaryTextColor">
       <p class="px-2 font-semibold">Detail Data</p>
-      <div class="mt-5 overflow-x-auto border rounded-md">
-        <table class="w-full text-sm rounded-md table-auto">
-          <thead class="text-[#0099AD] text-xs border-b">
+      <div class="mt-5 overflow-x-auto rounded-md">
+        <TableComponent>
+          <template v-slot:table-header>
             <tr>
               <th class="px-8 py-2 text-left">Deskripsi</th>
               <th class="px-1 py-2 text-right">Planning (Rp (Juta))</th>
             </tr>
-          </thead>
-          <tbody v-for="(item, i) in datatablePlanMesin" :key="i" class="text-xs">
-            <tr class="border-b bg-[#E5E7E9]">
+          </template>
+          <template v-slot:table-body>
+            <tr class="border-b" v-for="(item, i) in datatablePlanMesin" :key="i">
               <td class="px-8 py-2 text-left">{{ item.name }}</td>
               <td class="px-1 py-2 text-right">{{ globalFormat.formatDecimal(item.planning) }}</td>
             </tr>
-          </tbody>
-        </table>
+          </template>
+        </TableComponent>
       </div>
     </div>
   </ModalWrapper>
 
   <ModalWrapper :showModal="showModalPlanKom" :width="'w-[700px]'" :height="'h-auto'">
-    <div class="flex justify-between text-gray-950">
+    <div class="flex justify-between text-primaryTextColor">
       <div>
         <p class="px-2 text-lg font-semibold">
           Detail Perkembangan Unit Pertahun
@@ -465,29 +465,29 @@
     <div>
       <vue-echarts :option="chartDetailPlanKomMesin" style="height: 350px" />
     </div>
-    <div class="py-4 text-gray-950">
+    <div class="py-4 text-primaryTextColor">
       <p class="px-2 font-semibold">Detail Data</p>
-      <div class="mt-5 overflow-x-auto border rounded-md">
-        <table class="w-full text-sm rounded-md table-auto">
-          <thead class="text-[#0099AD] text-xs border-b">
+      <div class="mt-5 overflow-x-auto rounded-md">
+        <TableComponent>
+          <template v-slot:table-header>
             <tr>
               <th class="px-8 py-2 text-left">Deskripsi</th>
               <th class="px-1 py-2 text-right">Planning (Rp (Juta))</th>
             </tr>
-          </thead>
-          <tbody v-for="(item, i) in datatablePlanKomMesin" :key="i" class="text-xs">
-            <tr class="border-b bg-[#E5E7E9]">
+          </template>
+          <template v-slot:table-body>
+            <tr class="border-b" v-for="(item, i) in datatablePlanKomMesin" :key="i">
               <td class="px-8 py-2 text-left">{{ item.name }}</td>
               <td class="px-1 py-2 text-right">{{ globalFormat.formatDecimal(item.planning) }}</td>
             </tr>
-          </tbody>
-        </table>
+          </template>
+        </TableComponent>
       </div>
     </div>
   </ModalWrapper>
 
   <ModalWrapper :showModal="showModalPRP" :width="'w-[1000px]'" :height="'h-auto'">
-    <div class="flex justify-between text-gray-950">
+    <div class="flex justify-between text-primaryTextColor">
       <div>
         <p class="px-2 text-lg font-semibold">
           Detail Perkembangan Unit Pertahun
@@ -516,31 +516,31 @@
     <div>
       <vue-echarts :option="chartDetailPRPMesin" style="height: 350px" />
     </div>
-    <div class="py-4 text-gray-950">
+    <div class="py-4 text-primaryTextColor">
       <p class="px-2 font-semibold">Detail Data</p>
-      <div class="mt-5 overflow-x-auto border rounded-md">
-        <table class="w-full text-sm rounded-md table-auto">
-          <thead class="text-[#0099AD] text-xs border-b">
+      <div class="mt-5 overflow-x-auto rounded-md">
+        <TableComponent>
+          <template v-slot:table-header>
             <tr>
               <th class="px-8 py-2 text-left">Deskripsi</th>
               <th class="px-1 py-2 text-right">Realisasi + Proyeksi (Rp (Juta))</th>
               <th class="px-1 py-2 text-right">Planning (Rp (Juta))</th>
             </tr>
-          </thead>
-          <tbody v-for="(item, i) in datatablePRPMesin" :key="i" class="text-xs">
-            <tr class="border-b bg-[#E5E7E9]">
+          </template>
+          <template v-slot:table-body>
+            <tr class="border-b" v-for="(item, i) in datatablePRPMesin" :key="i">
               <td class="px-8 py-2 text-left">{{ item.name }}</td>
               <td class="px-1 py-2 text-right">{{ globalFormat.formatDecimal(item.realisasi) }}</td>
               <td class="px-1 py-2 text-right">{{ globalFormat.formatDecimal(item.planning) }}</td>
             </tr>
-          </tbody>
-        </table>
+          </template>
+        </TableComponent>
       </div>
     </div>
   </ModalWrapper>
 
   <ModalWrapper :showModal="showModalLastY" :width="'w-[1000px]'" :height="'h-auto'">
-    <div class="flex justify-between text-gray-950">
+    <div class="flex justify-between text-primaryTextColor">
       <div>
         <p class="px-2 text-lg font-semibold">
           Detail Perkembangan Unit Pertahun
@@ -569,25 +569,25 @@
     <div>
       <vue-echarts :option="chartDetailLastYMesin" style="height: 350px" />
     </div>
-    <div class="py-4 text-gray-950">
+    <div class="py-4 text-primaryTextColor">
       <p class="px-2 font-semibold">Detail Data</p>
-      <div class="mt-5 overflow-x-auto border rounded-md">
-        <table class="w-full text-sm rounded-md table-auto">
-          <thead class="text-[#0099AD] text-xs border-b">
+      <div class="mt-5 overflow-x-auto rounded-md">
+        <TableComponent>
+          <template v-slot:table-header>
             <tr>
               <th class="px-8 py-2 text-left">Deskripsi</th>
               <th class="px-1 py-2 text-right">Realisasi + Proyeksi (Rp (Juta))</th>
               <th class="px-1 py-2 text-right">Planning (Rp (Juta))</th>
             </tr>
-          </thead>
-          <tbody v-for="(item, i) in datatableLastYMesin" :key="i" class="text-xs">
-            <tr class="border-b bg-[#E5E7E9]">
+          </template>
+          <template v-slot:table-body>
+            <tr class="border-b" v-for="(item, i) in datatableLastYMesin" :key="i">
               <td class="px-8 py-2 text-left">{{ item.name }}</td>
               <td class="px-1 py-2 text-right">{{ globalFormat.formatDecimal(item.realisasi) }}</td>
               <td class="px-1 py-2 text-right">{{ globalFormat.formatDecimal(item.planning) }}</td>
             </tr>
-          </tbody>
-        </table>
+          </template>
+        </TableComponent>
       </div>
     </div>
   </ModalWrapper>
@@ -613,6 +613,7 @@ import WaitingGraikT1 from '@/components/Status/Grafik/WaitingGrafikT1.vue';
 import WaitingGraikT2 from '@/components/Status/Grafik/WaitingGrafikT2.vue';
 import DitolakGrafikT1 from '@/components/Status/Grafik/DitolakGrafikT1.vue';
 import DitolakGrafikT2 from '@/components/Status/Grafik/DitolakGrafikT2.vue';
+import TableComponent from "@/components/ui/Table.vue";
 
 const stored = useTagMesin();
 const grafikService = new GrafikService();

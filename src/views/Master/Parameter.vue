@@ -16,7 +16,7 @@
   </ModalWrapper>
   <div class="p-6 space-y-5 bg-white rounded-lg">
     <button @click="isModalOpen = true" type="button"
-      class="px-3 py-2 ml-auto space-x-3 text-white bg-[#0099AD] hover:bg-[#007E8F] focus:ring-4 focus:ring-[#9ddee7] font-medium rounded-lg text-sm flex justify-center items-center dark:bg-[#005A66] dark:hover:bg-[#0099AD] focus:outline-none dark:focus:ring-[#007E8F] duration-300">
+      class="px-3 py-2 ml-auto space-x-3 text-white bg-[#0099AD] hover:bg-[#007E8F] focus:ring-4 focus:ring-[#9ddee7] font-medium rounded-lg text-sm flex justify-center items-center focus:outline-none duration-300">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" clip-rule="evenodd"
           d="M7 0.875C7.48325 0.875 7.875 1.26675 7.875 1.75V6.125H12.25C12.7332 6.125 13.125 6.51675 13.125 7C13.125 7.48325 12.7332 7.875 12.25 7.875H7.875V12.25C7.875 12.7332 7.48325 13.125 7 13.125C6.51675 13.125 6.125 12.7332 6.125 12.25V7.875H1.75C1.26675 7.875 0.875 7.48325 0.875 7C0.875 6.51675 1.26675 6.125 1.75 6.125H6.125V1.75C6.125 1.26675 6.51675 0.875 7 0.875Z"
@@ -83,7 +83,8 @@
       <div class="flex items-center space-x-2 text-sm">
         <span>Menampilkan</span>
         <select v-model.number="navigation.pageLimit" name="" id=""
-          class="text-sm text-gray-500 border-gray-300 rounded-lg cursor-pointer" @change="handlePageSizeChange">
+          class="p-2 text-sm text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
+          @change="handlePageSizeChange">
           <option value="10">10</option>
           <option value="20">20</option>
           <option value="30">30</option>
@@ -129,7 +130,7 @@
   </div>
   <!-- Modal Tambah -->
   <ModalWrapper :show-modal="isModalOpen" :width="'w-[500px]'" :height="'h-auto'">
-    <h3 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">
+    <h3 class="mb-4 text-xl font-bold text-gray-900">
       Tambah Parameter
     </h3>
     <div class="space-y-5">
@@ -141,9 +142,9 @@
         </ul>
       </div>
       <div>
-        <label for="tahun" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Tahun</label>
+        <label for="tahun" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Tahun</label>
         <select id="tahun" v-model="formData.tahun"
-          class="border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+          class="border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
           required>
           <option value="" disabled selected hidden>2xxx</option>
           <option v-for="tahun in tahunOptions" :key="tahun" :value="tahun">
@@ -152,7 +153,7 @@
         </select>
       </div>
       <div>
-        <label for="discount" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Discount
+        <label for="discount" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Discount
           Rate
           (%)</label>
         <div v-if="errors_DT.includes('kosong')" class="text-xs text-red-500">
@@ -168,11 +169,11 @@
           Discount Rate harus tidak lebih dari 100.
         </div>
         <input type="text" id="discount" v-model="formData.discount_rate" @input="validForm_DT"
-          class="bg-white border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+          class="bg-white border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
           placeholder="Contoh : 10" required />
       </div>
       <div>
-        <label for="tax" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Corporate Tax
+        <label for="tax" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Corporate Tax
           Rate
           (%)</label>
         <div v-if="errors_CT.includes('kosong')" class="text-xs text-red-500">
@@ -188,7 +189,7 @@
           Corporate Tax Rate harus tidak lebih dari 100.
         </div>
         <input type="text" id="tax" v-model="formData.corporate_tax_rate" @input="validForm_CT"
-          class="bg-white border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+          class="bg-white border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
           placeholder="Contoh : 10" required />
       </div>
       <div class="flex justify-end space-x-2">
@@ -206,7 +207,7 @@
     </div>
   </ModalWrapper>
   <ModalWrapper :show-modal="isModalEdit" :width="'w-[500px]'" :height="'h-auto'">
-    <h3 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">
+    <h3 class="mb-4 text-xl font-bold text-gray-900">
       Edit Parameter
     </h3>
     <form class="space-y-6">
@@ -218,13 +219,13 @@
         </ul>
       </div>
       <div>
-        <label for="tahun" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Tahun</label>
+        <label for="tahun" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Tahun</label>
         <input type="text" id="tahun" v-model="formData.tahun"
-          class="border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+          class="border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
           placeholder="2xxx" disabled />
       </div>
       <div>
-        <label for="discount" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Discount
+        <label for="discount" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Discount
           Rate (%)</label>
         <div v-if="errors_DT.includes('non_angka')" class="text-xs text-red-500">
           Discount Rate harus berupa angka
@@ -236,11 +237,11 @@
           Discount Rate harus tidak lebih dari 100.
         </div>
         <input type="text" id="discount" v-model="formData.discount_rate" @input="validForm_DT"
-          class="bg-white border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+          class="bg-white border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
           placeholder="Contoh : 10" required />
       </div>
       <div>
-        <label for="tax" class="block mb-2 text-xs font-semibold text-[#4D5E80] dark:text-white">Corporate Tax
+        <label for="tax" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Corporate Tax
           Rate (%)</label>
         <div v-if="errors_CT.includes('non_angka')" class="text-xs text-red-500">
           Corporate Tax Rate harus berupa angka positif
@@ -252,7 +253,7 @@
           Corporate Tax Rate harus tidak lebih dari 100.
         </div>
         <input type="text" id="tax" v-model="formData.corporate_tax_rate" @input="validForm_CT"
-          class="bg-white border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+          class="bg-white border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
           placeholder="Contoh : 10" required />
       </div>
       <div class="flex justify-end space-x-2">

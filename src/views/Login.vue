@@ -258,7 +258,7 @@
           <label for="password1" class="text-xs text-[#5979A6] mb-1">Password</label>
           <div class="relative">
             <input v-model="valPassword" autocomplete="new-password"
-              class="block bg-white py-3 w-[350px] text-xs mb-6 text-gray-900 rounded-md border border-gray-300 focus:ring-[#0099AD] focus:border-[#0099AD]"
+              class="block bg-white p-3 w-[350px] text-xs mb-6 text-gray-900 rounded-md border border-gray-300 focus:ring-[#0099AD] focus:border-[#0099AD]"
               :type="showPassword ? 'text' : 'password'" id="password1" placeholder="Masukkan Kata Sandi"
               @keyup.enter="onSubmitLogin" />
             <button @click="visiblePassword" class="absolute transform -translate-y-1/2 top-1/2 right-3" type="button">
@@ -340,7 +340,7 @@
           </div>
         </div>
         <button @click="onSubmitLogin" type="button"
-          class="text-white uppercase  bg-[#0099AD] w-[350px] hover:bg-[#0099AD] hover:text-white active:ring active:ring-[#005A66] rounded-lg text-xs p-3 my-4 dark:bg-[#005A66] dark:hover:bg-slate-300 focus:outline-none dark:focus:ring-[#0099AD]"
+          class="text-white uppercase  bg-[#0099AD] w-[350px] hover:bg-[#0099AD] hover:text-white active:ring active:ring-[#005A66] rounded-lg text-xs p-3 my-4 focus:outline-none"
           v-if="ceklistCaptcha && (valEmail && valPassword)">
           <p v-show="!isLoadingButton" class="font-semibold">Masuk Ke Aplikasi</p>
           <div v-show="isLoadingButton" class="flex flex-row items-center justify-center space-x-2">
@@ -357,7 +357,7 @@
           </div>
         </button>
         <button
-          class="text-primaryTextColor uppercase  bg-slate-300 w-[350px] cursor-not-allowed focus:ring-4 focus:ring-slate-700 rounded-lg text-xs p-3 my-4 dark:bg-slate-700 dark:hover:bg-slate-300 focus:outline-none dark:focus:ring-slate-400"
+          class="text-primaryTextColor uppercase  bg-slate-300 w-[350px] cursor-not-allowed focus:ring-4 focus:ring-slate-700 rounded-lg text-xs p-3 my-4 focus:outline-none"
           v-else disabled>
           <p class="font-medium">Masuk Ke Aplikasi</p>
         </button>
@@ -367,7 +367,7 @@
           <div class="w-16 h-[1px] bg-slate-300"></div>
         </div>
         <button type="button" @click="loginSSO"
-          class="text-[#0099AD] duration-300 bg-white w-[350px] hover:bg-blue-100 border border-blue-200 focus:ring-4 focus:outline-none focus:ring-blue-100 font-medium rounded-lg text-xs p-3 text-center dark:focus:ring-[#007E8F] dark:bg-white dark:border-[#0099AD] dark:text-[#005A66] dark:hover:bg-blue-200 mr-2">
+          class="text-[#0099AD] duration-300 bg-white w-[350px] hover:bg-blue-100 border border-blue-200 focus:ring-4 focus:outline-none focus:ring-blue-100 font-medium rounded-lg text-xs p-3 text-center mr-2">
           LOGIN SSO
         </button>
       </form>
