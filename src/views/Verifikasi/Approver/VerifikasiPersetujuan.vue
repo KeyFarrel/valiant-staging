@@ -628,7 +628,8 @@
           <div class="flex items-center space-x-2 text-sm">
             <span>Menampilkan</span>
             <select v-model="navigationFS.limit" name="" id=""
-              class="text-sm text-gray-500 border-gray-300 rounded-lg cursor-pointer" @change="changeLimit($event)">
+              class="p-2 text-sm text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
+              @change="changeLimit($event)">
               <option value="10">10</option>
               <option value="20">20</option>
               <option value="30">30</option>

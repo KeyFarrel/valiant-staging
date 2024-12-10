@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center">
     <input type="search" autocomplete="off" id="search"
-      class="block px-3 py-2 w-full text-sm text-gray-900 rounded-l-lg border border-[#0099AD] focus:ring-[#80C1CD] focus:border-[#80C1CD]"
+      class="block px-3 py-2 focus:outline-none w-full text-sm text-gray-900 rounded-l-lg border border-[#0099AD] focus:ring-[#80C1CD] focus:border-[#80C1CD]"
       :placeholder="props.placeholder" @change="emit('onChange')" @focus="handleFocus" @keyup.enter="emit('onKeyEnter')"
       @input="emit('onInput')" v-model="model" />
     <button type="submit"
