@@ -130,7 +130,7 @@
   </div>
   <!-- Modal Tambah -->
   <ModalWrapper :show-modal="isModalOpen" :width="'w-[500px]'" :height="'h-auto'">
-    <h3 class="mb-4 text-xl font-bold text-gray-900">
+    <h3 class="mb-4 text-xl font-bold text-primaryTextColor">
       Tambah Parameter
     </h3>
     <div class="space-y-5">
@@ -144,7 +144,7 @@
       <div>
         <label for="tahun" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Tahun</label>
         <select id="tahun" v-model="formData.tahun"
-          class="border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
+          class="border focus:border-transparent border-gray-300 text-primaryTextColor text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5 border-r-4 border-transparent cursor-pointer outline-1 outline outline-gray-300"
           required>
           <option value="" disabled selected hidden>2xxx</option>
           <option v-for="tahun in tahunOptions" :key="tahun" :value="tahun">
@@ -169,7 +169,7 @@
           Discount Rate harus tidak lebih dari 100.
         </div>
         <input type="text" id="discount" v-model="formData.discount_rate" @input="validForm_DT"
-          class="bg-white border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
+          class="bg-white border border-gray-300 text-primaryTextColor text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
           placeholder="Contoh : 10" required />
       </div>
       <div>
@@ -189,7 +189,7 @@
           Corporate Tax Rate harus tidak lebih dari 100.
         </div>
         <input type="text" id="tax" v-model="formData.corporate_tax_rate" @input="validForm_CT"
-          class="bg-white border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
+          class="bg-white border border-gray-300 text-primaryTextColor text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
           placeholder="Contoh : 10" required />
       </div>
       <div class="flex justify-end space-x-2">
@@ -207,7 +207,7 @@
     </div>
   </ModalWrapper>
   <ModalWrapper :show-modal="isModalEdit" :width="'w-[500px]'" :height="'h-auto'">
-    <h3 class="mb-4 text-xl font-bold text-gray-900">
+    <h3 class="mb-4 text-xl font-bold text-primaryTextColor">
       Edit Parameter
     </h3>
     <form class="space-y-6">
@@ -221,7 +221,7 @@
       <div>
         <label for="tahun" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Tahun</label>
         <input type="text" id="tahun" v-model="formData.tahun"
-          class="border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
+          class="border border-gray-300 text-primaryTextColor text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
           placeholder="2xxx" disabled />
       </div>
       <div>
@@ -237,7 +237,7 @@
           Discount Rate harus tidak lebih dari 100.
         </div>
         <input type="text" id="discount" v-model="formData.discount_rate" @input="validForm_DT"
-          class="bg-white border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
+          class="bg-white border border-gray-300 text-primaryTextColor text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
           placeholder="Contoh : 10" required />
       </div>
       <div>
@@ -253,7 +253,7 @@
           Corporate Tax Rate harus tidak lebih dari 100.
         </div>
         <input type="text" id="tax" v-model="formData.corporate_tax_rate" @input="validForm_CT"
-          class="bg-white border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
+          class="bg-white border border-gray-300 text-primaryTextColor text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
           placeholder="Contoh : 10" required />
       </div>
       <div class="flex justify-end space-x-2">
@@ -277,7 +277,6 @@ import { ref, onMounted, computed } from "vue";
 import GlobalFormat from "@/services/format/global-format";
 const globalFormat = new GlobalFormat();
 import Loading from "@/components/ui/LoadingSpinner.vue";
-import Vue3Lottie from "vue3-lottie";
 import ParameterService from "@/services/parameter-service";
 const parameterService = new ParameterService();
 import ModalWrapper from "@/components/ui/ModalWrapper.vue";

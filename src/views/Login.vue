@@ -291,7 +291,7 @@
             @load-callback="handleLoadCallback" /> -->
           <div
             class="bg-white text-primaryTextColor h-[80px] w-[350px] px-4 border-2 border-gray-200 flex items-center justify-between rounded-md">
-            <label for="check" class="space-x-2.5">
+            <label for="check" class="space-x-2.5 flex items-center">
               <input type="checkbox" id="check" class="w-5 h-5 rounded-sm cursor-pointer" v-model="checkbox"
                 @click="checkboxChange" />
               <span class="text-sm" :class="ceklistCaptcha === true
@@ -313,14 +313,15 @@
               </div>
             </div>
           </div>
-          <div class="mt-2 bg-white text-primaryTextColor h-[140px] w-[350px] border border-gray-300 rounded-md"
+          <div class="mt-2 bg-white text-primaryTextColor w-[350px] pb-2 border border-gray-300 rounded-md"
             :class="box === true ? 'block' : 'hidden'">
-            <input type="text" id="captchaInput" class="w-[330px] mx-2 text-xs m-1 border-0"
+            <input type="text" id="captchaInput"
+              class="w-full px-3 py-3.5 rounded-lg text-xs border-0 focus:outline-none focus:border-0"
               placeholder="Masukkan captcha disini" v-model="valCaptcha" />
-            <hr class="border-gray-300 w-[330px] mx-2" />
+            <hr class="w-full border-gray-300" />
             <div class="flex items-center justify-center">
               <div class="m-2">
-                <input type="text" id="captcha" disabled class="w-24 text-xs text-center bg-gray-200 border-0"
+                <input type="text" id="captcha" disabled class="w-24 text-xs py-2.5 text-center bg-gray-200 border-0"
                   :value="captcha.map((c: any) => c.char).join('')" />
               </div>
             </div>

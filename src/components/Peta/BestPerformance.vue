@@ -26,7 +26,7 @@
                 <p class="mr-2 text-sm font-medium">Periode</p>
                 <div class="w-32 z-[25]">
                   <select v-model="yearModel" @change="fetchBestPerformance"
-                    class="mt-1 border border-gray-300 text-gray-900 text-sm rounded-lg hover:cursor-pointer focus:ring-[#0099AD] focus:border-[#0099AD] block w-full p-2">
+                    class="block w-full p-2 mt-1 text-sm text-gray-900 border-r-4 border-transparent border-gray-300 rounded-lg cursor-pointer outline-1 outline outline-gray-300 hover:cursor-pointer">
                     <option disable hidden>Pilih Tahun</option>
                     <option v-for="item in tahun" :key="item" :value="item">{{ item }}
                     </option>

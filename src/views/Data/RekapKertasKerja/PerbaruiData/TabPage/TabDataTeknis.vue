@@ -29,7 +29,8 @@
       <div class="space-y-1">
         <label class="block font-bold text-gray-500" for="periodic">Type of Periodic Maintenance <span
             class="text-warningColor">*</span></label>
-        <select name="" id="periodic" class="w-full text-sm border-gray-300 rounded-lg cursor-pointer"
+        <select name="" id="periodic"
+          class="w-full p-2 text-sm text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
           v-model="typePeriodic" required :disabled="props.isIntegrasi ? props.initValue.typePeriodic !== '' : false">
           <option value="" disabled hidden>Pilih Type of Periodic Maintenance</option>
           <option v-for="(comboTypePeriodicItem, index) in props.comboTypePeriodic"

@@ -267,7 +267,8 @@
           <label for="password" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Password <span
               class="text-warningColor">*</span></label>
           <input id="password" :type="showPassword ? 'text' : 'password'" v-model="formData.password"
-            class="w-full text-xs h-[38px] text-gray-500 border-gray-300 rounded-lg" placeholder="Masukkan Password" />
+            class="w-full text-xs h-[38px] border pl-3 text-gray-500 border-gray-300 rounded-lg"
+            placeholder="Masukkan Password" />
           <button type="button" @click="togglePasswordVisibility"
             class="absolute inset-y-0 right-0 flex items-center pt-6 pr-3">
             <svg v-if="!showPassword" width="16" height="12" viewBox="0 0 16 12" fill="none"
@@ -291,7 +292,8 @@
             <span class="text-warningColor">*</span></label>
           <input id="konfirmasiPassword" :type="showConfirmPassword ? 'text' : 'password'"
             v-model="formData.konfirmasi_password"
-            class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg" placeholder="Masukkan Password" />
+            class="w-full h-[38px] text-xs text-gray-500 border pl-3 border-gray-300 rounded-lg"
+            placeholder="Masukkan Password" />
           <button type="button" @click="toggleConfirmPasswordVisibility"
             class="absolute inset-y-0 right-0 flex items-center pt-6 pr-3">
             <svg v-if="!showConfirmPassword" width="16" height="12" viewBox="0 0 16 12" fill="none"
@@ -314,7 +316,7 @@
           <label for="level" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Level <span
               class="text-warningColor">*</span></label>
           <select v-model="formData.level_id"
-            class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer"
+            class="w-full p-2.5 text-xs text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
             @change="handleChangeLevel(formData.level_id)">
             <option value="" disable hidden>Pilih Level</option>
             <option v-for="item in comboLevel" :key="item.kode_level" :value="item.kode_level">
@@ -326,7 +328,7 @@
           <label for="unitInduk" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Unit
             Pengelola <span class="text-warningColor">*</span></label>
           <select v-model="formData.id_pengelola" :disabled="formData.level_id == ''"
-            class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer"
+            class="w-full p-2.5 text-xs text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
             @change="handleChangePengelola">
             <option value="" disable hidden>Pilih Pengelola</option>
             <option v-for="item in comboInduk" :key="item.id_pengelola" :value="item.id_pengelola">
@@ -338,7 +340,7 @@
           <label for="role" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Role <span
               class="text-warningColor">*</span></label>
           <select v-model="formData.role_id" :disabled="formData.level_id == ''"
-            class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer">
+            class="w-full p-2.5 text-xs text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300">
             <option value="" disable hidden>Pilih Role</option>
             <option v-for="item in comboRole" :key="item.id" :value="item.id">
               {{ item.role }}
@@ -349,7 +351,7 @@
           <label for="unitPembina" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Unit
             Pembina <span class="text-warningColor">*</span></label>
           <select v-model="formData.id_pembina" :disabled="formData.id_pengelola === ''"
-            class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer"
+            class="w-full p-2.5 text-xs text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
             @change="handleChangePembina">
             <option value="" disable hidden>Pilih Pembina</option>
             <option v-for="item in comboPengelola" :key="item.id_pembina" :value="item.id_pembina">
@@ -362,7 +364,7 @@
         <label for="unitSentral" class="block mb-3 text-xs font-semibold text-[#4D5E80]">Unit
           Sentral <span class="text-warningColor">*</span></label>
         <select v-model="formData.id_sentral" :disabled="formData.id_pengelola === ''"
-          class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer">
+          class="w-full p-2.5 text-xs text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300">
           <option value="" disable hidden>Pilih Unit Sentral</option>
           <option v-for="item in comboSentral" :key="item.id_sentral" :value="item.id_sentral">
             {{ item.sentral }}
@@ -453,7 +455,7 @@
           <label for="level" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Level <span
               class="text-warningColor">*</span></label>
           <select v-model="formData.level_id"
-            class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer"
+            class="w-full p-2.5 text-xs text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
             @change="handleChangeLevel(formData.level_id)">
             <option value="" disable hidden>Pilih Level</option>
             <option v-for="item in comboLevel" :key="item.kode_level" :value="item.kode_level">
@@ -465,7 +467,7 @@
           <label for="unitInduk" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Unit
             Pengelola <span class="text-warningColor">*</span></label>
           <select v-model="formData.id_pengelola" :disabled="formData.level_id == ''"
-            class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer"
+            class="w-full p-2.5 text-xs text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
             @change="handleChangePengelola">
             <option value="" disable hidden>Pilih Pengelola</option>
             <option v-for="item in comboInduk" :key="item.id_pengelola" :value="item.id_pengelola">
@@ -477,7 +479,7 @@
           <label for="role" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Role <span
               class="text-warningColor">*</span></label>
           <select v-model="formData.role_id" :disabled="formData.level_id === ''"
-            class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer">
+            class="w-full p-2.5 text-xs text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300">
             <option value="" disable hidden>Pilih Role</option>
             <option v-for="item in comboRole" :key="item.id" :value="item.id">
               {{ item.role }}
@@ -488,7 +490,7 @@
           <label for="unitPembina" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Unit
             Pembina <span class="text-warningColor">*</span></label>
           <select v-model="formData.id_pembina" :disabled="formData.id_pengelola === ''"
-            class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer"
+            class="w-full p-2.5 text-xs text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
             @change="handleChangePembina">
             <option value="" disable hidden>Pilih Pembina</option>
             <option v-for="item in comboPengelola" :key="item.id_pembina" :value="item.id_pembina">
@@ -501,7 +503,7 @@
         <label for="unitSentral" class="block mb-3 text-xs font-semibold text-[#4D5E80]">Unit
           Sentral <span class="text-warningColor">*</span></label>
         <select v-model="formData.id_sentral" :disabled="formData.id_pengelola === ''"
-          class="w-full h-[38px] text-xs text-gray-500 border-gray-300 rounded-lg cursor-pointer">
+          class="w-full p-2.5 text-xs text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300">
           <option value="" disable hidden>Pilih Unit Sentral</option>
           <option v-for="item in comboSentral" :key="item.id_sentral" :value="item.id_sentral">
             {{ item.sentral }}

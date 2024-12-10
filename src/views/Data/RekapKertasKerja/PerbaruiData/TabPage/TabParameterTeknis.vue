@@ -107,15 +107,17 @@
       <div class="grid grid-cols-3 gap-5">
         <template v-for="( bahanBakarItem, bahanBakarIndex ) in bahanBakarsFinal()" :key="bahanBakarIndex">
           <div class="flex flex-row items-center space-x-3">
-            <input type="checkbox" name="" class="rounded-[3.5px] border-primaryColor cursor-pointer"
+            <input type="checkbox" name="" class="rounded-[3.5px] border-primaryColor border cursor-pointer"
               :id="bahanBakarItem.id" :value="bahanBakarItem.id" v-model="checkedBahanBakar" @change="emit('onChecked')"
               v-if="props.isRealisasiUploaded === false && bahanBakarItem.flag_bahan_bakar === 0">
             <div class="flex flex-col w-full space-y-1">
               <label class="block font-bold text-gray-500">Bahan Bakar {{ bahanBakars.length > 0 ?
                 bahanBakarItem.flag_bahan_bakar === 1 ? 'Utama' : bahanBakarIndex + 1 : '-' }}<span
                   class="text-warningColor">*</span></label>
-              <select class="text-sm border-gray-300 rounded-lg" @change="emit('onChange')"
-                v-model="bahanBakarItem.kode_bahan_bakar" required :disabled="props.isRealisasiUploaded === true">
+              <select
+                class="p-2 text-sm text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
+                @change="emit('onChange')" v-model="bahanBakarItem.kode_bahan_bakar" required
+                :disabled="props.isRealisasiUploaded === true">
                 <option value="" disabled hidden>Pilih Bahan Bakar</option>
                 <option v-for="( comboBahanBakarItem, comboBahanBakarIndex ) in props.comboBahanBakar"
                   :value="(comboBahanBakarItem as any).kode_bahan_bakar" :key="comboBahanBakarIndex"
