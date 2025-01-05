@@ -112,15 +112,6 @@
                 <p class="text-xs text-[#0A448F]">{{ itemData.nama_evidence }}</p>
               </button>
             </div>
-            <!-- <div class="flex items-center space-x-3" v-else-if="itemData.action === 'Edit' && itemData.nama_document">
-              <button
-                class="flex items-center space-x-1.5 bg-[#F7FBFC] rounded-md w-fit px-2 py-1 active:ring-1 active:ring-[#E7F1FD]">
-                <div class="rounded-full flex items-center p-1 bg-[#E7F1FD]">
-                  <IconPhoto />
-                </div>
-                <p class="text-xs text-[#0A448F]">profil.png</p>
-              </button>
-            </div> -->
           </div>
         </div>
       </div>
@@ -203,7 +194,6 @@ import IconTambahUser from '@/components/icons/LogActivity/IconTambahUser.vue';
 import IconTolak from '@/components/icons/LogActivity/IconTolak.vue';
 import IconUnduh from '@/components/icons/LogActivity/IconUnduh.vue';
 import IconDocument from '@/components/icons/LogActivity/IconDocument.vue';
-import IconPhoto from '@/components/icons/LogActivity/IconPhoto.vue';
 
 const date = new Date();
 const isLoading = ref<boolean>(false);
@@ -254,7 +244,7 @@ const filterData = ref<{
 }>({
   activity: ['Login', 'Logout', 'Draft Data', 'Revisi Data', 'Kirim Data', 'Tolak Data', 'Unduh Data', 'Setujui Data', 'Tambah', 'Edit']
 });
-var debounceTimeout: any = null;
+let debounceTimeout: any = null;
 
 const changePageLimit = async () => {
   isLoading.value = true;
@@ -262,7 +252,6 @@ const changePageLimit = async () => {
   await fetchLogActivity();
   isLoading.value = false;
 };
-
 
 const processValue = (val: string) => {
   if (filterValue.value.selectedActivity.includes(val)) {
@@ -325,30 +314,28 @@ const generatePageList = computed(() => {
     for (let i = 1; i <= navigation.value.totalPages; i++) {
       pageList.push(i)
     };
-  } else {
-    if (navigation.value.currentPage <= 3) {
-      for (let i = 1; i <= Math.min(navigation.value.totalPages, maxPages - 1); i++) {
-        pageList.push(i)
-      }
-      if (navigation.value.totalPages > maxPages) {
-        pageList.push('...');
-        pageList.push(navigation.value.totalPages)
-      }
-    } else if (navigation.value.currentPage >= navigation.value.totalPages - 2) {
-      pageList.push(1);
-      pageList.push('...')
-      for (let i = navigation.value.totalPages - (maxPages - 2); i <= navigation.value.totalPages; i++) {
-        pageList.push(i)
-      };
-    } else {
-      pageList.push(1)
-      pageList.push('...')
-      for (let i = navigation.value.currentPage - 1; i <= navigation.value.currentPage + 1; i++) {
-        pageList.push(i);
-      }
-      pageList.push('...')
-      pageList.push(navigation.value.totalPages);
+  } else if (navigation.value.currentPage <= 3) {
+    for (let i = 1; i <= Math.min(navigation.value.totalPages, maxPages - 1); i++) {
+      pageList.push(i)
     }
+    if (navigation.value.totalPages > maxPages) {
+      pageList.push('...');
+      pageList.push(navigation.value.totalPages)
+    }
+  } else if (navigation.value.currentPage >= navigation.value.totalPages - 2) {
+    pageList.push(1);
+    pageList.push('...')
+    for (let i = navigation.value.totalPages - (maxPages - 2); i <= navigation.value.totalPages; i++) {
+      pageList.push(i)
+    };
+  } else {
+    pageList.push(1)
+    pageList.push('...')
+    for (let i = navigation.value.currentPage - 1; i <= navigation.value.currentPage + 1; i++) {
+      pageList.push(i);
+    }
+    pageList.push('...')
+    pageList.push(navigation.value.totalPages);
   }
   return pageList;
 })
@@ -377,7 +364,7 @@ const handleChangeFilter = () => {
 const handleChangeDate = () => {
   navigation.value.currentPage = 1;
   nextTick(() => {
-    fetchLogActivity();
+    fetchLogActivity()
   });
 }
 
@@ -457,7 +444,7 @@ const downloadEvidenceFS = async (dokumenEvidence: string, namaFileEvidence: str
 const downloadExcelKK = async (tahun: number, tahunRealisasi: number, idMesin: number) => {
   try {
     isLoading.value = true;
-    var responseMesin: any;
+    let responseMesin: any;
     try {
       responseMesin = await detailRekapService.getMesinById(idMesin);
     } catch (error) {
@@ -484,7 +471,7 @@ const downloadExcelKK = async (tahun: number, tahunRealisasi: number, idMesin: n
 const downloadExcelFS = async (tahun: number, tahunRealisasi: number, idMesin: number) => {
   try {
     isLoading.value = true;
-    var responseMesin: any;
+    let responseMesin: any;
     try {
       responseMesin = await detailRekapService.getMesinById(idMesin);
     } catch (error) {

@@ -71,7 +71,6 @@
                 fill="#0099AD" />
             </svg>
             <p>Silahkan pilih berkas excel anda</p>
-            <!-- <p>ATAU</p> -->
             <label for="fileInput"
               class="flex flex-row items-center px-3 py-2 space-x-2 text-white duration-300 rounded-lg cursor-pointer bg-primaryColor hover:bg-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0">
               <IconFolder />
@@ -108,7 +107,6 @@
                 fill="#0099AD" />
             </svg>
             <p>Silahkan pilih berkas evidence anda</p>
-            <!-- <p>ATAU</p> -->
             <label for="fileInputEvidence"
               class="flex flex-row items-center px-3 py-2 space-x-2 text-white duration-300 rounded-lg cursor-pointer bg-primaryColor hover:bg-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0">
               <IconFolder />
@@ -359,7 +357,7 @@ const fetchMesinById = async () => {
 const fetchCheckIntegrasi = async () => {
   try {
     const response: any = await perbaruiDataService.getCheckIntegrasi(tahunBerjalan - 1, idMesin);
-    isIntegrasi.value = response.data[0].status_data_integrasi === "0" ? false : true;
+    isIntegrasi.value = response.data[0].status_data_integrasi !== "0"
     console.log(isIntegrasi.value, 'dds');
   } catch (error) {
     console.error('Fetch Check Integrasi Error : ' + error)
@@ -375,7 +373,6 @@ const fetchAsumsiParameter = async (isCreate: boolean) => {
     )
     if (isCreate !== true) {
       if (response.code === 200) {
-        // if (response.data.status === 'update') {
         const tempBahanBakars = response.data.harga_bahan_bakars;
         for (const iterator of tempBahanBakars) {
           iterator.harga_bahan_bakar = globalFormat.formatCurrencyNotFixed(iterator.harga_bahan_bakar.toString());
@@ -395,7 +392,6 @@ const fetchAsumsiParameter = async (isCreate: boolean) => {
         electricityPriceD.value = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_d_rp_per_kwh.toString());
         bahanBakars.value = tempBahanBakars;
         pickedParameterValue.value = pemakaianSendiri.value === '0,00' ? 'auxiliarySusut' : 'pemakaianSendiri';
-        // }
       }
     }
     asumsiParameter.value = response.data;
@@ -507,7 +503,6 @@ const insertAsumsiParameter = async () => {
     } else {
       errorParameterTeknis.nphr = false;
     }
-    // if (pickedParameterValue.value === 'auxiliarySusut') {
     if (auxiliary.value === '') {
       errorParameterTeknis.auxiliary = true;
     } else {
@@ -517,22 +512,12 @@ const insertAsumsiParameter = async () => {
       errorParameterTeknis.susutTrafo = true;
     } else {
       errorParameterTeknis.susutTrafo = false;
-    } if (pemakaianSendiri.value === '') {
+    }
+    if (pemakaianSendiri.value === '') {
       errorParameterTeknis.pemakaianSendiri = true;
     } else {
       errorParameterTeknis.pemakaianSendiri = false;
     }
-    // } else if (pickedParameterValue.value === 'pemakaianSendiri') {
-    //   if (pemakaianSendiri.value === '') {
-    //     errorParameterTeknis.pemakaianSendiri = true;
-    //     errorParameterTeknis.auxiliary = false;
-    //     errorParameterTeknis.susutTrafo = false;
-    //   } else {
-    //     errorParameterTeknis.pemakaianSendiri = false;
-    //     errorParameterTeknis.auxiliary = false;
-    //     errorParameterTeknis.susutTrafo = false;
-    //   }
-    // }
     if (electricityPriceA.value === '') {
       errorParameterTeknis.electricityPriceA = true;
     } else {
@@ -565,8 +550,8 @@ const insertAsumsiParameter = async () => {
       isShowModalNotification.value = false;
     } else {
       isLoading.value = true;
-      for (let index = 0; index < bahanBakars.value.length; index++) {
-        delete bahanBakars.value[index].id;
+      for (const item of bahanBakars.value) {
+        delete item.id;
       }
       const finalInterestRate = interestRate.value.includes('.') ? interestRate.value.replace(/[.]/g, '') : interestRate.value;
       const finalLoanPortion = loanPortion.value.includes('.') ? loanPortion.value.replace(/[.]/g, '') : loanPortion.value;
@@ -624,11 +609,6 @@ const insertAsumsiParameter = async () => {
       }
     }
   } catch (error: any) {
-    // if (error.response.data.message === 'Data Asumsi sudah ada') {
-    //   notifyError('Data Asumsi sudah ada', 3500);
-    // } else {
-    //   notifyError('Data gagal dikirim', 3500);
-    // }
     console.error('Insert Asumsi Parameter Error : ' + error);
   } finally {
     isLoading.value = false;
@@ -767,5 +747,3 @@ onMounted(async () => {
   isLoading.value = false;
 })
 </script>
-
-<style scoped></style>

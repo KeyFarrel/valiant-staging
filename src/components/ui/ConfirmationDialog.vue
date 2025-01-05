@@ -25,5 +25,3 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits(['onBatalClick', 'onAcceptClick']);
 </script>
-
-<style scoped></style>

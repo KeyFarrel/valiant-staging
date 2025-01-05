@@ -8,16 +8,6 @@
         </h1>
       </div>
       <div class="flex px-6 pt-2">
-        <!-- <div v-if="tabGraphic === 'Semua'" class="flex flex-row items-center space-x-3">
-          <label class="text-sm font-semibold text-labelColor" for="">Periode</label>
-          <VueDatePicker v-if="periodeTahun" class="date-picker" :model-value="yearRangePicked"
-            @update:model-value="handleYearRangeWlcAll" :year-range="yearRange" :clearable="false" year-picker range />
-        </div>
-        <div v-else-if="tabGraphic === 'Biaya Komponen'" class="flex flex-row items-center space-x-3">
-          <label class="text-sm font-semibold text-labelColor" for="">Periode</label>
-          <VueDatePicker v-if="periodeTahun" class="date-picker" :model-value="yearRangePicked"
-            @update:model-value="handleYearRangeWlcKom" :year-range="yearRange" :clearable="false" year-picker range />
-        </div> -->
         <RouterLink :to="{ name: 'detail-rekap', params: { id: props.idSentral } }">
           <button type="button"
             class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center focus:outline-none">
@@ -207,7 +197,7 @@
           </thead>
           <tbody v-for="(item, i) in datatableWlcAll" :key="i" class="text-xs">
             <tr class="border-b bg-[#E5E7E9]">
-              <td scope="row" class="px-2 py-2 font-medium whitespace-nowrap">
+              <td class="px-2 py-2 font-medium whitespace-nowrap">
                 <div class="bg-[#F7F7F7] rounded-md flex justify-center py-1.5">
                   <svg width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd"
@@ -220,15 +210,6 @@
               <td class="px-1 py-2 text-right">{{ globalFormat.formatRupiah(item.realisasi) }}</td>
               <td class="px-1 py-2 text-right">{{ globalFormat.formatRupiah(item.planning) }}</td>
             </tr>
-            <!-- <tr class="text-center text-gray-900 border-b">
-              <th
-                scope="row"
-                class="px-2 py-2 font-medium text-center whitespace-nowrap"
-              ></th>
-              <td class="px-8 py-2">Revenue A</td>
-              <td class="px-1 py-2">3,378</td>
-              <td class="px-1 py-2">-</td>
-            </tr> -->
           </tbody>
         </table>
       </div>
@@ -279,7 +260,7 @@
           </thead>
           <tbody v-for="(item, i) in datatableWlcKom" :key="i" class="text-xs">
             <tr class="border-b bg-[#E5E7E9]">
-              <td scope="row" class="px-2 py-2 font-medium whitespace-nowrap">
+              <td class="px-2 py-2 font-medium whitespace-nowrap">
                 <div class="bg-[#F7F7F7] rounded-md flex justify-center py-1.5">
                   <svg width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd"
@@ -342,7 +323,7 @@
           </thead>
           <tbody v-for="(item, i) in datatablePlan" :key="i" class="text-xs">
             <tr class="border-b bg-[#E5E7E9]">
-              <td scope="row" class="px-2 py-2 font-medium whitespace-nowrap">
+              <td class="px-2 py-2 font-medium whitespace-nowrap">
                 <div class="bg-[#F7F7F7] rounded-md flex justify-center py-1.5">
                   <svg width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd"
@@ -405,7 +386,7 @@
           </thead>
           <tbody v-for="(item, i) in datatablePRP" :key="i" class="text-xs">
             <tr class="border-b bg-[#E5E7E9]">
-              <td scope="row" class="px-2 py-2 font-medium whitespace-nowrap">
+              <td class="px-2 py-2 font-medium whitespace-nowrap">
                 <div class="bg-[#F7F7F7] rounded-md flex justify-center py-1.5">
                   <svg width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd"
@@ -468,7 +449,7 @@
           </thead>
           <tbody v-for="(item, i) in datatableLastY" :key="i" class="text-xs">
             <tr class="border-b bg-[#E5E7E9]">
-              <td scope="row" class="px-2 py-2 font-medium whitespace-nowrap">
+              <td class="px-2 py-2 font-medium whitespace-nowrap">
                 <div class="bg-[#F7F7F7] rounded-md flex justify-center py-1.5">
                   <svg width="8" height="6" viewBox="0 0 8 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd"
@@ -512,15 +493,15 @@ const dataPRPPlan = ref<Grafik1[]>([]);
 const dataPRPLastYear = ref<Grafik1[]>([]);
 const dataPRPLastYearPlan = ref<Grafik1[]>([]);
 const dataDetailWlcAll = ref<Grafik1[]>([]);
-const datatableWlcAll = ref<table[]>([]);
+const datatableWlcAll = ref<TableInterface[]>([]);
 const dataDetailWlcKom = ref<Grafik1[]>([]);
-const datatableWlcKom = ref<table[]>([]);
+const datatableWlcKom = ref<TableInterface[]>([]);
 const dataDetailPlan = ref<Grafik1[]>([]);
-const datatablePlan = ref<table[]>([]);
+const datatablePlan = ref<TableInterface[]>([]);
 const dataDetailPRP = ref<Grafik1[]>([]);
-const datatablePRP = ref<table[]>([]);
+const datatablePRP = ref<TableInterface[]>([]);
 const dataDetailLastY = ref<Grafik1[]>([]);
-const datatableLastY = ref<table[]>([]);
+const datatableLastY = ref<TableInterface[]>([]);
 const showModalWlcAll = ref(false);
 const showModalWlcKom = ref(false);
 const showModalPlan = ref(false);
@@ -531,12 +512,6 @@ const isLoading = ref(false);
 const tabGraphic = ref("Semua");
 const props = defineProps<Sentral>();
 const tahunData = computed(() => props.tahunData);
-
-// const tahunDari = ref<any>();
-// const tahunSampai = ref<any>();
-// const yearRangePicked = ref<number[]>([]);
-// const yearRange = ref<number[]>([]);
-// const periodeTahun = ref<any[]>([]);
 
 interface Sentral {
   idSentral: any;
@@ -565,7 +540,7 @@ interface Grafik2 {
   revenue_komp_d: number;
 }
 
-interface table {
+interface TableInterface {
   name: string;
   realisasi: number;
   planning: number;
@@ -756,22 +731,6 @@ let forceRender9 = async () => {
   updateDetailLastY.value = true;
 };
 
-// const fetchPeriodeTahun = async () => {
-//   try {
-//     const response: any = await grafikService.getRangeYearSentral({
-//       id_sentral: props.idSentral,
-//     });
-//     periodeTahun.value = response.data;
-//     tahunDari.value = periodeTahun.value[0].tahun;
-//     tahunSampai.value = periodeTahun.value[periodeTahun.value.length - 1].tahun;
-//     yearRangePicked.value = [tahunDari.value, tahunSampai.value];
-//     yearRange.value = [tahunDari.value, tahunSampai.value];
-//     stored.periodeTahun = [tahunDari.value, tahunSampai.value];
-//   } catch (error) {
-//     console.error('Fetch Tahun Grafik Sentral Error : ' + error);
-//   }
-// }
-
 function changeTab(tabs: number) {
   if (tabs === 1) {
     tabGraphic.value = "Semua";
@@ -782,7 +741,6 @@ function changeTab(tabs: number) {
 
 onMounted(async () => {
   AOS.init();
-  // await fetchPeriodeTahun();
 });
 
 let tahunDetail = ref("");
@@ -790,7 +748,6 @@ let tahunDetail = ref("");
 function handleClickWlcAll(param: any) {
   showModalWlcAll.value = true;
   tahunDetail.value = tahunWLCAll.value[param.dataIndex];
-  // console.log(param);
 
   grafikService
     .getGrafikWLCALLDetail({
@@ -808,10 +765,10 @@ function handleClickWlcAll(param: any) {
       dataDetailWlcAll.value.reverse();
       datatableWlcAll.value.reverse();
 
-      for (var i = 0; i < res.data.graph.length; i++) {
-        judulDetWlcAll.value.push(res.data.graph[i].judul);
-        realDetWlcAll.value.push(res.data.graph[i].realisasi);
-        planDetWlcAll.value.push(res.data.graph[i].planning);
+      for (const item of res.data.graph) {
+        judulDetWlcAll.value.push(item.judul);
+        realDetWlcAll.value.push(item.realisasi);
+        planDetWlcAll.value.push(item.planning);
       }
 
       chartDetailWLCAll.value = {
@@ -887,14 +844,6 @@ function handleClickWlcAll(param: any) {
               focus: "series",
             },
             data: realDetWlcAll,
-            // label: {
-            //   show: true,
-            //   position: "top",
-            //   fontSize: 10,
-            //   formatter: function (params: any) {
-            //     return globalFormat.formatEnergy(params.value / 1000) + ' k'
-            //   },
-            // },
             tooltip: {
               valueFormatter: (value: any) =>
                 globalFormat.formatRupiah(value) + " Rp(Juta)",
@@ -910,7 +859,6 @@ function handleClickWlcAll(param: any) {
 function handleClickWlcKom(param: any) {
   showModalWlcKom.value = true;
   tahunDetail.value = tahunWLCKom.value[param.dataIndex];
-  // console.log(tahunDetail.value);
 
   grafikService
     .getGrafikWLCKomDetail({
@@ -928,10 +876,10 @@ function handleClickWlcKom(param: any) {
       dataDetailWlcKom.value.reverse();
       datatableWlcKom.value.reverse();
 
-      for (var i = 0; i < res.data.graph.length; i++) {
-        judulDetWlcKom.value.push(res.data.graph[i].judul);
-        realDetWlcKom.value.push(res.data.graph[i].realisasi);
-        planDetWlcKom.value.push(res.data.graph[i].planning);
+      for (const item of res.data.graph) {
+        judulDetWlcKom.value.push(item.judul);
+        realDetWlcKom.value.push(item.realisasi);
+        planDetWlcKom.value.push(item.planning);
       }
 
       chartDetailWLCKom.value = {
@@ -1022,7 +970,6 @@ function handleClickWlcKom(param: any) {
 function handleClickPlan(param: any) {
   showModalPlan.value = true;
   tahunDetail.value = tahunPlanning.value[param.dataIndex];
-  // console.log(tahunDetail.value);
 
   grafikService
     .getGrafikPlanDetail({
@@ -1040,10 +987,10 @@ function handleClickPlan(param: any) {
       dataDetailPlan.value.reverse();
       datatablePlan.value.reverse();
 
-      for (var i = 0; i < res.data.graph.length; i++) {
-        judulDetPlan.value.push(res.data.graph[i].judul);
-        realDetPlan.value.push(res.data.graph[i].realisasi);
-        planDetPlan.value.push(res.data.graph[i].planning);
+      for (const item of res.data.graph) {
+        judulDetPlan.value.push(item.judul);
+        realDetPlan.value.push(item.realisasi);
+        planDetPlan.value.push(item.planning);
       }
 
       chartDetailPlan.value = {
@@ -1134,7 +1081,6 @@ function handleClickPlan(param: any) {
 function handleClickPRP(param: any) {
   showModalPRP.value = true;
   tahunDetail.value = tahunPRP.value[param.dataIndex];
-  // console.log(tahunDetail.value);
 
   if (chartDetailPRP.value) {
     return null;
@@ -1155,10 +1101,10 @@ function handleClickPRP(param: any) {
         dataDetailPRP.value.reverse();
         datatablePRP.value.reverse();
 
-        for (var i = 0; i < res.data.graph.length; i++) {
-          judulDetPRP.value.push(res.data.graph[i].judul);
-          realDetPRP.value.push(res.data.graph[i].realisasi);
-          planDetPRP.value.push(res.data.graph[i].planning);
+        for (const item of res.data.graph) {
+          judulDetPRP.value.push(item.judul);
+          realDetPRP.value.push(item.realisasi);
+          planDetPRP.value.push(item.planning);
         }
 
         chartDetailPRP.value = {
@@ -1250,7 +1196,6 @@ function handleClickPRP(param: any) {
 function handleClickLastY(param: any) {
   showModalLastY.value = true;
   tahunDetail.value = tahunLastYear.value[param.dataIndex];
-  // console.log(tahunDetail.value);
 
   grafikService
     .getGrafikLastYearDetail({
@@ -1268,10 +1213,10 @@ function handleClickLastY(param: any) {
       dataDetailLastY.value.reverse();
       datatableLastY.value.reverse();
 
-      for (var i = 0; i < res.data.graph.length; i++) {
-        judulDetLastY.value.push(res.data.graph[i].judul);
-        realDetLastY.value.push(res.data.graph[i].realisasi);
-        planDetLastY.value.push(res.data.graph[i].planning);
+      for (const item of res.data.graph) {
+        judulDetLastY.value.push(item.judul);
+        realDetLastY.value.push(item.realisasi);
+        planDetLastY.value.push(item.planning);
       }
 
       chartDetailLastY.value = {
@@ -1389,7 +1334,7 @@ watch(tahunData, async (tahun) => {
       yAxisWlc.value = [];
 
       if (res.data != null) {
-        for (var i = 0; i < res.data.length; i++) {
+        for (let i = 0; i < res.data.length; i++) {
           tahunWLCAll.value.push(res.data[i].tahun);
           revWLC.value.push(res.data[i].revenue_annualized);
           sumLccWLC.value.push(res.data[i].total_wlcc);
@@ -1398,7 +1343,7 @@ watch(tahunData, async (tahun) => {
           fuelComWLC.value.push(res.data[i].cost_component_c_annualized);
           yAxisWlc.value.push(res.data[i].capex_annualized + res.data[i].cost_component_bd + res.data[i].cost_component_c_annualized);
 
-          maxWlc.value = Math.max.apply(Math, yAxisWlc.value)
+          maxWlc.value = Math.max(...yAxisWlc.value)
 
           const difference = Math.abs(res.data[i].total_wlcc - res.data[i].revenue_annualized);
           if (difference < selisih) {
@@ -1407,7 +1352,7 @@ watch(tahunData, async (tahun) => {
             selisih = difference;
             tahunBEP = res.data[i].tahun
           }
-          const diffOpt = Math.min.apply(Math, sumLccWLC.value)
+          const diffOpt = Math.min(...sumLccWLC.value)
           if (diffOpt < selisihOpt) {
             indexOptimum = i;
             indexOpt = i + 1;
@@ -1633,16 +1578,16 @@ watch(tahunData, async (tahun) => {
       sumCostComp.value = [];
 
       if (res.data != null) {
-        for (var i = 0; i < res.data.length; i++) {
-          tahunWLCKom.value.push(res.data[i].tahun);
-          costCompA.value.push(res.data[i].cost_komp_a);
-          costCompC.value.push(res.data[i].cost_komp_c);
-          costCompBD.value.push(res.data[i].cost_komp_bd);
+        for (const item of res.data) {
+          tahunWLCKom.value.push(item.tahun);
+          costCompA.value.push(item.cost_komp_a);
+          costCompC.value.push(item.cost_komp_c);
+          costCompBD.value.push(item.cost_komp_bd);
           sumCostComp.value.push(
-            res.data[i].cost_komp_a +
-            res.data[i].cost_komp_b +
-            res.data[i].cost_komp_c +
-            res.data[i].cost_komp_d
+            item.cost_komp_a +
+            item.cost_komp_b +
+            item.cost_komp_c +
+            item.cost_komp_d
           );
         }
       }
@@ -1805,7 +1750,7 @@ watch(tahunData, async (tahun) => {
       yAxisPlan.value = [];
 
       if (res.data != null) {
-        for (var i = 0; i < res.data.length; i++) {
+        for (let i = 0; i < res.data.length; i++) {
           tahunPlanning.value.push(res.data[i].tahun);
           capexPlan.value.push(res.data[i].capex_annualized);
           comBDPlan.value.push(res.data[i].cost_component_bd);
@@ -1814,7 +1759,7 @@ watch(tahunData, async (tahun) => {
           sumLccPlan.value.push(res.data[i].total_wlcc);
           yAxisPlan.value.push(res.data[i].capex_annualized + res.data[i].cost_component_bd + res.data[i].cost_component_c_annualized);
 
-          maxPlan.value = Math.max.apply(Math, yAxisPlan.value)
+          maxPlan.value = Math.max(...yAxisPlan.value)
 
           const difference = Math.abs(res.data[i].total_wlcc - res.data[i].revenue_annualized);
           if (difference < selisih) {
@@ -1824,7 +1769,7 @@ watch(tahunData, async (tahun) => {
             tahunBEP = res.data[i].tahun
           }
 
-          const diffOpt = Math.min.apply(Math, sumLccPlan.value)
+          const diffOpt = Math.min(...sumLccPlan.value)
           if (diffOpt < selisihOpt) {
             indexOptimum = i;
             indexOpt = i + 1;
@@ -2064,7 +2009,7 @@ watch(tahunData, async (tahun) => {
       yAxisPRP.value = [];
 
       if (res.data[0].realisasi_proyeksi != null) {
-        for (var i = 0; i < res.data[0].realisasi_proyeksi.length; i++) {
+        for (let i = 0; i < res.data[0].realisasi_proyeksi.length; i++) {
           tahunPRP.value.push(res.data[0].realisasi_proyeksi[i].tahun);
           capexPRP.value.push(res.data[0].realisasi_proyeksi[i].capex_annualized);
           comBDPRP.value.push(res.data[0].realisasi_proyeksi[i].cost_component_bd);
@@ -2079,7 +2024,7 @@ watch(tahunData, async (tahun) => {
           revCPRP.value.push(res.data[0].realisasi_proyeksi[i].revenue_komp_c);
           revDPRP.value.push(res.data[0].realisasi_proyeksi[i].revenue_komp_d);
           yAxisPRP.value.push(res.data[0].realisasi_proyeksi[i].capex_annualized + res.data[0].realisasi_proyeksi[i].cost_component_bd + res.data[0].realisasi_proyeksi[i].cost_component_c_annualized)
-          maxPRP.value = Math.max.apply(Math, yAxisPRP.value)
+          maxPRP.value = Math.max(...yAxisPRP.value)
 
           const difference = Math.abs(res.data[0].realisasi_proyeksi[i].total_wlcc - res.data[0].realisasi_proyeksi[i].revenue_annualized);
           if (difference < selisih) {
@@ -2089,7 +2034,7 @@ watch(tahunData, async (tahun) => {
             tahunBEP = res.data[0].realisasi_proyeksi[i].tahun
           }
 
-          const diffOpt = Math.min.apply(Math, sumLccPRP.value)
+          const diffOpt = Math.min(...sumLccPRP.value)
           if (diffOpt < selisihOpt) {
             indexOptimum = i;
             indexOpt = i + 1;
@@ -2115,7 +2060,7 @@ watch(tahunData, async (tahun) => {
       yAxisPRPPlan.value = [];
 
       if (res.data[0].planning != null) {
-        for (var j = 0; j < res.data[0].planning.length; j++) {
+        for (let j = 0; j < res.data[0].planning.length; j++) {
           tahunPRPPlan.value.push(res.data[0].planning[j].tahun);
           capexPRPPlan.value.push(res.data[0].planning[j].capex_annualized);
           comBDPRPPlan.value.push(res.data[0].planning[j].cost_component_bd);
@@ -2128,7 +2073,7 @@ watch(tahunData, async (tahun) => {
           revCPRPPlan.value.push(res.data[0].planning[j].revenue_komp_c);
           revDPRPPlan.value.push(res.data[0].planning[j].revenue_komp_d);
           yAxisPRPPlan.value.push(res.data[0].planning[j].capex_annualized + res.data[0].planning[j].cost_component_bd + res.data[0].planning[j].cost_component_c_annualized)
-          maxPRPPlan.value = Math.max.apply(Math, yAxisPRPPlan.value)
+          maxPRPPlan.value = Math.max(...yAxisPRPPlan.value)
 
           const difference = Math.abs(res.data[0].planning[j].total_wlcc - res.data[0].planning[j].revenue_annualized);
           if (difference < selisihPlan) {
@@ -2138,7 +2083,7 @@ watch(tahunData, async (tahun) => {
             tahunBEPPlan = res.data[0].planning[j].tahun
           }
 
-          const diffOptPlan = Math.min.apply(Math, sumLccPRPPlan.value)
+          const diffOptPlan = Math.min(...sumLccPRPPlan.value)
           if (diffOptPlan < selisihOptPlan) {
             indexOptimumPlan = j;
             indexOptPlan = j + 1;
@@ -2685,7 +2630,7 @@ watch(tahunData, async (tahun) => {
       yAxisLastYear.value = [];
 
       if (res.data[0].realisasi_proyeksi != null) {
-        for (var i = 0; i < res.data[0].realisasi_proyeksi.length; i++) {
+        for (let i = 0; i < res.data[0].realisasi_proyeksi.length; i++) {
           tahunLastYear.value.push(res.data[0].realisasi_proyeksi[i].tahun);
           capexLastYear.value.push(
             res.data[0].realisasi_proyeksi[i].capex_annualized
@@ -2716,7 +2661,7 @@ watch(tahunData, async (tahun) => {
             res.data[0].realisasi_proyeksi[i].revenue_komp_d
           );
           yAxisLastYear.value.push(res.data[0].realisasi_proyeksi[i].capex_annualized + res.data[0].realisasi_proyeksi[i].cost_component_bd + res.data[0].realisasi_proyeksi[i].cost_component_c_annualized);
-          maxLastYear.value = Math.max.apply(Math, yAxisLastYear.value);
+          maxLastYear.value = Math.max(...yAxisLastYear.value);
 
           const difference = Math.abs(res.data[0].realisasi_proyeksi[i].total_wlcc - res.data[0].realisasi_proyeksi[i].revenue_annualized);
           if (difference < selisih) {
@@ -2726,7 +2671,7 @@ watch(tahunData, async (tahun) => {
             tahunBEP = res.data[0].realisasi_proyeksi[i].tahun
           }
 
-          const diffOpt = Math.min.apply(Math, sumLccLastYear.value)
+          const diffOpt = Math.min(...sumLccLastYear.value)
           if (diffOpt < selisihOpt) {
             indexOptimum = i;
             indexOpt = i + 1;
@@ -2752,7 +2697,7 @@ watch(tahunData, async (tahun) => {
       yAxisLastYearPlan.value = [];
 
       if (res.data[0].planning != null) {
-        for (var j = 0; j < res.data[0].planning.length; j++) {
+        for (let j = 0; j < res.data[0].planning.length; j++) {
           tahunLastYearPlan.value.push(res.data[0].planning[j].tahun);
           capexLastYearPlan.value.push(res.data[0].planning[j].capex_annualized);
           comBDLastYearPlan.value.push(res.data[0].planning[j].cost_component_bd);
@@ -2767,7 +2712,7 @@ watch(tahunData, async (tahun) => {
           revCLastYearPlan.value.push(res.data[0].planning[j].revenue_komp_c);
           revDLastYearPlan.value.push(res.data[0].planning[j].revenue_komp_d);
           yAxisLastYearPlan.value.push(res.data[0].planning[j].capex_annualized + res.data[0].planning[j].cost_component_bd + res.data[0].planning[j].cost_component_c_annualized);
-          maxLastYearPlan.value = Math.max.apply(Math, yAxisLastYearPlan.value);
+          maxLastYearPlan.value = Math.max(...yAxisLastYearPlan.value);
 
           const difference = Math.abs(res.data[0].planning[j].total_wlcc - res.data[0].planning[j].revenue_annualized);
           if (difference < selisihPlan) {
@@ -2777,7 +2722,7 @@ watch(tahunData, async (tahun) => {
             tahunBEPPlan = res.data[0].planning[j].tahun
           }
 
-          const diffOptPlan = Math.min.apply(Math, sumLccLastYearPlan.value)
+          const diffOptPlan = Math.min(...sumLccLastYearPlan.value)
           if (diffOptPlan < selisihOptPlan) {
             indexOptimumPlan = j;
             indexOptPlan = j + 1;
@@ -3287,433 +3232,6 @@ watch(tahunData, async (tahun) => {
     });
   isLoading.value = false;
 })
-
-// const handleYearRangeWlcAll = async (modelData: Array<number>) => {
-//   yearRangePicked.value = modelData;
-//   stored.periodeTahun = modelData;
-
-//   isLoading.value = true;
-//   await grafikService
-//     .getGrafikWLCALL({
-//       id_sentral: props.idSentral,
-//       start_year: modelData[0],
-//       end_year: modelData[1],
-//       tahun_realisasi: tahunData.value,
-//     })
-//     .then((res: any) => {
-//       let indexTerdekat;
-//       let tahunBEP;
-//       let indexBEP;
-//       let indexOpt;
-//       let indexOptimum;
-//       let tahunOptimum;
-//       let selisih = Infinity;
-//       let selisihOpt = Infinity;
-
-//       dataWLCAll.value = res.data;
-
-//       tahunWLCAll.value = [];
-//       revWLC.value = [];
-//       sumLccWLC.value = [];
-//       fuelComWLC.value = [];
-//       comBDWLC.value = [];
-//       yAxisWlc.value = [];
-
-//       for (var i = 0; i < res.data.length; i++) {
-//         tahunWLCAll.value.push(res.data[i].tahun);
-//         revWLC.value.push(res.data[i].revenue_annualized);
-//         sumLccWLC.value.push(res.data[i].total_wlcc);
-//         capexWLC.value.push(res.data[i].capex_annualized);
-//         comBDWLC.value.push(res.data[i].cost_component_bd);
-//         fuelComWLC.value.push(res.data[i].fuel_cost_annualized);
-//         yAxisWlc.value.push(res.data[i].capex_annualized + res.data[i].cost_component_bd + res.data[i].fuel_cost_annualized);
-//         maxWlc.value = Math.max.apply(Math, yAxisWlc.value);
-
-//         const difference = Math.abs(res.data[i].total_wlcc - res.data[i].revenue_annualized);
-//         if (difference < selisih) {
-//           indexTerdekat = i;
-//           indexBEP = i + 1;
-//           selisih = difference;
-//           tahunBEP = res.data[i].tahun
-//         }
-
-//         const diffOpt = Math.min.apply(Math, sumLccWLC.value)
-//         if (diffOpt < selisihOpt) {
-//           indexOptimum = i;
-//           indexOpt = i + 1;
-//           selisihOpt = diffOpt;
-//           tahunOptimum = res.data[i].tahun
-//         }
-//       }
-
-//       chartWLCAll.value = {
-//         title: {
-//           show: false,
-//         },
-//         tooltip: {
-//           trigger: "axis",
-//           axisPointer: {
-//             type: "shadow",
-//           },
-//         },
-//         legend: {
-//           bottom: "bottom",
-//           data: [
-//             "Revenue Annualized",
-//             "Total LCC",
-//             "Cost Component A (Capex) Annualized",
-//             "Cost Component B + D Annualized",
-//             "Fuel Cost Annualized",
-//           ],
-//         },
-//         grid: {
-//           top: "3%",
-//           left: "2%",
-//           right: "2%",
-//           bottom: "8%",
-//           containLabel: true,
-//         },
-//         xAxis: [
-//           {
-//             type: "category",
-//             data: tahunWLCAll,
-//             axisLabel: {
-//               fontSize: 10,
-//               color: function (value: any, index: number) {
-//                 const filterTahun = tahunData.value;
-//                 if (value < filterTahun) {
-//                   return '#FF5656';
-//                 } else if (value == filterTahun) {
-//                   return '#6C6C6C';
-//                 } else if (value > filterTahun) {
-//                   return '#37B1D5';
-//                 }
-//               },
-//               formatter: function (value: any, index: number) {
-//                 return index + 1 + `\n${value}`;
-//               },
-//             },
-//           },
-//         ],
-//         yAxis: [
-//           {
-//             type: "value",
-//             name: "Triliun Rupiah",
-//             nameLocation: "center",
-//             nameTextStyle: {
-//               align: "left",
-//               padding: [30, 20, 15, -25],
-//               fontSize: 14,
-//               color: "#4D5E80",
-//               fontWeight: "bold",
-//             },
-//             axisLabel: {
-//               fontSize: 10,
-//               formatter: function (value: any) {
-//                 return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
-//               },
-//             },
-//           },
-//         ],
-//         series: [
-//           {
-//             name: "Cost Component A (Capex) Annualized",
-//             type: "bar",
-//             stack: "Ad",
-//             emphasis: {
-//               focus: "series",
-//             },
-//             data: capexWLC,
-//             markPoint: {
-//               silent: true,
-//               symbol: 'rect',
-//               symbolSize: [80, 30],
-//               label: { fontSize: 10, fontWeight: 'bold'},
-//               data: [
-//                 { name: 'Max', value: `BEP : ${tahunBEP} (${indexBEP})`, xAxis: indexTerdekat, yAxis: maxWlc },
-//               ]
-//             },
-//             markArea: {
-//               silent: true,
-//               itemStyle: {
-//                 color: '#E2EAF2'
-//               },
-//               label: { show: false },
-//               data: [
-//                 [
-//                   {
-//                     name: 'BEP',
-//                     xAxis: indexTerdekat
-//                   },
-//                   {
-//                     xAxis: indexTerdekat
-//                   }
-//                 ],
-//               ]
-//             },
-//             color: "#0D5A71",
-//             tooltip: {
-//               valueFormatter: (value: any) =>
-//                 globalFormat.formatRupiah(value) + " Rp(Juta)",
-//             },
-//           },
-//           {
-//             name: "Cost Component B + D Annualized",
-//             type: "bar",
-//             stack: "Ad",
-//             emphasis: {
-//               focus: "series",
-//             },
-//             data: comBDWLC,
-//             markPoint: {
-//               silent: true,
-//               symbol: 'rect',
-//               symbolSize: [85, 30],
-//               itemStyle: { color: '#0D5A71' },
-//               label: { fontSize: 10, fontWeight: 'bold'},
-//               data: [
-//                 { name: 'Min', value: `Optimum life : \n ${tahunOptimum} (${indexOpt})`, xAxis: indexOptimum, yAxis: maxWlc },
-//               ]
-//             },
-//             markArea: {
-//               silent: true,
-//               itemStyle: {
-//                 color: '#E2EAF2'
-//               },
-//               label: { show: false },
-//               data: [
-//                 [
-//                   {
-//                     name: 'Optimum Life',
-//                     xAxis: indexOptimum
-//                   },
-//                   {
-//                     xAxis: indexOptimum
-//                   }
-//                 ],
-//               ]
-//             },
-//             color: "#37B1D5",
-//             tooltip: {
-//               valueFormatter: (value: any) =>
-//                 globalFormat.formatRupiah(value) + " Rp(Juta)",
-//             },
-//           },
-//           {
-//             name: "Fuel Cost Annualized",
-//             type: "bar",
-//             stack: "Ad",
-//             emphasis: {
-//               focus: "series",
-//             },
-//             itemStyle: {
-//               borderRadius: [5, 5, 0, 0],
-//             },
-//             data: fuelComWLC,
-//             color: "#CCF2FF",
-//             tooltip: {
-//               valueFormatter: (value: any) =>
-//                 globalFormat.formatRupiah(value) + " Rp(Juta)",
-//             },
-//           },
-//           {
-//             name: "Revenue Annualized",
-//             type: "line",
-//             smooth: true,
-//             showSymbol: false,
-//             data: revWLC,
-//             color: "#0099AD",
-//             tooltip: {
-//               valueFormatter: (value: any) =>
-//                 globalFormat.formatRupiah(value) + " Rp(Juta)",
-//             },
-//           },
-//           {
-//             name: "Total LCC",
-//             type: "line",
-//             smooth: true,
-//             showSymbol: false,
-//             data: sumLccWLC,
-//             color: "#1E1F4E",
-//             tooltip: {
-//               valueFormatter: (value: any) =>
-//                 globalFormat.formatRupiah(value) + " Rp(Juta)",
-//             },
-//           },
-//         ],
-//       };
-//       forceRender();
-//     });
-//   isLoading.value = false;
-// }
-
-// const handleYearRangeWlcKom = async (modelData: Array<number>) => {
-//   yearRangePicked.value = modelData;
-//   stored.periodeTahun = modelData;
-
-//   isLoading.value = true;
-//   await grafikService
-//     .getGrafikWLCKom({
-//       id_sentral: props.idSentral,
-//       start_year: modelData[0],
-//       end_year: modelData[1],
-//       tahun_realisasi: tahunData.value,
-//     })
-//     .then((res: any) => {
-//       dataWLCKom.value = res.data;
-
-//       tahunWLCKom.value = [];
-//       costCompA.value = [];
-//       costCompC.value = [];
-//       costCompBD.value = [];
-//       sumCostComp.value = [];
-
-//       for (var i = 0; i < res.data.length; i++) {
-//         tahunWLCKom.value.push(res.data[i].tahun);
-//         costCompA.value.push(res.data[i].cost_komp_a);
-//         costCompC.value.push(res.data[i].cost_komp_c);
-//         costCompBD.value.push(res.data[i].cost_komp_bd);
-//         sumCostComp.value.push(
-//           res.data[i].cost_komp_a +
-//           res.data[i].cost_komp_b +
-//           res.data[i].cost_komp_c +
-//           res.data[i].cost_komp_d
-//         );
-//       }
-
-//       chartWLCKom.value = {
-//         title: {
-//           show: false,
-//         },
-//         tooltip: {
-//           trigger: "axis",
-//           axisPointer: {
-//             type: "shadow",
-//           },
-//         },
-//         legend: {
-//           bottom: "bottom",
-//           padding: 0,
-//           data: [
-//             "Total Cost",
-//             "Komponen A",
-//             "Komponen B + D",
-//             "Komponen C",
-//           ],
-//         },
-//         grid: {
-//           top: "3%",
-//           left: "2%",
-//           right: "2%",
-//           bottom: "8%",
-//           containLabel: true,
-//         },
-//         xAxis: [
-//           {
-//             type: "category",
-//             data: tahunWLCKom,
-//             axisLabel: {
-//               fontSize: 10,
-//               color: function (value: any, index: number) {
-//                 const filterTahun = tahunData.value;
-//                 if (value < filterTahun) {
-//                   return '#FF5656';
-//                 } else if (value == filterTahun) {
-//                   return '#6C6C6C';
-//                 } else if (value > filterTahun) {
-//                   return '#37B1D5';
-//                 }
-//               },
-//               formatter: function (value: any, index: number) {
-//                 return index + 1 + `\n${value}`;
-//               },
-//             }
-//           },
-//         ],
-//         yAxis: [
-//           {
-//             type: "value",
-//             name: "Triliun Rupiah",
-//             nameLocation: "center",
-//             nameTextStyle: {
-//               align: "left",
-//               padding: [30, 20, 15, -25],
-//               fontSize: 14,
-//               color: "#4D5E80",
-//               fontWeight: "bold",
-//             },
-//             axisLabel: {
-//               fontSize: 10,
-//               formatter: function (value: any) {
-//                 return globalFormat.formatRupiah(value.toFixed(2) / 1000000);
-//               },
-//             },
-//           },
-//         ],
-//         series: [
-//           {
-//             name: "Komponen A",
-//             type: "bar",
-//             stack: "Ad",
-//             emphasis: {
-//               focus: "series",
-//             },
-//             data: costCompA,
-//             color: "#068D9D",
-//             tooltip: {
-//               valueFormatter: (value: any) =>
-//                 globalFormat.formatRupiah(value) + " Rp(Juta)",
-//             },
-//           },
-//           {
-//             name: "Komponen B + D",
-//             type: "bar",
-//             stack: "Ad",
-//             emphasis: {
-//               focus: "series",
-//             },
-//             data: costCompBD,
-//             color: "#6D9DC5",
-//             tooltip: {
-//               valueFormatter: (value: any) =>
-//                 globalFormat.formatRupiah(value) + " Rp(Juta)",
-//             },
-//           },
-//           {
-//             name: "Komponen C",
-//             type: "bar",
-//             stack: "Ad",
-//             emphasis: {
-//               focus: "series",
-//             },
-//             itemStyle: {
-//               borderRadius: [5, 5, 0, 0],
-//             },
-//             data: costCompC,
-//             color: "#CCF2FF",
-//             tooltip: {
-//               valueFormatter: (value: any) =>
-//                 globalFormat.formatRupiah(value) + " Rp(Juta)",
-//             },
-//           },
-//           {
-//             name: "Total Cost",
-//             type: "line",
-//             smooth: true,
-//             showSymbol: false,
-//             data: sumCostComp,
-//             color: "#53599A",
-//             tooltip: {
-//               valueFormatter: (value: any) =>
-//                 globalFormat.formatRupiah(value) + " Rp(Juta)",
-//             },
-//           },
-//         ],
-//       };
-//       forceRender1();
-//     });
-//   isLoading.value = false;
-// }
 </script>
 
 <style scoped>

@@ -9,5 +9,3 @@
 <script setup lang="ts">
 import IconCheckedPersetujuan from '../icons/IconCheckedPersetujuan.vue';
 </script>
-
-<style scoped></style>

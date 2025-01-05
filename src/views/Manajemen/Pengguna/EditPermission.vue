@@ -14,13 +14,10 @@
               Level :
               <span class="text-primaryTextColor">{{
                 levelMappings[roleData.kode_level]
-              }}</span>
+                }}</span>
             </h5>
           </div>
         </div>
-        <!-- <div class="flex items-center">
-          <SearchBox class="w-60" />
-        </div> -->
         <TableComponent>
           <template v-slot:table-header>
             <tr>
@@ -29,12 +26,11 @@
               <th scope="col">Create</th>
               <th scope="col">Read</th>
               <th scope="col">Update</th>
-              <!-- <th scope="col">Delete</th> -->
             </tr>
           </template>
           <template v-slot:table-body>
             <tr class="border" v-for="(permission, index) in combinedPermissions" :key="permission.id">
-              <td scope="row" class="text-center whitespace-nowrap">
+              <td class="text-center whitespace-nowrap">
                 {{ index + 1 }}
               </td>
               <td class="text-center">
@@ -67,26 +63,9 @@
                   </div>
                 </label>
               </td>
-              <!-- <td class="text-center">
-                <label class="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" v-model="permission.delete" @change="updatePermission(permission)"
-                    class="sr-only peer" />
-                  <div
-                    class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-[#9de5a8] peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#21CD3C]">
-                  </div>
-                </label>
-              </td> -->
             </tr>
           </template>
         </TableComponent>
-        <!-- <table class="w-full overflow-hidden text-sm text-left text-gray-500 rounded">
-          <thead class="pt-4 pb-4 border font-bold text-sm text-[#0099AD] sticky top-0">
-            
-          </thead>
-          <tbody class="overflow-y-auto text-xs text-gray-900">
-            
-          </tbody>
-        </table> -->
         <nav class="flex items-center justify-between bg-white rounded-b-lg" aria-label="Table navigation">
           <div class="flex items-center">
             <span class="inline-block pr-2 text-sm font-normal text-gray-500">Menampilkan</span>
@@ -140,7 +119,6 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import RoleService from "@/services/role-service";
 import TableComponent from "@/components/ui/Table.vue";
-import SearchBox from "@/components/ui/SearchBox.vue";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 const isLoading = ref(false);
 const roleService = new RoleService();
@@ -254,7 +232,6 @@ const levelMappings = ref<{ [key: string]: string }>({});
 onMounted(async () => {
   try {
     const response = (await roleService.getLevel()) as ResponseType;
-    const responseData = response;
     comboLevel.value = response.data;
 
     comboLevel.value.forEach((item) => {

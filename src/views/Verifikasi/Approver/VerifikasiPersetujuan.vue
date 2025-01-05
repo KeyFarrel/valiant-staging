@@ -179,7 +179,7 @@
           <template v-slot:table-body v-else>
             <tr class="text-xs text-gray-900 border-b hover:bg-gray-100" v-for="(item, index) in persetujuanKK"
               :key="index">
-              <td scope="row" class="text-center whitespace-nowrap">
+              <td class="text-center whitespace-nowrap">
                 {{ index + 1 }}
               </td>
               <td v-if="pengelolaList.length" class="text-left">
@@ -513,7 +513,7 @@
           <template v-slot:table-body v-else>
             <tr class="text-xs text-gray-900 border-b hover:bg-gray-100" v-for="(item, index) in persetujuanFS"
               :key="index">
-              <td scope="row" class="text-center whitespace-nowrap">
+              <td class="text-center whitespace-nowrap">
                 {{ index + 1 }}
               </td>
               <td v-if="pengelolaList.length" class="text-left">
@@ -683,7 +683,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from "vue";
-import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
+import { encryptStorage } from "@/utils/app-encrypt-storage";
 import PersetujuanService from "@/services/persetujuan-service";
 import PetaService from "@/services/peta-service";
 import GlobalFormat from "@/services/format/global-format";
@@ -696,7 +696,6 @@ import TabItem from "@/components/ui/TabItem.vue";
 import ModalWrapper from "@/components/ui/ModalWrapper.vue";
 import type { CheckboxValueType } from "element-plus";
 import TableComponent from "@/components/ui/Table.vue";
-import { notifyError } from "@/services/helper/toast-notification";
 import Empty from "@/components/ui/EmptyData.vue";
 
 const nodeMode = import.meta.env.MODE;
@@ -795,7 +794,7 @@ const navigationFS = ref<{
   totalRecords: 0,
   limit: 10,
 });
-var debounceTimeout: any = null;
+let debounceTimeout: any = null;
 
 async function getDataPengelola() {
   try {
@@ -843,7 +842,7 @@ const fetchPersetujuanKK = async (page?: number) => {
       kode_pengelola: filterKK.value.selectedPengelola,
       id_pembina: filterKK.value.selectedPembina,
       status: filterKK.value.selectedPersetujuan,
-      page: page ? page : navigationKK.value.currentPage,
+      page: page || navigationKK.value.currentPage,
       limit: navigationKK.value.limit,
       tahun: yearPicked.value.toString(),
       search: searchQKK.value.toUpperCase(),
@@ -867,7 +866,7 @@ const fetchPersetujuanFS = async (page?: number) => {
       kode_pengelola: filterFS.value.selectedPengelola,
       id_pembina: filterFS.value.selectedPembina,
       status: filterFS.value.selectedPersetujuan,
-      page: page ? page : navigationFS.value.currentPage,
+      page: page || navigationFS.value.currentPage,
       limit: navigationFS.value.limit,
       search: searchQFS.value.toUpperCase(),
     });
@@ -1032,45 +1031,43 @@ const generatePageList = computed(() => {
     for (let i = 1; i <= navigationKK.value.totalPages; i++) {
       pageList.push(i);
     }
-  } else {
-    if (navigationKK.value.currentPage <= 3) {
-      for (
-        let i = 1;
-        i <= Math.min(navigationKK.value.totalPages, maxPages - 1);
-        i++
-      ) {
-        pageList.push(i);
-      }
-      if (navigationKK.value.totalPages > maxPages) {
-        pageList.push("...");
-        pageList.push(navigationKK.value.totalPages);
-      }
-    } else if (
-      navigationKK.value.currentPage >=
-      navigationKK.value.totalPages - 2
+  } else if (navigationKK.value.currentPage <= 3) {
+    for (
+      let i = 1;
+      i <= Math.min(navigationKK.value.totalPages, maxPages - 1);
+      i++
     ) {
-      pageList.push(1);
-      pageList.push("...");
-      for (
-        let i = navigationKK.value.totalPages - (maxPages - 2);
-        i <= navigationKK.value.totalPages;
-        i++
-      ) {
-        pageList.push(i);
-      }
-    } else {
-      pageList.push(1);
-      pageList.push("...");
-      for (
-        let i = navigationKK.value.currentPage - 1;
-        i <= navigationKK.value.currentPage + 1;
-        i++
-      ) {
-        pageList.push(i);
-      }
+      pageList.push(i);
+    }
+    if (navigationKK.value.totalPages > maxPages) {
       pageList.push("...");
       pageList.push(navigationKK.value.totalPages);
     }
+  } else if (
+    navigationKK.value.currentPage >=
+    navigationKK.value.totalPages - 2
+  ) {
+    pageList.push(1);
+    pageList.push("...");
+    for (
+      let i = navigationKK.value.totalPages - (maxPages - 2);
+      i <= navigationKK.value.totalPages;
+      i++
+    ) {
+      pageList.push(i);
+    }
+  } else {
+    pageList.push(1);
+    pageList.push("...");
+    for (
+      let i = navigationKK.value.currentPage - 1;
+      i <= navigationKK.value.currentPage + 1;
+      i++
+    ) {
+      pageList.push(i);
+    }
+    pageList.push("...");
+    pageList.push(navigationKK.value.totalPages);
   }
   return pageList;
 });
@@ -1108,45 +1105,43 @@ const generatePage = computed(() => {
     for (let i = 1; i <= navigationFS.value.totalPages; i++) {
       pageList.push(i);
     }
-  } else {
-    if (navigationFS.value.currentPage <= 3) {
-      for (
-        let i = 1;
-        i <= Math.min(navigationFS.value.totalPages, maxPages - 1);
-        i++
-      ) {
-        pageList.push(i);
-      }
-      if (navigationFS.value.totalPages > maxPages) {
-        pageList.push("...");
-        pageList.push(navigationFS.value.totalPages);
-      }
-    } else if (
-      navigationFS.value.currentPage >=
-      navigationFS.value.totalPages - 2
+  } else if (navigationFS.value.currentPage <= 3) {
+    for (
+      let i = 1;
+      i <= Math.min(navigationFS.value.totalPages, maxPages - 1);
+      i++
     ) {
-      pageList.push(1);
-      pageList.push("...");
-      for (
-        let i = navigationFS.value.totalPages - (maxPages - 2);
-        i <= navigationFS.value.totalPages;
-        i++
-      ) {
-        pageList.push(i);
-      }
-    } else {
-      pageList.push(1);
-      pageList.push("...");
-      for (
-        let i = navigationFS.value.currentPage - 1;
-        i <= navigationFS.value.currentPage + 1;
-        i++
-      ) {
-        pageList.push(i);
-      }
+      pageList.push(i);
+    }
+    if (navigationFS.value.totalPages > maxPages) {
       pageList.push("...");
       pageList.push(navigationFS.value.totalPages);
     }
+  } else if (
+    navigationFS.value.currentPage >=
+    navigationFS.value.totalPages - 2
+  ) {
+    pageList.push(1);
+    pageList.push("...");
+    for (
+      let i = navigationFS.value.totalPages - (maxPages - 2);
+      i <= navigationFS.value.totalPages;
+      i++
+    ) {
+      pageList.push(i);
+    }
+  } else {
+    pageList.push(1);
+    pageList.push("...");
+    for (
+      let i = navigationFS.value.currentPage - 1;
+      i <= navigationFS.value.currentPage + 1;
+      i++
+    ) {
+      pageList.push(i);
+    }
+    pageList.push("...");
+    pageList.push(navigationFS.value.totalPages);
   }
   return pageList;
 });

@@ -192,7 +192,7 @@ const closeModal = () => {
     notifyError('Mohon pilih 1 tahun!', 5000);
   } else {
     notifyError('Mohon pilih minimal 1 kategori pembangkit!', 5000);
-  };
+  }
 };
 
 const applyFilter = async () => {
@@ -205,7 +205,7 @@ const applyFilter = async () => {
     notifyError('Mohon pilih 1 tahun!', 5000);
   } else {
     notifyError('Mohon pilih minimal 1 kategori pembangkit!', 5000);
-  };
+  }
 };
 
 const applyFilterNoDMN = async () => {
@@ -218,7 +218,7 @@ const applyFilterNoDMN = async () => {
     notifyError('Mohon pilih 1 tahun!', 5000)
   } else {
     notifyError('Mohon pilih minimal 1 kategori pembangkit!', 5000)
-  };
+  }
 };
 
 watch(value, (val) => {
@@ -251,7 +251,7 @@ watch(dmn, (val) => {
     indeterminateDmn.value = false;
   } else {
     indeterminateDmn.value = true
-  };
+  }
 });
 
 const handleCheckDmn = (val: CheckboxValueType) => {

@@ -15,9 +15,9 @@
           " :discount-rate="asumsiParameter ? asumsiParameter.asumsi_makro.discount_rate : '-'
             " :interest-rate="asumsiParameter ? asumsiParameter.asumsi_makro.discount_rate : '-'
               " :loan-tenor="asumsiParameter ? asumsiParameter.asumsi_makro.loan_tenor : '-'
-        " :loan-portion="asumsiParameter ? asumsiParameter.asumsi_makro.loan_portion : '-'
-        " :equity-portion="asumsiParameter ? asumsiParameter.asumsi_makro.equity : '-'
-        " />
+                " :loan-portion="asumsiParameter ? asumsiParameter.asumsi_makro.loan_portion : '-'
+          " :equity-portion="asumsiParameter ? asumsiParameter.asumsi_makro.equity : '-'
+          " />
       </TabItem>
       <TabItem title="Parameter Teknis & Finansial">
         <ParameterTeknis v-model="tahunRealisasi" :daya-terpasang="asumsiParameter
@@ -30,40 +30,40 @@
               ? asumsiParameter.parameter_teknis_financial.auxiliary
               : '-'
               " :susut-trafo="asumsiParameter
-        ? asumsiParameter.parameter_teknis_financial.susut_trafo
-        : '-'
-        " :pemakaian-sendiri="asumsiParameter
-        ? asumsiParameter.parameter_teknis_financial.ps
-        : '-'
-        " :net-plant-heat-rate="asumsiParameter
-        ? asumsiParameter.parameter_teknis_financial.nphr
-        : '-'
-        " :total-project-cost="asumsiParameter
-        ? asumsiParameter.parameter_teknis_financial.total_project_cost
-        : '-'
-        " :loan="asumsiParameter
-        ? asumsiParameter.parameter_teknis_financial.loan
-        : '-'
-        " :equity="asumsiParameter
-        ? asumsiParameter.parameter_teknis_financial.equity
-        : '-'
-        " :electricity-price-a="asumsiParameter
-        ? asumsiParameter.parameter_teknis_financial
-          .electricity_price_a_rp_per_kwbln
-        : '-'
-        " :electricity-price-b="asumsiParameter
-        ? asumsiParameter.parameter_teknis_financial
-          .electricity_price_b_rp_per_kwbln
-        : '-'
-        " :electricity-price-c="asumsiParameter
-        ? asumsiParameter.parameter_teknis_financial
-          .electricity_price_c_rp_per_kwh
-        : '-'
-        " :electricity-price-d="asumsiParameter
-        ? asumsiParameter.parameter_teknis_financial
-          .electricity_price_d_rp_per_kwh
-        : '-'
-        " :bahan-bakars="asumsiParameter ? asumsiParameter.bahan_bakars : '-'" />
+                ? asumsiParameter.parameter_teknis_financial.susut_trafo
+                : '-'
+                " :pemakaian-sendiri="asumsiParameter
+          ? asumsiParameter.parameter_teknis_financial.ps
+          : '-'
+          " :net-plant-heat-rate="asumsiParameter
+          ? asumsiParameter.parameter_teknis_financial.nphr
+          : '-'
+          " :total-project-cost="asumsiParameter
+          ? asumsiParameter.parameter_teknis_financial.total_project_cost
+          : '-'
+          " :loan="asumsiParameter
+          ? asumsiParameter.parameter_teknis_financial.loan
+          : '-'
+          " :equity="asumsiParameter
+          ? asumsiParameter.parameter_teknis_financial.equity
+          : '-'
+          " :electricity-price-a="asumsiParameter
+          ? asumsiParameter.parameter_teknis_financial
+            .electricity_price_a_rp_per_kwbln
+          : '-'
+          " :electricity-price-b="asumsiParameter
+          ? asumsiParameter.parameter_teknis_financial
+            .electricity_price_b_rp_per_kwbln
+          : '-'
+          " :electricity-price-c="asumsiParameter
+          ? asumsiParameter.parameter_teknis_financial
+            .electricity_price_c_rp_per_kwh
+          : '-'
+          " :electricity-price-d="asumsiParameter
+          ? asumsiParameter.parameter_teknis_financial
+            .electricity_price_d_rp_per_kwh
+          : '-'
+          " :bahan-bakars="asumsiParameter ? asumsiParameter.bahan_bakars : '-'" />
       </TabItem>
       <TabItem title="Data Teknis">
         <div class="w-full overflow-auto border rounded-lg whitespace-nowrap">
@@ -225,34 +225,6 @@
           </table>
         </div>
       </TabItem>
-      <!-- <TabItem title="Hasil Simulasi">
-        <div class="flex flex-col w-full px-2">
-          <nav class="rounded-md bg-primaryColor bg-opacity-5">
-            <ul class="flex justify-around text-sm text-primaryColor">
-              <li class="font-semibold py-1.5 px-20 cursor-pointer" @click="selectedTab = 'Akhir Masa'"
-                :class="{ selected: selectedTab === 'Akhir Masa' }">
-                COD - Akhir Masa Manfaat
-              </li>
-              <li class="font-semibold py-1.5 px-20 cursor-pointer" @click="selectedTab = 'Tahun Berjalan'"
-                :class="{ selected: selectedTab === 'Tahun Berjalan' }">
-                COD - Tahun Berjalan
-              </li>
-              <li class="font-semibold py-1.5 px-20 cursor-pointer" @click="selectedTab = 'Periode'"
-                :class="{ selected: selectedTab === 'Periode' }">
-                Periode
-              </li>
-              <li class="font-semibold py-1.5 px-20 cursor-pointer" @click="selectedTab = 'Proyeksi'"
-                :class="{ selected: selectedTab === 'Proyeksi' }">
-                Proyeksi (N+1 s.d Akhir Masa Manfaat)
-              </li>
-            </ul>
-          </nav>
-          <AkhirMasaManfaat v-show="selectedTab === 'Akhir Masa'" />
-          <TahunBerjalan v-show="selectedTab === 'Tahun Berjalan'" />
-          <Periode v-show="selectedTab === 'Periode'" />
-          <Proyeksi v-show="selectedTab === 'Proyeksi'" />
-        </div>
-      </TabItem> -->
     </TabsWrapper>
   </div>
 </template>
@@ -439,8 +411,6 @@ const isRowOpen = (itemId: number) => {
 
 onMounted(async () => {
   isLoading.value = true;
-  // await fetchTahunRealisasiData();
-  // await fetchUnitPengelola();
   await fetchSentralById();
   await fetchTypePeriodic();
   await fetchAsumsiParameter();

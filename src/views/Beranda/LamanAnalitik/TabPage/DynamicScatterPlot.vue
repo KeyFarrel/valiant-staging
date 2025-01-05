@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import VChart, { THEME_KEY } from 'vue-echarts';
-import { provide, computed } from 'vue';
+import { provide, computed, ref } from 'vue';
 import { use } from "echarts/core"
-import * as echarts from 'echarts';
-import ecStat from "echarts-stat";
 import { ScatterChart, LineChart, LineSeriesOption, ScatterSeriesOption } from "echarts/charts"
 import {
   TitleComponent,
@@ -18,7 +16,6 @@ import {
 import { CanvasRenderer } from "echarts/renderers"
 import type { ComposeOption } from "echarts/core"
 import GlobalFormat from "@/services/format/global-format";
-import { onMounted, ref } from 'vue';
 
 use([
   TitleComponent,
@@ -48,7 +45,6 @@ provide(THEME_KEY, 'light');
 
 const chartRef = ref(null);
 
-// echarts.registerTransform(ecStat.transform.regression);
 const option = computed({
   get() {
     const chartOption: ComposeOption<LineSeriesOption | ScatterSeriesOption | GridComponentOption | TooltipComponentOption | VisualMapComponentOption> = {
@@ -92,8 +88,8 @@ const option = computed({
           padding: [2, 0, 0, -80],
         },
         splitNumber: 10,
-        min: Math.min.apply(Math, props.source.map(item => item[0])) - Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10),
-        max: props.xData.satuan === '%' ? 100 : Math.max.apply(Math, props.source.map(item => item[0])) + Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10),
+        min: Math.min(...props.source.map(item => item[0])) - Math.round((Math.max(...props.source.map(item => item[0])) - Math.min(...props.source.map(item => item[0]))) / 10),
+        max: props.xData.satuan === '%' ? 100 : Math.max(...props.source.map(item => item[0])) + Math.round((Math.max(...props.source.map(item => item[0])) - Math.min(...props.source.map(item => item[0]))) / 10),
       },
       yAxis: {
         type: "value",
@@ -108,8 +104,8 @@ const option = computed({
           fontWeight: "bold",
         },
         splitNumber: 10,
-        min: Math.min.apply(Math, props.source.map(item => item[1])) < 0 ? Math.floor(Math.min.apply(Math, props.source.map(item => item[1])) * 1.1) : Math.ceil(Math.min.apply(Math, props.source.map(item => item[1]))),
-        max: Math.max.apply(Math, props.source.map(item => item[1])) + Math.round((Math.max.apply(Math, props.source.map(item => item[1])) - Math.min.apply(Math, props.source.map(item => item[1]))) / 10)
+        min: Math.min(...props.source.map(item => item[1])) < 0 ? Math.floor(Math.min(...props.source.map(item => item[1])) * 1.1) : Math.ceil(Math.min(...props.source.map(item => item[1]))),
+        max: Math.max(...props.source.map(item => item[1])) + Math.round((Math.max(...props.source.map(item => item[1])) - Math.min(...props.source.map(item => item[1]))) / 10)
       },
       visualMap: {
         show: false,
@@ -147,9 +143,10 @@ const option = computed({
           name: "PLNX",
           smooth: false,
           data: [
-            [Math.min.apply(Math, props.source.map(item => item[0])) - Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10), props.pln?.y],
-            [props.xData.satuan === '%' ? 100 : Math.max.apply(Math, props.source.map(item => item[0])) + Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10), props.pln?.y],
+            [Math.min(...props.source.map(item => item[0])) - Math.round((Math.max(...props.source.map(item => item[0])) - Math.min(...props.source.map(item => item[0]))) / 10), props.pln?.y],
+            [props.xData.satuan === '%' ? 100 : Math.max(...props.source.map(item => item[0])) + Math.round((Math.max(...props.source.map(item => item[0])) - Math.min(...props.source.map(item => item[0]))) / 10), props.pln?.y],
           ],
+
           color: "#FF5656",
         },
         // Vertical PLN AVG
@@ -158,8 +155,8 @@ const option = computed({
           name: "PLNY",
           smooth: false,
           data: [
-            [props.pln?.x, Math.min.apply(Math, props.source.map(item => item[1])) < 0 ? Math.floor(Math.min.apply(Math, props.source.map(item => item[1])) * 1.1) : Math.ceil(Math.min.apply(Math, props.source.map(item => item[1])))],
-            [props.pln?.x, Math.max.apply(Math, props.source.map(item => item[1])) + Math.round((Math.max.apply(Math, props.source.map(item => item[1])) - Math.min.apply(Math, props.source.map(item => item[1]))) / 10)],
+            [props.pln?.x, Math.min(...props.source.map(item => item[1])) < 0 ? Math.floor(Math.min(...props.source.map(item => item[1])) * 1.1) : Math.ceil(Math.min(...props.source.map(item => item[1])))],
+            [props.pln?.x, Math.max(...props.source.map(item => item[1])) + Math.round((Math.max(...props.source.map(item => item[1])) - Math.min(...props.source.map(item => item[1]))) / 10)],
           ],
           color: "#FF5656",
         },
@@ -169,8 +166,8 @@ const option = computed({
           name: "IPPX",
           smooth: false,
           data: [
-            [Math.min.apply(Math, props.source.map(item => item[0])) - Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10), props.ipp?.y],
-            [props.xData.satuan === '%' ? 100 : Math.max.apply(Math, props.source.map(item => item[0])) + Math.round((Math.max.apply(Math, props.source.map(item => item[0])) - Math.min.apply(Math, props.source.map(item => item[0]))) / 10), props.ipp?.y],
+            [Math.min(...props.source.map(item => item[0])) - Math.round((Math.max(...props.source.map(item => item[0])) - Math.min(...props.source.map(item => item[0]))) / 10), props.ipp?.y],
+            [props.xData.satuan === '%' ? 100 : Math.max(...props.source.map(item => item[0])) + Math.round((Math.max(...props.source.map(item => item[0])) - Math.min(...props.source.map(item => item[0]))) / 10), props.ipp?.y],
           ],
           color: "#0EA976",
         },
@@ -180,8 +177,8 @@ const option = computed({
           name: "IPPY",
           smooth: false,
           data: [
-            [props.ipp?.x, Math.min.apply(Math, props.source.map(item => item[1])) < 0 ? Math.floor(Math.min.apply(Math, props.source.map(item => item[1])) * 1.1) : Math.ceil(Math.min.apply(Math, props.source.map(item => item[1]))),],
-            [props.ipp?.x, Math.max.apply(Math, props.source.map(item => item[1])) + Math.round((Math.max.apply(Math, props.source.map(item => item[1])) - Math.min.apply(Math, props.source.map(item => item[1]))) / 10)],
+            [props.ipp?.x, Math.min(...props.source.map(item => item[1])) < 0 ? Math.floor(Math.min(...props.source.map(item => item[1])) * 1.1) : Math.ceil(Math.min(...props.source.map(item => item[1]))),],
+            [props.ipp?.x, Math.max(...props.source.map(item => item[1])) + Math.round((Math.max(...props.source.map(item => item[1])) - Math.min(...props.source.map(item => item[1]))) / 10)],
           ],
           color: "#0EA976",
         },

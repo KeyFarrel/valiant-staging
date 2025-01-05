@@ -1,5 +1,4 @@
 <template>
-  <!-- <Loading v-if="isLoading" /> -->
   <div v-if="stored.currentTabMesin === 'WLC (Realisasi & Proyeksi)'">
     <div class="text-xs">
       <div class="flex justify-between py-1">
@@ -474,7 +473,6 @@ import FSRedSame from "@/components/icons/FSRedSame.vue";
 import YoyRedDown from "@/components/icons/YoyRedDown.vue";
 import YoyGreenUp from "@/components/icons/YoyGreenUp.vue";
 import YoyRedSame from "@/components/icons/YoyRedSame.vue";
-// import Loading from '@/components/ui/LoadingSpinner.vue'
 
 const isLoading = ref(false);
 const stored = useTagMesin();
@@ -485,8 +483,6 @@ const dataRealisasiMesin = ref<RelProyItem>({});
 const dataYoyMesin = ref<RelProyItem>({});
 const props = defineProps<Mesin>();
 const tahunData = computed(() => props.tahunData);
-// const dataPlanRealMesin = ref<RelProyItem[]>([]);
-// const idMesin = computed(() => props.idMesin);
 
 interface Mesin {
   idMesin: any;
@@ -566,5 +562,3 @@ onMounted(async () => {
   isLoading.value = false;
 })
 </script>
-
-<style scoped></style>

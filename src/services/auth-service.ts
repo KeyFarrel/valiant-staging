@@ -5,10 +5,9 @@ import { encryptStorage } from "@/utils/app-encrypt-storage";
 const nodeMode: any = import.meta.env.MODE;
 const url: any = import.meta.env.VITE_API_URL;
 
-export default class AuthService extends BaseService {
-  setUserInfo(){
 
-  }
+export default class AuthService extends BaseService {
+  
   async login<T>(payload: any): Promise<T> {
     try {
       const response: any = await this.post(`${url}auth/login`, payload);
@@ -19,30 +18,28 @@ export default class AuthService extends BaseService {
       const levelSentral = response.data.id_sentral === '' || response.data.id_sentral === '0' ? 0 : response.data.id_sentral;
       const idPembina = response.data.id_pembina === '' || response.data.id_pembina === '0' ? 0 : response.data.id_pembina;
       const kodePengelola = response.data.kode_pengelola === '' || response.data.kode_pengelola === 'ALL' ? 0 : response.data.kode_pengelola;
-      if(response.data.is_reset){
+      
+      const setStorage = (storage: any) => {
+        storage.setItem('token', token);
+        storage.setItem('role_id', roleId);
+        storage.setItem('nama_pegawai', namaPegawai);
+        storage.setItem('level_id', levelID);
+        storage.setItem('level_sentral', levelSentral);
+        storage.setItem('id_pembina', idPembina);
+        storage.setItem('kode_pengelola', kodePengelola);
+      };
+
+      if (response.data.is_reset) {
         sessionStorage.setItem('token', token);
       } else {
-        if (nodeMode === 'production'){
-          encryptStorage.setItem('token', token);
-          encryptStorage.setItem('role_id', roleId);
-          encryptStorage.setItem('nama_pegawai', namaPegawai);
-          encryptStorage.setItem('level_id', levelID);
-          encryptStorage.setItem('level_sentral', levelSentral);
-          encryptStorage.setItem('id_pembina', idPembina);
-          encryptStorage.setItem('kode_pengelola', kodePengelola);
-        } else {
-          localStorage.setItem('token', token);
-          localStorage.setItem('role_id', roleId);
-          localStorage.setItem('nama_pegawai', namaPegawai);
-          localStorage.setItem('level_id', levelID);
-          localStorage.setItem('level_sentral', levelSentral);
-          localStorage.setItem('id_pembina', idPembina);
-          localStorage.setItem('kode_pengelola', kodePengelola);
-        }
+        const storage = nodeMode === 'production' ? encryptStorage : localStorage;
+        setStorage(storage);
       }
+
       console.log(response);
       return response;
     } catch (error) {
+      console.error('Login Error', error);
       throw error;
     }
   }
@@ -82,7 +79,7 @@ export default class AuthService extends BaseService {
     }
   }
 
-  logOut(){
+  logout(){
     nodeMode === 'production' ? encryptStorage.clear() : localStorage.clear();
     router.push("/login");
   }

@@ -74,7 +74,6 @@
                   fill="#0099AD" />
               </svg>
               <p>Silahkan pilih berkas excel anda</p>
-              <!-- <p>ATAU</p> -->
               <label for="fileInputFS"
                 class="flex flex-row items-center px-3 py-2 space-x-2 text-white duration-300 rounded-lg cursor-pointer bg-primaryColor hover:bg-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0">
                 <IconFolder />
@@ -110,7 +109,6 @@
                   fill="#0099AD" />
               </svg>
               <p>Silahkan pilih berkas evidence anda</p>
-              <!-- <p>ATAU</p> -->
               <label for="fileInputEvidenceFS"
                 class="flex flex-row items-center px-3 py-2 space-x-2 text-white duration-300 rounded-lg cursor-pointer bg-primaryColor hover:bg-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0">
                 <IconFolder />
@@ -399,12 +397,6 @@
                 @click="selectedTab = 'Akhir Masa'" :class="{ selected: selectedTab === 'Akhir Masa' }">
                 COD - Akhir Masa Manfaat
               </li>
-              <!-- <li id="tab"
-                class="table-cell w-1/2 py-2 font-semibold rounded-lg cursor-pointer active:bg-primaryColor active:bg-opacity-10"
-                @click="selectedTab = 'Tahun Berjalan'" :class="{ selected: selectedTab === 'Tahun Berjalan' }"> COD -
-                Tahun
-                Berjalan
-              </li> -->
             </ul>
           </nav>
           <AkhirMasaManfaat v-if="hasilSimulasi" :irr-on-project="hasilSimulasi.fs_irr_project"
@@ -424,7 +416,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute } from 'vue-router';
-import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
+import { encryptStorage } from "@/utils/app-encrypt-storage";
 import { Vue3Lottie } from 'vue3-lottie';
 import { notifyError } from "@/services/helper/toast-notification";
 import UserService from "@/services/user-service";
@@ -449,7 +441,6 @@ import ParameterTeknis from "@/components/ui/ParameterTeknisApprove.vue";
 import AkhirMasaManfaat from "@/views/Data/RekapKertasKerja/DetailRekap/HasilSimulasi/AkhirMasaManfaat.vue";
 import TahunBerjalan from "@/views/Data/RekapKertasKerja/DetailRekap/HasilSimulasi/TahunBerjalan.vue";
 import jsonData from "@/assets/lottie/success.json";
-import axios from "axios";
 import IconFolder from "@/components/icons/IconFolder.vue";
 import ComponentDisetujui from '@/components/Status/ComponentDisetujui.vue';
 import ComponentDitolakT1 from '@/components/Status/ComponentDitolakT1.vue';
@@ -743,7 +734,7 @@ const fetchDataFinansial = async () => {
         currentLevel2.level3.push(currentLevel3);
       } else if (item.level === 4 && currentLevel1 !== null) {
         currentLevel3.level4.push({ ...item })
-      };
+      }
     }
     dataFinansial.value = response.data;
   } catch (error) {
@@ -908,6 +899,7 @@ const updateFS = async () => {
     isLoading.value = false;
   } catch (error) {
     console.error("Error Fetch Update Fesibilty Study : " + error);
+    notifyError('Gagal kirim feasibility study, mohon coba lagi', 5000);
   }
 }
 

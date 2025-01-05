@@ -81,9 +81,9 @@ const option = computed({
           showMinLabel: false,
           showMaxLabel: false
         },
-        splitNumber: Math.max.apply(Math, props.years) - Math.min.apply(Math, props.years),
-        min: Math.min.apply(Math, props.years) - 0.05,
-        max: Math.max.apply(Math, props.years) + 0.05,
+        splitNumber: Math.max(...props.years) - Math.min(...props.years),
+        min: Math.min(...props.years) - 0.05,
+        max: Math.max(...props.years) + 0.05,
       },
       yAxis: {
         type: "value",
@@ -107,7 +107,7 @@ const option = computed({
         },
         // min: Math.min.apply(Math, props.yValues) - Math.round((Math.max.apply(Math, props.yValues) - Math.min.apply(Math, props.yValues)) / 10),
         // max: Math.max.apply(Math, props.yValues) + 1000
-        max: Math.max.apply(Math, props.yValues) + Math.round((Math.max.apply(Math, props.yValues) - Math.min.apply(Math, props.yValues)) / 10),
+        max: Math.max(...props.yValues) + Math.round((Math.max(...props.yValues) - Math.min(...props.yValues)) / 10),
       },
       visualMap: {
         show: false,

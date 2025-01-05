@@ -408,7 +408,7 @@ const fetchDataFinansial = async () => {
         currentLevel2.level3.push(currentLevel3);
       } else if (item.level === 4 && currentLevel1 !== null) {
         currentLevel3.level4.push({ ...item })
-      };
+      }
     }
     dataFinansial.value = response.data
   } catch (error) {

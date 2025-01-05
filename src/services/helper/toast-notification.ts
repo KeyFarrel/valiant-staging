@@ -3,7 +3,7 @@ import 'vue3-toastify/dist/index.css';
 
 export const notifyError = (message: string, autoClose: boolean | number) => {
   toast(message, {
-    "theme": "auto",
+    "theme": "light",
     "type": "error",
     "closeOnClick": false,
     "autoClose": autoClose,
@@ -13,7 +13,7 @@ export const notifyError = (message: string, autoClose: boolean | number) => {
 }
 export const notifySuccess = (message: string, autoClose: boolean | number) => {
   toast(message, {
-    "theme": "auto",
+    "theme": "light",
     "type": "success",
     "closeOnClick": false,
     "autoClose": autoClose,

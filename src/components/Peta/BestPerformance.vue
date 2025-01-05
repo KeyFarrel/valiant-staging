@@ -58,7 +58,7 @@
                   <template v-if="bpaData.length">
                     <tr class="text-gray-900 border border-gray-300" v-for="(item, index) in bpaData"
                       :key="item.kode_sentral">
-                      <td scope="row" class="text-xs font-normal text-center whitespace-nowrap">
+                      <td class="text-xs font-normal text-center whitespace-nowrap">
                         {{ index + 1 }}
                       </td>
                       <td class="text-xs">
@@ -251,8 +251,8 @@ const fetchYearListBPA = async () => {
   try {
     const response: any = await petaService.getYearListBPA();
     year.value = response.data;
-    for (var i = 0; i < response.data.length; i++) {
-      tahun.value.push(response.data[i].tahun)
+    for (const item of response.data) {
+      tahun.value.push(item.tahun)
     }
     tahun.value.reverse()
   } catch (error) {

@@ -128,5 +128,3 @@ interface Props {
   isFetchingError: boolean
 }
 </script>
-
-<style scoped></style>

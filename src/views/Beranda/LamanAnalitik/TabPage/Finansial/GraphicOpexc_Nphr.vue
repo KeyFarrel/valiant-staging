@@ -13,7 +13,6 @@ import { notifyError } from "@/services/helper/toast-notification"
 
 const petaService = new PetaService()
 const grafikService = new GrafikService()
-// const periodeTahun = ref<Array<number>>([])
 const checkAll = ref(false)
 const checkDmn = ref(true)
 const indeterminate = ref(false)
@@ -55,14 +54,6 @@ const filter: Ref<{
   tahun: new Date().getFullYear()
 });
 
-// const fetchTahunTerakhirRealisasi = async () => {
-//   try {
-//     const response: any = await grafikService.getTahunTerakhirRealisasiAnalitik();
-//     // filter.value.tahun = response.data.tahun;
-//   } catch (error) {
-//     console.error('Fetch Tahun Terakhir Realisasi Error : ' + error);
-//   }
-// }
 const fetchInitialPembangkit = async () => {
   try {
     const response: any = await grafikService.getInitialPembangkit()
@@ -177,7 +168,7 @@ const closeModal = () => {
     notifyError('Mohon pilih 1 tahun!', 5000)
   } else {
     notifyError('Mohon pilih minimal 1 kategori pembangkit!', 5000);
-  };
+  }
 }
 
 const applyFilter = async () => {
@@ -203,17 +194,8 @@ const applyFilterNoDMN = async () => {
     notifyError('Mohon pilih 1 tahun!', 5000);
   } else {
     notifyError('Mohon pilih minimal 1 kategori pembangkit!', 5000)
-  };
+  }
 };
-
-// const fetchPeriodeTahunSentral = async () => {
-//   try {
-//     const response: any = await petaService.getYearListBPA();
-//     periodeTahun.value = [response.data[0].tahun, response.data[response.data.length - 1].tahun];
-//   } catch (error) {
-//     console.error('Fetch Tahun Grafik Sentral Error : ' + error);
-//   }
-// }
 
 watch(value, (val) => {
   if (val.length === 0) {
@@ -224,7 +206,7 @@ watch(value, (val) => {
     indeterminate.value = false
   } else {
     indeterminate.value = true;
-  };
+  }
 })
 
 const handleCheckAll = (val: CheckboxValueType) => {
@@ -245,7 +227,7 @@ watch(dmn, (val) => {
     indeterminateDmn.value = false
   } else {
     indeterminateDmn.value = true;
-  };
+  }
 })
 
 const handleCheckDmn = (val: CheckboxValueType) => {

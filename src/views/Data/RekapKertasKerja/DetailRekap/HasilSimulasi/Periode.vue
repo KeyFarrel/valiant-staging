@@ -63,5 +63,3 @@ import { ref } from "vue";
 
 const tahunPeriode = ref();
 </script>
-
-<style scoped></style>

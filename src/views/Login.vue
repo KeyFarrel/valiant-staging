@@ -519,11 +519,6 @@ const fetchDataProfile = async () => {
   }
 };
 
-// const preventCopyPaste = (event: ClipboardEvent) => {
-//   event.preventDefault();
-// };
-
-
 const verifyMatchPassword = () => {
   if (newPassword.value !== confirmNewPassword.value) {
     isPasswordMatched.value = false;
@@ -720,5 +715,3 @@ onUnmounted(() => {
   sessionStorage.clear();
 })
 </script>
-
-<style lang="scss" scoped></style>

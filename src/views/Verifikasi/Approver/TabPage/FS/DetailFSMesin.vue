@@ -320,12 +320,6 @@
                   @click="selectedTab = 'Akhir Masa'" :class="{ selected: selectedTab === 'Akhir Masa' }">
                   COD - Akhir Masa Manfaat
                 </li>
-                <!-- <li id="tab"
-                  class="table-cell w-1/2 py-2 font-semibold rounded-lg cursor-pointer active:bg-primaryColor active:bg-opacity-10"
-                  @click="selectedTab = 'Tahun Berjalan'" :class="{ selected: selectedTab === 'Tahun Berjalan' }"> COD -
-                  Tahun
-                  Berjalan
-                </li> -->
               </ul>
             </nav>
             <AkhirMasaManfaat v-if="hasilSimulasi" :irr-on-project="hasilSimulasi.fs_irr_project"
@@ -348,7 +342,7 @@ import { ref, onMounted } from "vue";
 import { useRoute } from 'vue-router'
 import { Vue3Lottie } from 'vue3-lottie';
 import { notifyError } from "@/services/helper/toast-notification";
-import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
+import { encryptStorage } from "@/utils/app-encrypt-storage";
 import RekapService from "@/services/rekap-service";
 const rekapService = new RekapService();
 import UserService from "@/services/user-service";

@@ -1,5 +1,4 @@
 <template>
-  <!-- <Loading v-if="isLoading" /> -->
   <div class="w-full bg-white rounded-md h-52">
     <div class="flex px-3 py-2">
       <div class="flex items-center justify-center mr-2 rounded-full w-7 h-7 bg-slate-200">
@@ -431,7 +430,6 @@ import YoyGreenUp from "@/components/icons/YoyGreenUp.vue";
 import YoyRedSame from "@/components/icons/YoyRedSame.vue";
 import GrafikService from "@/services/grafik-service";
 import GlobalFormat from "@/services/format/global-format";
-// import Loading from '@/components/ui/LoadingSpinner.vue'
 
 const isLoading = ref(false);
 const globalFormat = new GlobalFormat();
@@ -441,7 +439,6 @@ const dataRealisasiMesin = ref<RelProyItem>({});
 const dataYoyMesin = ref<RelYoyItem>({});
 const props = defineProps<Mesin>();
 const tahunData = computed(() => props.tahunData);
-// const idMesin = computed(() => props.idMesin);
 
 interface Mesin {
   idMesin: number

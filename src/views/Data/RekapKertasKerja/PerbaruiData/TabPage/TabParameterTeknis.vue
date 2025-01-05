@@ -141,7 +141,6 @@
                 labelBahanBakar(bahanBakarItem.kode_bahan_bakar) }}</label>
             </div>
           </div>
-          <!-- v-if="isSfcTrue(bahanBakarItem.kode_bahan_bakar) == true" -->
           <div class="space-y-1">
             <label class="block font-bold text-gray-500">Specific Fuel Consumption (SFC) {{ bahanBakars.length > 0 ?
               bahanBakarItem.flag_bahan_bakar === 1 ? 'Utama' : bahanBakarIndex + 1 : '-' }}<span
@@ -190,11 +189,10 @@
 </template>
 
 <script setup lang="ts">
-import { inject, ref } from 'vue';
+import { inject } from 'vue';
 import GlobalFormat from '@/services/format/global-format';
 const globalFormat = new GlobalFormat();
 import TextField from '@/components/ui/TextField.vue';
-import WarningIcon from '@/components/icons/WarningIcon.vue';
 
 const checkedBahanBakar = defineModel('checkedBahanBakar');
 const bahanBakars: any = defineModel('bahanBakars');

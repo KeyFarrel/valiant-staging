@@ -126,7 +126,7 @@
       <BestPerformance />
     </div>
     <div class="z-0 space-y-3 h-[75dvh]">
-      <ol-map style="width: 100%; height: calc(71.5 * var(--dvh, 1vh));" @moveend="consoleZoom">
+      <ol-map style="width: 100%; height: calc(71.5 * var(--dvh, 1vh));">
         <ol-view ref="viewRef" :center="center" :rotation="rotation" :zoom="zoom" :minZoom="4"
           :projection="projection" />
         <ol-tile-layer>
@@ -294,7 +294,6 @@ const itemsUmurMesin = ref<{ id: string; name: string; }[]>([])
 const pengelola = ref<CheckboxValueType[]>([])
 const pembangkit = ref<CheckboxValueType[]>([])
 const dmn = ref<CheckboxValueType[]>([1, 2, 3])
-// const no_dmn = ref<CheckboxValueType[]>([])
 const umur = ref<CheckboxValueType[]>([])
 
 interface PetaItem {
@@ -326,7 +325,6 @@ const fetchPetaSentral = async () => {
       dataPeta.value = response.data;
       console.log(response.data);
     }
-    // console.log(viewRef.value?.view.getZoom())
     if (dataPeta.value.length === 1) {
       center.value = [parseFloat(dataPeta.value[0].lng), parseFloat(dataPeta.value[0].lat)]
       zoom.value = 17;
@@ -355,12 +353,6 @@ function getDetailSentral(kode: string) {
   } catch (error) {
     console.error('Fetch Detail Sentral By Kode Error : ' + error);
   }
-}
-
-function consoleZoom() {
-  // zoom.value = viewRef.value?.view.getZoom();
-  // console.log(viewRef.value?.view.getZoom());
-  // console.log(viewRef.value?.view.d);
 }
 
 const handleFocus = () => {
@@ -416,15 +408,6 @@ async function getDataPembangkit() {
             })
           }
         })
-        // itemsDmn.value = response.data[11].dmn
-        // for (var i = 0; i < itemsDmn.value.length; i++) {
-        //   if (itemsDmn.value[i].daya_mampu != "") {
-        //     childDmn.value.push({
-        //       id: itemsDmn.value[i].id_daya,
-        //       name: 'PLTU ' + itemsDmn.value[i].daya_mampu
-        //     })
-        //   }
-        // }
       }
     }
     itemsPembangkit.value.reverse()
@@ -546,7 +529,6 @@ async function changeData() {
       dataPeta.value = response.data;
     } else {
       dataPeta.value = response.data;
-      // console.log(response.data);
     }
     showModal.value = false;
     if (dataPeta.value.length === 0) {
@@ -568,7 +550,6 @@ async function changeDataNoDMN() {
       dataPeta.value = response.data;
     } else {
       dataPeta.value = response.data;
-      // console.log(response.data);
     }
     showModal.value = false;
     if (dataPeta.value.length === 0) {
@@ -582,7 +563,6 @@ async function changeDataNoDMN() {
 }
 
 onMounted(async () => {
-  const view: View | undefined = viewRef.value?.view;
   isLoading.value = true;
   await fetchPetaSentral();
   getDataPengelola()

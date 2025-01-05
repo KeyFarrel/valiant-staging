@@ -1,13 +1,12 @@
 <template>
   <Teleport :to="props.teleportTo">
     <Transition name="modal">
-      <div tabindex="0" ref="modal-backdrop"
-        :class="`fixed ${props.zIndex} inset-0 overflow-y-auto bg-black bg-opacity-50`" v-if="props.showModal"
-        @keydown.esc="emit('onEscape')">
+      <div ref="modal-backdrop" :class="`fixed ${props.zIndex} inset-0 overflow-y-auto bg-black bg-opacity-50`"
+        v-if="props.showModal" @keydown.esc="emit('onEscape')">
         <div :class="`min-h-screen flex ${props.itemsPosition} ${props.justify} ${props.marginTop}`">
           <div
             :class="`flex flex-col p-6 rounded-md ${props.width} ${props.height} bg-white pb-5 relative drop-shadow-xl`"
-            role="dialog" aria-modal="true">
+            aria-modal="true">
             <slot></slot>
           </div>
         </div>

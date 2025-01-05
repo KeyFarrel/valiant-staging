@@ -43,7 +43,6 @@
           </th>
           <th class="font-semibold border-b border-r">Capital Expenditure (CAPEX)</th>
           <th class="font-semibold border-b" colspan="3">Operational Expenditure (OPEX)</th>
-          <!-- <th class="sticky right-0 z-10 border-l bg-gray-50" rowspan="2">Aksi</th> -->
         </tr>
         <tr>
           <th class="border-r">
@@ -105,7 +104,6 @@
             <td class="text-end">{{ globalFormat.formatRupiah(pengelola.cost_component_b) }}</td>
             <td class="text-end">{{ globalFormat.formatRupiah(pengelola.cost_component_c) }}</td>
             <td class="text-end">{{ globalFormat.formatRupiah(pengelola.cost_component_d) }}</td>
-            <!-- <td></td> -->
           </tr>
           <template v-if="isRowOpen(pengelola.id_pengelola)"
             v-for="(pembangkit, pembangkitIndex) in pengelola.pembangkits" :key="pembangkitIndex">
@@ -136,7 +134,6 @@
               <td class="text-end">{{ globalFormat.formatRupiah(pembangkit.cost_component_b) }}</td>
               <td class="text-end">{{ globalFormat.formatRupiah(pembangkit.cost_component_c) }}</td>
               <td class="text-end">{{ globalFormat.formatRupiah(pembangkit.cost_component_d) }}</td>
-              <!-- <td></td> -->
             </tr>
             <template v-if="isRowOpen(pembangkit.id_sentral)" v-for="(mesin, mesinIndex) in pembangkit.mesins"
               :key="mesinIndex">
@@ -148,7 +145,6 @@
                 <td class="text-end">{{ globalFormat.formatRupiah(mesin.cost_component_b) }}</td>
                 <td class="text-end">{{ globalFormat.formatRupiah(mesin.cost_component_c) }}</td>
                 <td class="text-end">{{ globalFormat.formatRupiah(mesin.cost_component_d) }}</td>
-                <!-- <td></td> -->
               </tr>
               <template v-for="(transCostItem, transCostIndex) in mesin.detail_mesin_cost_component"
                 :key="transCostIndex">
@@ -160,9 +156,6 @@
                   <td class="text-end">{{ globalFormat.formatRupiah(transCostItem.cost_component_b) }}</td>
                   <td class="text-end">{{ globalFormat.formatRupiah(transCostItem.cost_component_c) }}</td>
                   <td class="text-end">{{ globalFormat.formatRupiah(transCostItem.cost_component_d) }}</td>
-                  <!-- <td class="sticky right-0 bg-white">
-                    <TooltipLamanData :id-mesin="mesin.id_mesin" :tahun="parseInt(transCostItem.tahun)" /> -->
-                  <!-- </td> -->
                 </tr>
               </template>
             </template>
@@ -175,7 +168,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
 import { useLamanDataPeriodeStore } from "@/store/storeLamanDataTab";
 const store = useLamanDataPeriodeStore();
 import LamanService from '@/services/laman-service';
@@ -188,9 +180,7 @@ import ButtonComponent from "@/components/ui/Button.vue";
 import TableComponent from '@/components/ui/Table.vue'
 import Loading from '@/components/ui/LoadingSpinner.vue'
 import SearchBox from '@/components/ui/SearchBox.vue'
-import TooltipLamanData from "@/components/ui/TooltipLamanData.vue";
 import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
-import axios from "axios";
 
 const tahunDari = ref<any>();
 const tahunSampai = ref<any>();

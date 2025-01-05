@@ -180,5 +180,3 @@ const bahanBakarsFinal = () => {
   return props.bahanBakars;
 }
 </script>
-
-<style scoped></style>

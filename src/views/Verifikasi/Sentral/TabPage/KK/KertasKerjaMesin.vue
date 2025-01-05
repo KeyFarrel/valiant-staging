@@ -37,7 +37,7 @@
     <template v-slot:table-body v-else>
       <tr class="text-xs text-gray-900 border-b hover:bg-gray-100"
         v-for="(persetujuanKKItem, persetujuanKKIndex) in props.source" :key="persetujuanKKIndex">
-        <td scope="row" class="px-1 py-4 text-center whitespace-nowrap">{{ persetujuanKKIndex + 1 }}</td>
+        <td class="px-1 py-4 text-center whitespace-nowrap">{{ persetujuanKKIndex + 1 }}</td>
         <td class="text-center">{{ persetujuanKKItem.tahun ? persetujuanKKItem.tahun : '-' }}</td>
         <td class="text-right">{{ persetujuanKKItem.irr_on_equity === '' ? 'NUM' :
           globalFormat.formatRupiah(persetujuanKKItem.irr_on_equity) }}</td>
@@ -181,44 +181,38 @@ const generatePageList = computed(() => {
     for (let i = 1; i <= navigation.value.totalPages; i++) {
       pageList.push(i);
     }
-  } else {
-    if (navigation.value.currentPage <= 3) {
-      for (let i = 1; i <= Math.min(navigation.value.totalPages, maxPages - 1); i++) {
-        pageList.push(i)
-      };
-      if (navigation.value.totalPages > maxPages) {
-        pageList.push('...')
-        pageList.push(navigation.value.totalPages)
-      };
-    } else if (navigation.value.currentPage >= navigation.value.totalPages - 2) {
-      pageList.push(1)
+  } else if (navigation.value.currentPage <= 3) {
+    for (let i = 1; i <= Math.min(navigation.value.totalPages, maxPages - 1); i++) {
+      pageList.push(i)
+    };
+    if (navigation.value.totalPages > maxPages) {
       pageList.push('...')
-      for (let i = navigation.value.totalPages - (maxPages - 2); i <= navigation.value.totalPages; i++) {
-        pageList.push(i);
-      }
-    } else {
-      pageList.push(1)
-      pageList.push('...');
-      for (let i = navigation.value.currentPage - 1; i <= navigation.value.currentPage + 1; i++) {
-        pageList.push(i)
-      }
-      pageList.push('...');
       pageList.push(navigation.value.totalPages)
+    };
+  } else if (navigation.value.currentPage >= navigation.value.totalPages - 2) {
+    pageList.push(1)
+    pageList.push('...')
+    for (let i = navigation.value.totalPages - (maxPages - 2); i <= navigation.value.totalPages; i++) {
+      pageList.push(i);
     }
-  };
+  } else {
+    pageList.push(1)
+    pageList.push('...');
+    for (let i = navigation.value.currentPage - 1; i <= navigation.value.currentPage + 1; i++) {
+      pageList.push(i)
+    }
+    pageList.push('...');
+    pageList.push(navigation.value.totalPages)
+  }
   return pageList
 })
 
 const goToPage = async (page: any) => {
   try {
-    // isLoading.value = true;
     navigation.value.currentPage = page;
-    // await fetchSentralData();
 
   } catch (error) {
     console.error('Go To Page Error : ' + error);
-  } finally {
-    // isLoading.value = false;
   }
 };
 const goToPrevious = () => {
@@ -237,17 +231,13 @@ td {
   padding: 0.85rem;
 }
 
-/* For Webkit-based browsers (Chrome, Safari and Opera) */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
 
-/* For IE, Edge and Firefox */
 .scrollbar-hide {
   -ms-overflow-style: none;
-  /* IE and Edge */
   scrollbar-width: none;
-  /* Firefox */
 }
 
 ul li#pagination.selected {

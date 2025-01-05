@@ -342,7 +342,6 @@ import ComponentWaitingT1 from '@/components/Status/ComponentWaitingT1.vue';
 import ComponentWaitingT2 from '@/components/Status/ComponentWaitingT2.vue';
 import ComponentDraft from '@/components/Status/ComponentDraft.vue';
 import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
-import ReloadComponent from "@/components/ui/ReloadComponent.vue";
 
 const nodeMode = import.meta.env.MODE;
 const route = useRoute();
@@ -801,7 +800,9 @@ const updateKK = async () => {
     fetchComboBahanBakar();
     fetchDataFinansial();
   } catch (error) {
+    isLoading.value = false;
     console.error("Error Fetch Update Kertas Kerja : " + error);
+    notifyError('Gagal kirim kertas kerja, mohon coba lagi', 5000)
   }
 }
 const fetchListPembina = async () => {

@@ -1,7 +1,7 @@
 <template>
   <div
-    class="w-full p-3 bg-infoComponentBgColor flex flex-col border border-infoComponentBorderColor rounded-lg space-y-2">
-    <div class="flex flex-row justify-between items-center">
+    class="flex flex-col w-full p-3 space-y-2 border rounded-lg bg-infoComponentBgColor border-infoComponentBorderColor">
+    <div class="flex flex-row items-center justify-between">
       <div class="flex flex-row items-center space-x-2">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path fill-rule="evenodd" clip-rule="evenodd"
@@ -10,11 +10,6 @@
         </svg>
         <p class="text-xs font-semibold text-primaryTextColor">Informasi</p>
       </div>
-      <!-- <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill-rule="evenodd" clip-rule="evenodd"
-          d="M2.29289 2.29289C2.68342 1.90237 3.31658 1.90237 3.70711 2.29289L8 6.58579L12.2929 2.29289C12.6834 1.90237 13.3166 1.90237 13.7071 2.29289C14.0976 2.68342 14.0976 3.31658 13.7071 3.70711L9.41421 8L13.7071 12.2929C14.0976 12.6834 14.0976 13.3166 13.7071 13.7071C13.3166 14.0976 12.6834 14.0976 12.2929 13.7071L8 9.41421L3.70711 13.7071C3.31658 14.0976 2.68342 14.0976 2.29289 13.7071C1.90237 13.3166 1.90237 12.6834 2.29289 12.2929L6.58579 8L2.29289 3.70711C1.90237 3.31658 1.90237 2.68342 2.29289 2.29289Z"
-          fill="#4791F2" />
-      </svg> -->
     </div>
     <p class="text-xs text-primaryTextColor">Data {{ props.simulasi }} berasal dari hasil perhitungan <span
         class="font-semibold">{{ props.proyeksi }}</span>
@@ -30,5 +25,3 @@ interface Props {
 
 const props = defineProps<Props>();
 </script>
-
-<style scoped></style>

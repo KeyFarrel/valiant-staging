@@ -37,7 +37,7 @@
     <template v-slot:table-body v-else>
       <tr class="text-xs text-gray-900 border-b hover:bg-gray-100"
         v-for="(persetujuanFSItem, persetujuanFSIndex) in props.source" :key="persetujuanFSIndex">
-        <td scope="row" class="px-1 py-4 text-center whitespace-nowrap">{{ persetujuanFSIndex + 1 }}</td>
+        <td class="px-1 py-4 text-center whitespace-nowrap">{{ persetujuanFSIndex + 1 }}</td>
         <td class="text-center">{{ persetujuanFSItem.tahun ? persetujuanFSItem.tahun : '-' }}</td>
         <td class="text-right">{{ persetujuanFSItem.irr_on_equity === '' ? 'NUM' :
           globalFormat.formatRupiah(persetujuanFSItem.irr_on_equity) }}</td>
@@ -204,7 +204,7 @@ const generatePageList = computed(() => {
       }
       pageList.push('...');
       pageList.push(navigation.value.totalPages)
-    };
+    }
   }
   return pageList;
 })

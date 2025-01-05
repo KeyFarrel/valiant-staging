@@ -200,14 +200,6 @@
         <Empty />
       </div>
       <div v-else>
-        <!-- <div v-if="maxPRPPlanBep === 0 && maxPRPPlanOpt === 0">
-          <vue-echarts :option="chartPRPMesin_NoPlan" style="height: 450px" @click="handleClickPRP" />
-          <Legend />
-        </div>
-        <div v-else-if="maxPRPBep === 0 && maxPRPOpt === 0">
-          <vue-echarts :option="chartPRPMesin_Plan" style="height: 450px" @click="handleClickPRP" />
-          <Legend />
-        </div> -->
         <div
           v-if="(statusApprovePlanning === 'Disetujui' || statusApprovePlanning === 'Data sudah update') && (statusApprove === 'Disetujui' || statusApprove === 'Data sudah update')">
           <vue-echarts :option="chartPRPMesin" style="height: 450px" @click="handleClickPRP" />
@@ -614,6 +606,7 @@ import WaitingGraikT2 from '@/components/Status/Grafik/WaitingGrafikT2.vue';
 import DitolakGrafikT1 from '@/components/Status/Grafik/DitolakGrafikT1.vue';
 import DitolakGrafikT2 from '@/components/Status/Grafik/DitolakGrafikT2.vue';
 import TableComponent from "@/components/ui/Table.vue";
+import { legacy_createStore } from "redux";
 
 const stored = useTagMesin();
 const grafikService = new GrafikService();
@@ -629,17 +622,17 @@ const dataPRPPlanMesin = ref<Grafik1[]>([]);
 const dataPRPLastYearMesin = ref<Grafik1[]>([]);
 const dataPRPLastYearPlanMesin = ref<Grafik1[]>([]);
 const dataDetailWlcAllMesin = ref<Grafik1[]>([]);
-const datatableWlcAllMesin = ref<table[]>([]);
+const datatableWlcAllMesin = ref<TableInterface[]>([]);
 const dataDetailWlcKomMesin = ref<Grafik1[]>([]);
-const datatableWlcKomMesin = ref<table[]>([]);
+const datatableWlcKomMesin = ref<TableInterface[]>([]);
 const dataDetailPlanMesin = ref<Grafik1[]>([]);
-const datatablePlanMesin = ref<table[]>([]);
+const datatablePlanMesin = ref<TableInterface[]>([]);
 const dataDetailPlanKomMesin = ref<Grafik1[]>([]);
-const datatablePlanKomMesin = ref<table[]>([]);
+const datatablePlanKomMesin = ref<TableInterface[]>([]);
 const dataDetailPRPMesin = ref<Grafik1[]>([]);
-const datatablePRPMesin = ref<table[]>([]);
+const datatablePRPMesin = ref<TableInterface[]>([]);
 const dataDetailLastYMesin = ref<Grafik1[]>([]);
-const datatableLastYMesin = ref<table[]>([]);
+const datatableLastYMesin = ref<TableInterface[]>([]);
 const showModalWlcAll = ref(false);
 const showModalWlcKom = ref(false);
 const showModalPlan = ref(false);
@@ -683,7 +676,7 @@ interface Grafik2 {
   revenue_komp_d: number;
 }
 
-interface table {
+interface TableInterface {
   name: string;
   realisasi: number;
   planning: number;
@@ -933,7 +926,6 @@ function changeTabFS(tabs: number) {
 function handleClickWlcAll(param: any) {
   showModalWlcAll.value = true;
   tahunDetail.value = tahunWLCAllMesin.value[param.dataIndex];
-  // console.log(tahunDetail.value);
 
   grafikService
     .getGrafikWLCALLDetailMesin({
@@ -951,10 +943,10 @@ function handleClickWlcAll(param: any) {
       res.data.graph.sort((a: any, b: any) => a.nomor - b.nomor)
       res.data.table.sort((a: any, b: any) => a.nomor - b.nomor)
 
-      for (var i = 0; i < res.data.graph.length; i++) {
-        judulDetWlcAll.value.push(res.data.graph[i].judul)
-        realDetWlcAll.value.push(res.data.graph[i].realisasi)
-        planDetWlcAll.value.push(res.data.graph[i].planning)
+      for (const item of res.data.graph) {
+        judulDetWlcAll.value.push(item.judul);
+        realDetWlcAll.value.push(item.realisasi);
+        planDetWlcAll.value.push(item.planning);
       }
 
       chartDetailWLCAllMesin.value = {
@@ -1047,7 +1039,6 @@ function handleClickWlcAll(param: any) {
 function handleClickWlcKom(param: any) {
   showModalWlcKom.value = true;
   tahunDetail.value = tahunWLCKomMesin.value[param.dataIndex];
-  // console.log(tahunDetail.value);
 
   grafikService
     .getGrafikWLCKomDetailMesin({
@@ -1065,11 +1056,11 @@ function handleClickWlcKom(param: any) {
       res.data.graph.sort((a: any, b: any) => a.nomor - b.nomor)
       res.data.table.sort((a: any, b: any) => a.nomor - b.nomor);
 
-      for (var i = 0; i < res.data.graph.length; i++) {
-        judulDetWlcKom.value.push(res.data.graph[i].judul)
-        realDetWlcKom.value.push(res.data.graph[i].realisasi);
-        planDetWlcKom.value.push(res.data.graph[i].planning)
-      };
+      for (const item of res.data.graph) {
+        judulDetWlcKom.value.push(item.judul);
+        realDetWlcKom.value.push(item.realisasi);
+        planDetWlcKom.value.push(item.planning);
+      }
 
       chartDetailWLCKomMesin.value = {
         title: {
@@ -1161,7 +1152,6 @@ function handleClickWlcKom(param: any) {
 function handleClickPlan(param: any) {
   showModalPlan.value = true;
   tahunDetail.value = tahunPlanningMesin.value[param.dataIndex];
-  // console.log(tahunDetail.value);
 
   grafikService
     .getGrafikPlanDetailMesin({
@@ -1179,9 +1169,9 @@ function handleClickPlan(param: any) {
       res.data.graph.sort((a: any, b: any) => a.nomor - b.nomor);
       res.data.table.sort((a: any, b: any) => a.nomor - b.nomor)
 
-      for (var i = 0; i < res.data.graph.length; i++) {
-        judulDetPlan.value.push(res.data.graph[i].judul);
-        planDetPlan.value.push(res.data.graph[i].planning)
+      for (const item of res.data.graph) {
+        judulDetPlan.value.push(item.judul);
+        planDetPlan.value.push(item.planning);
       }
 
       chartDetailPlanMesin.value = {
@@ -1261,7 +1251,6 @@ function handleClickPlan(param: any) {
 function handleClickPlanKom(param: any) {
   showModalPlanKom.value = true;
   tahunDetail.value = tahunPlanKomMesin.value[param.dataIndex];
-  // console.log(tahunDetail.value);
 
   grafikService
     .getGrafikPlanKomDetailMesin({
@@ -1278,9 +1267,9 @@ function handleClickPlanKom(param: any) {
       res.data.graph.sort((a: any, b: any) => a.nomor - b.nomor)
       res.data.table.sort((a: any, b: any) => a.nomor - b.nomor);
 
-      for (var i = 0; i < res.data.graph.length; i++) {
-        judulDetPlanKom.value.push(res.data.graph[i].judul);
-        planDetPlanKom.value.push(res.data.graph[i].planning)
+      for (const item of res.data.graph) {
+        judulDetPlanKom.value.push(item.judul);
+        planDetPlanKom.value.push(item.planning);
       }
 
       chartDetailPlanKomMesin.value = {
@@ -1360,7 +1349,6 @@ function handleClickPlanKom(param: any) {
 function handleClickPRP(param: any) {
   showModalPRP.value = true;
   tahunDetail.value = tahunPRPMesin.value[param.dataIndex];
-  // console.log(tahunDetail.value);
 
   grafikService
     .getGrafikPRPDetailMesin({
@@ -1378,10 +1366,10 @@ function handleClickPRP(param: any) {
       res.data.graph.sort((a: any, b: any) => a.nomor - b.nomor);
       res.data.table.sort((a: any, b: any) => a.nomor - b.nomor);
 
-      for (var i = 0; i < res.data.graph.length; i++) {
-        judulDetPRP.value.push(res.data.graph[i].judul);
-        realDetPRP.value.push(res.data.graph[i].realisasi);
-        planDetPRP.value.push(res.data.graph[i].planning);
+      for (const item of res.data.graph) {
+        judulDetPRP.value.push(item.judul);
+        realDetPRP.value.push(item.realisasi);
+        planDetPRP.value.push(item.planning);
       }
 
       chartDetailPRPMesin.value = {
@@ -1474,7 +1462,6 @@ function handleClickPRP(param: any) {
 function handleClickLastY(param: any) {
   showModalLastY.value = true;
   tahunDetail.value = tahunLastYearMesin.value[param.dataIndex];
-  // console.log(tahunDetail.value);
 
   grafikService
     .getGrafikPRPLastYearDetailMesin({
@@ -1492,10 +1479,10 @@ function handleClickLastY(param: any) {
       res.data.graph.sort((a: any, b: any) => a.nomor - b.nomor);
       res.data.table.sort((a: any, b: any) => a.nomor - b.nomor);
 
-      for (var i = 0; i < res.data.graph.length; i++) {
-        judulDetLastY.value.push(res.data.graph[i].judul);
-        realDetLastY.value.push(res.data.graph[i].realisasi);
-        planDetLastY.value.push(res.data.graph[i].planning);
+      for (const item of res.data.graph) {
+        judulDetLastY.value.push(item.judul);
+        realDetLastY.value.push(item.realisasi);
+        planDetLastY.value.push(item.planning);
       }
 
       chartDetailLastYMesin.value = {
@@ -1594,6 +1581,7 @@ const fetchGrafikWLCAllMesin = async () => {
     let indexOpt;
     let indexOptimum;
     let tahunOptimum;
+    let finalMax;
 
     const profitLoss: any = [];
     dataWLCAllMesin.value = response.data;
@@ -1604,18 +1592,16 @@ const fetchGrafikWLCAllMesin = async () => {
     comBDWLCMesin.value = [];
     fuelComWLCMesin.value = [];
     yAxisWlc.value = [];
-    var isBepFounded = false;
+    let isBepFounded = false;
 
     if (response.data != null) {
-      var wlcAnnu = [];
-      var revenAnnu = [];
-      var capexAnnu = [];
-      var comBDAnnu = [];
-      var fuelComAnnu = [];
-      var finalMax;
-      // console.log('Adipala Masuk 1')
+      let wlcAnnu = [];
+      let revenAnnu = [];
+      let capexAnnu = [];
+      let comBDAnnu = [];
+      let fuelComAnnu = [];
 
-      for (var i = 0; i < response.data.length; i++) {
+      for (let i = 0; i < response.data.length; i++) {
         tahunWLCAllMesin.value.push(response.data[i].tahun);
         revWLCMesin.value.push(response.data[i].revenue_annualized);
         sumLccWLCMesin.value.push(response.data[i].total_wlcc_annualized);
@@ -1624,11 +1610,8 @@ const fetchGrafikWLCAllMesin = async () => {
         comBDWLCMesin.value.push(response.data[i].cost_component_bd);
         fuelComWLCMesin.value.push(response.data[i].cost_component_c_annualized);
         yAxisWlc.value.push(response.data[i].capex_annualized + response.data[i].cost_component_bd + response.data[i].cost_component_c_annualized);
-        maxWlcBep.value = Math.max.apply(Math, yAxisWlc.value) * 1.1;
-        maxWlcOpt.value = Math.max.apply(Math, yAxisWlc.value);
-
-        // console.log('Adipala Masuk', i)
-
+        maxWlcBep.value = Math.max(...yAxisWlc.value) * 1.1;
+        maxWlcOpt.value = Math.max(...yAxisWlc.value);
 
         wlcAnnu.push(response.data[i].total_wlcc_annualized);
         revenAnnu.push(response.data[i].revenue_annualized);
@@ -1651,7 +1634,7 @@ const fetchGrafikWLCAllMesin = async () => {
           isBepFounded = true;
         }
 
-        const finalOptimum = Math.max.apply(Math, profitLoss)
+        const finalOptimum = Math.max(...profitLoss)
         if (finalOptimum == response.data[i].profit_loss) {
           indexOptimum = i
           indexOpt = i + 1
@@ -1659,14 +1642,14 @@ const fetchGrafikWLCAllMesin = async () => {
         }
       }
 
-      var maxWlc = Math.max.apply(Math, wlcAnnu);
-      var maxRev = Math.max.apply(Math, revenAnnu);
-      var maxCapex = Math.max.apply(Math, capexAnnu)
-      var maxComBD = Math.max.apply(Math, comBDAnnu);
-      var maxFuelCom = Math.max.apply(Math, fuelComAnnu);
+      let maxWlc = Math.max(...wlcAnnu);
+      let maxRev = Math.max(...revenAnnu);
+      let maxCapex = Math.max(...capexAnnu)
+      let maxComBD = Math.max(...comBDAnnu);
+      let maxFuelCom = Math.max(...fuelComAnnu);
 
-      var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxWlc, maxRev]
-      finalMax = Math.max.apply(Math, listOfMax);
+      let listOfMax = [maxCapex, maxComBD, maxFuelCom, maxWlc, maxRev]
+      finalMax = Math.max(...listOfMax);
     }
 
     chartWLCAllMesin.value = isBepFounded ? {
@@ -1882,7 +1865,7 @@ const fetchGrafikWLCAllMesin = async () => {
                 return '#6C6C6C';
               } else if (value > filterTahun) {
                 return '#37B1D5'
-              };
+              }
             },
             formatter: function (value: any, index: number) {
               return index + 1 + `\n${value}`
@@ -2019,18 +2002,18 @@ const fetchGrafikWLCKomMesin = async () => {
     sumCostCompMesin.value = [];
 
     if (response.data != null) {
-      for (var i = 0; i < response.data.length; i++) {
-        tahunWLCKomMesin.value.push(response.data[i].tahun);
-        costCompAMesin.value.push(response.data[i].cost_komp_a);
-        costCompCMesin.value.push(response.data[i].cost_komp_c);
-        costCompBDMesin.value.push(response.data[i].cost_komp_bd);
+      for (const item of response.data) {
+        tahunWLCKomMesin.value.push(item.tahun);
+        costCompAMesin.value.push(item.cost_komp_a);
+        costCompCMesin.value.push(item.cost_komp_c);
+        costCompBDMesin.value.push(item.cost_komp_bd);
         sumCostCompMesin.value.push(
-          response.data[i].cost_komp_a +
-          response.data[i].cost_komp_b +
-          response.data[i].cost_komp_c +
-          response.data[i].cost_komp_d
+          item.cost_komp_a +
+          item.cost_komp_b +
+          item.cost_komp_c +
+          item.cost_komp_d
         );
-      };
+      }
     }
 
     chartWLCKomMesin.value = {
@@ -2174,7 +2157,7 @@ const fetchGrafikPlanMesin = async () => {
     let indexOpt;
     let indexOptimum;
     let tahunOptimum;
-    let selisih = Infinity;
+    let finalMax;
 
     dataPlanMesin.value = response.data;
 
@@ -2186,17 +2169,16 @@ const fetchGrafikPlanMesin = async () => {
     revPlanMesin.value = [];
     sumLccPlanMesin.value = [];
     yAxisPlan.value = [];
-    var isBepFounded = false;
+    let isBepFounded = false;
 
     if (response.data != null) {
-      var wlcAnnu = [];
-      var revenAnnu = [];
-      var capexAnnu = [];
-      var comBDAnnu = [];
-      var fuelComAnnu = [];
-      var finalMax;
+      let wlcAnnu = [];
+      let revenAnnu = [];
+      let capexAnnu = [];
+      let comBDAnnu = [];
+      let fuelComAnnu = [];
 
-      for (var i = 0; i < response.data.length; i++) {
+      for (let i = 0; i < response.data.length; i++) {
         tahunPlanningMesin.value.push(response.data[i].tahun);
         capexPlanMesin.value.push(response.data[i].capex_annualized);
         comBDPlanMesin.value.push(response.data[i].cost_component_bd);
@@ -2205,8 +2187,8 @@ const fetchGrafikPlanMesin = async () => {
         fuelComPlanMesin.value.push(response.data[i].cost_component_c_annualized);
         sumLccPlanMesin.value.push(response.data[i].total_wlcc_annualized);
         yAxisPlan.value.push(response.data[i].capex_annualized + response.data[i].cost_component_bd + response.data[i].cost_component_c_annualized);
-        maxPlanBep.value = Math.max.apply(Math, yAxisPlan.value) * 1.1;
-        maxPlanOpt.value = Math.max.apply(Math, yAxisPlan.value);
+        maxPlanBep.value = Math.max(...yAxisPlan.value) * 1.1;
+        maxPlanOpt.value = Math.max(...yAxisPlan.value);
 
         wlcAnnu.push(response.data[i].total_wlcc_annualized);
         revenAnnu.push(response.data[i].revenue_annualized)
@@ -2229,29 +2211,21 @@ const fetchGrafikPlanMesin = async () => {
           isBepFounded = true
         };
 
-        // const diffOpt = Math.min.apply(Math, sumLccPlanMesin.value)
-        // if (diffOpt < selisihOpt) {
-        //   indexOptimum = i;
-        //   indexOpt = i + 1;
-        //   selisihOpt = diffOpt;
-        //   tahunOptimum = response.data[i].tahun
-        // }
-        const finalOptimum = Math.max.apply(Math, profitLoss)
+        const finalOptimum = Math.max(...profitLoss)
         if (finalOptimum == response.data[i].profit_loss) {
           indexOptimum = i;
           indexOpt = i + 1
           tahunOptimum = response.data[i].tahun;
         }
       };
-      // console.log(tahunOptimum, 'Optimum');
-      var maxWlc = Math.max.apply(Math, wlcAnnu)
-      var maxRev = Math.max.apply(Math, revenAnnu);
-      var maxCapex = Math.max.apply(Math, capexAnnu);
-      var maxComBD = Math.max.apply(Math, comBDAnnu)
-      var maxFuelCom = Math.max.apply(Math, fuelComAnnu);
+      let maxWlc = Math.max(...wlcAnnu)
+      let maxRev = Math.max(...revenAnnu);
+      let maxCapex = Math.max(...capexAnnu);
+      let maxComBD = Math.max(...comBDAnnu)
+      let maxFuelCom = Math.max(...fuelComAnnu);
 
-      var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxWlc, maxRev]
-      finalMax = Math.max.apply(Math, listOfMax);
+      let listOfMax = [maxCapex, maxComBD, maxFuelCom, maxWlc, maxRev]
+      finalMax = Math.max(...listOfMax);
     }
 
     chartPlanningMesin.value = isBepFounded ? {
@@ -2590,16 +2564,16 @@ const fetchGrafikPlanKomMesin = async () => {
     sumCostCompMesinPlan.value = [];
 
     if (response.data != null) {
-      for (var i = 0; i < response.data.length; i++) {
-        tahunPlanKomMesin.value.push(response.data[i].tahun);
-        costCompAMesinPlan.value.push(response.data[i].cost_komp_a);
-        costCompCMesinPlan.value.push(response.data[i].cost_komp_c);
-        costCompBDMesinPlan.value.push(response.data[i].cost_komp_bd);
+      for (const item of response.data) {
+        tahunPlanKomMesin.value.push(item.tahun);
+        costCompAMesinPlan.value.push(item.cost_komp_a);
+        costCompCMesinPlan.value.push(item.cost_komp_c);
+        costCompBDMesinPlan.value.push(item.cost_komp_bd);
         sumCostCompMesinPlan.value.push(
-          response.data[i].cost_komp_a +
-          response.data[i].cost_komp_b +
-          response.data[i].cost_komp_c +
-          response.data[i].cost_komp_d
+          item.cost_komp_a +
+          item.cost_komp_b +
+          item.cost_komp_c +
+          item.cost_komp_d
         );
       }
     }
@@ -2742,6 +2716,7 @@ const fetchGrafikPRPMesin = async () => {
     let indexOptPlan;
     let indexOptimumPlan;
     let tahunOptimumPlan;
+    let finalMax: any;
 
     dataPRPMesin.value = response.data[0].realisasi_proyeksi;
 
@@ -2758,22 +2733,21 @@ const fetchGrafikPRPMesin = async () => {
     revCPRPMesin.value = [];
     revDPRPMesin.value = [];
     yAxisPRP.value = [];
-    var isBepKKFounded = false;
+    let isBepKKFounded = false;
 
     if (response.data[0].realisasi_proyeksi != null) {
-      var capexAnnu: number[] = [];
-      var comBDAnnu: number[] = [];
-      var fuelComAnnu: number[] = [];
-      var sumrevenAnnu: number[] = [];
-      var revenAnnu: number[] = [];
-      var wlcAnnu: number[] = [];
-      var revaAnnu: number[] = [];
-      var revbAnnu: number[] = [];
-      var revcAnnu: number[] = [];
-      var revdAnnu: number[] = [];
-      var finalMax: any;
+      let capexAnnu: number[] = [];
+      let comBDAnnu: number[] = [];
+      let fuelComAnnu: number[] = [];
+      let sumrevenAnnu: number[] = [];
+      let revenAnnu: number[] = [];
+      let wlcAnnu: number[] = [];
+      let revaAnnu: number[] = [];
+      let revbAnnu: number[] = [];
+      let revcAnnu: number[] = [];
+      let revdAnnu: number[] = [];
 
-      for (var i = 0; i < response.data[0].realisasi_proyeksi.length; i++) {
+      for (let i = 0; i < response.data[0].realisasi_proyeksi.length; i++) {
         tahunPRPMesin.value.push(response.data[0].realisasi_proyeksi[i].tahun);
         capexPRPMesin.value.push(
           response.data[0].realisasi_proyeksi[i].capex_annualized
@@ -2797,8 +2771,8 @@ const fetchGrafikPRPMesin = async () => {
         revCPRPMesin.value.push(response.data[0].realisasi_proyeksi[i].revenue_komp_c);
         revDPRPMesin.value.push(response.data[0].realisasi_proyeksi[i].revenue_komp_d);
         yAxisPRP.value.push(response.data[0].realisasi_proyeksi[i].capex_annualized + response.data[0].realisasi_proyeksi[i].cost_component_bd + response.data[0].realisasi_proyeksi[i].cost_component_c_annualized);
-        maxPRPBep.value = Math.max.apply(Math, yAxisPRP.value) / 1.2;
-        maxPRPOpt.value = Math.max.apply(Math, yAxisPRP.value);
+        maxPRPBep.value = Math.max(...yAxisPRP.value) / 1.2;
+        maxPRPOpt.value = Math.max(...yAxisPRP.value);
 
         capexAnnu.push(response.data[0].realisasi_proyeksi[i].capex_annualized);
         comBDAnnu.push(response.data[0].realisasi_proyeksi[i].cost_component_bd);
@@ -2826,7 +2800,7 @@ const fetchGrafikPRPMesin = async () => {
           isBepKKFounded = true;
         }
 
-        const finalOptimum = Math.max.apply(Math, profitLoss)
+        const finalOptimum = Math.max(...profitLoss)
         if (finalOptimum == response.data[0].realisasi_proyeksi[i].profit_loss) {
           indexOptimum = i
           indexOpt = i + 1
@@ -2834,19 +2808,19 @@ const fetchGrafikPRPMesin = async () => {
         }
       }
 
-      var maxCapex = Math.max.apply(Math, capexAnnu);
-      var maxComBD = Math.max.apply(Math, comBDAnnu);
-      var maxFuelCom = Math.max.apply(Math, fuelComAnnu);
-      var maxsumRev = Math.max.apply(Math, sumrevenAnnu);
-      var maxRev = Math.max.apply(Math, revenAnnu);
-      var maxWlc = Math.max.apply(Math, wlcAnnu);
-      var maxRevA = Math.max.apply(Math, revaAnnu);
-      var maxRevB = Math.max.apply(Math, revbAnnu);
-      var maxRevC = Math.max.apply(Math, revcAnnu);
-      var maxRevD = Math.max.apply(Math, revdAnnu);
+      let maxCapex = Math.max(...capexAnnu);
+      let maxComBD = Math.max(...comBDAnnu);
+      let maxFuelCom = Math.max(...fuelComAnnu);
+      let maxsumRev = Math.max(...sumrevenAnnu);
+      let maxRev = Math.max(...revenAnnu);
+      let maxWlc = Math.max(...wlcAnnu);
+      let maxRevA = Math.max(...revaAnnu);
+      let maxRevB = Math.max(...revbAnnu);
+      let maxRevC = Math.max(...revcAnnu);
+      let maxRevD = Math.max(...revdAnnu);
 
-      var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxsumRev, maxWlc, maxRev, maxRevA, maxRevB, maxRevC, maxRevD];
-      finalMax = Math.max.apply(Math, listOfMax);
+      let listOfMax = [maxCapex, maxComBD, maxFuelCom, maxsumRev, maxWlc, maxRev, maxRevA, maxRevB, maxRevC, maxRevD];
+      finalMax = Math.max(...listOfMax);
     }
 
     dataPRPPlanMesin.value = response.data[0].planning;
@@ -2863,22 +2837,22 @@ const fetchGrafikPRPMesin = async () => {
     revCPRPPlanMesin.value = [];
     revDPRPPlanMesin.value = [];
     yAxisPRPPlan.value = [];
-    var isBepFSFounded = false;
+    let isBepFSFounded = false;
+    let finalMaxPlan: any;
 
     if (response.data[0].planning != null) {
-      var capexAnnu: number[] = [];
-      var comBDAnnu: number[] = []
-      var fuelComAnnu: number[] = [];
-      var sumrevenAnnu: number[] = [];
-      var revenAnnu: number[] = [];
-      var wlcAnnu: number[] = []
-      var revaAnnu: number[] = [];
-      var revbAnnu: number[] = []
-      var revcAnnu: number[] = [];
-      var revdAnnu: number[] = []
-      var finalMaxPlan: any;
+      let capexAnnu: number[] = [];
+      let comBDAnnu: number[] = []
+      let fuelComAnnu: number[] = [];
+      let sumrevenAnnu: number[] = [];
+      let revenAnnu: number[] = [];
+      let wlcAnnu: number[] = []
+      let revaAnnu: number[] = [];
+      let revbAnnu: number[] = []
+      let revcAnnu: number[] = [];
+      let revdAnnu: number[] = []
 
-      for (var j = 0; j < response.data[0].planning.length; j++) {
+      for (let j = 0; j < response.data[0].planning.length; j++) {
         tahunPRPPlan.value.push(response.data[0].planning[j].tahun);
         capexPRPPlanMesin.value.push(response.data[0].planning[j].capex_annualized);
         comBDPRPPlanMesin.value.push(response.data[0].planning[j].cost_component_bd);
@@ -2894,8 +2868,8 @@ const fetchGrafikPRPMesin = async () => {
         revCPRPPlanMesin.value.push(response.data[0].planning[j].revenue_komp_c);
         revDPRPPlanMesin.value.push(response.data[0].planning[j].revenue_komp_d);
         yAxisPRPPlan.value.push(response.data[0].planning[j].capex_annualized + response.data[0].planning[j].cost_component_bd + response.data[0].planning[j].cost_component_c_annualized);
-        maxPRPPlanBep.value = Math.max.apply(Math, yAxisPRPPlan.value) / 1.4;
-        maxPRPPlanOpt.value = Math.max.apply(Math, yAxisPRPPlan.value) / 1.6;
+        maxPRPPlanBep.value = Math.max(...yAxisPRPPlan.value) / 1.4;
+        maxPRPPlanOpt.value = Math.max(...yAxisPRPPlan.value) / 1.6;
 
         capexAnnu.push(response.data[0].planning[j].capex_annualized);
         comBDAnnu.push(response.data[0].planning[j].cost_component_bd);
@@ -2923,27 +2897,26 @@ const fetchGrafikPRPMesin = async () => {
           isBepFSFounded = true;
         }
 
-        const finalOptimum = Math.max.apply(Math, profitLoss)
+        const finalOptimum = Math.max(...profitLoss)
         if (finalOptimum == response.data[0].planning[j].profit_loss) {
           indexOptimumPlan = j
           indexOptPlan = j + 1
           tahunOptimumPlan = response.data[0].planning[j].tahun
         }
       }
-      var maxCapex = Math.max.apply(Math, capexAnnu);
-      var maxComBD = Math.max.apply(Math, comBDAnnu)
-      var maxFuelCom = Math.max.apply(Math, fuelComAnnu);
-      var maxsumRev = Math.max.apply(Math, sumrevenAnnu)
-      var maxRev = Math.max.apply(Math, revenAnnu);
-      var maxWlc = Math.max.apply(Math, wlcAnnu)
-      var maxRevA = Math.max.apply(Math, revaAnnu);
-      var maxRevB = Math.max.apply(Math, revbAnnu)
-      var maxRevC = Math.max.apply(Math, revcAnnu);
-      var maxRevD = Math.max.apply(Math, revdAnnu)
+      let maxCapex = Math.max(...capexAnnu);
+      let maxComBD = Math.max(...comBDAnnu)
+      let maxFuelCom = Math.max(...fuelComAnnu);
+      let maxsumRev = Math.max(...sumrevenAnnu)
+      let maxRev = Math.max(...revenAnnu);
+      let maxWlc = Math.max(...wlcAnnu)
+      let maxRevA = Math.max(...revaAnnu);
+      let maxRevB = Math.max(...revbAnnu)
+      let maxRevC = Math.max(...revcAnnu);
+      let maxRevD = Math.max(...revdAnnu)
 
-      var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxsumRev, maxWlc, maxRev, maxRevA, maxRevB, maxRevC, maxRevD];
-      finalMaxPlan = Math.max.apply(Math, listOfMax)
-      // console.log(profitLoss)
+      let listOfMax = [maxCapex, maxComBD, maxFuelCom, maxsumRev, maxWlc, maxRev, maxRevA, maxRevB, maxRevC, maxRevD];
+      finalMaxPlan = Math.max(...listOfMax)
     }
 
     if (isBepKKFounded && isBepFSFounded) {
@@ -3492,7 +3465,7 @@ const fetchGrafikPRPMesin = async () => {
                 return finalMax
               } else if (finalMax < finalMaxPlan) {
                 return finalMaxPlan
-              };
+              }
             },
             // max: finalMax,
           },
@@ -4657,7 +4630,7 @@ const fetchGrafikPRPMesin = async () => {
                 return '#6C6C6C'
               } else if (value > filterTahun) {
                 return '#37B1D5';
-              };
+              }
             },
             formatter: function (value: any, index: number) {
               return index + 1 + `\n${value}`
@@ -4917,7 +4890,7 @@ const fetchGrafikPRPMesin = async () => {
                 return '#6C6C6C';
               } else if (value > filterTahun) {
                 return '#37B1D5';
-              };
+              }
             }
           },
           type: "category"
@@ -5648,57 +5621,39 @@ const fetchGrafikPRPLastYearMesin = async () => {
     yAxisLastYear.value = [];
 
     if (response.data[0].realisasi_proyeksi != null) {
-      for (var i = 0; i < response.data[0].realisasi_proyeksi.length; i++) {
-        tahunLastYearMesin.value.push(response.data[0].realisasi_proyeksi[i].tahun);
+      for (const item of response.data[0].realisasi_proyeksi) {
+        tahunLastYearMesin.value.push(item.tahun);
         capexLastYearMesin.value.push(
-          response.data[0].realisasi_proyeksi[i].capex_annualized
+          item.capex_annualized
         );
         comBDLastYearMesin.value.push(
-          response.data[0].realisasi_proyeksi[i].cost_component_bd
+          item.cost_component_bd
         );
         fuelComLastYearMesin.value.push(
-          response.data[0].realisasi_proyeksi[i].cost_component_c_annualized
+          item.cost_component_c_annualized
         );
         sumRevLastYearMesin.value.push(
-          response.data[0].realisasi_proyeksi[i].total_revenue
+          item.total_revenue
         );
         revLastYearMesin.value.push(
-          response.data[0].realisasi_proyeksi[i].revenue_annualized
+          item.revenue_annualized
         );
         sumLccLastYearMesin.value.push(
-          response.data[0].realisasi_proyeksi[i].total_wlcc_annualized
+          item.total_wlcc_annualized
         );
         revALastYearMesin.value.push(
-          response.data[0].realisasi_proyeksi[i].revenue_komp_a
+          item.revenue_komp_a
         );
         revBLastYearMesin.value.push(
-          response.data[0].realisasi_proyeksi[i].revenue_komp_b
+          item.revenue_komp_b
         );
         revCLastYearMesin.value.push(
-          response.data[0].realisasi_proyeksi[i].revenue_komp_c
+          item.revenue_komp_c
         );
         revDLastYearMesin.value.push(
-          response.data[0].realisasi_proyeksi[i].revenue_komp_d
+          item.revenue_komp_d
         );
-        yAxisLastYear.value.push(response.data[0].realisasi_proyeksi[i].capex_annualized + response.data[0].realisasi_proyeksi[i].cost_component_bd + response.data[0].realisasi_proyeksi[i].cost_component_c_annualized);
-        // maxLastYearBep.value = Math.max.apply(Math, yAxisLastYear.value) / 1.2;
-        // maxLastYearOpt.value = Math.max.apply(Math, yAxisLastYear.value);
-
-        // const difference = Math.abs(response.data[0].realisasi_proyeksi[i].total_wlcc_annualized - response.data[0].realisasi_proyeksi[i].revenue_annualized);
-        // if (difference < selisih) {
-        //   indexTerdekat = i;
-        //   indexBEP = i + 1;
-        //   selisih = difference;
-        //   tahunBEP = response.data[0].realisasi_proyeksi[i].tahun
-        // }
-
-        // const diffOpt = Math.min.apply(Math, sumLccLastYearMesin.value)
-        // if (diffOpt < selisihOpt) {
-        //   indexOptimum = i;
-        //   indexOpt = i + 1;
-        //   selisihOpt = diffOpt;
-        //   tahunOptimum = response.data[0].realisasi_proyeksi[i].tahun
-        // }
+        yAxisLastYear.value.push(item.capex_annualized + item.cost_component_bd + item.cost_component_c_annualized);
       }
     }
 
@@ -5718,57 +5673,39 @@ const fetchGrafikPRPLastYearMesin = async () => {
     yAxisLastYearPlan.value = [];
 
     if (response.data[0].planning != null) {
-      for (var j = 0; j < response.data[0].planning.length; j++) {
+      for (const item of response.data[0].planning) {
         tahunLastYearPlanMesin.value.push(
-          response.data[0].planning[j].tahun
+          item.tahun
         );
         capexLastYearPlanMesin.value.push(
-          response.data[0].planning[j].capex_annualized
+          item.capex_annualized
         );
         comBDLastYearPlanMesin.value.push(
-          response.data[0].planning[j].cost_component_bd
+          item.cost_component_bd
         );
         fuelComLastYearPlanMesin.value.push(
-          response.data[0].planning[j].cost_component_c_annualized
+          item.cost_component_c_annualized
         );
         revLastYearPlanMesin.value.push(
-          response.data[0].planning[j].revenue_annualized
+          item.revenue_annualized
         );
-        sumLccLastYearPlanMesin.value.push(response.data[0].planning[j].total_wlcc_annualized);
+        sumLccLastYearPlanMesin.value.push(item.total_wlcc_annualized);
         sumRevLastYearPlanMesin.value.push(
-          response.data[0].planning[j].total_revenue
+          item.total_revenue
         );
         revALastYearPlanMesin.value.push(
-          response.data[0].planning[j].revenue_komp_a
+          item.revenue_komp_a
         );
         revBLastYearPlanMesin.value.push(
-          response.data[0].planning[j].revenue_komp_b
+          item.revenue_komp_b
         );
         revCLastYearPlanMesin.value.push(
-          response.data[0].planning[j].revenue_komp_c
+          item.revenue_komp_c
         );
         revDLastYearPlanMesin.value.push(
-          response.data[0].planning[j].revenue_komp_d
+          item.revenue_komp_d
         );
-        yAxisLastYearPlan.value.push(response.data[0].planning[j].capex_annualized + response.data[0].planning[j].cost_component_bd + response.data[0].planning[j].cost_component_c_annualized);
-        // maxLastYearPlanBep.value = Math.max.apply(Math, yAxisLastYearPlan.value) / 1.4;
-        // maxLastYearPlanOpt.value = Math.max.apply(Math, yAxisLastYearPlan.value) / 1.8;
-
-        // const difference = Math.abs(response.data[0].planning[j].total_wlcc_annualized - response.data[0].planning[j].revenue_annualized);
-        // if (difference < selisihPlan) {
-        //   indexTerdekatPlan = j;
-        //   indexBEPPlan = j + 1;
-        //   selisihPlan = difference;
-        //   tahunBEPPlan = response.data[0].planning[j].tahun
-        // }
-
-        // const diffOptPlan = Math.min.apply(Math, sumLccLastYearPlanMesin.value)
-        // if (diffOptPlan < selisihOptPlan) {
-        //   indexOptimumPlan = j;
-        //   indexOptPlan = j + 1;
-        //   selisihOptPlan = diffOptPlan;
-        //   tahunOptimumPlan = response.data[0].planning[j].tahun
-        // }
+        yAxisLastYearPlan.value.push(item.capex_annualized + item.cost_component_bd + item.cost_component_c_annualized);
       }
     }
 
@@ -6300,7 +6237,7 @@ const fetchGrafikPRPLastYearMesin = async () => {
                 return '#6C6C6C'
               } else if (value > filterTahun) {
                 return '#37B1D5'
-              };
+              }
             },
             formatter: function (value: any, index: number) {
               return index + 1 + `\n${value}`;
@@ -6494,7 +6431,7 @@ const fetchGrafikPRPLastYearMesin = async () => {
                 return '#6C6C6C'
               } else if (value > filterTahun) {
                 return '#37B1D5'
-              };
+              }
             },
             formatter: function (value: any, index: number) {
               return index + 1 + `\n${value}`;

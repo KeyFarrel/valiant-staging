@@ -436,7 +436,7 @@ import {
   LegendComponent,
   GridComponent,
 } from "echarts/components";
-import VChart, { THEME_KEY } from "vue-echarts";
+import VChart from "vue-echarts";
 import ModalWrapper from "@/components/ui/ModalWrapper.vue";
 import TableComponent from "@/components/ui/Table.vue";
 import SearchBox from "@/components/ui/SearchBox.vue";
@@ -769,15 +769,28 @@ const handlePushPage = () => {
 }
 
 watch(isModalUnit, (value) => {
-  value === true ? document.body.style.overflow = 'hidden' : document.body.style.overflow = 'auto';
+  if (value === true) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = 'auto';
+  }
+
 })
 
 watch(isLoading, (value) => {
-  value === true ? document.body.style.overflow = 'hidden' : document.body.style.overflow = 'auto';
+  if (value === true) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = 'auto';
+  }
 })
 
 watch(isModalCOD, (value) => {
-  value === true ? document.body.style.overflow = 'hidden' : document.body.style.overflow = 'auto';
+  if (value === true) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = 'auto';
+  }
 })
 
 onMounted(async () => {
@@ -785,7 +798,7 @@ onMounted(async () => {
   const dataTotalDaya = await getTotalDaya();
   const dataSebaranUnit = await getSebaranUnit();
   const dataMesinBaru = await getMesinBaru(pageMesinBaru.value, limitMesinBaru.value, searchQuery.value);
-  const dataMesinBelumInput = await getMesinBelumInput();
+  await getMesinBelumInput();
   const dataKategoriPembangkit = await getKategoriPembangkit();
   const dataChartDaya = await getChartDaya();
   const dataChartKategori = await getChartKategori(tabs2.value, 0);
@@ -804,10 +817,20 @@ onMounted(async () => {
   mesinBaru.value = dataMesinBaru;
   filteredMesin.value = mesinBaru.value;
   for (const value of dataKategoriPembangkit) {
+    let id_daya = 0;
+
+    if (value.kode_jenis_pembangkit === 'PLTU < 100') {
+      id_daya = 1;
+    } else if (value.kode_jenis_pembangkit === 'PLTU 100 - 400') {
+      id_daya = 2;
+    } else if (value.kode_jenis_pembangkit === 'PLTU > 400') {
+      id_daya = 3;
+    }
+
     kategoriPembangkit.value.push({
       ...value,
-      id_daya: value.kode_jenis_pembangkit === 'PLTU < 100' ? 1 : value.kode_jenis_pembangkit === 'PLTU 100 - 400' ? 2 : value.kode_jenis_pembangkit === 'PLTU > 400' ? 3 : 0
-    })
+      id_daya
+    });
   }
   console.log(kategoriPembangkit.value);
   if (kategoriPembangkit.value.length > 0) {

@@ -240,8 +240,6 @@ import IconEdit from "@/components/icons/IconEdit.vue";
 import Chips from "@/components/ui/Chips.vue";
 import TextField from "@/components/ui/TextField.vue";
 import successJson from "@/assets/lottie/success.json";
-import LoginService from "@/services/auth-service";
-const loginService = new LoginService();
 import AuthService from "@/services/auth-service";
 const authService = new AuthService();
 
@@ -264,7 +262,7 @@ const isSuccess = ref<boolean>(false);
 const isOldPasswordWrong = ref<boolean>(false);
 const activeDate = ref<any>('');
 
-interface dataItem {
+interface DataItemInterface {
   data: any
   id_user: string
   nip: string
@@ -282,7 +280,7 @@ interface dataItem {
   created_at: any
 }
 
-const data = ref<dataItem>({
+const data = ref<DataItemInterface>({
   data: {},
   id_user: "",
   nip: "",
@@ -335,7 +333,7 @@ const calculateTimeAgo = (createdAt: any) => {
 const fetchDataProfile = async () => {
   try {
     isLoading.value = true;
-    const response: dataItem = await loginService.profile();
+    const response: DataItemInterface = await authService.profile();
     data.value = response.data;
     const createdAt = data.value.created_at;
     activeDate.value = calculateTimeAgo(createdAt);

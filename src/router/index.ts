@@ -1,8 +1,8 @@
-import { createRouter, createWebHistory, createWebHashHistory, RouteRecordRaw } from "vue-router";
+import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import { useRoleMenuStore } from "@/store/storeRoleMenu";
 import { useNavbarLabelStore } from '@/store/storeNavbar';
 import { useRekapNavigationStore } from '@/store/storeRekapKertasKerja';
-import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
+import { encryptStorage } from "@/utils/app-encrypt-storage";
 import Sidebar from "@/components/layout/Sidebar.vue";
 import PetaSebaran from "@/views/Beranda/PetaSebaran.vue";
 import LamanUtama from "@/views/Beranda/LamanUtama/LamanUtama.vue";
@@ -14,8 +14,6 @@ import RekapKertasKerjaV1 from "@/views/Data/RekapKertasKerjaV1/RekapKertasKerja
 import FeasibilityStudy from "@/views/Data/RekapKertasKerja/FeasibilityStudy/FeasibilityStudy.vue";
 import FeasibilityStudySentral from "@/views/Data/RekapKertasKerja/FeasibilityStudy/FeasibilityStudySentral.vue";
 import VerifikasiApprover from "@/views/Verifikasi/Approver/VerifikasiPersetujuan.vue";
-// import ApproverFS from "@/views/Verifikasi/Approver/TabPage/FS/PersetujuanFS.vue";
-// import ApproverKK from "@/views/Verifikasi/Approver/TabPage/KK/PersetujuanKk.vue";
 import ApproveDetailFS from "@/views/Verifikasi/Approver/TabPage/FS/DetailFS.vue";
 import ApproveDetailKk from "@/views/Verifikasi/Approver/TabPage/KK/DetailKK.vue";
 import ApproveDetailFSMesin from "@/views/Verifikasi/Approver/TabPage/FS/DetailFSMesin.vue";
@@ -27,8 +25,6 @@ import PersetujuanKk from "@/views/Verifikasi/Sentral/TabPage/KK/DetailKK.vue";
 import PersetujuanFSMesin from "@/views/Verifikasi/Sentral/TabPage/FS/DetailFSMesin.vue";
 import PersetujuanKkMesin from "@/views/Verifikasi/Sentral/TabPage/KK/DetailKKMesin.vue";
 import InputAsumsiKKApprove from "@/views/Verifikasi/Sentral/TabPage/KK/InputAsumsiParameter.vue";
-// import InputAsumsiFSApprove from "@/views/Verifikasi/Sentral/TabPage/FS/InputAsumsiParameter.vue";
-// import PerbaruiKKApprove from "@/views/Verifikasi/Sentral/TabPage/KK/PerbaruiDataApprove.vue";
 import SentralAdmin from "@/views/Master/SentralAdmin.vue";
 import DetailUnit from "@/views/Master/DetailUnit.vue";
 import DetailRekap from "@/views/Data/RekapKertasKerja/DetailRekap/DetailRekap.vue";
@@ -43,13 +39,10 @@ import Pengguna from "@/views/Manajemen/Pengguna/Pengguna.vue";
 import Role from "@/views/Manajemen/Pengguna/RolePage.vue";
 import EditPermission from "@/views/Manajemen/Pengguna/EditPermission.vue";
 import LogActivity from "@/views/Manajemen/LogActivity/LogActivity.vue";
-// import Query from "@/views/Query/Query.vue";
 import MesinBelumTerinput from "@/views/Beranda/LamanUtama/MesinBelumTerinput.vue";
 import Login from "../views/Login.vue";
 import VerifikasiSSO from "@/views/VerifikasiSSO.vue";
 import Error404Page from "@/views/404Page.vue";
-import 'vue-router'
-export {}
 
 const nodeMode: any = import.meta.env.MODE;
 
@@ -450,15 +443,14 @@ const router = createRouter({
 
 declare module 'vue-router' {
   interface RouteMeta {
-    label?: string | undefined,
     requiresAuth?: boolean,
+    label: string | undefined,
   }
 }
 
 router.beforeEach((to, _, next) => {
   const storeNavbar = useNavbarLabelStore();
   const token = nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem('token');
-  const storeRoleMenu = useRoleMenuStore();
   storeNavbar.label = to.meta.label;
   if (to.name === "redirect-sso" && !token) next();
   else if (to.name !== "login" && !token) next({ name: "login" });

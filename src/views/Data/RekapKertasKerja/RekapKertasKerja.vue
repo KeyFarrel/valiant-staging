@@ -164,145 +164,6 @@
           <!--Divider-->
           <TabWrapperSentral v-if="sentralData.length" :is-lihat-grafik="false" :tabs-titles="sentralItem.mesins[0]"
             :class="'mt-3'" :is-rekap="true">
-            <!-- <TabItem :title="'Sentral'">
-              Statis Udah Pasti Sentral
-              <template v-if="sentralData.length">
-                <div class="flex items-start justify-start mt-3">
-                  <div class="w-40 mr-6 bg-red-500 rounded-lg h-44"></div>
-                  <div class="grid grid-cols-4 gap-y-5 gap-x-20">
-                    <div>
-                      <h3 class="text-gray-400">Nilai Aset Awal</h3>
-                      <p class="text-gray-400">
-                        <span class="text-sm font-semibold text-primaryTextColor">{{
-                          calculateNilaiAsetAwalSentral(sentralItem.mesins[0]) !== '-' ?
-                            globalFormat.formatRupiah(calculateNilaiAsetAwalSentral(sentralItem.mesins[0]).toString()) :
-                            '-'
-                        }}</span> Rp (Juta)
-                      </p>
-                    </div>
-                    <div>
-                      <h3 class="text-gray-400">Daya Terpasang</h3>
-                      <p class="text-sm font-semibold text-primaryTextColor">
-                        {{ sentralItem.daya_terpasang }}
-                        <span class="text-gray-400">MW</span>
-                      </p>
-                    </div>
-                    <div>
-                      <h3 class="text-gray-400">Daya Mampu Netto (DMN)</h3>
-                      <p class="text-sm font-semibold text-primaryTextColor">
-                        {{ sentralItem.daya_mampu }}
-                        <span class="text-gray-400">MW</span>
-                      </p>
-                    </div>
-                    <div>
-                      <h3 class="text-gray-400">Jenis Bahan Bakar Utama</h3>
-                      <p class="text-sm font-semibold text-primaryTextColor">
-                        {{ sentralItem.bbm }}
-                      </p>
-                    </div>
-                    <div>
-                      <h3 class="text-gray-400">IRR on Equity</h3>
-                      <div class="flex items-center">
-                        <p class="flex items-center space-x-1.5 font-semibold" :key="0"
-                          v-if="sentralAssetIRRNPV.filter((sentral) => sentral.kode_sentral === sentralItem.kode_sentral).length === 0">
-                          -<span class="ml-1 mr-0.5 text-gray-400">%</span>
-                        </p>
-                        <p class="flex items-center space-x-1.5 font-semibold"
-                          :class="{ 'text-warningColor': sentralIRR.irr_on_equity < 9 || sentralIRR.irr_on_equity > 14, 'text-green-500': sentralIRR.irr_on_equity > 9 && sentralIRR.irr_on_equity < 14 }"
-                          v-for="( sentralIRR, sentralIRRIndex ) in sentralAssetIRRNPV.filter((sentral) => sentral.kode_sentral === sentralItem.kode_sentral)"
-                          :key="sentralIRRIndex" v-else>{{ globalFormat.formatRupiah(sentralIRR.irr_on_equity) }}<span
-                            class="ml-1 mr-0.5">%</span>
-                          <KeteranganAnomali :value="sentralIRR.irr_on_equity" />
-                        </p>
-                      </div>
-                    </div>
-                    <div class="col-span-3">
-                      <h3 class="text-gray-400">NPV on Equity</h3>
-                      <p class="font-semibold text-primaryTextColor"
-                        v-if="sentralAssetIRRNPV.filter((sentral) => sentral.kode_sentral === sentralItem.kode_sentral).length === 0"
-                        :key="0">- <span class="text-gray-400">Rp (Juta)</span>
-                      </p>
-                      <ShimmerLoading class="w-18 h-3 mt-0.5" v-else-if="!sentralAssetIRRNPV.length" />
-                      <p class="font-semibold text-primaryTextColor" v-else
-                        v-for="( sentralNPV, sentralNPVIndex ) in sentralAssetIRRNPV.filter((sentral) => sentral.kode_sentral === sentralItem.kode_sentral)"
-                        :key="sentralNPVIndex">{{ globalFormat.formatRupiah(sentralNPV.npv_on_equity) }}
-                        <span class="text-gray-400">Rp (Juta)</span>
-                      </p>
-                    </div>
-                    <div
-                      v-if="statusFSSentral.filter((sentral) => sentral.kode_sentral === sentralItem.kode_sentral).length">
-                      <h3 class="text-gray-400">Feasibility Study</h3>
-                      <CheckIcon
-                        v-if="statusFSSentral.filter((sentral) => sentral.kode_sentral === sentralItem.kode_sentral)[0].status === true" />
-                      <div class="flex flex-row items-center space-x-2" v-else>
-                        <p class="text-sm font-semibold text-warningColor">Belum Input</p>
-                        <WarningIcon />
-                      </div>
-                    </div>
-                    <div v-else-if="statusFSSentral.length === 0">
-                      <h3 class="text-gray-400">Feasibility Study</h3>
-                      <p>-</p>
-                    </div>
-                    <div v-else class="space-y-2">
-                      <ShimmerLoading class="w-18 h-3 mt-0.5" />
-                      <ShimmerLoading class="h-3 w-28" />
-                    </div>
-                    <div
-                      v-if="statusRealisasiSentral.filter((sentral) => sentral.kode_sentral === sentralItem.kode_sentral).length !== 0">
-                      <h3 class="text-gray-400">Realisasi</h3>
-                      <div class="flex flex-row items-center space-x-2"
-                        v-if="statusRealisasiSentral.filter((sentral) => sentral.kode_sentral === sentralItem.kode_sentral)[0].status === 'Data belum terisi'">
-                        <p class="text-sm font-semibold text-warningColor">Belum Input</p>
-                        <WarningIcon />
-                      </div>
-                      <div class="flex flex-row items-center space-x-2"
-                        v-else-if="statusRealisasiSentral.filter((sentral) => sentral.kode_sentral === sentralItem.kode_sentral)[0].status === 'Data belum update'">
-                        <p class="text-sm font-semibold text-warningColor">Belum Update</p>
-                        <WarningIcon />
-                      </div>
-                      <CheckIcon v-else />
-                    </div>
-                    <div v-else class="space-y-2">
-                      <ShimmerLoading class="w-18 h-3 mt-0.5" />
-                      <ShimmerLoading class="h-3 w-28" />
-                    </div>
-                  </div>
-                </div>
-                <div class="mt-4 border-b"></div>
-                <div class="flex mt-2 space-x-3"
-                  v-if="listStatusInputAsumsiSentral.filter((sentral) => sentral.kode_sentral === sentralItem.kode_sentral).length">
-                  <RouterLink :to="{ name: 'feasibility-study-sentral', params: { id: sentralItem.id_sentral } }">
-                    <button
-                      class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
-                      id="hover-button">
-                      <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M15 7.205C14.9922 7.1361 14.9771 7.06822 14.955 7.0025V6.935C14.9189 6.85788 14.8708 6.787 14.8125 6.725L10.3125 2.225C10.2505 2.16666 10.1796 2.11856 10.1025 2.0825H10.035C9.95881 2.03881 9.87467 2.01076 9.7875 2H5.25C4.65326 2 4.08097 2.23705 3.65901 2.65901C3.23705 3.08097 3 3.65326 3 4.25V14.75C3 15.3467 3.23705 15.919 3.65901 16.341C4.08097 16.7629 4.65326 17 5.25 17H12.75C13.3467 17 13.919 16.7629 14.341 16.341C14.7629 15.919 15 15.3467 15 14.75V7.25V7.205ZM10.5 4.5575L12.4425 6.5H11.25C11.0511 6.5 10.8603 6.42098 10.7197 6.28033C10.579 6.13968 10.5 5.94891 10.5 5.75V4.5575ZM13.5 14.75C13.5 14.9489 13.421 15.1397 13.2803 15.2803C13.1397 15.421 12.9489 15.5 12.75 15.5H5.25C5.05109 15.5 4.86032 15.421 4.71967 15.2803C4.57902 15.1397 4.5 14.9489 4.5 14.75V4.25C4.5 4.05109 4.57902 3.86032 4.71967 3.71967C4.86032 3.57902 5.05109 3.5 5.25 3.5H9V5.75C9 6.34674 9.23705 6.91903 9.65901 7.34099C10.081 7.76295 10.6533 8 11.25 8H13.5V14.75Z"
-                          fill="#0099AD" />
-                      </svg>
-                      <span class="text-sm font-semibold">Lihat Feasibility Study</span>
-                    </button>
-                  </RouterLink>
-                  <RouterLink :to="{ name: 'detail-rekap-sentral', params: { id: sentralItem.id_sentral } }">
-                    <button
-                      class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
-                      id="hover-button">
-                      <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          d="M15 7.205C14.9922 7.1361 14.9771 7.06822 14.955 7.0025V6.935C14.9189 6.85788 14.8708 6.787 14.8125 6.725L10.3125 2.225C10.2505 2.16666 10.1796 2.11856 10.1025 2.0825H10.035C9.95881 2.03881 9.87467 2.01076 9.7875 2H5.25C4.65326 2 4.08097 2.23705 3.65901 2.65901C3.23705 3.08097 3 3.65326 3 4.25V14.75C3 15.3467 3.23705 15.919 3.65901 16.341C4.08097 16.7629 4.65326 17 5.25 17H12.75C13.3467 17 13.919 16.7629 14.341 16.341C14.7629 15.919 15 15.3467 15 14.75V7.25V7.205ZM10.5 4.5575L12.4425 6.5H11.25C11.0511 6.5 10.8603 6.42098 10.7197 6.28033C10.579 6.13968 10.5 5.94891 10.5 5.75V4.5575ZM13.5 14.75C13.5 14.9489 13.421 15.1397 13.2803 15.2803C13.1397 15.421 12.9489 15.5 12.75 15.5H5.25C5.05109 15.5 4.86032 15.421 4.71967 15.2803C4.57902 15.1397 4.5 14.9489 4.5 14.75V4.25C4.5 4.05109 4.57902 3.86032 4.71967 3.71967C4.86032 3.57902 5.05109 3.5 5.25 3.5H9V5.75C9 6.34674 9.23705 6.91903 9.65901 7.34099C10.081 7.76295 10.6533 8 11.25 8H13.5V14.75Z"
-                          fill="#0099AD" />
-                      </svg>
-                      <span class="text-sm font-semibold">Lihat Detail Rekap</span>
-                    </button>
-                  </RouterLink>
-                </div>
-                <div class="flex mt-2 space-x-3" v-else>
-                  <ShimmerLoading class="w-48 h-9" />
-                  <ShimmerLoading class="w-48 h-9" />
-                  <ShimmerLoading class="w-48 h-9" />
-                </div>
-              </template>
-</TabItem> -->
             <TabItem v-for="( mesinItem, mesinIndex ) in sentralItem.mesins[0] " :key="mesinIndex"
               :title="mesinItem.mesin">
               <template v-if="sentralData.length">
@@ -591,7 +452,6 @@
                     fill="#0099AD" />
                 </svg>
                 <p>Silahkan pilih berkas excel anda</p>
-                <!-- <p>ATAU</p> -->
                 <label for="fileInput"
                   class="flex flex-row items-center px-3 py-2 space-x-2 text-white duration-300 rounded-lg cursor-pointer bg-primaryColor hover:bg-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0">
                   <IconFolder />
@@ -627,7 +487,6 @@
                     fill="#0099AD" />
                 </svg>
                 <p>Silahkan pilih berkas evidence anda</p>
-                <!-- <p>ATAU</p> -->
                 <label for="fileInputEvidence"
                   class="flex flex-row items-center px-3 py-2 space-x-2 text-white duration-300 rounded-lg cursor-pointer bg-primaryColor hover:bg-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0">
                   <IconFolder />
@@ -698,7 +557,6 @@
                     fill="#0099AD" />
                 </svg>
                 <p>Silahkan pilih berkas excel anda</p>
-                <!-- <p>ATAU</p> -->
                 <label for="fileInputFS"
                   class="flex flex-row items-center px-3 py-2 space-x-2 text-white duration-300 rounded-lg cursor-pointer bg-primaryColor hover:bg-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0">
                   <IconFolder />
@@ -734,7 +592,6 @@
                     fill="#0099AD" />
                 </svg>
                 <p>Silahkan pilih berkas evidence anda</p>
-                <!-- <p>ATAU</p> -->
                 <label for="fileInputEvidenceFS"
                   class="flex flex-row items-center px-3 py-2 space-x-2 text-white duration-300 rounded-lg cursor-pointer bg-primaryColor hover:bg-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0">
                   <IconFolder />
@@ -918,8 +775,8 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
 const router = useRouter();
 import { Vue3Lottie } from "vue3-lottie";
-import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
-import { useWindowScroll, useScroll } from '@vueuse/core'
+import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { useWindowScroll } from '@vueuse/core'
 const { x, y } = useWindowScroll()
 import { useRekapSearchStore, useRekapNavigationStore } from "@/store/storeRekapKertasKerja";
 const store = useRekapSearchStore();
@@ -950,13 +807,10 @@ import ModalWrapper from "@/components/ui/ModalWrapper.vue";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import KeteranganAnomali from "@/components/RekapKertasKerja/KeteranganAnomali.vue";
 import IconEmptyData from "@/components/icons/IconEmptyData.vue";
-import CheckIcon from "@/components/icons/CheckIcon.vue";
-import WarningIcon from "@/components/icons/WarningIcon.vue";
 import jsonData from "@/assets/lottie/success.json";
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog.vue";
 import IconFolder from "@/components/icons/IconFolder.vue";
 import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
-import axios from "axios";
 
 const isLoading = ref<boolean>(false);
 const nodeMode = import.meta.env.MODE;
@@ -1133,23 +987,14 @@ const fetchComboKategoriPembangkit = async () => {
             })
           }
         })
-        // itemsDmn.value = response.data[11].dmn
-        // for (var i = 0; i < itemsDmn.value.length; i++) {
-        //   if (itemsDmn.value[i].daya_mampu != "") {
-        //     childDmn.value.push({
-        //       id: itemsDmn.value[i].id_daya,
-        //       name: 'PLTU ' + itemsDmn.value[i].daya_mampu
-        //     })
-        //   }
-        // }
       }
     }
     kategoriPembangkitData.value.reverse();
     const comboJenisKitData = response.data;
-    for (var i = 0; i < comboJenisKitData.length; i++) {
+    for (const item of comboJenisKitData) {
       comboJenisKit.value.push({
-        name: comboJenisKitData[i].jenis_kit,
-        id: comboJenisKitData[i].jenis_kit,
+        name: item.jenis_kit,
+        id: item.jenis_kit,
       })
     }
   } catch (error) {
@@ -1161,10 +1006,10 @@ const fetchComboUmurMesin = async () => {
     const response: any = await rekapService.getComboUmurMesin();
     const comboUmurMesinData = response.data;
     kategoriUmurMesinData.value = response.data
-    for (var i = 0; i < comboUmurMesinData.length; i++) {
+    for (const item of comboUmurMesinData) {
       comboUmurMesin.value.push({
-        name: comboUmurMesinData[i].umur_mesin,
-        id: comboUmurMesinData[i].umur_mesin,
+        name: item.umur_mesin,
+        id: item.umur_mesin,
       })
     }
   } catch (error) {
@@ -1176,10 +1021,10 @@ const fetchComboKondisiMesin = async () => {
     const response: any = await rekapService.getComboKondisiMesin();
     const comboKondisiMesinData = response.data;
     kategoriKondisiMesinData.value = response.data;
-    for (var i = 0; i < comboKondisiMesinData.length; i++) {
+    for (const item of comboKondisiMesinData) {
       comboKondisiMesin.value.push({
-        name: comboKondisiMesinData[i].kondisi_unit,
-        id: comboKondisiMesinData[i].kondisi_unit,
+        name: item.kondisi_unit,
+        id: item.kondisi_unit,
       })
     }
   } catch (error) {
@@ -1190,10 +1035,10 @@ const fetchComboIRR = async () => {
   try {
     const response: any = await rekapService.getComboIRR();
     const comboIRRData = response.data;
-    for (var i = 0; i < comboIRRData.length; i++) {
+    for (const item of comboIRRData) {
       comboIRR.value.push({
-        name: comboIRRData[i].nilai_irr,
-        id: comboIRRData[i].nilai_irr,
+        name: item.nilai_irr,
+        id: item.nilai_irr,
       })
     }
   } catch (error) {
@@ -1399,6 +1244,7 @@ const uploadFile = async () => {
     }
   } catch (error) {
     console.error('Error upload file : ', error);
+    notifyError('Upload File Gagal, mohon coba lagi', 3000);
   } finally {
     isLoading.value = false;
   }
@@ -1440,6 +1286,7 @@ const uploadFileFS = async () => {
     }
   } catch (error) {
     console.error('Error upload file : ', error);
+    notifyError('Upload File Gagal, mohon coba lagi', 3000);
   } finally {
     isLoading.value = false;
   }
@@ -1451,22 +1298,22 @@ const changeSelectedPengelola = async (pengelola: any) => {
     if (kodePengelola.value !== 'ALL') {
       kodePengelola.value = pengelola;
       selectedPengelola.value = [];
-      await fetchSentralData();
-    }
-  } else {
-    if (!selectedPengelola.value.includes(pengelola)) {
-      selectedPengelola.value.push(pengelola);
-      kodePengelola.value = null;
       navigationStore.currentPage = 1;
       await fetchSentralData();
-    } else {
-      if (selectedPengelola.value.length === 1) {
-        kodePengelola.value = 'ALL';
-      }
-      const pengelolaIndex = selectedPengelola.value.indexOf(pengelola);
-      selectedPengelola.value.splice(pengelolaIndex, 1);
-      await fetchSentralData();
     }
+  } else if (!selectedPengelola.value.includes(pengelola)) {
+    selectedPengelola.value.push(pengelola);
+    kodePengelola.value = null;
+    navigationStore.currentPage = 1;
+    await fetchSentralData();
+  } else {
+    if (selectedPengelola.value.length === 1) {
+      kodePengelola.value = 'ALL';
+    }
+    const pengelolaIndex = selectedPengelola.value.indexOf(pengelola);
+    selectedPengelola.value.splice(pengelolaIndex, 1);
+    navigationStore.currentPage = 1;
+    await fetchSentralData();
   }
   isLoading.value = false;
 }
@@ -1477,10 +1324,15 @@ const changePageLimit = async () => {
   isLoading.value = false;
 };
 const handleSearch = async () => {
-  isLoading.value = true;
-  navigationStore.currentPage = 1;
-  await fetchSentralData();
-  isLoading.value = false;
+  try {
+    isLoading.value = true;
+    navigationStore.currentPage = 1;
+    await fetchSentralData();
+  } catch (error) {
+    console.error('Search Error : ' + error);
+  } finally {
+    isLoading.value = false;
+  }
 }
 const togglePembangkit = async (idSentral: any) => {
   isLoading.value = true;
@@ -1537,30 +1389,28 @@ const generatePageList = computed(() => {
     for (let i = 1; i <= totalPages.value; i++) {
       pageList.push(i);
     }
-  } else {
-    if (navigationStore.currentPage <= 3) {
-      for (let i = 1; i <= Math.min(totalPages.value, maxPages - 1); i++) {
-        pageList.push(i);
-      }
-      if (totalPages.value > maxPages) {
-        pageList.push('...');
-        pageList.push(totalPages.value);
-      }
-    } else if (navigationStore.currentPage >= totalPages.value - 2) {
-      pageList.push(1);
-      pageList.push('...');
-      for (let i = totalPages.value - (maxPages - 2); i <= totalPages.value; i++) {
-        pageList.push(i);
-      }
-    } else {
-      pageList.push(1);
-      pageList.push('...');
-      for (let i = navigationStore.currentPage - 1; i <= navigationStore.currentPage + 1; i++) {
-        pageList.push(i);
-      }
+  } else if (navigationStore.currentPage <= 3) {
+    for (let i = 1; i <= Math.min(totalPages.value, maxPages - 1); i++) {
+      pageList.push(i);
+    }
+    if (totalPages.value > maxPages) {
       pageList.push('...');
       pageList.push(totalPages.value);
     }
+  } else if (navigationStore.currentPage >= totalPages.value - 2) {
+    pageList.push(1);
+    pageList.push('...');
+    for (let i = totalPages.value - (maxPages - 2); i <= totalPages.value; i++) {
+      pageList.push(i);
+    }
+  } else {
+    pageList.push(1);
+    pageList.push('...');
+    for (let i = navigationStore.currentPage - 1; i <= navigationStore.currentPage + 1; i++) {
+      pageList.push(i);
+    }
+    pageList.push('...');
+    pageList.push(totalPages.value);
   }
   return pageList;
 });
@@ -1637,6 +1487,7 @@ watch(totalPages, (newTotalPages) => {
 
 watch(isLoading, (value) => {
   value === true ? document.body.style.overflow = 'hidden' : document.body.style.overflow = 'auto';
+
 })
 
 watch(pengelola, (val) => {

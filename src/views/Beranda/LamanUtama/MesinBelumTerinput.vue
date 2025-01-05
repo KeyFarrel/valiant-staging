@@ -136,6 +136,7 @@ const navigation = ref<{
   totalRecords: 0,
   limit: 10
 });
+var debounceTimeout: any = null;
 
 const fetchMesinBelumInput = async () => {
   isLoading.value = true;
@@ -152,8 +153,11 @@ const fetchMesinBelumInput = async () => {
   }
 };
 
-const handleSearch = async () => {
-  await fetchMesinBelumInput();
+const handleSearch = () => {
+  clearTimeout(debounceTimeout);
+  debounceTimeout = setTimeout(() => {
+    fetchMesinBelumInput();
+  }, 500);
 };
 
 const fetchPengelolaData = async () => {
@@ -179,21 +183,22 @@ const changeSelectedPengelola = async (pengelola: any) => {
     if (kodePengelola.value !== 'ALL') {
       kodePengelola.value = pengelola;
       selectedPengelola.value = [];
+      navigation.value.currentPage = 1;
       await fetchMesinBelumInput();
     }
+  } else if (!selectedPengelola.value.includes(pengelola)) {
+    selectedPengelola.value.push(pengelola);
+    kodePengelola.value = null;
+    navigation.value.currentPage = 1;
+    await fetchMesinBelumInput();
   } else {
-    if (!selectedPengelola.value.includes(pengelola)) {
-      selectedPengelola.value.push(pengelola);
-      kodePengelola.value = null;
-      await fetchMesinBelumInput();
-    } else {
-      if (selectedPengelola.value.length === 1) {
-        kodePengelola.value = 'ALL';
-      }
-      const pengelolaIndex = selectedPengelola.value.indexOf(pengelola);
-      selectedPengelola.value.splice(pengelolaIndex, 1);
-      await fetchMesinBelumInput();
+    if (selectedPengelola.value.length === 1) {
+      kodePengelola.value = 'ALL';
     }
+    const pengelolaIndex = selectedPengelola.value.indexOf(pengelola);
+    selectedPengelola.value.splice(pengelolaIndex, 1);
+    navigation.value.currentPage = 1;
+    await fetchMesinBelumInput();
   }
   isLoading.value = false;
 }
@@ -204,30 +209,28 @@ const generatePageList = computed(() => {
     for (let i = 1; i <= navigation.value.totalPages; i++) {
       pageList.push(i)
     }
-  } else {
-    if (navigation.value.currentPage <= 3) {
-      for (let i = 1; i <= Math.min(navigation.value.totalPages, maxPages - 1); i++) {
-        pageList.push(i)
-      }
-      if (navigation.value.totalPages > maxPages) {
-        pageList.push('...')
-        pageList.push(navigation.value.totalPages)
-      }
-    } else if (navigation.value.currentPage >= navigation.value.totalPages - 2) {
-      pageList.push(1)
-      pageList.push('...')
-      for (let i = navigation.value.totalPages - (maxPages - 2); i <= navigation.value.totalPages; i++) {
-        pageList.push(i)
-      }
-    } else {
-      pageList.push(1)
-      pageList.push('...')
-      for (let i = navigation.value.currentPage - 1; i <= navigation.value.currentPage + 1; i++) {
-        pageList.push(i)
-      }
+  } else if (navigation.value.currentPage <= 3) {
+    for (let i = 1; i <= Math.min(navigation.value.totalPages, maxPages - 1); i++) {
+      pageList.push(i)
+    }
+    if (navigation.value.totalPages > maxPages) {
       pageList.push('...')
       pageList.push(navigation.value.totalPages)
     }
+  } else if (navigation.value.currentPage >= navigation.value.totalPages - 2) {
+    pageList.push(1)
+    pageList.push('...')
+    for (let i = navigation.value.totalPages - (maxPages - 2); i <= navigation.value.totalPages; i++) {
+      pageList.push(i)
+    }
+  } else {
+    pageList.push(1)
+    pageList.push('...')
+    for (let i = navigation.value.currentPage - 1; i <= navigation.value.currentPage + 1; i++) {
+      pageList.push(i)
+    }
+    pageList.push('...')
+    pageList.push(navigation.value.totalPages)
   }
   return pageList
 })

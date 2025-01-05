@@ -1,5 +1,4 @@
 <template>
-  <!-- <Loading v-if="isLoading" /> -->
   <div v-if="store.currentTabSentral === 'WLC (Realisasi & Proyeksi)'">
     <div class="text-xs">
       <div class="flex justify-between py-1 text-xs">
@@ -416,7 +415,6 @@ import FSRedSame from "@/components/icons/FSRedSame.vue";
 import YoyRedDown from "@/components/icons/YoyRedDown.vue";
 import YoyGreenUp from "@/components/icons/YoyGreenUp.vue";
 import YoyRedSame from "@/components/icons/YoyRedSame.vue";
-// import Loading from '@/components/ui/LoadingSpinner.vue'
 
 const isLoading = ref(false);
 const store = useTagSentral();
@@ -427,8 +425,6 @@ const dataRealisasi = ref<RelProyItem>({});
 const dataYoy = ref<RelProyItem>({});
 const props = defineProps<Sentral>();
 const tahunData = computed(() => props.tahunData);
-// const idSentral = computed(() => props.idSentral);
-// const dataPlanReal = ref<RelProyItem[]>([]);
 
 interface Sentral {
   idSentral: any;
@@ -486,5 +482,3 @@ watch(tahunData, async (tahun) => {
   isLoading.value = false
 })
 </script>
-
-<style scoped></style>

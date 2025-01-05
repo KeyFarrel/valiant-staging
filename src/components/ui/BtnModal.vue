@@ -13,11 +13,6 @@ const visible = ref(false)
 function handleModal(value: boolean) {
   visible.value = value
 }
-
-function submitFilter() {
-  emits('submit')
-  handleModal(false)
-}
 </script>
 
 <template>
@@ -27,7 +22,7 @@ function submitFilter() {
   <!-- Main modal -->
   <div id="modal-tambah" tabindex="-1" v-if="visible"
     class="fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full justify-center items-center flex"
-    aria-modal="true" role="dialog">
+    aria-modal="true">
     <div :class="`relative ${props.width} max-h-full`">
       <!-- Modal content -->
       <div class="relative bg-white rounded-lg shadow">

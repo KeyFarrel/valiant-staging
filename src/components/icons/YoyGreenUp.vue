@@ -56,5 +56,3 @@ function toggleButton() {
   isHover.value = !isHover.value;
 }
 </script>
-
-<style scoped></style>

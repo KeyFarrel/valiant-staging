@@ -3,9 +3,9 @@
         <div class="bar" :style="{ width: percentage + '%', backgroundColor: color }"></div>
     </div>
 </template>
-   
+
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import { defineComponent } from 'vue';
 
 export default defineComponent({
     props: {
@@ -32,7 +32,7 @@ export default defineComponent({
     }
 });
 </script>
-   
+
 <style scoped>
 .progress-bar {
     @apply bg-gray-200 rounded-lg h-2 w-9/12;

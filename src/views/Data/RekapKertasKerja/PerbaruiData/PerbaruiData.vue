@@ -124,7 +124,6 @@
                 fill="#0099AD" />
             </svg>
             <p>Silahkan pilih berkas excel anda</p>
-            <!-- <p>ATAU</p> -->
             <label for="fileInput"
               class="flex flex-row items-center px-3 py-2 space-x-2 text-white duration-300 rounded-lg cursor-pointer bg-primaryColor hover:bg-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0">
               <IconFolder />
@@ -184,7 +183,6 @@
                 fill="#0099AD" />
             </svg>
             <p>Silahkan pilih berkas excel anda</p>
-            <!-- <p>ATAU</p> -->
             <label for="fileInput"
               class="flex flex-row items-center px-3 py-2 space-x-2 text-white duration-300 rounded-lg cursor-pointer bg-primaryColor hover:bg-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0">
               <IconFolder />
@@ -244,7 +242,6 @@
                 fill="#0099AD" />
             </svg>
             <p>Silahkan pilih berkas excel anda</p>
-            <!-- <p>ATAU</p> -->
             <label for="fileInput"
               class="flex flex-row items-center px-3 py-2 space-x-2 text-white duration-300 rounded-lg cursor-pointer bg-primaryColor hover:bg-hoverColor active:ring active:ring-infoComponentBorderColor active:duration-0">
               <IconFolder />
@@ -434,7 +431,7 @@
               </aside>
               <div
                 class="flex flex-col space-y-3.5 2xl:w-[88%] 3xl:w-[90%] w-[87%] 4xl:w-[91.5%] 5xl:w-[94%] 6xl:w-[96%] 7xl:w-full">
-                <nav class="w-full bg-primaryColor bg-opacity-5 p-1.5 rounded-lg">
+                <nav class="w-full bg-primaryColor bg-opacity-5 p-1.5 rounded-lg" aria-label="Navigation tabs">
                   <ul class="table w-full text-sm text-center text-primaryColor border-spacing-x-3">
                     <li id="tab"
                       class="table-cell py-2 font-semibold rounded-lg cursor-pointer active:bg-primaryColor active:bg-opacity-10"
@@ -578,7 +575,7 @@
                           @click="handleDownloadExcelSimulasi1">Unduh</button>
                       </div>
                     </div>
-                    <nav class="rounded-md bg-primaryColor bg-opacity-5">
+                    <nav class="rounded-md bg-primaryColor bg-opacity-5" aria-label="Navigation tabs simulasi 1">
                       <ul class="table w-full text-sm text-center text-primaryColor border-spacing-x-5">
                         <li id="tab"
                           class="table-cell w-1/2 py-2 font-semibold rounded-md cursor-pointer outline-1 outline outline-primaryColor active:bg-primaryColor active:bg-opacity-10">
@@ -602,7 +599,7 @@
                           @click="handleDownloadExcelSimulasi2">Unduh</button>
                       </div>
                     </div>
-                    <nav class="rounded-md bg-primaryColor bg-opacity-5">
+                    <nav class="rounded-md bg-primaryColor bg-opacity-5" aria-label="Navigation tabs simulasi 2">
                       <ul class="table w-full text-sm text-center text-primaryColor border-spacing-x-5">
                         <li id="tab"
                           class="table-cell w-1/2 py-2 font-semibold rounded-md cursor-pointer outline-1 outline outline-primaryColor active:bg-primaryColor active:bg-opacity-10">
@@ -619,11 +616,7 @@
                 </section>
               </div>
             </div>
-            <nav class="flex flex-row items-center justify-end space-x-3">
-              <!-- <button type="submit"
-                class="px-3 py-2 font-semibold duration-300 border rounded-lg text-primaryColor border-primaryColor hover:text-white hover:bg-hoverColor hover:border-hoverColor">Lihat
-                Grafik
-              </button> -->
+            <nav class="flex flex-row items-center justify-end space-x-3" aria-label="Navigation tabs submit">
               <button
                 class="px-3 py-2 font-semibold text-white duration-300 rounded-lg bg-primaryColor border-primaryColor hover:bg-hoverColor hover:border-hoverColor"
                 @click="isShowModalEvidence = true"
@@ -649,8 +642,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, onUnmounted, computed, watchEffect } from "vue";
-import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
+import { ref, onMounted, watch, onUnmounted, watchEffect } from "vue";
+import { encryptStorage } from "@/utils/app-encrypt-storage";
 import { notifyError } from "@/services/helper/toast-notification";
 import { usePerbaruiTabStore } from "@/store/storeRekapKertasKerja";
 const storePerbaruiTab = usePerbaruiTabStore();
@@ -684,7 +677,6 @@ import errorJsonData from '@/assets/lottie/error.json';
 import ModalWrapper from '@/components/ui/ModalWrapper.vue';
 import ModalNotification from '@/components/ui/ModalNotification.vue';
 import ConfirmationDialog from '@/components/ui/ConfirmationDialog.vue';
-import axios from "axios";
 import IconFolder from "@/components/icons/IconFolder.vue";
 import IconFolderBlue from "@/components/icons/IconFolderBlue.vue";
 import successJsonData from "@/assets/lottie/success.json";
@@ -708,8 +700,8 @@ const namaPengelola = ref<string>('');
 const namaPembina = ref<string>('');
 const comboTypePeriodic = ref<ComboTypePeriodicItem[]>([]);
 const isLoading = ref(true);
-const selectedAside = ref<String>('Asumsi Makro');
-const selectedSimulasiTab = ref<String>('Simulasi 1');
+const selectedAside = ref<string>('Asumsi Makro');
+const selectedSimulasiTab = ref<string>('Simulasi 1');
 const isShowModalNotification = ref(false);
 const isSuccess = ref(false);
 const picked = ref('pisah');
@@ -869,11 +861,6 @@ const revenueKompB = ref<string>('');
 const revenueKompC = ref<string>('');
 const revenueKompD = ref<string>('');
 const isAudited = ref<boolean>(false);
-// const totalRevenue = computed(() => {
-//   const valueToFormat = parseFloat(revenueKompA.value.replace(/[.]/g, '')) + parseFloat(revenueKompB.value.replace(/[.]/g, '')) + parseFloat(revenueKompC.value.replace(/[.]/g, '')) + parseFloat(revenueKompD.value.replace(/[.]/g, ''));
-//   return globalFormat.formatCurrencyNotFixed(valueToFormat);
-// }
-// );
 const formFinansialSimulasi1 = ref();
 const formFinansialSimulasi2 = ref();
 const dataFinansialInit = ref<{
@@ -1143,7 +1130,7 @@ const fetchListPembina = async () => {
 const fetchCheckIntegrasi = async () => {
   try {
     const response: any = await perbaruiDataService.getCheckIntegrasi(tahunTerakhirRealisasi.value, idMesin);
-    isIntegrasi.value = response.data[0].status_data_integrasi === "0" ? false : true;
+    isIntegrasi.value = response.data[0].status_data_integrasi !== "0";
     console.log(isIntegrasi.value, 'dds');
   } catch (error) {
     console.error('Fetch Check Integrasi Error : ' + error)
@@ -1365,7 +1352,7 @@ const fetchDataTeknisByPeriode = async () => {
         energy_sales: energySalesItem1[0].value,
         fuel_consumption: fuelConsumptionFinal
       }
-      var typePeriodic2 = 0;
+      let typePeriodic2 = 0;
       const fuelConsumptionFinal2: any = [];
       const periodicItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('Periodic'));
       const ncfItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('NCF'));
@@ -1378,8 +1365,6 @@ const fetchDataTeknisByPeriode = async () => {
       if (tempTypePeriodic2 !== '' && tempTypePeriodic2 !== 0) {
         const fetchTypePeriodicResult = await fetchTypePeriodic(tempTypePeriodic2);
         typePeriodic2 = fetchTypePeriodicResult[0].id_type_periodic;
-      } else if (tempTypePeriodic2 === 0) {
-        typePeriodic2 = 0;
       }
       for (const item of fuelConsItem2) {
         fuelConsumptionFinal2.push({
@@ -1852,7 +1837,7 @@ const fetchDataFinansialSimulasi1 = async () => {
         currentLevel2.level3.push(currentLevel3);
       } else if (item.level === 4 && currentLevel1 !== null) {
         currentLevel3.level4.push({ ...item });
-      };
+      }
     };
     dataFinansialSimulasi1.value = response.data;
     console.log('Simulasi Finansial 1 : ', response.data);
@@ -2017,7 +2002,6 @@ const handleSubmit = async () => {
   } else {
     errorDataFinansial.costComponentB = false;
   }
-  // if (picked.value === 'pisah') {
   if (biayaKepegawaian.value === 'NaN' || biayaKepegawaian.value === '') {
     errorDataFinansial.biayaKepegawaian = true;
   } else {
@@ -2192,8 +2176,7 @@ const handleSubmit = async () => {
       const finalElecB = asumsiParameter.value.parameterTeknis.electricityPriceB.includes('.') ? asumsiParameter.value.parameterTeknis.electricityPriceB.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.electricityPriceB;
       const finalElecC = asumsiParameter.value.parameterTeknis.electricityPriceC.includes('.') ? asumsiParameter.value.parameterTeknis.electricityPriceC.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.electricityPriceC;
       const finalElecD = asumsiParameter.value.parameterTeknis.electricityPriceD.includes('.') ? asumsiParameter.value.parameterTeknis.electricityPriceD.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.electricityPriceD;
-      var formParameterUpdate = {};
-      // if (kodePengelola.value === 'PIP') {
+      let formParameterUpdate = {};
       formParameterUpdate = {
         id_asumsi: idAsumsi.value,
         id_mesin: idMesin,
@@ -2248,7 +2231,6 @@ const handleSubmit = async () => {
         tahun: tahunBerjalan,
         tahun_realisasi: tahunBerjalan - 1,
         id_type_periodic: typePeriodic.value,
-        // const finalBiayaPeriodicMaintenance = parseFloat(biayaPeriodicMaintenance.value.replace(/,/g, '.'));
         nfc: parseFloat(finalNFC.replace(/,/g, '.')),
         eaf: parseFloat(finalEAF.replace(/,/g, '.')),
         production_bruto: parseFloat(finalProductionBrutto.replace(/,/g, '.')),
@@ -2261,8 +2243,8 @@ const handleSubmit = async () => {
       await perbaruiDataService.updateDataTeknisSimulasi(formDataTeknisUpdate);
 
       // Update Data Finansial
-      for (let index = 0; index < costComponentADetail.value.length; index++) {
-        delete costComponentADetail.value[index].id;
+      for (const item of costComponentADetail.value) {
+        delete item.id;
       }
       for (const value of costComponentADetail.value) {
         if (value.ai !== '') {
@@ -2275,8 +2257,6 @@ const handleSubmit = async () => {
       console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 1')
       const finalCostComponentA = costComponentA.value.includes('.') ? costComponentA.value.replace(/[.]/g, '') : costComponentA.value;
       console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 2')
-      // const finalBiayaPeriodicMaintenance = parseFloat(biayaPeriodicMaintenance.value.replace(/,/g, '.'));
-      // const finalCostComponentADetail = costComponentADetail.value;
       const finalCostComponentB = costComponentB.value.includes('.') ? costComponentB.value.replace(/[.]/g, '') : costComponentB.value;
       console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 3')
       const finalBiayaKepegawaian = biayaKepegawaian.value.includes('.') ? biayaKepegawaian.value.replace(/[.]/g, '') : biayaKepegawaian.value;
@@ -2292,7 +2272,6 @@ const handleSubmit = async () => {
       console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 8')
       const finalBiayaLainLain = biayaLainLain.value.includes('.') ? biayaLainLain.value.replace(/[.]/g, '') : biayaLainLain.value;
       console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 9')
-      const finalOMCost = oMCost.value.includes('.') ? oMCost.value.replace(/[.]/g, '') : oMCost.value;
       console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 10')
       const finalCostComponentC = costComponentC.value.includes('.') ? costComponentC.value.replace(/[.]/g, '') : costComponentC.value;
       console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 11')
@@ -2318,7 +2297,6 @@ const handleSubmit = async () => {
       const finalRevenueKompD = revenueKompD.value.includes('.') ? revenueKompD.value.replace(/[.]/g, '') : revenueKompD.value;
 
       let formDataFinansialUpdate;
-      // if (picked.value === 'pisah') {
       formDataFinansialUpdate = {
         id_mesin: idMesin,
         tahun: tahunBerjalan - 1,

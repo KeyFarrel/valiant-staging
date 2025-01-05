@@ -16,5 +16,3 @@ import errorLottie from '@/assets/lottie/error.json';
 
 const emit = defineEmits(['onClick']);
 </script>
-
-<style scoped></style>

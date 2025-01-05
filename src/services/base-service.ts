@@ -1,7 +1,5 @@
-import axios from "axios";
-import { store } from "../store";
-import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
-import { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
+import { encryptStorage } from "@/utils/app-encrypt-storage";
 
 const nodeMode: any = import.meta.env.MODE;
 const TIME_OUT = 120000;

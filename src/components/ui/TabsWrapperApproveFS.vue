@@ -26,12 +26,6 @@
           <p p class="px-2 text-lg font-semibold text-primaryTextColor">
             Lihat Grafik
           </p>
-          <!-- <div class="flex p-2">
-              <p class="mr-2 text-primaryTextColor">Periode Laporan</p>
-              <p class="text-[#0099AD]">
-                {{ props.tahun !== '-' ? props.tahun : '-' }}
-              </p>
-            </div> -->
         </div>
         <div class="mr-3 cursor-pointer" @click="showModal = false">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -106,7 +100,6 @@
             <div class="flex flex-row mt-3">
               <Chips :title="'Daya Terpasang'" :content="props.dayaTerpasang / 1000 + ' MW'" />
               <Chips :title="'Daya Mampu(Netto)'" :content="props.dayaMampu / 1000 + ' MW'" />
-              <!-- <Chips :title="'Tahun Perolehan Data'" :content="props.tahunPerolehanData" /> -->
             </div>
             <div class="flex justify-between mr-3">
               <div>
@@ -367,9 +360,9 @@ const dataPlanMesin = ref<Grafik1[]>([]);
 const dataPlanKomMesin = ref<Grafik2[]>([]);
 const showModalPlan = ref(false);
 const dataDetailPlanMesin = ref<Grafik1[]>([]);
-const datatablePlanMesin = ref<table[]>([]);
+const datatablePlanMesin = ref<TableInterface[]>([]);
 const dataDetailPlanKomMesin = ref<Grafik1[]>([]);
-const datatablePlanKomMesin = ref<table[]>([]);
+const datatablePlanKomMesin = ref<TableInterface[]>([]);
 
 // chart Planning
 let chartPlanningMesin = ref();
@@ -431,7 +424,6 @@ let forceRender3 = async () => {
 
 
 interface Props {
-  // kodeSentral?: string
   idMesin: number | string
   tahunGrafik: number
   irrOnProject: number | string
@@ -485,7 +477,7 @@ interface Grafik2 {
   revenue_komp_d: number;
 }
 
-interface table {
+interface TableInterface {
   name: string;
   realisasi: number;
   planning: number;
@@ -506,6 +498,7 @@ onMounted(async () => {
       let indexOpt;
       let indexOptimum;
       let tahunOptimum;
+      let finalMax;
 
       dataPlanMesin.value = res.data;
 
@@ -516,17 +509,16 @@ onMounted(async () => {
       revPlanMesin.value = [];
       sumLccPlanMesin.value = [];
       yAxisPlan.value = [];
-      var isBepFounded = false;
+      let isBepFounded = false;
 
       if (res.data != null) {
-        var wlcAnnu = [];
-        var revenAnnu = [];
-        var capexAnnu = [];
-        var comBDAnnu = [];
-        var fuelComAnnu = [];
-        var finalMax;
+        let wlcAnnu = [];
+        let revenAnnu = [];
+        let capexAnnu = [];
+        let comBDAnnu = [];
+        let fuelComAnnu = [];
 
-        for (var i = 0; i < res.data.length; i++) {
+        for (let i = 0; i < res.data.length; i++) {
           tahunPlanningMesin.value.push(res.data[i].tahun);
           capexPlanMesin.value.push(res.data[i].capex_annualized);
           comBDPlanMesin.value.push(res.data[i].cost_component_bd);
@@ -535,8 +527,8 @@ onMounted(async () => {
           fuelComPlanMesin.value.push(res.data[i].cost_component_c_annualized);
           sumLccPlanMesin.value.push(res.data[i].total_wlcc_annualized);
           yAxisPlan.value.push(res.data[i].capex_annualized + res.data[i].cost_component_bd + res.data[i].cost_component_c_annualized);
-          maxPlanBep.value = Math.max.apply(Math, yAxisPlan.value) * 1.1;
-          maxPlanOpt.value = Math.max.apply(Math, yAxisPlan.value);
+          maxPlanBep.value = Math.max(...yAxisPlan.value) * 1.1;
+          maxPlanOpt.value = Math.max(...yAxisPlan.value);
 
           wlcAnnu.push(res.data[i].total_wlcc_annualized);
           revenAnnu.push(res.data[i].revenue_annualized);
@@ -559,21 +551,21 @@ onMounted(async () => {
             isBepFounded = true;
           }
 
-          const finalOptimum = Math.max.apply(Math, profitLoss.value)
+          const finalOptimum = Math.max(...profitLoss.value)
           if (finalOptimum == res.data[i].profit_loss) {
             indexOptimum = i
             indexOpt = i + 1
             tahunOptimum = res.data[i].tahun
           }
         }
-        var maxWlc = Math.max.apply(Math, wlcAnnu);
-        var maxRev = Math.max.apply(Math, revenAnnu);
-        var maxCapex = Math.max.apply(Math, capexAnnu);
-        var maxComBD = Math.max.apply(Math, comBDAnnu);
-        var maxFuelCom = Math.max.apply(Math, fuelComAnnu);
+        let maxWlc = Math.max(...wlcAnnu);
+        let maxRev = Math.max(...revenAnnu);
+        let maxCapex = Math.max(...capexAnnu);
+        let maxComBD = Math.max(...comBDAnnu);
+        let maxFuelCom = Math.max(...fuelComAnnu);
 
-        var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxWlc, maxRev];
-        finalMax = Math.max.apply(Math, listOfMax);
+        let listOfMax = [maxCapex, maxComBD, maxFuelCom, maxWlc, maxRev];
+        finalMax = Math.max(...listOfMax);
       }
 
       chartPlanningMesin.value = isBepFounded ? {
@@ -909,16 +901,16 @@ onMounted(async () => {
       sumCostCompMesinPlan.value = [];
 
       if (res.data != null) {
-        for (var i = 0; i < res.data.length; i++) {
-          tahunPlanKomMesin.value.push(res.data[i].tahun);
-          costCompAMesinPlan.value.push(res.data[i].cost_komp_a);
-          costCompCMesinPlan.value.push(res.data[i].cost_komp_c);
-          costCompBDMesinPlan.value.push(res.data[i].cost_komp_bd);
+        for (const item of res.data) {
+          tahunPlanKomMesin.value.push(item.tahun);
+          costCompAMesinPlan.value.push(item.cost_komp_a);
+          costCompCMesinPlan.value.push(item.cost_komp_c);
+          costCompBDMesinPlan.value.push(item.cost_komp_bd);
           sumCostCompMesinPlan.value.push(
-            res.data[i].cost_komp_a +
-            res.data[i].cost_komp_b +
-            res.data[i].cost_komp_c +
-            res.data[i].cost_komp_d
+            item.cost_komp_a +
+            item.cost_komp_b +
+            item.cost_komp_c +
+            item.cost_komp_d
           );
         }
       }
@@ -1049,7 +1041,6 @@ let tahunDetail = ref("");
 function handleClickPlan(param: any) {
   showModalPlan.value = true;
   tahunDetail.value = tahunPlanningMesin.value[param.dataIndex];
-  // console.log(tahunDetail.value);
 
   grafikService
     .getGrafikPlanDetailMesin({
@@ -1059,7 +1050,6 @@ function handleClickPlan(param: any) {
     })
     .then((res: any) => {
       judulDetPlan.value = [];
-      // realDetPlan.value = [];
       planDetPlan.value = [];
 
       dataDetailPlanMesin.value = res.data.graph;
@@ -1067,10 +1057,9 @@ function handleClickPlan(param: any) {
       res.data.graph.sort((a: any, b: any) => a.nomor - b.nomor);
       res.data.table.sort((a: any, b: any) => a.nomor - b.nomor);
 
-      for (var i = 0; i < res.data.graph.length; i++) {
-        judulDetPlan.value.push(res.data.graph[i].judul);
-        // realDetPlan.value.push(res.data.graph[i].realisasi);
-        planDetPlan.value.push(res.data.graph[i].planning);
+      for (const item of res.data.graph) {
+        judulDetPlan.value.push(item.judul);
+        planDetPlan.value.push(item.planning);
       }
 
       chartDetailPlanMesin.value = {
@@ -1150,7 +1139,6 @@ function handleClickPlan(param: any) {
 function handleClickPlanKom(param: any) {
   showModalPlanKom.value = true;
   tahunDetail.value = tahunPlanKomMesin.value[param.dataIndex];
-  // console.log(tahunDetail.value);
 
   grafikService
     .getGrafikPlanKomDetailMesin({
@@ -1159,7 +1147,6 @@ function handleClickPlanKom(param: any) {
     })
     .then((res: any) => {
       judulDetPlanKom.value = [];
-      // realDetPlanKom.value = [];
       planDetPlanKom.value = [];
 
       dataDetailPlanKomMesin.value = res.data.graph;
@@ -1167,10 +1154,9 @@ function handleClickPlanKom(param: any) {
       res.data.graph.sort((a: any, b: any) => a.nomor - b.nomor);
       res.data.table.sort((a: any, b: any) => a.nomor - b.nomor);
 
-      for (var i = 0; i < res.data.graph.length; i++) {
-        judulDetPlanKom.value.push(res.data.graph[i].judul);
-        // realDetPlanKom.value.push(res.data.graph[i].realisasi);
-        planDetPlanKom.value.push(res.data.graph[i].planning);
+      for (const item of res.data.graph) {
+        judulDetPlanKom.value.push(item.judul);
+        planDetPlanKom.value.push(item.planning);
       }
 
       chartDetailPlanKomMesin.value = {
