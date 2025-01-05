@@ -1,5 +1,4 @@
 <template>
-  <!-- <Loading v-if="isLoading" /> -->
   <div class="w-full bg-white rounded-md h-52">
     <div class="flex px-3 py-2">
       <div class="flex items-center justify-center mr-2 rounded-full w-7 h-7 bg-slate-200">
@@ -26,8 +25,8 @@
           <div class="mr-2 font-bold">
             {{
               dataPlanning.fs_irr_project
-              ? globalFormat.formatEnergy(dataPlanning.fs_irr_project)
-              : "-"
+                ? globalFormat.formatEnergy(dataPlanning.fs_irr_project)
+                : "-"
             }}
           </div>
           <p class="text-slate-500">%</p>
@@ -44,8 +43,8 @@
           <div class="mr-2 font-bold">
             {{
               dataPlanning.fs_irr_equity
-              ? globalFormat.formatEnergy(dataPlanning.fs_irr_equity)
-              : "-"
+                ? globalFormat.formatEnergy(dataPlanning.fs_irr_equity)
+                : "-"
             }}
           </div>
           <p class="text-slate-500">%</p>
@@ -57,8 +56,8 @@
           <div class="mr-2 font-bold">
             {{
               dataPlanning.fs_npv_project
-              ? globalFormat.formatRupiah(dataPlanning.fs_npv_project)
-              : "-"
+                ? globalFormat.formatRupiah(dataPlanning.fs_npv_project)
+                : "-"
             }}
           </div>
           <p class="text-slate-500">Rp (Juta)</p>
@@ -70,8 +69,8 @@
           <div class="mr-2 font-bold">
             {{
               dataPlanning.fs_npv_equity
-              ? globalFormat.formatRupiah(dataPlanning.fs_npv_equity)
-              : "-"
+                ? globalFormat.formatRupiah(dataPlanning.fs_npv_equity)
+                : "-"
             }}
           </div>
           <p class="text-slate-500">Rp (Juta)</p>
@@ -83,8 +82,8 @@
           <div class="mr-2 font-bold">
             {{
               dataPlanning.fs_average_cf
-              ? globalFormat.formatEnergy(dataPlanning.fs_average_cf)
-              : "-"
+                ? globalFormat.formatEnergy(dataPlanning.fs_average_cf)
+                : "-"
             }}
           </div>
           <p class="text-slate-500">%</p>
@@ -96,8 +95,8 @@
           <div class="mr-2 font-bold">
             {{
               dataPlanning.fs_average_eaf
-              ? globalFormat.formatEnergy(dataPlanning.fs_average_eaf)
-              : "-"
+                ? globalFormat.formatEnergy(dataPlanning.fs_average_eaf)
+                : "-"
             }}
           </div>
           <p class="text-slate-500">%</p>
@@ -136,8 +135,8 @@
           <div class="mr-2 font-bold">
             {{
               dataRealisasi.irr_project
-              ? globalFormat.formatEnergy(dataRealisasi.irr_project)
-              : "-"
+                ? globalFormat.formatEnergy(dataRealisasi.irr_project)
+                : "-"
             }}
           </div>
           <p class="text-slate-500">%</p>
@@ -160,8 +159,8 @@
           <div class="mr-2 font-bold">
             {{
               dataRealisasi.irr_equity
-              ? globalFormat.formatEnergy(dataRealisasi.irr_equity)
-              : "-"
+                ? globalFormat.formatEnergy(dataRealisasi.irr_equity)
+                : "-"
             }}
           </div>
           <p class="text-slate-500">%</p>
@@ -179,8 +178,8 @@
           <div class="mr-2 font-bold">
             {{
               dataRealisasi.npv_project
-              ? globalFormat.formatRupiah(dataRealisasi.npv_project)
-              : "-"
+                ? globalFormat.formatRupiah(dataRealisasi.npv_project)
+                : "-"
             }}
           </div>
           <p class="text-slate-500">Rp (Juta)</p>
@@ -198,8 +197,8 @@
           <div class="mr-2 font-bold">
             {{
               dataRealisasi.npv_equity
-              ? globalFormat.formatRupiah(dataRealisasi.npv_equity)
-              : "-"
+                ? globalFormat.formatRupiah(dataRealisasi.npv_equity)
+                : "-"
             }}
           </div>
           <p class="text-slate-500">Rp (Juta)</p>
@@ -217,8 +216,8 @@
           <div class="mr-2 font-bold">
             {{
               dataRealisasi.average_cf
-              ? globalFormat.formatEnergy(dataRealisasi.average_cf)
-              : "-"
+                ? globalFormat.formatEnergy(dataRealisasi.average_cf)
+                : "-"
             }}
           </div>
           <p class="text-slate-500">%</p>
@@ -274,8 +273,8 @@
           <div class="mr-2 font-bold">
             {{
               dataYoy.irr_project
-              ? globalFormat.formatEnergy(dataYoy.irr_project)
-              : "-"
+                ? globalFormat.formatEnergy(dataYoy.irr_project)
+                : "-"
             }}
           </div>
           <p class="text-slate-500">%</p>
@@ -292,8 +291,8 @@
           <div class="mr-2 font-bold">
             {{
               dataYoy.irr_equity
-              ? globalFormat.formatEnergy(dataYoy.irr_equity)
-              : "-"
+                ? globalFormat.formatEnergy(dataYoy.irr_equity)
+                : "-"
             }}
           </div>
           <p class="text-slate-500">%</p>
@@ -305,8 +304,8 @@
           <div class="mr-2 font-bold">
             {{
               dataYoy.npv_project
-              ? globalFormat.formatRupiah(dataYoy.npv_project)
-              : "-"
+                ? globalFormat.formatRupiah(dataYoy.npv_project)
+                : "-"
             }}
           </div>
           <p class="text-slate-500">Rp (Juta)</p>
@@ -318,8 +317,8 @@
           <div class="mr-2 font-bold">
             {{
               dataYoy.npv_equity
-              ? globalFormat.formatRupiah(dataYoy.npv_equity)
-              : "-"
+                ? globalFormat.formatRupiah(dataYoy.npv_equity)
+                : "-"
             }}
           </div>
           <p class="text-slate-500">Rp (Juta)</p>
@@ -331,8 +330,8 @@
           <div class="mr-2 font-bold">
             {{
               dataYoy.average_cf
-              ? globalFormat.formatEnergy(dataYoy.average_cf)
-              : "-"
+                ? globalFormat.formatEnergy(dataYoy.average_cf)
+                : "-"
             }}
           </div>
           <p class="text-slate-500">%</p>
@@ -344,8 +343,8 @@
           <div class="mr-2 font-bold">
             {{
               dataYoy.average_eaf
-              ? globalFormat.formatEnergy(dataYoy.average_eaf)
-              : "-"
+                ? globalFormat.formatEnergy(dataYoy.average_eaf)
+                : "-"
             }}
           </div>
           <p class="text-slate-500">%</p>
@@ -366,7 +365,6 @@ import YoyGreenUp from "@/components/icons/YoyGreenUp.vue";
 import YoyRedSame from "@/components/icons/YoyRedSame.vue";
 import GrafikService from "@/services/grafik-service";
 import GlobalFormat from "@/services/format/global-format";
-// import Loading from '@/components/ui/LoadingSpinner.vue'
 
 const isLoading = ref(false);
 const globalFormat = new GlobalFormat();
@@ -376,7 +374,6 @@ const dataRealisasi = ref<RelProyItem>({});
 const dataYoy = ref<RelYoyItem>({});
 const props = defineProps<Sentral>();
 const tahunData = computed(() => props.tahunData);
-// const idSentral = computed(() => props.idSentral);
 
 interface Sentral {
   idSentral: any;
@@ -424,22 +421,23 @@ interface RelYoyItem {
 
 watch(tahunData, async (tahun) => {
   isLoading.value = true;
-  await grafikService.getPlanning({ 
-    id_sentral: props.idSentral 
+  await grafikService.getPlanning({
+    id_sentral: props.idSentral
   }).then((res: any) => {
-  dataPlanning.value = res.data;
+    dataPlanning.value = res.data;
   });
 
-  await grafikService.getRealisasiProyeksi({ 
-    tahun: tahun, 
-    id_sentral: props.idSentral })
-  .then((res: any) => {
-    dataRealisasi.value = res.data;
-  });
+  await grafikService.getRealisasiProyeksi({
+    tahun: tahun,
+    id_sentral: props.idSentral
+  })
+    .then((res: any) => {
+      dataRealisasi.value = res.data;
+    });
 
-  await grafikService.getRealisasiYoy({ 
-    id_sentral: props.idSentral, 
-    tahun: tahun -1
+  await grafikService.getRealisasiYoy({
+    id_sentral: props.idSentral,
+    tahun: tahun - 1
   }).then((res: any) => {
     dataYoy.value = res.data;
   });
@@ -447,4 +445,3 @@ watch(tahunData, async (tahun) => {
 })
 
 </script>
-

@@ -498,6 +498,7 @@ const getSentralById = async () => {
         longitude: false,
         latitude: false
       })
+      console.log(i)
     };
     nilaiAsetAwalSentral.value = response.data[0].mesins.reduce((acc: number, val: any) => acc + val.nilai_asset_awal, 0);
     const allPengelola = await fetchPengelola();

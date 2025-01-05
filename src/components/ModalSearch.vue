@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick, computed, watch } from 'vue';
+import { ref, onMounted, nextTick, computed } from 'vue';
 import ModalWrapper from './ui/ModalWrapper.vue';
 import EmptyData from './ui/EmptyData.vue';
 import { notifyError } from '@/services/helper/toast-notification';

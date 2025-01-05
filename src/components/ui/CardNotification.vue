@@ -23,5 +23,3 @@
 //   message: string;
 // }>();
 </script>
-
-<style scoped></style>

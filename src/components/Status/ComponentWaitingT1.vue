@@ -9,5 +9,3 @@
 <script setup lang="ts">
 import IconWaitingPersetujuan from '../icons/IconWaitingPersetujuan.vue';
 </script>
-
-<style scoped></style>

@@ -4,7 +4,7 @@ const url = import.meta.env.VITE_API_URL;
 
 export default class RekapService extends BaseService {
 
-  async getSentralData<T>(sentral: string, pengelola: Array<string>, jenis_kit: Array<string>, id_daya: any, kondisi_mesin: Array<string>, umur: Array<string>, page: number, limit: number): Promise<T> {
+  async getSentralData<T>(sentral: string, pengelola: Array<string>, jenis_kit: Array<string>, id_daya: any, kondisi_mesin: Array<string>, umur: Array<string>, page: number, limit: number): Promise<T> { //NOSONAR
     return this.post(`${url}kertas-kerja-detail/all-rekap-kertas-kerja`, {sentral: sentral, pengelola: pengelola, jenis_kit: jenis_kit, id_daya: id_daya, kondisi_mesin: kondisi_mesin, umur: umur, page: page, limit: limit});
   }
   async uploadEvidence<T>(file: any): Promise<T> {

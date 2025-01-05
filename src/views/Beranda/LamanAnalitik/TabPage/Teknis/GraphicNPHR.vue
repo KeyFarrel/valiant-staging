@@ -123,7 +123,6 @@ async function getDataGraph() {
 async function getDataGraphNoDMN() {
   try {
     isLoading.value = true
-    // filterChips.value?.setValue();
     const param: any = {
       kode_jenis_pembangkit: [],
       id_daya: [],

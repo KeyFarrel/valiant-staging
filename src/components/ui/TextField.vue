@@ -7,5 +7,3 @@
 const model = defineModel();
 const emit = defineEmits(['onInput', 'onCopy', 'onPaste'])
 </script>
-
-<style scoped></style>

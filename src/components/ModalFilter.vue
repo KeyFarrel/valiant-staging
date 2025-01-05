@@ -73,4 +73,4 @@ function submitFilter() {
   <div v-if="visible" modal-backdrop class="fixed inset-0 z-40 bg-gray-900 bg-opacity-50"></div>
 </template>
 
-<style scoped></style>
+ 

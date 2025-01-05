@@ -82,7 +82,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, provide } from "vue";
-import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
+import { encryptStorage } from "@/utils/app-encrypt-storage";
 import PersetujuanService from '@/services/persetujuan-service';
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import KertasKerja from "@/views/Verifikasi/Sentral/TabPage/KK/KertasKerja.vue";

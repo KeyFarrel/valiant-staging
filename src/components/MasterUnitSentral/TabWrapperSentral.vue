@@ -29,17 +29,6 @@ const store = useRekapCheckRealisasi();
 
 const selectedTitle = ref('Sentral');
 
-interface MesinItem {
-  mesin: String
-  nilai_asset_awal: Number
-  tahun_operasi: any
-  masa_manfaat: any
-  sisa_masa_manfaat: any
-  daya_terpasang: any
-  daya_mampu: any
-  kondisi_unit: any
-}
-
 interface Tab {
   mesin: string
   kode_mesin: string

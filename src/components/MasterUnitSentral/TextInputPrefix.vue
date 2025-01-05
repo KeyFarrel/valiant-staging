@@ -28,5 +28,3 @@ const handleInput = () => {
   emit('update:modelValue', inputValue.value);
 };
 </script>
-
-<style scoped></style>

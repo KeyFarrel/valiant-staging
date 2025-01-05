@@ -177,7 +177,6 @@ import RoleService from '@/services/role-service';
 const roleService = new RoleService();
 import Loading from '@/components/ui/LoadingSpinner.vue';
 import IconDetailAkses from '@/components/icons/IconDetailAkses.vue';
-import ShimmerLoading from '@/components/ui/ShimmerLoading.vue';
 import Table from '@/components/ui/Table.vue';
 import ModalWrapper from '@/components/ui/ModalWrapper.vue';
 import IconRoundedChecked from '@/components/icons/IconRoundedChecked.vue';
@@ -303,30 +302,28 @@ const generatePageList = computed(() => {
     for (let i = 1; i <= navigation.value.totalPages; i++) {
       pageList.push(i);
     }
-  } else {
-    if (navigation.value.page <= 3) {
-      for (let i = 1; i <= Math.min(navigation.value.totalPages, maxPages - 1); i++) {
-        pageList.push(i);
-      }
-      if (navigation.value.totalPages > maxPages) {
-        pageList.push('...');
-        pageList.push(navigation.value.totalPages);
-      }
-    } else if (navigation.value.page >= navigation.value.totalPages - 2) {
-      pageList.push(1);
-      pageList.push('...');
-      for (let i = navigation.value.totalPages - (maxPages - 2); i <= navigation.value.totalPages; i++) {
-        pageList.push(i);
-      }
-    } else {
-      pageList.push(1);
-      pageList.push('...');
-      for (let i = navigation.value.page - 1; i <= navigation.value.page + 1; i++) {
-        pageList.push(i);
-      }
+  } else if (navigation.value.page <= 3) {
+    for (let i = 1; i <= Math.min(navigation.value.totalPages, maxPages - 1); i++) {
+      pageList.push(i);
+    }
+    if (navigation.value.totalPages > maxPages) {
       pageList.push('...');
       pageList.push(navigation.value.totalPages);
     }
+  } else if (navigation.value.page >= navigation.value.totalPages - 2) {
+    pageList.push(1);
+    pageList.push('...');
+    for (let i = navigation.value.totalPages - (maxPages - 2); i <= navigation.value.totalPages; i++) {
+      pageList.push(i);
+    }
+  } else {
+    pageList.push(1);
+    pageList.push('...');
+    for (let i = navigation.value.page - 1; i <= navigation.value.page + 1; i++) {
+      pageList.push(i);
+    }
+    pageList.push('...');
+    pageList.push(navigation.value.totalPages);
   }
   return pageList;
 });

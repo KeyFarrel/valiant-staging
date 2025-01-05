@@ -36,7 +36,7 @@
     </template>
     <template v-slot:table-body v-else>
       <tr class="text-xs text-gray-900 border-b hover:bg-gray-100">
-        <td scope="row" class="px-1 py-4 text-center whitespace-nowrap">{{ index + 1 }}</td>
+        <td class="px-1 py-4 text-center whitespace-nowrap">{{ index + 1 }}</td>
         <td class="text-center">{{ props.source.tahun ? props.source.tahun : '-' }}</td>
         <td class="text-right">{{ props.source.irr_on_equity }}</td>
         <td class="text-right">{{ globalFormat.formatRupiah(props.source.npv_on_equity) }}</td>

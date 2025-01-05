@@ -91,5 +91,3 @@ const props = withDefaults(defineProps<Props>(), {
 })
 const emit = defineEmits(['onChange', 'onClick'])
 </script>
-
-<style scoped></style>

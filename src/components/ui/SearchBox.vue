@@ -31,5 +31,3 @@ const props = withDefaults(defineProps<{
   placeholder: 'Cari...',
 });
 </script>
-
-<style scoped></style>

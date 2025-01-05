@@ -60,7 +60,7 @@ const yearRange = ref<number[]>([])
 async function getCategory() {
   try {
     const response: any = await grafikService.getComboKategoriPembangkit()
-    const res: any = await grafikService.getFilterDaya()
+    await grafikService.getFilterDaya()
     if (response.success) {
       itemsCategory.value = []
       if (response.data.length > 0) {

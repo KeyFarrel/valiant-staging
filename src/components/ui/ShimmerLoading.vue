@@ -1,6 +1,6 @@
 <template>
   <div :class="[bgClass, loaderClass, 'relative overflow-hidden']">
-    <div class="shimmer absolute top-0 right-0 bottom-0 left-0" :style="shimmerStyle"></div>
+    <div class="absolute top-0 bottom-0 left-0 right-0 shimmer" :style="shimmerStyle"></div>
     <slot />
   </div>
 </template>
@@ -24,7 +24,11 @@ const isHexColor = (hexColor: string) => {
   return typeof hexColor === 'string' && hexColor.startsWith('#') && hex.length === 6 && !isNaN(Number('0x' + hex));
 };
 
-const hexToRgb = (hex: string) => `${hex.match(/\w\w/g)?.map((x) => +`0x${x}`)}`;
+const hexToRgb = (hex: string) => {
+  const matches = hex.match(/\w\w/g);
+  return matches ? matches.map((x) => parseInt(x, 16)).toString() : '';
+};
+
 </script>
 
 <script setup lang="ts">

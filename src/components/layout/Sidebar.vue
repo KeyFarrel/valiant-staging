@@ -20,30 +20,9 @@
       </div>
       <div class="text-white -ml-[72px]" :class="isSidebarOpen ? 'ml-3' : ''">
         <p class="text-lg font-semibold">{{ store.label }}</p>
-        <!-- <p class="text-xs font-semibold">
-              {{ store.label }}
-            </p> Dikomen dulu untuk nanti CR breadcrumbs -->
       </div>
     </div>
     <div class="flex flex-row items-center space-x-3">
-      <!-- <button @click="isNotificationShow = !isNotificationShow">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" clip-rule="evenodd"
-            d="M12 4C9.23859 4 7.00001 6.23858 7.00001 9L6.99982 9.75C6.99982 9.74991 6.99982 9.75009 6.99982 9.75C6.99976 11.79 6.38801 13.689 5.33877 15.2709C6.60342 15.6529 7.9142 15.929 9.26093 16.0887C10.1587 16.1952 11.0726 16.25 11.9998 16.25C12.9271 16.25 13.8412 16.1952 14.7391 16.0887C16.0857 15.9289 17.3963 15.6529 18.6609 15.2709C17.6116 13.6889 16.9998 11.7901 16.9998 9.75V9.04115L17 9C17 6.23858 14.7614 4 12 4ZM5.00002 8.99974C5.00016 5.13386 8.13411 2 12 2C15.866 2 19 5.13401 19 9L18.9998 9.04919V9.75C18.9998 11.809 19.7763 13.6842 21.0541 15.1025C21.2761 15.349 21.3615 15.6894 21.282 16.0114C21.2026 16.3335 20.9686 16.5951 20.6575 16.71C19.1663 17.2605 17.6084 17.6728 15.9994 17.9316C15.9998 17.9544 16 17.9772 16 18C16 20.2091 14.2092 22 12 22C9.79088 22 8.00001 20.2091 8.00001 18C8.00001 17.9772 8.00021 17.9544 8.00059 17.9317C6.39149 17.6729 4.83345 17.2605 3.34218 16.71C3.03102 16.5951 2.79707 16.3335 2.71761 16.0114C2.63815 15.6894 2.72353 15.349 2.94553 15.1025C4.2233 13.6842 4.99982 11.809 4.99982 9.75L5.00002 8.99974C5.00002 8.99982 5.00002 8.99965 5.00002 8.99974ZM10.0073 18.1717C10.0944 19.1959 10.9533 20 12 20C13.0468 20 13.9057 19.1959 13.9927 18.1717C13.3351 18.2236 12.6704 18.25 11.9998 18.25C11.3293 18.25 10.6648 18.2236 10.0073 18.1717Z"
-            fill="white" />
-        </svg>
-      </button>
-      <div
-        class="bg-white rounded-lg absolute z-[35] p-3 flex flex-col space-y-3 w-[400px] shadow-md right-[170px] top-7"
-        v-show="isNotificationShow">
-        <div class="flex flex-row items-center justify-between">
-          <p class="text-base font-semibold text-primaryTextColor">Notifikasi</p>
-          <button class="text-xs text-primaryColor">Tandai semua telah dibaca</button>
-        </div>
-        <div class="space-y-5">
-          <CardNotification v-for="(notificationItem, notificationIndex) in 2" />
-        </div>
-      </div> -->
       <div class="flex items-center justify-center w-6 h-6 rounded-full bg-warningColor">
         <span class="text-sm font-semibold text-white uppercase">{{ namaPegawai?.split('')[0] }}</span>
       </div>
@@ -77,7 +56,7 @@
             </div>
           </div>
           <hr />
-          <button @click="authService.logOut"
+          <button @click="handleLogout"
             class="flex items-center w-full justify-center py-2 space-x-1.5 cursor-pointer border">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -190,14 +169,6 @@
             <span class="ml-8 text-xs">Rekap Kertas Kerja</span>
           </RouterLink>
         </li>
-        <!-- <li v-if="authService.checkLevel() === 'Admin'">
-          <RouterLink id="sidebar-button"
-            @click="store.label = 'Rekap Kertas Kerja V1'; rekapStore.searchRekapQuery = ''; rekapStore.selectedRekapSearchQuery = '';"
-            to="/rekap-kertas-kerja-v1" href="#" class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
-            :class="{ selected: store.label === 'Rekap Kertas Kerja V1' }">
-            <span class="ml-8 text-xs">Rekap Kertas Kerja V1</span>
-          </RouterLink>
-        </li> -->
         <li class="px-3"
           v-if="authService.checkRole() == 'Approver' || authService.checkRole() == 'Staff' || authService.checkRole() == 'Super Admin' || authService.checkRole() == 'Monitoring' || authService.checkRole() == 'Input'">
           <div class="flex items-center px-2 text-[#7F7F80]">
@@ -276,13 +247,6 @@
             <span class="ml-8 text-xs">Pengguna</span>
           </RouterLink>
         </li>
-        <!-- <li v-if="authService.checkLevel() === 'Admin'">
-          <RouterLink id="sidebar-button" @click="store.label = 'Role'" to="/role"
-            class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
-            :class="{ selected: store.label === 'Role' }">
-            <span class="ml-8 text-xs">Role</span>
-          </RouterLink>
-        </li> -->
         <li v-if="authService.checkLevel() === 'Admin'">
           <RouterLink id="sidebar-button" @click="store.label = 'Log Aktivitas'" to="/log-activity"
             class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
@@ -290,23 +254,6 @@
             <span class="ml-8 text-xs">Log Aktivitas</span>
           </RouterLink>
         </li>
-        <!-- <li class="px-3">
-          <div class="flex items-center px-2 text-gray-900">
-            <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M3 2C2.73478 2 2.48043 2.10536 2.29289 2.29289C2.10536 2.48043 2 2.73478 2 3V17C2 17.2652 2.10536 17.5196 2.29289 17.7071C2.48043 17.8946 2.73478 18 3 18H7.5C8.05228 18 8.5 18.4477 8.5 19C8.5 19.5523 8.05228 20 7.5 20H3C2.20435 20 1.44129 19.6839 0.87868 19.1213C0.31607 18.5587 0 17.7957 0 17V3C0 2.20435 0.31607 1.44129 0.87868 0.87868C1.44129 0.31607 2.20435 0 3 0H10C10.2652 0 10.5196 0.105357 10.7071 0.292893L15.7071 5.29289C15.8946 5.48043 16 5.73478 16 6V11C16 11.5523 15.5523 12 15 12C14.4477 12 14 11.5523 14 11V7H11C10.4696 7 9.96086 6.78929 9.58579 6.41421C9.21071 6.03914 9 5.53043 9 5V2H3ZM11 3.41421L12.5858 5H11V3.41421ZM13.2929 14.7071C12.9024 14.3166 12.9024 13.6834 13.2929 13.2929C13.6834 12.9024 14.3166 12.9024 14.7071 13.2929L17.7071 16.2929C18.0976 16.6834 18.0976 17.3166 17.7071 17.7071L14.7071 20.7071C14.3166 21.0976 13.6834 21.0976 13.2929 20.7071C12.9024 20.3166 12.9024 19.6834 13.2929 19.2929L14.5858 18H10C9.44771 18 9 17.5523 9 17C9 16.4477 9.44771 16 10 16H14.5858L13.2929 14.7071Z"
-                fill="#7F7F80" />
-            </svg>
-            <span class="ml-3 font-semibold mt-1 text-sm text-[#7F7F80]">Query</span>
-          </div>
-        </li>
-        <li>
-          <RouterLink id="sidebar-button" @click="store.label = 'Query'" to="/query"
-            class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
-            :class="{ selected: store.label === 'Query' }">
-            <span class="ml-8 text-xs">Query</span>
-          </RouterLink>
-        </li> -->
       </ul>
     </div>
     <div v-show="!isSidebarOpen" class="h-full p-4 overflow-y-auto bg-white" @mouseenter="toggleSidebar">
@@ -362,14 +309,6 @@
               fill="#7F7F80" />
           </svg>
         </li>
-        <!-- <li class="flex items-center justify-center h-12 rounded-lg" :class="{ selected: store.label === 'Query' }">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-            class="cursor-pointer">
-            <path fill-rule="evenodd" clip-rule="evenodd"
-              d="M7 4C6.73478 4 6.48043 4.10536 6.29289 4.29289C6.10536 4.48043 6 4.73478 6 5V19C6 19.2652 6.10536 19.5196 6.29289 19.7071C6.48043 19.8946 6.73478 20 7 20H11.5C12.0523 20 12.5 20.4477 12.5 21C12.5 21.5523 12.0523 22 11.5 22H7C6.20435 22 5.44129 21.6839 4.87868 21.1213C4.31607 20.5587 4 19.7957 4 19V5C4 4.20435 4.31607 3.44129 4.87868 2.87868C5.44129 2.31607 6.20435 2 7 2H14C14.2652 2 14.5196 2.10536 14.7071 2.29289L19.7071 7.29289C19.8946 7.48043 20 7.73478 20 8V13C20 13.5523 19.5523 14 19 14C18.4477 14 18 13.5523 18 13V9H15C14.4696 9 13.9609 8.78929 13.5858 8.41421C13.2107 8.03914 13 7.53043 13 7V4H7ZM15 5.41421L16.5858 7H15V5.41421ZM17.2929 16.7071C16.9024 16.3166 16.9024 15.6834 17.2929 15.2929C17.6834 14.9024 18.3166 14.9024 18.7071 15.2929L21.7071 18.2929C22.0976 18.6834 22.0976 19.3166 21.7071 19.7071L18.7071 22.7071C18.3166 23.0976 17.6834 23.0976 17.2929 22.7071C16.9024 22.3166 16.9024 21.6834 17.2929 21.2929L18.5858 20H14C13.4477 20 13 19.5523 13 19C13 18.4477 13.4477 18 14 18H18.5858L17.2929 16.7071Z"
-              fill="#7F7F80" />
-          </svg>
-        </li> -->
       </ul>
     </div>
   </aside>
@@ -380,12 +319,14 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, inject } from "vue";
 import { initFlowbite } from "flowbite";
 import { RouterView } from "vue-router";
 import { useNavbarLabelStore } from "@/store/storeNavbar";
 import { useRekapSearchStore } from "@/store/storeRekapKertasKerja";
-import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
+import { VueCookies } from "vue-cookies";
+const $cookies = inject<VueCookies>('$cookies');
+import { encryptStorage } from "@/utils/app-encrypt-storage";
 const rekapStore = useRekapSearchStore();
 const store = useNavbarLabelStore();
 import AuthService from "../../services/auth-service";
@@ -393,7 +334,6 @@ const authService = new AuthService();
 import PersetujuanService from "../../services/persetujuan-service";
 const persetujuanService = new PersetujuanService();
 import ValiantLogo from '@/components/icons/ValiantLogo.vue'
-import CardNotification from "../ui/CardNotification.vue";
 
 const nodeMode: any = import.meta.env.MODE;
 const levelSentral = ref(nodeMode === 'production' ? encryptStorage.getItem('level_sentral') : localStorage.getItem('level_sentral'));
@@ -451,6 +391,11 @@ const fetchPersetujuanFS = async () => {
   } catch (error) {
     console.error('Fetch Persetujuan FS Sentral Error : ' + error);
   }
+}
+
+const handleLogout = () => {
+  authService.logout();
+  $cookies.remove('token');
 }
 
 onMounted(() => {

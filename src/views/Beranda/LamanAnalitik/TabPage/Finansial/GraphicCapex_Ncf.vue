@@ -13,7 +13,6 @@ import { notifyError } from "@/services/helper/toast-notification"
 
 const petaService = new PetaService();
 const grafikService = new GrafikService()
-// const periodeTahun = ref<Array<number>>([]);
 const checkAll = ref(false);
 const checkDmn = ref(true)
 const indeterminate = ref(false);
@@ -55,14 +54,6 @@ const filter: Ref<{
   tahun: new Date().getFullYear(),
 });
 
-// const fetchTahunTerakhirRealisasi = async () => {
-//   try {
-//     const response: any = await grafikService.getTahunTerakhirRealisasiAnalitik();
-//     // filter.value.tahun = response.data.tahun;
-//   } catch (error) {
-//     console.error('Fetch Tahun Terakhir Realisasi Error : ' + error);
-//   }
-// }
 const fetchInitialPembangkit = async () => {
   try {
     const response: any = await grafikService.getInitialPembangkit()
@@ -219,7 +210,7 @@ watch(value, (val) => {
     indeterminate.value = false
   } else {
     indeterminate.value = true;
-  };
+  }
 })
 
 const handleCheckAll = (val: CheckboxValueType) => {
@@ -240,7 +231,7 @@ watch(dmn, (val) => {
     indeterminateDmn.value = false
   } else {
     indeterminateDmn.value = true;
-  };
+  }
 })
 
 const handleCheckDmn = (val: CheckboxValueType) => {
@@ -255,8 +246,6 @@ const handleCheckDmn = (val: CheckboxValueType) => {
 onMounted(async () => {
   isLoading.value = true;
   await fetchInitialPembangkit();
-  // await fetchTahunTerakhirRealisasi()
-  // fetchPeriodeTahunSentral()
   getDataGraph()
 })
 </script>

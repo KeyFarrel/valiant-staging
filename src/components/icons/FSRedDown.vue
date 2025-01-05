@@ -12,7 +12,7 @@
         <div class="flex text-xs border-b">
           <p class="font-semibold">WLC (Realisasi & Proyeksi) </p>
           <p class="ml-2">vs</p>
-          <p class="font-semibold ml-2">Planning / FS </p>
+          <p class="ml-2 font-semibold">Planning / FS </p>
         </div>
         <div class="flex text-xs">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -56,5 +56,3 @@ function toggleButton() {
   isHover.value = !isHover.value;
 }
 </script>
-
-<style scoped></style>

@@ -222,7 +222,6 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { useLamanDataTabStore } from "@/store/storeLamanDataTab";
-import { encryptStorage } from "@/utils/app-encrypt-storage";
 const store = useLamanDataTabStore();
 import GlobalFormat from "@/services/format/global-format";
 const globalFormat = new GlobalFormat();
@@ -231,7 +230,6 @@ import Empty from "@/components/ui/EmptyData.vue";
 import ButtonComponent from "@/components/ui/Button.vue";
 import TableComponent from "@/components/ui/Table.vue";
 import Loading from "@/components/ui/LoadingSpinner.vue";
-import SortingIcon from "@/components/icons/SortingIcon.vue";
 import LamanService from "@/services/laman-service";
 import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
 

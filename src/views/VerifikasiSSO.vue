@@ -64,5 +64,3 @@ const verifikasiSSO = async () => {
 };
 verifikasiSSO();
 </script>
-
-<style lang="scss" scoped></style>

@@ -194,7 +194,7 @@ const bahanBakars = ref<any[]>([
 const fetchCheckIntegrasi = async () => {
   try {
     const response: any = await perbaruiDataService.getCheckIntegrasi(tahunBerjalan - 1, idMesin);
-    isIntegrasi.value = response.data[0].status_data_integrasi === "0" ? false : true;
+    isIntegrasi.value = response.data[0].status_data_integrasi !== "0";
     console.log(isIntegrasi.value, 'dds');
   } catch (error) {
     console.error('Fetch Check Integrasi Error : ' + error)
@@ -365,7 +365,6 @@ const insertAsumsiParameter = async () => {
     } else {
       errorParameterTeknis.nphr = false
     }
-    // if (pickedParameterValue.value === 'auxiliarySusut') {
     if (auxiliary.value === '') {
       errorParameterTeknis.auxiliary = true
     } else {
@@ -375,7 +374,8 @@ const insertAsumsiParameter = async () => {
       errorParameterTeknis.susutTrafo = true
     } else {
       errorParameterTeknis.susutTrafo = false
-    } if (pemakaianSendiri.value === '') {
+    }
+    if (pemakaianSendiri.value === '') {
       errorParameterTeknis.pemakaianSendiri = true
     } else {
       errorParameterTeknis.pemakaianSendiri = false
@@ -422,8 +422,8 @@ const insertAsumsiParameter = async () => {
       isShowModalNotification.value = false
     } else {
       isLoading.value = true
-      for (let index = 0; index < bahanBakars.value.length; index++) {
-        delete bahanBakars.value[index].id
+      for (const item of bahanBakars.value) {
+        delete item.id
       }
       const finalInterestRate = interestRate.value.includes('.') ? interestRate.value.replace(/[.]/g, '') : interestRate.value
       const finalLoanPortion = loanPortion.value.includes('.') ? loanPortion.value.replace(/[.]/g, '') : loanPortion.value
@@ -550,5 +550,3 @@ onMounted(async () => {
   isLoading.value = false;
 })
 </script>
-
-<style scoped></style>

@@ -9,5 +9,3 @@
 <script setup lang="ts">
 import IconDraftPersetujuan from '../icons/IconDraftPersetujuan.vue';
 </script>
-
-<style scoped></style>

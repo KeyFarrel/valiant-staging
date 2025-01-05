@@ -25,7 +25,7 @@ const store = useConnectionStatusStore();
 watch(idle, (isTimeout) => {
   if (isTimeout) {
     if (nodeMode === 'production') {
-      authService.logOut();
+      authService.logout();
     }
   }
 });

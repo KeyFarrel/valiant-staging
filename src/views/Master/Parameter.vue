@@ -281,9 +281,7 @@ import ParameterService from "@/services/parameter-service";
 const parameterService = new ParameterService();
 import ModalWrapper from "@/components/ui/ModalWrapper.vue";
 import jsonData from "@/assets/lottie/success.json";
-import SearchBox from "@/components/ui/SearchBox.vue";
 import TableComponent from "@/components/ui/Table.vue";
-import ModalSearch from "@/components/ModalSearch.vue";
 
 const isLoading = ref(false);
 const parameter = ref<any[]>([]);
@@ -490,31 +488,29 @@ const generatePageList = computed(() => {
     for (let i = 1; i <= navigation.value.totalPages; i++) {
       pageList.push(i);
     }
+  } else if (navigation.value.currentPage <= 3) {
+    for (let i = 1; i <= Math.min(navigation.value.totalPages, maxPages - 1); i++) {
+      pageList.push(i);
+    };
+    if (navigation.value.totalPages > maxPages) {
+      pageList.push('...');
+      pageList.push(navigation.value.totalPages)
+    };
+  } else if (navigation.value.currentPage >= navigation.value.totalPages - 2) {
+    pageList.push(1);
+    pageList.push('...');
+    for (let i = navigation.value.totalPages - (maxPages - 2); i <= navigation.value.totalPages; i++) {
+      pageList.push(i)
+    };
   } else {
-    if (navigation.value.currentPage <= 3) {
-      for (let i = 1; i <= Math.min(navigation.value.totalPages, maxPages - 1); i++) {
-        pageList.push(i);
-      };
-      if (navigation.value.totalPages > maxPages) {
-        pageList.push('...');
-        pageList.push(navigation.value.totalPages)
-      };
-    } else if (navigation.value.currentPage >= navigation.value.totalPages - 2) {
-      pageList.push(1);
-      pageList.push('...');
-      for (let i = navigation.value.totalPages - (maxPages - 2); i <= navigation.value.totalPages; i++) {
-        pageList.push(i)
-      };
-    } else {
-      pageList.push(1);
-      pageList.push('...');
-      for (let i = navigation.value.currentPage - 1; i <= navigation.value.currentPage + 1; i++) {
-        pageList.push(i)
-      };
-      pageList.push('...');
-      pageList.push(navigation.value.totalPages);
-    }
-  };
+    pageList.push(1);
+    pageList.push('...');
+    for (let i = navigation.value.currentPage - 1; i <= navigation.value.currentPage + 1; i++) {
+      pageList.push(i)
+    };
+    pageList.push('...');
+    pageList.push(navigation.value.totalPages);
+  }
   return pageList;
 });
 const submitEditForm = async () => {
@@ -592,7 +588,6 @@ const closeModal = () => {
   errors.value = [];
   errors_CT.value = [];
   errors_DT.value = [];
-  //formData.value.status = 0;
 };
 const closeModalEdit = () => {
   isModalEdit.value = false;
@@ -605,7 +600,6 @@ const closeModalEdit = () => {
   errors.value = [];
   errors_CT.value = [];
   errors_DT.value = [];
-  //formData.value.status = 0;
 };
 const fetchDetailData = async (Id: string) => {
   try {

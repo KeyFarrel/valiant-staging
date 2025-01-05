@@ -420,21 +420,22 @@ const changeSelectedPengelola = async (pengelola: any) => {
   if (pengelola === 'ALL') {
     selectedAll.value.push(pengelola);
     selectedPengelola.value = [];
+    currentPage.value = 1;
+    await fetchSentralData();
+  } else if (!selectedPengelola.value.includes(pengelola)) {
+    selectedAll.value = [];
+    selectedPengelola.value.push(pengelola);
+    currentPage.value = 1;
     await fetchSentralData();
   } else {
-    if (!selectedPengelola.value.includes(pengelola)) {
-      selectedAll.value = [];
-      selectedPengelola.value.push(pengelola);
-      await fetchSentralData();
-    } else {
-      if (selectedPengelola.value.length === 1) {
-        selectedPengelola.value = [];
-        selectedAll.value = ['ALL'];
-      }
-      const pengelolaIndex = selectedPengelola.value.indexOf(pengelola);
-      selectedPengelola.value.splice(pengelolaIndex, 1);
-      await fetchSentralData();
+    if (selectedPengelola.value.length === 1) {
+      selectedPengelola.value = [];
+      selectedAll.value = ['ALL'];
     }
+    const pengelolaIndex = selectedPengelola.value.indexOf(pengelola);
+    selectedPengelola.value.splice(pengelolaIndex, 1);
+    currentPage.value = 1;
+    await fetchSentralData();
   }
   isLoading.value = false;
 }
@@ -452,30 +453,28 @@ const generatePageList = computed(() => {
     for (let i = 1; i <= totalPages.value; i++) {
       pageList.push(i);
     }
-  } else {
-    if (currentPage.value <= 3) {
-      for (let i = 1; i <= Math.min(totalPages.value, maxPages - 1); i++) {
-        pageList.push(i);
-      }
-      if (totalPages.value > maxPages) {
-        pageList.push('...');
-        pageList.push(totalPages.value);
-      }
-    } else if (currentPage.value >= totalPages.value - 2) {
-      pageList.push(1);
-      pageList.push('...');
-      for (let i = totalPages.value - (maxPages - 2); i <= totalPages.value; i++) {
-        pageList.push(i);
-      }
-    } else {
-      pageList.push(1);
-      pageList.push('...');
-      for (let i = currentPage.value - 1; i <= currentPage.value + 1; i++) {
-        pageList.push(i);
-      }
+  } else if (currentPage.value <= 3) {
+    for (let i = 1; i <= Math.min(totalPages.value, maxPages - 1); i++) {
+      pageList.push(i);
+    }
+    if (totalPages.value > maxPages) {
       pageList.push('...');
       pageList.push(totalPages.value);
     }
+  } else if (currentPage.value >= totalPages.value - 2) {
+    pageList.push(1);
+    pageList.push('...');
+    for (let i = totalPages.value - (maxPages - 2); i <= totalPages.value; i++) {
+      pageList.push(i);
+    }
+  } else {
+    pageList.push(1);
+    pageList.push('...');
+    for (let i = currentPage.value - 1; i <= currentPage.value + 1; i++) {
+      pageList.push(i);
+    }
+    pageList.push('...');
+    pageList.push(totalPages.value);
   }
   return pageList;
 });

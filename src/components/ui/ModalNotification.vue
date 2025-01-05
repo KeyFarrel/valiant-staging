@@ -24,5 +24,3 @@ interface Props {
   animationData: any
 }
 </script>
-
-<style scoped></style>

@@ -67,5 +67,3 @@ interface Props {
   periode: any
 }
 </script>
-
-<style scoped></style>

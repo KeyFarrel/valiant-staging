@@ -3,7 +3,6 @@ import { onMounted, type Ref, ref, watch } from "vue";
 import Empty from "@/components/icons/IconEmptyData.vue";
 import ShimmerLoading from "@/components/ui/ShimmerLoading.vue"
 import ModalWrapper from "@/components/ui/ModalWrapper.vue";
-import PetaService from "@/services/peta-service";
 import GrafikService from "@/services/grafik-service"
 import type { BaseResponse, ResCapexEaf } from "@/types/LamanAnalitik/TypeFinansial";
 import type { CheckboxValueType } from 'element-plus';
@@ -11,9 +10,7 @@ import { id } from "date-fns/locale"
 import DynamicScatterPlot from "@/views/Beranda/LamanAnalitik/TabPage/DynamicScatterPlot.vue";
 import { notifyError } from "@/services/helper/toast-notification";
 
-const petaService = new PetaService()
 const grafikService = new GrafikService();
-// const periodeTahun = ref<Array<number>>([]);
 const checkAll = ref(false);
 const checkDmn = ref(true)
 const indeterminate = ref(false);
@@ -55,14 +52,6 @@ const filter: Ref<{
   kategoriPembangkit: [""],
 })
 
-// const fetchTahunTerakhirRealisasi = async () => {
-//   try {
-//     const response: any = await grafikService.getTahunTerakhirRealisasiAnalitik();
-//     // filter.value.tahun = response.data.tahun;
-//   } catch (error) {
-//     console.error('Fetch Tahun Terakhir Realisasi Error : ' + error);
-//   }
-// }
 const fetchInitialPembangkit = async () => {
   try {
     const response: any = await grafikService.getInitialPembangkit();
@@ -179,7 +168,7 @@ const closeModal = () => {
     notifyError('Mohon pilih 1 tahun!', 5000);
   } else {
     notifyError('Mohon pilih minimal 1 kategori pembangkit!', 5000)
-  };
+  }
 }
 
 const applyFilter = async () => {
@@ -205,17 +194,8 @@ const applyFilterNoDMN = async () => {
     notifyError('Mohon pilih 1 tahun!', 5000);
   } else {
     notifyError('Mohon pilih minimal 1 kategori pembangkit!', 5000)
-  };
+  }
 }
-
-// const fetchPeriodeTahunSentral = async () => {
-//   try {
-//     const response: any = await petaService.getYearListBPA();
-//     periodeTahun.value = [response.data[0].tahun, response.data[response.data.length - 1].tahun];
-//   } catch (error) {
-//     console.error('Fetch Tahun Grafik Sentral Error : ' + error);
-//   }
-// }
 
 watch(value, (val) => {
   if (val.length === 0) {
@@ -262,8 +242,6 @@ const handleCheckDmn = (val: CheckboxValueType) => {
 onMounted(async () => {
   isLoading.value = true;
   await fetchInitialPembangkit()
-  // await fetchTahunTerakhirRealisasi();
-  // fetchPeriodeTahunSentral();
   getDataGraph();
 })
 </script>

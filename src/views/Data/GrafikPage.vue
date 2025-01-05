@@ -14,10 +14,6 @@
     <div class="bg-white">
       <ul class="flex items-end space-x-8 overflow-auto border-b-2 border-gray-50 whitespace-nowrap scrollbar-hide"
         :class="authService.checkLevel() === 'Sentral' ? 'mt-14' : 'mt-0'">
-        <!-- <li class="ml-5 text-gray-500 transition-all duration-300 cursor-pointer"
-            :class="{ selected: 'Unit Sentral' === selectedTitle }" @click="selectedTitle = 'Unit Sentral'">
-            Unit Sentral
-          </li> -->
         <li v-for="(item, i) in dataUnit" :key="i"
           class="pb-2 text-base font-bold transition-all duration-300 cursor-pointer text-textDisabledColor"
           :class="{ selected: item.mesin === selectedTitle }" @click="changeTabMesin(item.mesin)">
@@ -26,7 +22,7 @@
       </ul>
     </div>
   </div>
-  <!-- Sental -->
+  <!-- Sentral -->
   <div v-show="selectedTitle === 'Unit Sentral'" @click="selectedTitle = 'Unit Sentral'">
     <div class="flex mt-2">
       <div v-auto-animate="{ duration: 300 }" class="w-full px-4 py-2 mr-2 bg-white border rounded-md">
@@ -390,9 +386,8 @@
 import { ref, provide, onMounted, watch, onUnmounted } from "vue";
 import router from "@/router";
 import { useRoute } from "vue-router";
-import { useTagSentral } from "@/store/storeTagGrafik";
-import { useTagMesin } from "@/store/storeTagGrafik";
-import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
+import { useTagSentral, useTagMesin } from "@/store/storeTagGrafik";
+import { encryptStorage } from "@/utils/app-encrypt-storage";
 import { notifyError } from "@/services/helper/toast-notification";
 import { osDetector } from "@/utils/os-detector";
 import DetailSentralService from "@/services/detail-sentral-service";
@@ -453,7 +448,6 @@ const isOver = ref(false);
 const message = ref(false);
 const pembinaHover = ref(false);
 const tabs = ref("WLC (Realisasi & Proyeksi)");
-// const selectedTitle = ref("Unit Sentral");
 const selectedTitle = ref(namaMesin);
 
 function toggleButton() {
@@ -531,19 +525,18 @@ const fetchDataSentral = async () => {
     const response: SentralItem = await petaService.getSentralByKode(
       nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id
     );
-    // const { data } = response;
     dataSentral.value = response.data;
     idSentral.value = response.data.id_sentral;
     tahunSentral.value = response.data.tahun_data;
     namaMesin.value = response.data.mesins[0].mesin;
     jumlahMesin.value = response.data.jumlah_mesin
-    for (var i = 0; i < response.data.mesins.length; i++) {
-      idMesin.value.push(response.data.mesins[i].id_mesin)
-      tahunMesin.value.push(response.data.mesins[i].tahun_data)
+    for (const item of response.data.mesins) {
+      idMesin.value.push(item.id_mesin)
+      tahunMesin.value.push(item.tahun_data)
       try {
-        const responsePhoto: any = await detailSentralService.getPhoto(response.data.mesins[i].photo1);
+        const responsePhoto: any = await detailSentralService.getPhoto(item.photo1);
         const blob = new Blob([responsePhoto]);
-        response.data.mesins[i].photo2 = URL.createObjectURL(blob);
+        item.photo2 = URL.createObjectURL(blob);
       } catch (error) {
         console.error('Error Fetch Photo: ', error)
       }
@@ -608,11 +601,10 @@ const fetchPeriodeTahunSentral = async () => {
     });
     periodeTahunSentral.value = [response.data[0].tahun, response.data[response.data.length - 1].tahun];
     yearPickedSentral.value = response.data[response.data.length - 1].tahun;
-    for (let i = 0; i < dataUnit.value.length; i++) {
+    for (const item of dataUnit.value) {
       responseLimitTahun.value = await grafikService.getYearMesin({
-        id_mesin: dataUnit.value[i].id_mesin
+        id_mesin: item.id_mesin
       });
-      console.log('resp', responseLimitTahun.value.data)
       if (responseLimitTahun.value.data !== null) {
         selectedYear.value.push({ tahun: responseLimitTahun.value.data[responseLimitTahun.value.data.length - 1].tahun, range: [responseLimitTahun.value.data[0].tahun, responseLimitTahun.value.data[responseLimitTahun.value.data.length - 1].tahun] })
         console.log('year', responseLimitTahun.value.data, selectedYear.value)
@@ -621,24 +613,10 @@ const fetchPeriodeTahunSentral = async () => {
       }
     }
     console.log(yearPickerService.filterYears(responseLimitTahun.value.data, parseInt(selectedYear.value[0].range[0]), parseInt(selectedYear.value[0].range[1])))
-    // console.log('year', yearPickedSentral.value)
   } catch (error) {
     console.error('Fetch Tahun Grafik Sentral Error : ' + error);
   }
 }
-
-// const fetchPeriodeTahunMesin = async () => {
-//   try {
-//     const response: any = await grafikService.getYearMesin({
-//       id_mesin: item.id_mesin
-//     });
-//     periodeTahunMesin.value = [response.data[0].tahun, response.data[response.data.length - 1].tahun];
-//     selectedYear.value = response.data[response.data.length - 1].tahun
-//     // console.log('year', selectedYear.value)
-//   } catch (error) {
-//     console.error('Fetch Tahun Grafik Mesin Error : ' + error);
-//   }
-// }
 
 watch(route, async (value) => {
   await fetchDataSentral();

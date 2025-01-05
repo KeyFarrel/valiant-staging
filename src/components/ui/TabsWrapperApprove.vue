@@ -372,9 +372,9 @@ const pembinaHover = ref(false);
 const tab = ref("prev");
 
 const dataDetailWlcAllMesin = ref<Grafik1[]>([]);
-const datatableWlcAllMesin = ref<table[]>([]);
+const datatableWlcAllMesin = ref<TableInterface[]>([]);
 const dataDetailWlcKomMesin = ref<Grafik1[]>([]);
-const datatableWlcKomMesin = ref<table[]>([]);
+const datatableWlcKomMesin = ref<TableInterface[]>([]);
 const dataWLCAllMesin = ref<any[]>([]);
 const dataWLCKomMesin = ref<any[]>([]);
 const showModalWlcAll = ref(false);
@@ -484,7 +484,7 @@ interface Grafik1 {
   revenue_komp_bd: number
 }
 
-interface table {
+interface TableInterface {
   name: string;
   realisasi: number;
   planning: number;
@@ -506,6 +506,7 @@ onMounted(async () => {
       let indexOpt;
       let indexOptimum;
       let tahunOptimum;
+      let finalMax;
 
       dataWLCAllMesin.value = res.data;
 
@@ -516,17 +517,16 @@ onMounted(async () => {
       comBDWLCMesin.value = [];
       fuelComWLCMesin.value = [];
       yAxisWlc.value = [];
-      var isBepFounded = false;
+      let isBepFounded = false;
 
       if (res.data != null) {
-        var wlcAnnu = [];
-        var revenAnnu = [];
-        var capexAnnu = [];
-        var comBDAnnu = [];
-        var fuelComAnnu = [];
-        var finalMax;
+        let wlcAnnu = [];
+        let revenAnnu = [];
+        let capexAnnu = [];
+        let comBDAnnu = [];
+        let fuelComAnnu = [];
 
-        for (var i = 0; i < res.data.length; i++) {
+        for (let i = 0; i < res.data.length; i++) {
           tahunWLCAllMesin.value.push(res.data[i].tahun);
           revWLCMesin.value.push(res.data[i].revenue_annualized);
           sumLccWLCMesin.value.push(res.data[i].total_wlcc_annualized);
@@ -535,8 +535,8 @@ onMounted(async () => {
           comBDWLCMesin.value.push(res.data[i].cost_component_bd);
           fuelComWLCMesin.value.push(res.data[i].cost_component_c_annualized);
           yAxisWlc.value.push(res.data[i].capex_annualized + res.data[i].cost_component_bd + res.data[i].cost_component_c_annualized);
-          maxWlcBep.value = Math.max.apply(Math, yAxisWlc.value) * 1.1;
-          maxWlcOpt.value = Math.max.apply(Math, yAxisWlc.value);
+          maxWlcBep.value = Math.max(...yAxisWlc.value) * 1.1;
+          maxWlcOpt.value = Math.max(...yAxisWlc.value);
 
           wlcAnnu.push(res.data[i].total_wlcc_annualized)
           revenAnnu.push(res.data[i].revenue_annualized)
@@ -559,21 +559,21 @@ onMounted(async () => {
             isBepFounded = true
           }
 
-          const finalOptimum = Math.max.apply(Math, profitLoss.value);
+          const finalOptimum = Math.max(...profitLoss.value);
           if (finalOptimum == res.data[i].profit_loss) {
             indexOptimum = i;
             indexOpt = i + 1;
             tahunOptimum = res.data[i].tahun;
           }
         }
-        var maxWlc = Math.max.apply(Math, wlcAnnu)
-        var maxRev = Math.max.apply(Math, revenAnnu)
-        var maxCapex = Math.max.apply(Math, capexAnnu)
-        var maxComBD = Math.max.apply(Math, comBDAnnu)
-        var maxFuelCom = Math.max.apply(Math, fuelComAnnu)
+        let maxWlc = Math.max(...wlcAnnu)
+        let maxRev = Math.max(...revenAnnu)
+        let maxCapex = Math.max(...capexAnnu)
+        let maxComBD = Math.max(...comBDAnnu)
+        let maxFuelCom = Math.max(...fuelComAnnu)
 
-        var listOfMax = [maxCapex, maxComBD, maxFuelCom, maxWlc, maxRev]
-        finalMax = Math.max.apply(Math, listOfMax)
+        let listOfMax = [maxCapex, maxComBD, maxFuelCom, maxWlc, maxRev]
+        finalMax = Math.max(...listOfMax)
       }
 
       chartWLCAllMesin.value = isBepFounded ? {
@@ -926,16 +926,16 @@ onMounted(async () => {
       costCompBDMesin.value = [];
       sumCostCompMesin.value = [];
       if (res.data != null) {
-        for (var i = 0; i < res.data.length; i++) {
-          tahunWLCKomMesin.value.push(res.data[i].tahun);
-          costCompAMesin.value.push(res.data[i].cost_komp_a);
-          costCompCMesin.value.push(res.data[i].cost_komp_c);
-          costCompBDMesin.value.push(res.data[i].cost_komp_bd);
+        for (const item of res.data) {
+          tahunWLCKomMesin.value.push(item.tahun);
+          costCompAMesin.value.push(item.cost_komp_a);
+          costCompCMesin.value.push(item.cost_komp_c);
+          costCompBDMesin.value.push(item.cost_komp_bd);
           sumCostCompMesin.value.push(
-            res.data[i].cost_komp_a +
-            res.data[i].cost_komp_b +
-            res.data[i].cost_komp_c +
-            res.data[i].cost_komp_d
+            item.cost_komp_a +
+            item.cost_komp_b +
+            item.cost_komp_c +
+            item.cost_komp_d
           );
         }
       }
@@ -1074,7 +1074,6 @@ let tahunDetail = ref("");
 function handleClickWlcAll(param: any) {
   showModalWlcAll.value = true;
   tahunDetail.value = tahunWLCAllMesin.value[param.dataIndex];
-  // console.log(tahunDetail.value);
 
   grafikService
     .getGrafikWLCALLDetailMesin({
@@ -1092,12 +1091,10 @@ function handleClickWlcAll(param: any) {
       res.data.graph.sort((a: any, b: any) => a.nomor - b.nomor);
       res.data.table.sort((a: any, b: any) => a.nomor - b.nomor);
 
-      console.log(datatableWlcAllMesin.value);
-
-      for (var i = 0; i < res.data.graph.length; i++) {
-        judulDetWlcAll.value.push(res.data.graph[i].judul);
-        realDetWlcAll.value.push(res.data.graph[i].realisasi);
-        planDetWlcAll.value.push(res.data.graph[i].planning);
+      for (const item of res.data.graph) {
+        judulDetWlcAll.value.push(item.judul);
+        realDetWlcAll.value.push(item.realisasi);
+        planDetWlcAll.value.push(item.planning);
       }
 
       chartDetailWLCAllMesin.value = {
@@ -1177,7 +1174,6 @@ function handleClickWlcAll(param: any) {
 function handleClickWlcKom(param: any) {
   showModalWlcKom.value = true;
   tahunDetail.value = tahunWLCKomMesin.value[param.dataIndex];
-  // console.log(tahunDetail.value);
 
   grafikService
     .getGrafikWLCKomDetailMesin({
@@ -1195,10 +1191,10 @@ function handleClickWlcKom(param: any) {
       res.data.graph.sort((a: any, b: any) => a.nomor - b.nomor);
       res.data.table.sort((a: any, b: any) => a.nomor - b.nomor);
 
-      for (var i = 0; i < res.data.graph.length; i++) {
-        judulDetWlcKom.value.push(res.data.graph[i].judul);
-        realDetWlcKom.value.push(res.data.graph[i].realisasi);
-        planDetWlcKom.value.push(res.data.graph[i].planning);
+      for (const item of res.data.graph) {
+        judulDetWlcKom.value.push(item.judul);
+        realDetWlcKom.value.push(item.realisasi);
+        planDetWlcKom.value.push(item.planning);
       }
 
       chartDetailWLCKomMesin.value = {

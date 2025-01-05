@@ -13,7 +13,6 @@ import { notifyError } from "@/services/helper/toast-notification";
 
 const petaService = new PetaService();
 const grafikService = new GrafikService();
-// const periodeTahun = ref<Array<number>>([]);
 const checkAll = ref(false)
 const checkDmn = ref(true)
 const indeterminate = ref(false)
@@ -55,14 +54,6 @@ const filter: Ref<{
   tahun: new Date().getFullYear()
 })
 
-// const fetchTahunTerakhirRealisasi = async () => {
-//   try {
-//     const response: any = await grafikService.getTahunTerakhirRealisasiAnalitik();
-//     // filter.value.tahun = response.data.tahun;
-//   } catch (error) {
-//     console.error('Fetch Tahun Terakhir Realisasi Error : ' + error);
-//   }
-// }
 const fetchInitialPembangkit = async () => {
   try {
     const response: any = await grafikService.getInitialPembangkit();
@@ -90,7 +81,7 @@ async function getDataGraph() {
       graphData.value.source = []
       graphData.value.pln.x = data.average_daya_terpasang
       graphData.value.pln.y = data.average_opex
-      graphData.value.ipp.x = Math.min.apply(Math, data.grafik?.map(graph => graph.data.daya_terpasang)) // min daya
+      graphData.value.ipp.x = Math.min(...data.grafik?.map(graph => graph.data.daya_terpasang)) // min daya
       graphData.value.ipp.y = data.average_ipp_opex
       data.legend?.map((item, index) => {
         graphData.value.legends?.push(item)
@@ -137,7 +128,7 @@ async function getDataGraphNoDMN() {
       graphData.value.source = [];
       graphData.value.pln.x = data.average_daya_terpasang;
       graphData.value.pln.y = data.average_opex;
-      graphData.value.ipp.x = Math.min.apply(Math, data.grafik?.map(graph => graph.data.daya_terpasang)); // min daya
+      graphData.value.ipp.x = Math.min(...data.grafik?.map(graph => graph.data.daya_terpasang)); // min daya
       graphData.value.ipp.y = data.average_ipp_opex;
       data.legend?.map((item, index) => {
         graphData.value.legends?.push(item);
@@ -206,15 +197,6 @@ const applyFilterNoDMN = async () => {
   }
 }
 
-// const fetchPeriodeTahunSentral = async () => {
-//   try {
-//     const response: any = await petaService.getYearListBPA();
-//     periodeTahun.value = [response.data[0].tahun, response.data[response.data.length - 1].tahun];
-//   } catch (error) {
-//     console.error('Fetch Tahun Grafik Sentral Error : ' + error);
-//   }
-// }
-
 watch(value, (val) => {
   if (val.length === 0) {
     checkAll.value = false
@@ -260,8 +242,6 @@ const handleCheckDmn = (val: CheckboxValueType) => {
 onMounted(async () => {
   isLoading.value = true
   await fetchInitialPembangkit();
-  // await fetchTahunTerakhirRealisasi();
-  // fetchPeriodeTahunSentral();
   getDataGraph();
 })
 </script>

@@ -1,8 +1,6 @@
 <template>
   <div class="grid grid-cols-2 mt-5 gap-x-10 gap-y-5" v-bind="$attrs">
-    <div
-      class="flex flex-col px-5 py-4 border-l-8 border-l-[#0099AD] rounded-lg border"
-    >
+    <div class="flex flex-col px-5 py-4 border-l-8 border-l-[#0099AD] rounded-lg border">
       <p class="text-base font-semibold pb-3 border-b">
         Internal Rate of Return (IRR)
       </p>
@@ -17,9 +15,7 @@
         </div>
       </div>
     </div>
-    <div
-      class="flex flex-col px-5 py-4 border-l-8 border-l-[#0099AD] rounded-lg border"
-    >
+    <div class="flex flex-col px-5 py-4 border-l-8 border-l-[#0099AD] rounded-lg border">
       <p class="text-base font-semibold pb-3 border-b">
         Net Present Value (NPV)
       </p>
@@ -38,17 +34,13 @@
         </div>
       </div>
     </div>
-    <div
-      class="flex flex-col px-5 py-4 border-l-8 border-l-[#0099AD] rounded-lg border space-y-3"
-    >
+    <div class="flex flex-col px-5 py-4 border-l-8 border-l-[#0099AD] rounded-lg border space-y-3">
       <p class="text-base font-semibold pb-3 border-b">
         Average Net Capacity Factor (NCF)
       </p>
       <p>7 <span class="text-textDisabledColor">%</span></p>
     </div>
-    <div
-      class="flex flex-col px-5 py-4 border-l-8 border-l-[#0099AD] rounded-lg border space-y-3"
-    >
+    <div class="flex flex-col px-5 py-4 border-l-8 border-l-[#0099AD] rounded-lg border space-y-3">
       <p class="text-base font-semibold pb-3 border-b">
         Average Equivalent Availability Factor (EAF)
       </p>
@@ -58,5 +50,3 @@
 </template>
 
 <script setup lang="ts"></script>
-
-<style scoped></style>

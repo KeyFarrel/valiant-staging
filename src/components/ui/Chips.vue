@@ -12,5 +12,3 @@ const props = defineProps({
   content: [String, Number],
 });
 </script>
-
-<style scoped></style>

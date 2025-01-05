@@ -174,7 +174,6 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { encryptStorage, encryptedUserInfo } from "@/utils/app-encrypt-storage";
 import { useLamanDataTabStore } from "@/store/storeLamanDataTab";
 const store = useLamanDataTabStore();
 import Empty from "@/components/ui/EmptyData.vue";
@@ -243,8 +242,7 @@ const fetchDataFinansial = async () => {
 };
 const fetchTahunSelected = async () => {
   try {
-    const response: any = await lamanService.getTahunSelected();
-    // yearPicked.value = response.data.tahun;
+    await lamanService.getTahunSelected();
   } catch (error) {
     console.error('Fetch Tahun Terakhir Realisasi Error : ' + error);
   }
@@ -287,7 +285,6 @@ const handleExport = async () => {
     const year = yearPicked.value;
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    const formattedDate = `${year}${month}${day}`;
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `Laman Data - Finansial - ${year}.xlsx`;

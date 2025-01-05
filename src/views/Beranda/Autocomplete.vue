@@ -41,5 +41,3 @@ const setSelected: any = (item: any) => {
   searchQuery.value = item;
 }
 </script>
-
-<style scoped></style>

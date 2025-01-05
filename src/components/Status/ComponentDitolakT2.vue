@@ -9,5 +9,3 @@
 <script setup lang="ts">
 import IconRejectedPersetujuan from '@/components/icons/IconRejectedPersetujuan.vue';
 </script>
-
-<style scoped></style>

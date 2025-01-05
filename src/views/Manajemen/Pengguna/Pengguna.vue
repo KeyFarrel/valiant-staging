@@ -72,7 +72,7 @@
       </template>
       <template v-slot:table-body v-else>
         <tr v-for="(user, index) in pengguna" :key="user.id">
-          <td scope="row" class="text-center whitespace-nowrap">
+          <td class="text-center whitespace-nowrap">
             {{ index + 1 }}
           </td>
           <td class="text-left">
@@ -670,7 +670,7 @@ const resetFormData = () => {
     isLocked: false
   };
 };
-var debounceTimeout: any = null;
+let debounceTimeout: any = null;
 
 interface PenggunaItem {
   data: any
@@ -759,30 +759,28 @@ const generatePageList = computed(() => {
     for (let i = 1; i <= navigation.value.totalPages; i++) {
       pageList.push(i);
     }
-  } else {
-    if (navigation.value.currentPage <= 3) {
-      for (let i = 1; i <= Math.min(navigation.value.totalPages, maxPages - 1); i++) {
-        pageList.push(i);
-      }
-      if (navigation.value.totalPages > maxPages) {
-        pageList.push('...');
-        pageList.push(navigation.value.totalPages);
-      }
-    } else if (navigation.value.currentPage >= navigation.value.totalPages - 2) {
-      pageList.push(1);
-      pageList.push('...');
-      for (let i = navigation.value.totalPages - (maxPages - 2); i <= navigation.value.totalPages; i++) {
-        pageList.push(i);
-      }
-    } else {
-      pageList.push(1);
-      pageList.push('...');
-      for (let i = navigation.value.currentPage - 1; i <= navigation.value.currentPage + 1; i++) {
-        pageList.push(i);
-      }
+  } else if (navigation.value.currentPage <= 3) {
+    for (let i = 1; i <= Math.min(navigation.value.totalPages, maxPages - 1); i++) {
+      pageList.push(i);
+    }
+    if (navigation.value.totalPages > maxPages) {
       pageList.push('...');
       pageList.push(navigation.value.totalPages);
     }
+  } else if (navigation.value.currentPage >= navigation.value.totalPages - 2) {
+    pageList.push(1);
+    pageList.push('...');
+    for (let i = navigation.value.totalPages - (maxPages - 2); i <= navigation.value.totalPages; i++) {
+      pageList.push(i);
+    }
+  } else {
+    pageList.push(1);
+    pageList.push('...');
+    for (let i = navigation.value.currentPage - 1; i <= navigation.value.currentPage + 1; i++) {
+      pageList.push(i);
+    }
+    pageList.push('...');
+    pageList.push(navigation.value.totalPages);
   }
   return pageList;
 });
@@ -880,7 +878,7 @@ const changePageLimit = async (event: any) => {
 
 const isActive = computed({
   get: () => formData.value.status === true,
-  set: (value) => (formData.value.status = value ? true : false),
+  set: (value) => (formData.value.status = !!value),
 });
 
 const handleChangeConfirmPassword = () => {
@@ -979,7 +977,7 @@ const editUserDataAndCloseModal = async () => {
   }
   if (errorsEdit.value.length === 0) {
     try {
-      var dataToPost = {};
+      let dataToPost = {};
       if (formData.value.level_id === '1' || formData.value.level_id === '5') {
         dataToPost = {
           nama_pegawai: formData.value.nama_pegawai,
@@ -1250,7 +1248,7 @@ const calculateRowNumber = (group: string, index: number) => {
 
 onMounted(async () => {
   try {
-    const response: any = await userService.getSentral();
+    await userService.getSentral();
   } catch (error) {
     console.error("Error fetching combo sentral:", error);
   }
@@ -1281,7 +1279,6 @@ onMounted(async () => {
 onMounted(async () => {
   try {
     const response: any = await userService.getInduk();
-    const responseData = response;
     comboInduk.value = response.data;
     comboInduk.value.forEach((item) => {
       indukMappings.value[item.id_pengelola] = item.id_pengelola;
@@ -1304,7 +1301,6 @@ onMounted(async () => {
 onMounted(async () => {
   try {
     const response: any = await userService.getLevel();
-    const responseData = response;
     comboLevel.value = response.data.filter((item: any) => item.kode_level !== '1');
     comboLevel.value.forEach((item) => {
       levelMappings.value[item.kode_level] = item.level;

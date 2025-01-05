@@ -9,5 +9,3 @@
 <script setup lang="ts">
 import IconWarningPersetujuan from '../icons/IconWarningPersetujuan.vue';
 </script>
-
-<style scoped></style>
