@@ -76,7 +76,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import { useRoute } from "vue-router";
 const route = useRoute();
 import FeasibilityStudyService from "@/services/feasibility-study";
@@ -127,7 +127,7 @@ const namaPengelola = ref<string>('');
 const namaPembina = ref<string>('');
 const finansialMappingResult = ref<any[]>([]);
 const typePeriodic = ref<Object[]>([]);
-const idMesin = parseInt(nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString());
+const idMesin = ref<number>(0);
 const selectedTab = ref("Akhir Masa");
 const tahunBerjalan = new Date().getFullYear();
 
@@ -170,7 +170,7 @@ interface ParameterTeknisFinancialItem {
 const fetchMesinById = async () => {
   try {
     const response: MesinItem = await feasibilityStudyService.getMesinById(
-      idMesin
+      idMesin.value
     );
     mesinDataById.value = response.data;
   } catch (error) {
@@ -181,7 +181,7 @@ const fetchAsumsiFeasibility = async () => {
   try {
     const response: any =
       await feasibilityStudyService.getAsumsiFeasibility(
-        idMesin,
+        idMesin.value,
         parseInt(mesinDataById.value?.tahun_operasi ?? '')
       );
     asumsiMakro.value = {
@@ -216,7 +216,7 @@ const fetchAsumsiFeasibility = async () => {
 };
 const fetchDataTeknis = async () => {
   try {
-    const response: any = await feasibilityStudyService.getDataTeknis(idMesin);
+    const response: any = await feasibilityStudyService.getDataTeknis(idMesin.value);
     dataTeknis.value = response.data;
   } catch (error) {
     console.error("Error Fetch Data Teknis : " + error);
@@ -225,7 +225,7 @@ const fetchDataTeknis = async () => {
 const fetchDataFinansial = async () => {
   try {
     const response: any = await feasibilityStudyService.getDataFinansial(
-      idMesin
+      idMesin.value
     );
     let currentLevel1: any | null = null;
     let currentLevel2: any | null = null;
@@ -261,7 +261,7 @@ const fetchDataFinansial = async () => {
 const fetchHasilSimulasi = async () => {
   try {
     const response: any = await feasibilityStudyService.getHasilSimulasi(
-      idMesin,
+      idMesin.value,
       4
     );
     hasilSimulasi.value = response.data;
@@ -319,10 +319,10 @@ const fetchUnitPengelola = async () => {
 const handleDownloadExcelMesin = async () => {
   try {
     isLoading.value = true;
-    const response: any = await feasibilityStudyService.downloadExcelFS(tahunBerjalan, tahunBerjalan - 1, idMesin);
+    const response: any = await feasibilityStudyService.downloadExcelFS(tahunBerjalan, tahunBerjalan - 1, idMesin.value);
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
-    const fileName = fileNameMatch ? fileNameMatch[1] : `Feasibility Study - ${mesinDataById.value?.mesin}_${tahunBerjalan}_${globalFormat.formatNumberFiveDigits(idMesin)}.xlsx`;
+    const fileName = fileNameMatch ? fileNameMatch[1] : `Feasibility Study - ${mesinDataById.value?.mesin}_${tahunBerjalan}_${globalFormat.formatNumberFiveDigits(idMesin.value)}.xlsx`;
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -339,6 +339,8 @@ const handleDownloadExcelMesin = async () => {
 
 onMounted(async () => {
   isLoading.value = true;
+  const encryptStorage = await encryptStoragePromise;
+  idMesin.value = parseInt(nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString());
   await fetchMesinById();
   await fetchAsumsiFeasibility();
   await fetchDataTeknis();

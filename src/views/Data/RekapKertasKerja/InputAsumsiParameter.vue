@@ -48,7 +48,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { notifyError } from '@/services/helper/toast-notification';
-import { encryptStorage } from '@/utils/app-encrypt-storage';
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import router from '@/router';
 import { useRoute } from 'vue-router';
 const route = useRoute();
@@ -88,7 +88,7 @@ const statusCode = ref();
 const namaPengelola = ref<string>('');
 const namaPembina = ref<string>('');
 const kodeMesin = ref();
-const idMesin = parseInt(nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString());
+const idMesin = ref<number>(0);
 const tahunBerjalan = new Date().getFullYear();
 const interestRate = ref<string>('');
 const umurTeknis = ref<string>('');
@@ -182,7 +182,7 @@ const checkedBahanBakar = ref<number[]>([]);
 const bahanBakars = ref<any[]>([
   {
     id: 1,
-    id_mesin: idMesin,
+    id_mesin: idMesin.value,
     tahun: tahunBerjalan.toString(),
     kode_bahan_bakar: "",
     harga_bahan_bakar: "",
@@ -193,7 +193,7 @@ const bahanBakars = ref<any[]>([
 
 const fetchCheckIntegrasi = async () => {
   try {
-    const response: any = await perbaruiDataService.getCheckIntegrasi(tahunBerjalan - 1, idMesin);
+    const response: any = await perbaruiDataService.getCheckIntegrasi(tahunBerjalan - 1, idMesin.value);
     isIntegrasi.value = response.data[0].status_data_integrasi !== "0";
     console.log(isIntegrasi.value, 'dds');
   } catch (error) {
@@ -203,7 +203,7 @@ const fetchCheckIntegrasi = async () => {
 const fetchMesinById = async () => {
   try {
     const response: any = await inputAsumsiParameterService.getMesinById(
-      idMesin
+      idMesin.value
     );
     mesin.value = response.data;
     kodeJenisPembangkit.value = response.data.kode_jenis_pembangkit;
@@ -216,7 +216,7 @@ const fetchMesinById = async () => {
 };
 const fetchStatusRealisasiById = async () => {
   try {
-    const response: any = await inputAsumsiParameterService.getStatusRealisasiById(idMesin);
+    const response: any = await inputAsumsiParameterService.getStatusRealisasiById(idMesin.value);
     statusRealisasi.value = response.data[0].status_kk;
   } catch (error) {
     console.error('Fetch Combo Bahan Bakar Error : ' + error);
@@ -226,7 +226,7 @@ const fetchAsumsiParameter = async (isCreate: boolean) => {
   try {
     const response: any = await inputAsumsiParameterService.getAsumsiMakroData(
       tahunBerjalan - 1,
-      idMesin,
+      idMesin.value,
       tahunBerjalan
     )
     if (isCreate !== true) {
@@ -323,7 +323,7 @@ const fetchUnitPengelola = async () => {
 function handleTambahBahanBakar() {
   bahanBakars.value.push({
     id: i.value++,
-    id_mesin: idMesin,
+    id_mesin: idMesin.value,
     tahun: tahunBerjalan,
     kode_bahan_bakar: "",
     harga_bahan_bakar: "",
@@ -432,7 +432,7 @@ const insertAsumsiParameter = async () => {
           id_asumsi: idAsumsi.value,
           tahun: tahunBerjalan,
           tahun_realisasi: tahunBerjalan - 1,
-          id_mesin: parseInt(idMesin.toString()),
+          id_mesin: parseInt(idMesin.value.toString()),
           umur_teknis: parseInt(masaManfaat.value),
           interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
           loan_portion: parseFloat(finalLoanPortion.replace(/,/g, '.')),
@@ -459,7 +459,7 @@ const insertAsumsiParameter = async () => {
         console.log(bahanBakars.value, 'BahanBakars');
         console.log(finalBahanBakars, 'Final')
         const formParameterUpdate = {
-          id_mesin: parseInt(idMesin.toString()),
+          id_mesin: parseInt(idMesin.value.toString()),
           tahun_realisasi: tahunBerjalan - 1,
           id_asumsi: idAsumsi.value,
           auxiliary: parseFloat(finalAuxiliary.replace(/,/g, '.')),
@@ -473,6 +473,7 @@ const insertAsumsiParameter = async () => {
           electricity_price_a_rp_per_kwbln: parseFloat(finalElecA.replace(/,/g, '.')),
           electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),
         }
+        console.log(formParameterUpdate, "Form Parameter Update");
         await inputAsumsiParameterService.createParameter(formParameterUpdate);
         isLoading.value = false;
         isInsertSuccess.value = true;
@@ -482,7 +483,7 @@ const insertAsumsiParameter = async () => {
         const formAsumsiCreate = {
           tahun: tahunBerjalan,
           tahun_realisasi: tahunBerjalan - 1,
-          id_mesin: parseInt(idMesin.toString()),
+          id_mesin: parseInt(idMesin.value.toString()),
           interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
           umur_teknis: parseInt(masaManfaat.value),
           loan_tenor: parseInt(loanTenor.value),
@@ -506,10 +507,11 @@ const insertAsumsiParameter = async () => {
           let finalSFC = newValue.sfc.includes('.') ? newValue.sfc.replace(/[.]/g, '') : newValue.sfc;
           newValue.sfc = parseFloat(finalSFC.replace(/,/g, '.'));
           newValue.tahun = (tahunBerjalan - 1).toString();
+          newValue.id_mesin = idMesin.value;
           return newValue;
         });
         const formParameterCreate = {
-          id_mesin: parseInt(idMesin.toString()),
+          id_mesin: parseInt(idMesin.value.toString()),
           id_asumsi: idAsumsi.value,
           tahun_realisasi: tahunBerjalan - 1,
           tahun: tahunBerjalan,
@@ -523,6 +525,7 @@ const insertAsumsiParameter = async () => {
           harga_bahan_bakars: finalBahanBakars,
           electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),
         }
+        console.log(formParameterCreate, 'Form Parameter Create');
         await inputAsumsiParameterService.createParameter(formParameterCreate);
         isLoading.value = false;
         isInsertSuccess.value = true;
@@ -541,6 +544,8 @@ const insertAsumsiParameter = async () => {
 
 onMounted(async () => {
   isLoading.value = true;
+  const encryptStorage = await encryptStoragePromise;
+  idMesin.value = parseInt(nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString())
   await fetchStatusRealisasiById();
   await fetchMesinById();
   await fetchCheckIntegrasi();

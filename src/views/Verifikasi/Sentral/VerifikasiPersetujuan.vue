@@ -82,7 +82,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, provide } from "vue";
-import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import PersetujuanService from '@/services/persetujuan-service';
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import KertasKerja from "@/views/Verifikasi/Sentral/TabPage/KK/KertasKerja.vue";
@@ -92,7 +92,7 @@ import FeasibilityStudyMesin from "@/views/Verifikasi/Sentral/TabPage/FS/Feasibi
 
 const nodeMode = import.meta.env.MODE;
 const persetujuanService = new PersetujuanService();
-const levelSentral = ref(nodeMode === 'production' ? encryptStorage.getItem('level_sentral') : localStorage.getItem("level_sentral"));
+const levelSentral = ref<any>('');
 const year = new Date().getFullYear();
 const approveSentralKK = ref<any[]>([]);
 const approveMesinKK = ref<any>();
@@ -166,6 +166,8 @@ function toggleButton() {
 
 onMounted(async () => {
   isLoading.value = true;
+  const encryptStorage = await encryptStoragePromise;
+  levelSentral.value = nodeMode === 'production' ? encryptStorage.getItem('level_sentral') : localStorage.getItem("level_sentral");
   await fetchPersetujuanKK();
   await fetchPersetujuanFS();
   await fetchDetailMesin();

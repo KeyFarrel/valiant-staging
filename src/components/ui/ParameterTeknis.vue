@@ -164,7 +164,7 @@
     </template>
   </div>
   <ReloadComponent v-else-if="props.isFetchingError && (!props.dayaTerpasang || !props.dayaMampuNetto)"
-    @onClick="emit('onClick')" />
+    @on-click="emit('onClickReload')" @on-key-down="emit('onKeyDown')" />
   <ShimmerLoading v-else class="w-full h-[500px]" />
 </template>
 
@@ -201,7 +201,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   isFetchingError: false
 })
-const emit = defineEmits(['onChange', 'onClick'])
+const emit = defineEmits(['onChange', 'onClickReload', 'onKeyDown'])
 const namaBahanBakar = (kodeBahanBakar: any) => {
   const result = props.comboBahanBakar.filter((val: any) => val.kode_bahan_bakar === kodeBahanBakar)
   if (result.length !== 0) {

@@ -21,7 +21,7 @@
               Component A) <span class="text-warningColor">*</span> </label>
             <div class="flex items-center justify-start">
               <TextField @on-input="handleInputDecimalRupiah('costComponentA')" v-model="costComponentA" class="pl-9" />
-              <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+              <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
             </div>
             <div class="text-xs text-warningColor" v-if="props.error?.costComponentA === true">
               Cost Component A wajib diisi
@@ -44,7 +44,7 @@
             <div class="flex items-center justify-start">
               <TextField @on-input="handleInputDecimalRupiah('costComponentB')" v-model="costComponentB" class="pl-9"
                 :disabled="props.isIntegrasi" />
-              <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+              <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
             </div>
             <div class="text-xs text-warningColor" v-if="props.error?.costComponentB === true">Total Cost
               Component
@@ -59,7 +59,7 @@
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('biayaKepegawaian')" v-model="biayaKepegawaian"
                   class="pl-9" :disabled="props.isIntegrasi" />
-                <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+                <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
               </div>
               <div class="text-xs text-warningColor" v-if="props.error?.biayaKepegawaian === true">
                 Biaya Kepegawaian wajib diisi</div>
@@ -72,7 +72,7 @@
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('biayaPemeliharaanRutin')"
                   v-model="biayaPemeliharaanRutin" class="pl-9" :disabled="props.isIntegrasi" />
-                <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+                <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
               </div>
               <div class="text-xs text-warningColor" v-if="props.error?.biayaPemeliharaanRutin === true">
                 Biaya Pemeliharaan Rutin wajib diisi</div>
@@ -85,7 +85,7 @@
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('biayaAdministrasiUmum')" v-model="biayaAdministrasiUmum"
                   class="pl-9" :disabled="props.isIntegrasi" />
-                <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+                <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
               </div>
               <div class="text-xs text-warningColor" v-if="props.error?.biayaAdministrasiUmum === true">
                 Biaya Administrasi Umum wajib diisi</div>
@@ -98,7 +98,7 @@
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('biayaPembelianTenagaListrik')"
                   v-model="biayaPembelianTenagaListrik" class="pl-9" :disabled="props.isIntegrasi" />
-                <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+                <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
               </div>
               <div class="text-xs text-warningColor" v-if="props.error?.biayaPembelianTenagaListrik === true">
                 Biaya Pembelian Tenaga Listrik wajib diisi</div>
@@ -111,7 +111,7 @@
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('biayaLainLain')" v-model="biayaLainLain" class="pl-9"
                   :disabled="props.isIntegrasi" />
-                <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+                <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
               </div>
               <div class="text-xs text-warningColor" v-if="props.error?.biayaLainLain === true">
                 Biaya Lain Lain wajib diisi</div>
@@ -134,7 +134,7 @@
             <div class="flex items-center justify-start">
               <TextField @on-input="handleInputDecimalRupiah('costComponentB')" v-model="costComponentB" class="pl-9"
                 :disabled="props.isIntegrasi" />
-              <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+              <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
             </div>
             <div class="text-xs text-warningColor" v-if="props.error?.costComponentB === true">Total Cost
               Component B dan D wajib diisi</div>
@@ -148,7 +148,7 @@
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('oMCost')" v-model="oMCost" class="pl-9"
                   :disabled="props.isIntegrasi" />
-                <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+                <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
               </div>
               <div class="text-xs text-warningColor" v-if="props.error?.oMCost === true">O&M Cost wajib diisi
               </div>
@@ -161,7 +161,7 @@
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('periodicMaintenanceCost')"
                   v-model="periodicMaintenanceCost" class="pl-9" :disabled="props.isIntegrasi" />
-                <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+                <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
               </div>
               <div class="text-xs text-warningColor" v-if="props.error?.periodicMaintenanceCost === true">
                 Periodic Maintenance Cost (Non MI) Cost wajib diisi</div>
@@ -184,7 +184,7 @@
             <div class="flex items-center justify-start">
               <TextField @on-input="handleInputDecimalRupiah('costComponentC')" v-model="costComponentC" class="pl-9"
                 :disabled="props.isIntegrasi" />
-              <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+              <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
             </div>
             <div class="text-xs text-warningColor" v-if="props.error?.costComponentC === true">Total Cost
               Component
@@ -200,7 +200,7 @@
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('componentCDetail', componentCIndex)" class="pl-9"
                   v-model="componentCItem.fuel_cost" :disabled="props.isIntegrasi" />
-                <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+                <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
               </div>
               <div class="text-xs text-warningColor" v-if="props.error?.costComponentCDetail === true">Cost
                 Component C Detail wajib diisi</div>
@@ -223,7 +223,7 @@
             <div class="flex items-center justify-start">
               <TextField @on-input="handleInputDecimalRupiah('costComponentD')" v-model="costComponentD" class="pl-9"
                 :disabled="props.isIntegrasi" />
-              <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+              <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
             </div>
             <div class="text-xs text-warningColor" v-if="props.error?.costComponentD === true">Total Cost
               Component
@@ -238,7 +238,7 @@
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('biayaMinyakPelumas')" v-model="biayaMinyakPelumas"
                   class="pl-9" :disabled="props.isIntegrasi" />
-                <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+                <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
               </div>
               <div class="text-xs text-warningColor" v-if="props.error?.biayaMinyakPelumas === true">
                 Biaya Minyak Pelumas wajib diisi</div>
@@ -251,7 +251,7 @@
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('bahanKimia')" v-model="bahanKimia" class="pl-9"
                   :disabled="props.isIntegrasi" />
-                <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+                <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
               </div>
               <div class="text-xs text-warningColor" v-if="props.error?.biayaBahanKimia === true">
                 Biaya Bahan Kimia wajib diisi</div>
@@ -274,7 +274,7 @@
             <div class="flex items-center justify-start">
               <TextField @on-input="handleInputDecimalRupiah('totalRevenue')" v-model="totalRevenue" class="pl-9"
                 :disabled="props.isIntegrasi" />
-              <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+              <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
             </div>
             <div class="text-xs text-warningColor" v-if="props.error?.totalRevenue === true">Total Revenue wajib diisi
             </div>
@@ -288,7 +288,7 @@
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('revenueKompA')" v-model="revenueKompA" class="pl-9"
                   :disabled="props.isIntegrasi" />
-                <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+                <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
               </div>
               <div class="text-xs text-warningColor" v-if="props.error?.revenueKompA === true">
                 Revenue Komp A wajib diisi</div>
@@ -301,7 +301,7 @@
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('revenueKompB')" v-model="revenueKompB" class="pl-9"
                   :disabled="props.isIntegrasi" />
-                <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+                <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
               </div>
               <div class="text-xs text-warningColor" v-if="props.error?.revenueKompB === true">
                 Revenue Komp B wajib diisi</div>
@@ -314,7 +314,7 @@
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('revenueKompC')" v-model="revenueKompC" class="pl-9"
                   :disabled="props.isIntegrasi" />
-                <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+                <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
               </div>
               <div class="text-xs text-warningColor" v-if="props.error?.revenueKompC === true">
                 Revenue Komp C wajib diisi</div>
@@ -327,7 +327,7 @@
               <div class="flex items-center justify-start">
                 <TextField @on-input="handleInputDecimalRupiah('revenueKompD')" v-model="revenueKompD" class="pl-9"
                   :disabled="props.isIntegrasi" />
-                <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+                <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
               </div>
               <div class="text-xs text-warningColor" v-if="props.error?.revenueKompD === true">
                 Revenue Komp D wajib diisi</div>

@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import { useRoleMenuStore } from "@/store/storeRoleMenu";
-import { useNavbarLabelStore } from '@/store/storeNavbar';
-import { useRekapNavigationStore } from '@/store/storeRekapKertasKerja';
-import { encryptStorage } from "@/utils/app-encrypt-storage";
+import CryptoJS from "crypto-js";
+import { useNavbarLabelStore } from "@/store/storeNavbar";
+import { useRekapNavigationStore } from "@/store/storeRekapKertasKerja";
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import Sidebar from "@/components/layout/Sidebar.vue";
 import PetaSebaran from "@/views/Beranda/PetaSebaran.vue";
 import LamanUtama from "@/views/Beranda/LamanUtama/LamanUtama.vue";
@@ -25,6 +25,7 @@ import PersetujuanKk from "@/views/Verifikasi/Sentral/TabPage/KK/DetailKK.vue";
 import PersetujuanFSMesin from "@/views/Verifikasi/Sentral/TabPage/FS/DetailFSMesin.vue";
 import PersetujuanKkMesin from "@/views/Verifikasi/Sentral/TabPage/KK/DetailKKMesin.vue";
 import InputAsumsiKKApprove from "@/views/Verifikasi/Sentral/TabPage/KK/InputAsumsiParameter.vue";
+import PerbaruiDataKKApprove from "@/views/Verifikasi/Sentral/TabPage/KK/PerbaruiData.vue";
 import SentralAdmin from "@/views/Master/SentralAdmin.vue";
 import DetailUnit from "@/views/Master/DetailUnit.vue";
 import DetailRekap from "@/views/Data/RekapKertasKerja/DetailRekap/DetailRekap.vue";
@@ -43,6 +44,7 @@ import MesinBelumTerinput from "@/views/Beranda/LamanUtama/MesinBelumTerinput.vu
 import Login from "../views/Login.vue";
 import VerifikasiSSO from "@/views/VerifikasiSSO.vue";
 import Error404Page from "@/views/404Page.vue";
+import AuthService from "@/services/auth-service";
 
 const nodeMode: any = import.meta.env.MODE;
 
@@ -52,8 +54,8 @@ const routes: RouteRecordRaw[] = [
     name: "login",
     component: Login,
     meta: {
-      label: 'Peta Sebaran',
-    }
+      label: "Peta Sebaran",
+    },
   },
   {
     path: "/redirect-sso",
@@ -61,7 +63,7 @@ const routes: RouteRecordRaw[] = [
     component: VerifikasiSSO,
     meta: {
       requiresAuth: true,
-      label: 'Verifikasi SSO',
+      label: "Verifikasi SSO",
     },
   },
   {
@@ -69,16 +71,16 @@ const routes: RouteRecordRaw[] = [
     name: "AA",
     component: Sidebar,
     meta: {
-      label: 'Peta Sebaran',
+      label: "Peta Sebaran",
     },
     children: [
       {
         path: "/peta",
-        name: "dashboard",
+        name: "peta",
         component: PetaSebaran,
         meta: {
           requiresAuth: true,
-          label: 'Peta Sebaran',
+          label: "Peta Sebaran",
         },
       },
       {
@@ -87,7 +89,7 @@ const routes: RouteRecordRaw[] = [
         component: LamanUtama,
         meta: {
           requiresAuth: true,
-          label: 'Laman Utama',
+          label: "Laman Utama",
         },
       },
       {
@@ -96,7 +98,7 @@ const routes: RouteRecordRaw[] = [
         component: LamanData,
         meta: {
           requiresAuth: true,
-          label: 'Laman Data',
+          label: "Laman Data",
         },
       },
       {
@@ -105,7 +107,7 @@ const routes: RouteRecordRaw[] = [
         component: LihatCAPEX,
         meta: {
           requiresAuth: true,
-          label: 'Lihat CAPEX',
+          label: "Lihat CAPEX",
         },
       },
       {
@@ -114,7 +116,7 @@ const routes: RouteRecordRaw[] = [
         component: LihatOPEX,
         meta: {
           requiresAuth: true,
-          label: 'Lihat OPEX',
+          label: "Lihat OPEX",
         },
       },
       {
@@ -123,8 +125,8 @@ const routes: RouteRecordRaw[] = [
         component: LamanAnalitik,
         meta: {
           requiresAuth: true,
-          label: 'Laman Analitik',
-        }
+          label: "Laman Analitik",
+        },
       },
       {
         path: "/grafik/:id",
@@ -133,7 +135,7 @@ const routes: RouteRecordRaw[] = [
         component: GraphicPage,
         meta: {
           requiresAuth: true,
-          label: 'Grafik',
+          label: "Grafik",
         },
       },
       {
@@ -142,16 +144,16 @@ const routes: RouteRecordRaw[] = [
         component: RekapKertasKerja,
         meta: {
           requiresAuth: true,
-          label: 'Rekap Kertas Kerja',
+          label: "Rekap Kertas Kerja",
         },
       },
       {
         path: "/rekap-kertas-kerja-v1",
         name: "rekap-kertas-kerja-v1",
-        component:  RekapKertasKerjaV1,
+        component: RekapKertasKerjaV1,
         meta: {
           requiresAuth: true,
-          label: 'Rekap Kertas Kerja V1',
+          label: "Rekap Kertas Kerja V1",
         },
       },
       {
@@ -160,7 +162,7 @@ const routes: RouteRecordRaw[] = [
         component: DetailRekap,
         meta: {
           requiresAuth: true,
-          label: 'Detail Rekap',
+          label: "Detail Rekap",
         },
       },
       {
@@ -169,7 +171,7 @@ const routes: RouteRecordRaw[] = [
         component: DetailRekapSentral,
         meta: {
           requiresAuth: true,
-          label: 'Detail Rekap',
+          label: "Detail Rekap",
         },
       },
       {
@@ -178,7 +180,7 @@ const routes: RouteRecordRaw[] = [
         component: PerbaruiData,
         meta: {
           requiresAuth: true,
-          label: 'Perbarui Data',
+          label: "Perbarui Data",
         },
       },
       {
@@ -187,7 +189,7 @@ const routes: RouteRecordRaw[] = [
         component: InputAsumsiParameter,
         meta: {
           requiresAuth: true,
-          label: 'Input Asumsi Parameter',
+          label: "Input Asumsi Parameter",
         },
       },
       {
@@ -196,7 +198,7 @@ const routes: RouteRecordRaw[] = [
         component: FeasibilityStudy,
         meta: {
           requiresAuth: true,
-          label: 'Feasibility Study',
+          label: "Feasibility Study",
         },
       },
       {
@@ -205,9 +207,9 @@ const routes: RouteRecordRaw[] = [
         component: FeasibilityStudySentral,
         meta: {
           requiresAuth: true,
-          label: 'Feasibility Study',
+          label: "Feasibility Study",
         },
-      },       
+      },
       // Persetujuan By Approver
       {
         path: "/persetujuan-by-approve",
@@ -215,7 +217,7 @@ const routes: RouteRecordRaw[] = [
         component: VerifikasiApprover,
         meta: {
           requiresAuth: true,
-          label: 'Persetujuan',
+          label: "Persetujuan",
         },
       },
       // {
@@ -242,7 +244,7 @@ const routes: RouteRecordRaw[] = [
         component: ApproveDetailFS,
         meta: {
           requiresAuth: true,
-          label: 'Detail Persetujuan Feasibility Study',
+          label: "Detail Persetujuan Feasibility Study",
         },
       },
       {
@@ -251,7 +253,7 @@ const routes: RouteRecordRaw[] = [
         component: ApproveDetailKk,
         meta: {
           requiresAuth: true,
-          label: 'Detail Persetujuan Kertas Kerja',
+          label: "Detail Persetujuan Kertas Kerja",
         },
       },
       {
@@ -260,7 +262,7 @@ const routes: RouteRecordRaw[] = [
         component: ApproveDetailFSMesin,
         meta: {
           requiresAuth: true,
-          label: 'Detail Persetujuan Feasibility Study',
+          label: "Detail Persetujuan Feasibility Study",
         },
       },
       {
@@ -269,7 +271,7 @@ const routes: RouteRecordRaw[] = [
         component: ApproveDetailKkMesin,
         meta: {
           requiresAuth: true,
-          label: 'Detail Persetujuan Kertas Kerja',
+          label: "Detail Persetujuan Kertas Kerja",
         },
       },
       // Persetujuan By Sentral
@@ -279,7 +281,7 @@ const routes: RouteRecordRaw[] = [
         component: VerifikasiSentral,
         meta: {
           requiresAuth: true,
-          label: 'Persetujuan',
+          label: "Persetujuan",
         },
       },
       {
@@ -288,7 +290,7 @@ const routes: RouteRecordRaw[] = [
         component: PersetujuanFS,
         meta: {
           requiresAuth: true,
-          label: 'Detail Persetujuan Feasibility Study',
+          label: "Detail Persetujuan Feasibility Study",
         },
       },
       {
@@ -297,7 +299,7 @@ const routes: RouteRecordRaw[] = [
         component: PersetujuanKk,
         meta: {
           requiresAuth: true,
-          label: 'Detail Persetujuan Kertas Kerja',
+          label: "Detail Persetujuan Kertas Kerja",
         },
       },
       {
@@ -306,7 +308,7 @@ const routes: RouteRecordRaw[] = [
         component: PersetujuanFSMesin,
         meta: {
           requiresAuth: true,
-          label: 'Detail Persetujuan Feasibility Study',
+          label: "Detail Persetujuan Feasibility Study",
         },
       },
       {
@@ -315,7 +317,7 @@ const routes: RouteRecordRaw[] = [
         component: PersetujuanKkMesin,
         meta: {
           requiresAuth: true,
-          label: 'Detail Persetujuan Kertas Kerja',
+          label: "Detail Persetujuan Kertas Kerja",
         },
       },
       {
@@ -324,7 +326,16 @@ const routes: RouteRecordRaw[] = [
         component: InputAsumsiKKApprove,
         meta: {
           requiresAuth: true,
-          label: 'Input Asumsi Parameter',
+          label: "Input Asumsi Parameter",
+        },
+      },
+      {
+        path: "/perbarui-data-approveKK/:id",
+        name: "perbarui-data-approveKK",
+        component: PerbaruiDataKKApprove,
+        meta: {
+          requiresAuth: true,
+          label: "Perbarui Data",
         },
       },
       {
@@ -334,7 +345,7 @@ const routes: RouteRecordRaw[] = [
         props: true,
         meta: {
           requiresAuth: true,
-          label: 'Unit Sentral',
+          label: "Unit Sentral",
         },
       },
       {
@@ -343,7 +354,7 @@ const routes: RouteRecordRaw[] = [
         component: DetailUnit,
         meta: {
           requiresAuth: true,
-          label: 'Detail Mesin',
+          label: "Detail Mesin",
         },
       },
       {
@@ -352,16 +363,16 @@ const routes: RouteRecordRaw[] = [
         component: Parameter,
         meta: {
           requiresAuth: true,
-          label: 'Parameter',
+          label: "Parameter",
         },
       },
       {
         path: "/profile-user",
-        name: "profile",
+        name: "profile-user",
         component: ProfileUser,
         meta: {
           requiresAuth: true,
-          label: 'Profil',
+          label: "Profil",
         },
       },
       {
@@ -370,7 +381,7 @@ const routes: RouteRecordRaw[] = [
         component: Pengguna,
         meta: {
           requiresAuth: true,
-          label: 'Pengguna',
+          label: "Pengguna",
         },
       },
       {
@@ -379,7 +390,7 @@ const routes: RouteRecordRaw[] = [
         component: Role,
         meta: {
           requiresAuth: true,
-          label: 'Role',
+          label: "Role",
         },
       },
       {
@@ -388,7 +399,7 @@ const routes: RouteRecordRaw[] = [
         component: EditPermission,
         meta: {
           requiresAuth: true,
-          label: 'Edit Permission',
+          label: "Edit Permission",
         },
       },
       {
@@ -397,7 +408,7 @@ const routes: RouteRecordRaw[] = [
         component: LogActivity,
         meta: {
           requiresAuth: true,
-          label: 'Log Aktivitas',
+          label: "Log Aktivitas",
         },
       },
       // {
@@ -415,7 +426,7 @@ const routes: RouteRecordRaw[] = [
         component: MesinBelumTerinput,
         meta: {
           requiresAuth: true,
-          label: 'Mesin Belum Terinput',
+          label: "Mesin Belum Terinput",
         },
       },
       {
@@ -424,8 +435,8 @@ const routes: RouteRecordRaw[] = [
         component: Error404Page,
         meta: {
           requiresAuth: true,
-          label: '404 Error',
-        }
+          label: "404 Error",
+        },
       },
     ],
   },
@@ -436,27 +447,111 @@ const router = createRouter({
   routes,
   scrollBehavior(to, from, savedPosition) {
     const rekapNavigationStore = useRekapNavigationStore();
-    rekapNavigationStore.scrollPosition.top = savedPosition == null ? 0 : savedPosition.top;
-    rekapNavigationStore.scrollPosition.left = savedPosition == null ? 0 : savedPosition.left;
-  }
+    rekapNavigationStore.scrollPosition.top =
+      savedPosition == null ? 0 : savedPosition.top;
+    rekapNavigationStore.scrollPosition.left =
+      savedPosition == null ? 0 : savedPosition.left;
+  },
 });
 
-declare module 'vue-router' {
+declare module "vue-router" {
   interface RouteMeta {
-    requiresAuth?: boolean,
-    label: string | undefined,
+    requiresAuth?: boolean;
+    label: string | undefined;
   }
 }
 
-router.beforeEach((to, _, next) => {
+router.beforeEach(async(to, _, next) => {
   const storeNavbar = useNavbarLabelStore();
-  const token = nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem('token');
+  const authService = new AuthService();
+  const encryptStorage = await encryptStoragePromise;
+  const token =
+    nodeMode === "production"
+      ? encryptStorage.getItem("token")
+      : localStorage.getItem("token");
   storeNavbar.label = to.meta.label;
-  if (to.name === "redirect-sso" && !token) next();
-  else if (to.name !== "login" && !token) next({ name: "login" });
-  else if (to.name === "login" && token) next({ name: "dashboard" });
-  else if (to.name === "AA" && token) next({ name: "dashboard" });
-  else next();
+  const storage = nodeMode === "production" ? encryptStorage : localStorage;
+  const menuData =
+    nodeMode === "production"
+      ? encryptStorage.getItem("menu")
+      : localStorage.getItem("menu");
+
+  const menuList = menuData != null
+  ? typeof menuData === "string"
+    ? JSON.parse(menuData)
+    : menuData
+  : [];
+
+  const getAllAccessibleRoutes = () => {
+    return menuList
+      .flatMap((menu) => menu.sub_menus || [])
+      .map((submenu) => submenu.url);
+  };
+
+  const accessibleRoutes = getAllAccessibleRoutes();
+
+  const isMenuAccessible = (menuName: any) =>
+    accessibleRoutes.includes(menuName);
+
+  if (token) {
+    let role: any;
+    let level: any;
+    let levelSentral: any;
+    let namaPegawai: any;
+    let menu: any;
+    let storedHash: any;
+    const getStorage = (storage: any) => {
+      role = storage.getItem("role");
+      level = storage.getItem("level");
+      levelSentral = storage.getItem("level_sentral");
+      namaPegawai = storage.getItem("nama_pegawai");
+      menu = storage.getItem("menu");
+      storedHash = storage.getItem("user_hash");
+    };
+    getStorage(storage);
+
+    // jika data tidak lengkap, langsung logout
+    if (
+      !role ||
+      !level ||
+      levelSentral === null ||
+      levelSentral === undefined ||
+      !namaPegawai ||
+      !storedHash ||
+      !menu
+    ) {
+      console.warn("⚠️ Data tidak lengkap, logout user...");
+      authService.logout();
+      return;
+    }
+
+    // hitung ulang hash dengan secret key
+    const dataString = `${role}:${level}:${levelSentral}:${namaPegawai}:${typeof storage.getItem("menu") === "string" ? storage.getItem("menu") : JSON.stringify(storage.getItem("menu"))}`;
+    const currentHash = CryptoJS.HmacSHA512(
+      dataString,
+      (window as any).userHashSecretKey(),
+    ).toString();
+
+    // jika hash berbeda, berarti ada manipulasi
+    if (storedHash != currentHash) {
+      console.warn("⚠️ Data telah dimanipulasi! Logout user...");
+      console.log(storedHash, currentHash);
+      authService.logout();
+    }
+  }
+
+  if (to.name === "redirect-sso" && !token) {
+    next();
+  } else if (!token) {
+    if (to.name !== "login") {
+      return next({ name: "login" });
+    }
+    return next();
+  }  else if (!isMenuAccessible(to.name) && token) {
+    next({ name: "peta" });
+  } else {
+    next();
+  }
 });
 
 export default router;

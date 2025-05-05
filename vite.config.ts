@@ -10,9 +10,9 @@ export default defineConfig(({ mode }) => {
     define: {
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'true'
     },
-    esbuild: {
-      drop: ['console', 'debugger'],
-    },
+    // esbuild: {
+    //   drop: ['console', 'debugger'],
+    // },
     server:{
       port: 5173
     },

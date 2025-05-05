@@ -9,14 +9,14 @@
       <label for="" class="text-sm font-semibold text-labelColor">AI</label>
       <div class="flex items-center justify-start">
         <TextField class="pl-9" />
-        <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+        <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
       </div>
     </div>
     <div class="flex flex-col space-y-1.5">
       <label for="" class="text-sm font-semibold text-labelColor">Realisasi AKI</label>
       <div class="flex items-center justify-start">
         <TextField class="pl-9" />
-        <label class="absolute pl-3 text-sm text-primaryColor">Rp.</label>
+        <span class="absolute pl-3 text-sm text-primaryColor">Rp.</span>
       </div>
     </div>
   </form>

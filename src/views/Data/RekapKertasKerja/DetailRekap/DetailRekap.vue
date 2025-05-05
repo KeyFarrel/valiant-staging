@@ -44,7 +44,7 @@
     <div class="items-start p-6 bg-white rounded-lg" v-if="mesin">
       <TabsWrapper :kode-sentral="mesin.kode_sentral" :isLihatGrafik="true" :laman-data="false">
         <TabItem title="Asumsi Makro">
-          <AsumsiMakro @on-click="reloadAsumsiParameter" @on-change="fetchAsumsiParameter"
+          <AsumsiMakro @on-click-reload="reloadAsumsiParameter" @on-change="fetchAsumsiParameter"
             :list-tahun-asumsi="listTahunAsumsi" :corporate-tax-rate="asumsiParameter.corporate_tax_rate"
             :discount-rate="asumsiParameter.discount_rate" :interest-rate="asumsiParameter.interest_rate"
             :loan-tenor="asumsiParameter.loan_tenor" :loan-portion="asumsiParameter.loan_portion"
@@ -52,7 +52,7 @@
             :is-fetching-error="asumsiParameter.isFetchingError" />
         </TabItem>
         <TabItem title="Parameter Teknis & Finansial">
-          <ParameterTeknis @on-click="reloadAsumsiParameter" @on-change="fetchAsumsiParameter"
+          <ParameterTeknis @on-click-reload="reloadAsumsiParameter" @on-change="fetchAsumsiParameter"
             v-model:selected-tahun="tahunTerakhirRealisasi" :selected-year="selectedYear"
             :list-tahun-asumsi="listTahunAsumsi" :daya-terpasang="parameterTeknisFinansial.daya_terpasang"
             :daya-mampu-netto="parameterTeknisFinansial.daya_mampu_netto_mw"
@@ -67,12 +67,12 @@
             :combo-bahan-bakar="comboBahanBakar" :is-fetching-error="parameterTeknisFinansial.isFetchingError" />
         </TabItem>
         <TabItem title="Data Teknis">
-          <TableDataTeknis @on-click="reloadDataTeknis" :data-teknis="dataTeknis"
+          <TableDataTeknis @on-click-reload="reloadDataTeknis" :data-teknis="dataTeknis"
             :tahun-terakhir-realisasi="parseInt(selectedYear)" :type-periodic="typePeriodic"
             :is-fetching-error="dataTeknis.isFetchingError" />
         </TabItem>
         <TabItem title="Data Finansial">
-          <TableDataFinansial @on-click="reloadDataFinansial" :source="finansialMappingResult"
+          <TableDataFinansial @on-click-reload="reloadDataFinansial" :source="finansialMappingResult"
             :data-finansial="dataFinansial" :tahun-terakhir-realisasi="parseInt(selectedYear)"
             :is-fetching-error="dataFinansial.isFetchingError" />
         </TabItem>
@@ -91,12 +91,12 @@
                 </li>
               </ul>
             </nav>
-            <AkhirMasaManfaat @on-click="reloadHasilSimulasi" :irr-on-project="hasilSimulasi.track_irr_project"
+            <AkhirMasaManfaat @on-click-reload="reloadHasilSimulasi" :irr-on-project="hasilSimulasi.track_irr_project"
               :irr-on-equity="hasilSimulasi.track_irr_equity" :npv-on-equity="hasilSimulasi.track_npv_equity"
               :npv-on-project="hasilSimulasi.track_npv_project" :average-ncf="hasilSimulasi.track_average_cf"
               :average-eaf="hasilSimulasi.track_average_eaf" v-show="selectedTab === 'Akhir Masa'"
               :is-fetching-error="hasilSimulasi.isFetchingError" />
-            <TahunBerjalan @on-click="reloadHasilSimulasi" :irr-on-project="hasilSimulasi.now_track_irr_project"
+            <TahunBerjalan @on-click-reload="reloadHasilSimulasi" :irr-on-project="hasilSimulasi.now_track_irr_project"
               :irr-on-equity="hasilSimulasi.now_track_irr_equity" :npv-on-equity="hasilSimulasi.now_track_npv_equity"
               :npv-on-project="hasilSimulasi.now_track_npv_project" :average-ncf="hasilSimulasi.now_track_average_cf"
               :average-eaf="hasilSimulasi.now_track_average_eaf" v-show="selectedTab === 'Tahun Berjalan'"
@@ -111,7 +111,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import { notifyError } from "@/services/helper/toast-notification";
 import { useRoute } from "vue-router";
 const route = useRoute();
@@ -298,6 +298,7 @@ interface ParameterTeknisFinancialItem {
 
 const fetchMesinById = async () => {
   try {
+    const encryptStorage = await encryptStoragePromise;
     const response: MesinItem = await detailRekapService.getMesinById(
       nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id
     );
@@ -470,6 +471,7 @@ const handleDownloadExcelMesin = async () => {
 }
 const fetchTahunRealisasiData = async () => {
   try {
+    const encryptStorage = await encryptStoragePromise;
     const response: any = await detailRekapService.getTahunRealisasi(
       nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id
     );
@@ -531,6 +533,7 @@ const fetchTypePeriodic = async () => {
 
 const handleYearChange = async () => {
   isLoading.value = true
+  const encryptStorage = await encryptStoragePromise;
   router.replace({ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(idMesin.value) : idMesin.value }, query: { tahun: selectedYear.value } });
   await fetchMesinById();
   await fetchTahunRealisasiData();

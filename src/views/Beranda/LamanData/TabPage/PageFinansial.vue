@@ -3,12 +3,12 @@
   <div class="space-y-5">
     <div class="justify-between md:flex">
       <SearchBox class="w-60" placeholder="Cari sentral..." @on-key-enter="fetchDataFinansial()"
-        @on-click="fetchDataFinansial()" @on-input="fetchDataFinansial()" v-model="searchQ" />
+        @on-click-submit="fetchDataFinansial()" @on-input="fetchDataFinansial()" v-model="searchQ" />
       <div class="flex items-center">
         <p class="mr-3 text-sm font-semibold text-labelColor">Periode</p>
         <VueDatePicker class="mr-3 date-picker" v-model="yearPicked" teleport :year-range="periodeTahun"
           :clearable="false" year-picker @update:model-value="fetchDataFinansial()" />
-        <ButtonComponent @on-click="handleExport" :text="'Export'" :text-color="'text-white'"
+        <ButtonComponent @on-click-submit="handleExport" :text="'Export'" :text-color="'text-white'"
           :hover-text-color="'text-hoverColor'" :bg-color="'bg-primaryColor'" :icon-position="'Left'"
           :hover-bg-color="'bg-hoverColor'" :border-color="'bg-primaryColor'" :hover-border-color="'bg-hoverColor'">
           <svg width="16" height="12" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -22,47 +22,47 @@
     <TableComponent>
       <template v-slot:table-header>
         <tr>
-          <th class="text-center border-r">
+          <th scope="col" class="text-center border-r">
             <div class="flex flex-row items-center justify-center space-x-10">
               <h1 class="font-semibold">Unit Induk / Sentral / Mesin</h1>
             </div>
           </th>
-          <th class="text-center border-r">
+          <th scope="col" class="text-center border-r">
             <div class="flex flex-row items-center justify-center space-x-10">
               <h1 class="font-semibold">Jenis Pembangkit</h1>
             </div>
           </th>
-          <th class="border-r text-start">
+          <th scope="col" class="border-r text-start">
             <div class="flex flex-row items-center justify-center space-x-10">
               <h1 class="font-semibold">IRR On Equity <br> (%)</h1>
             </div>
           </th>
-          <th class="border-r text-start">
+          <th scope="col" class="border-r text-start">
             <div class="flex flex-row items-center justify-center space-x-10">
               <h1 class="font-semibold">NPV On Equity <br> Rp (Juta)</h1>
             </div>
           </th>
-          <th class="border-r text-start">
+          <th scope="col" class="border-r text-start">
             <div class="flex flex-row items-center justify-center space-x-10">
               <h1 class="font-semibold">IRR On Project <br> (%)</h1>
             </div>
           </th>
-          <th class="border-r text-start">
+          <th scope="col" class="border-r text-start">
             <div class="flex flex-row items-center justify-center space-x-10">
               <h1 class="font-semibold">NPV On Project <br> Rp (Juta)</h1>
             </div>
           </th>
-          <th class="border-r text-start">
+          <th scope="col" class="border-r text-start">
             <div class="flex flex-row items-center justify-center space-x-10">
               <h1 class="font-semibold">EBITDA <br> Rp (Juta)</h1>
             </div>
           </th>
-          <th class="border-r text-start">
+          <th scope="col" class="border-r text-start">
             <div class="flex flex-row items-center justify-center space-x-10">
               <h1 class="font-semibold">RNFA <br> (%)</h1>
             </div>
           </th>
-          <th class="text-start">
+          <th scope="col" class="text-start">
             <div class="flex flex-row items-center justify-center space-x-10">
               <h1 class="font-semibold">Total Nilai Aset <br> Rp (Juta)</h1>
             </div>
@@ -283,8 +283,6 @@ const handleExport = async () => {
     isLoading.value = true;
     const response: any = await lamanService.downloadExcelFinansial(yearPicked.value, searchQ.value.toUpperCase());
     const year = yearPicked.value;
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
     const fileName = fileNameMatch ? fileNameMatch[1] : `Laman Data - Finansial - ${year}.xlsx`;

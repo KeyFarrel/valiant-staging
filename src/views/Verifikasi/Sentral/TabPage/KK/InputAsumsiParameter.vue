@@ -178,15 +178,15 @@
     </div>
     <TabsWrapper :laman-data="false">
       <TabItem :title="'Asumsi Makro'">
-        <TabAsumsiMakro :tahun-realisasi="tahunBerjalan" :mesin="mesin.mesin" v-model:interest-rate="interestRate"
+        <TabAsumsiMakro :tahun-realisasi="year" :mesin="mesin.mesin" v-model:interest-rate="interestRate"
           v-model:umur-teknis="umurTeknis" v-model:loan-tenor="loanTenor" v-model:loan-portion="loanPortion"
           :error="error.asumsi" :umur-teknis-init="masaManfaat.toString()" :is-perbarui-data="false" />
       </TabItem>
       <TabItem :title="'Parameter Teknis & Finansial'">
-        <TabParameterTeknis :is-perbarui-data="false" :tahun-realisasi="tahunBerjalan"
-          :init-pemakaian-sendiri="pemakaianSendiri" :init-auxiliary="auxiliary" :init-susut-trafo="susutTrafo"
-          :combo-bahan-bakar="comboBahanBakar" :bahan-bakars="bahanBakars"
-          :id_mesin="nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id"
+        <TabParameterTeknis :is-perbarui-data="false" :tahun-realisasi="year" :init-pemakaian-sendiri="pemakaianSendiri"
+          :init-auxiliary="auxiliary" :init-susut-trafo="susutTrafo" :combo-bahan-bakar="comboBahanBakar"
+          :bahan-bakars="bahanBakars"
+          :id_mesin="nodeMode === 'production' ? encryptStorageRef.decryptValue(route.params.id.toString()) : route.params.id"
           :is-input-asumsi-parameter="true" :mesin="mesin.mesin" v-model:pickedValue="pickedParameterValue"
           v-model:checkedBahanBakar="checkedBahanBakar" v-model:nphr="nphr" v-model:auxiliary="auxiliary"
           v-model:susut-trafo="susutTrafo" v-model:pemakaian-sendiri="pemakaianSendiri"
@@ -203,7 +203,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { encryptStorage } from '@/utils/app-encrypt-storage';
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import UserService from "@/services/user-service";
 const userService = new UserService();
 import RekapService from '@/services/rekap-service';
@@ -246,12 +246,11 @@ const kodeJenisPembangkit = ref();
 const asumsiParameter = ref();
 const idAsumsi = ref<number>(0);
 const status = ref<string>('');
-const idMesin = parseInt(nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString());
+const idMesin = ref<any>('');
 const statusCode = ref();
 const namaPengelola = ref<string>('');
 const namaPembina = ref<string>('');
 const kodeMesin = ref();
-const tahunBerjalan = new Date().getFullYear();
 const isIntegrasi = ref<boolean>(false);
 const interestRate = ref<string>('');
 const umurTeknis = ref<string>('');
@@ -268,8 +267,10 @@ const electricityPriceD = ref<string>('');
 const masaManfaat = ref<any>();
 const isModalUnggahKertasKerjaOpen = ref<boolean>(false);
 const namaMesin = ref<string>('');
+const year = parseInt(route.query.tahun as string, 10);
 const isDownloaded = ref(false)
 const pickedParameterValue = ref<string>('auxiliarySusut');
+let encryptStorageRef: any = null;
 const error = ref<{
   asumsi: {
     interestRate: boolean,
@@ -312,8 +313,8 @@ const checkedBahanBakar = ref<number[]>([]);
 const bahanBakars = ref<any[]>([
   {
     id: 1,
-    id_mesin: idMesin,
-    tahun: tahunBerjalan.toString(),
+    id_mesin: idMesin.value,
+    tahun: year.toString(),
     kode_bahan_bakar: "",
     harga_bahan_bakar: "",
     sfc: "",
@@ -322,8 +323,7 @@ const bahanBakars = ref<any[]>([
 ]);
 const isHover = ref(true);
 const approveMesinKK = ref<any>();
-const year = new Date().getFullYear();
-const levelSentral = ref(nodeMode === 'production' ? encryptStorage.getItem('level_sentral') : localStorage.getItem("level_sentral"));
+
 
 function toggleButton() {
   isHover.value = !isHover.value;
@@ -332,7 +332,7 @@ function toggleButton() {
 const fetchPersetujuanKK = async () => {
   try {
     const response: any = await persetujuanService.getPersetujuanKKSentral({ id_sentral: route.query.id_sentral, tahun: year });
-    approveMesinKK.value = response.data.mesins.filter((val: any) => val.id_mesin == idMesin)[0];
+    approveMesinKK.value = response.data.mesins.filter((val: any) => val.id_mesin == idMesin.value)[0];
   } catch (error) {
     console.error('Fetch Persetujuan KK Sentral Error : ' + error);
   }
@@ -341,7 +341,7 @@ const fetchPersetujuanKK = async () => {
 const fetchMesinById = async () => {
   try {
     const response: any = await inputAsumsiParameterService.getMesinById(
-      idMesin
+      idMesin.value
     );
     mesin.value = response.data;
     kodeJenisPembangkit.value = response.data.kode_jenis_pembangkit;
@@ -356,7 +356,7 @@ const fetchMesinById = async () => {
 
 const fetchCheckIntegrasi = async () => {
   try {
-    const response: any = await perbaruiDataService.getCheckIntegrasi(tahunBerjalan - 1, idMesin);
+    const response: any = await perbaruiDataService.getCheckIntegrasi(year - 1, idMesin.value);
     isIntegrasi.value = response.data[0].status_data_integrasi !== "0"
     console.log(isIntegrasi.value, 'dds');
   } catch (error) {
@@ -367,9 +367,9 @@ const fetchCheckIntegrasi = async () => {
 const fetchAsumsiParameter = async (isCreate: boolean) => {
   try {
     const response: any = await inputAsumsiParameterService.getAsumsiMakroData(
-      tahunBerjalan - 1,
-      idMesin,
-      tahunBerjalan
+      year - 1,
+      idMesin.value,
+      year
     )
     if (isCreate !== true) {
       if (response.code === 200) {
@@ -395,7 +395,7 @@ const fetchAsumsiParameter = async (isCreate: boolean) => {
       }
     }
     asumsiParameter.value = response.data;
-    if (response.data.tahun === tahunBerjalan) {
+    if (response.data.tahun === year) {
       status.value = response.data.status;
       idAsumsi.value = response.data.id_asumsi;
       statusCode.value = response.code;
@@ -459,8 +459,8 @@ function handleHapusBahanBakar() {
 function handleTambahBahanBakar() {
   bahanBakars.value.push({
     id: i.value++,
-    id_mesin: idMesin,
-    tahun: tahunBerjalan,
+    id_mesin: idMesin.value,
+    tahun: year,
     kode_bahan_bakar: "",
     harga_bahan_bakar: "",
     sfc: "",
@@ -558,9 +558,9 @@ const insertAsumsiParameter = async () => {
       if (idAsumsi.value !== 0) {
         const formAsumsiUpdate = {
           id_asumsi: idAsumsi.value,
-          tahun: tahunBerjalan,
-          tahun_realisasi: tahunBerjalan - 1,
-          id_mesin: idMesin,
+          tahun: year,
+          tahun_realisasi: year - 1,
+          id_mesin: idMesin.value,
           interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
           umur_teknis: parseInt(masaManfaat.value),
           loan_tenor: parseInt(loanTenor.value),
@@ -573,7 +573,7 @@ const insertAsumsiParameter = async () => {
           newValue.harga_bahan_bakar = parseFloat(finalHargaBahanBakar.replace(/,/g, '.'));
           let finalSFC = newValue.sfc.includes('.') ? newValue.sfc.replace(/[.]/g, '') : newValue.sfc;
           newValue.sfc = parseFloat(finalSFC.replace(/,/g, '.'));
-          newValue.tahun = (tahunBerjalan - 1).toString();
+          newValue.tahun = (year - 1).toString();
           return newValue;
         });
         const finalNPHR = nphr.value.includes('.') ? nphr.value.replace(/[.]/g, '') : nphr.value;
@@ -586,9 +586,9 @@ const insertAsumsiParameter = async () => {
         const finalElecD = electricityPriceD.value.includes('.') ? electricityPriceD.value.replace(/[.]/g, '') : electricityPriceD.value;
         const formParameterUpdate = {
           id_asumsi: idAsumsi.value,
-          tahun_realisasi: tahunBerjalan - 1,
-          tahun: tahunBerjalan,
-          id_mesin: idMesin,
+          tahun_realisasi: year - 1,
+          tahun: year,
+          id_mesin: idMesin.value,
           nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
           ps: parseFloat(finalPemakaianSendiri.replace(/,/g, '.')),
           susut_trafo: parseFloat(finalSusutTrafo.replace(/,/g, '.')),
@@ -639,7 +639,7 @@ const uploadFileEvidence = async () => {
     const formData = new FormData();
     formData.append('file', selectedFileEvidence.value);
     const response: any = await rekapService.uploadEvidence(formData);
-    await rekapService.updateEvidencePath(idMesin, tahunBerjalan.toString(), response.data, 0, selectedFileEvidence.value.name);
+    await rekapService.updateEvidencePath(idMesin.value, year.toString(), response.data, 0, selectedFileEvidence.value.name);
     isLoading.value = false;
     isModalUnggahKertasKerjaOpen.value = false;
     isEvidenceSuccess.value = true;
@@ -648,7 +648,7 @@ const uploadFileEvidence = async () => {
     isModalUnggahKertasKerjaOpen.value = false;
   } catch (error) {
     console.error('Error upload file : ', error);
-    await rekapService.updateEvidencePath(idMesin, tahunBerjalan.toString(), null, 0, '')
+    await rekapService.updateEvidencePath(idMesin.value, year.toString(), null, 0, '')
     notifyError('Upload Evidence Gagal', 5000);
   } finally {
     isLoading.value = false;
@@ -658,11 +658,11 @@ const uploadFileEvidence = async () => {
 const handleDownloadTemplateRekap = async () => {
   try {
     isLoading.value = true;
-    const response: any = await rekapService.downloadTemplateRekap(tahunBerjalan, tahunBerjalan - 1, idMesin);
+    const response: any = await rekapService.downloadTemplateRekap(year, year - 1, idMesin.value);
     isDownloaded.value = true;
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
-    const fileName = fileNameMatch ? fileNameMatch[1] : `Kertas Kerja Actual - ${namaMesin.value}_${tahunBerjalan}_${globalFormat.formatNumberFiveDigits(idMesin)}.xlsx`;
+    const fileName = fileNameMatch ? fileNameMatch[1] : `Kertas Kerja Actual - ${namaMesin.value}_${year}_${globalFormat.formatNumberFiveDigits(idMesin.value)}.xlsx`;
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -738,6 +738,8 @@ const handleCancelUpload = async () => {
 
 onMounted(async () => {
   isLoading.value = true;
+  encryptStorageRef = await encryptStoragePromise;
+  idMesin.value = parseInt(nodeMode === 'production' ? encryptStorageRef.decryptValue(route.params.id.toString()) : route.params.id.toString());
   await fetchMesinById();
   await fetchCheckIntegrasi();
   await fetchAsumsiParameter(false);

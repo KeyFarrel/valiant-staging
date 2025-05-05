@@ -3,7 +3,7 @@
   <div class="space-y-5">
     <div class="justify-between md:flex">
       <SearchBox class="w-60" placeholder="Cari sentral..." @on-input="fetchDataTeknis" @on-key-enter="fetchDataTeknis"
-        @on-click="fetchDataTeknis" v-model="searchQ" />
+        @on-click-submit="fetchDataTeknis" v-model="searchQ" />
       <div class="flex items-center space-x-3">
         <div class="flex flex-row items-center">
           <p class="mr-3 font-semibold text-labelColor">Tahun</p>
@@ -60,7 +60,7 @@
             </Transition>
           </div>
         </div>
-        <ButtonComponent @on-click="handleExport" :text="'Export'" :text-color="'text-white'"
+        <ButtonComponent @on-click-submit="handleExport" :text="'Export'" :text-color="'text-white'"
           :hover-text-color="'text-hoverColor'" :bg-color="'bg-primaryColor'" :icon-position="'Left'"
           :hover-bg-color="'bg-hoverColor'" :border-color="'bg-primaryColor'" :hover-border-color="'bg-hoverColor'">
           <svg width="16" height="12" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -74,47 +74,47 @@
     <TableComponent>
       <template v-slot:table-header>
         <tr>
-          <th class="border-r">
+          <th scope="col" class="border-r">
             <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Unit Induk / Sentral / Mesin</h1>
             </div>
           </th>
-          <th class="border-r">
+          <th scope="col" class="border-r">
             <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Jenis Pembangkit</h1>
             </div>
           </th>
-          <th class="border-r">
+          <th scope="col" class="border-r">
             <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Tahun</h1>
             </div>
           </th>
-          <th class="border-r">
+          <th scope="col" class="border-r">
             <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">NCF (%)</h1>
             </div>
           </th>
-          <th class="border-r">
+          <th scope="col" class="border-r">
             <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">EAF (%)</h1>
             </div>
           </th>
-          <th class="border-r text-start">
+          <th scope="col" class="border-r text-start">
             <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">NPHR <br>(kcal/kWh)</h1>
             </div>
           </th>
-          <th class="border-r text-start">
+          <th scope="col" class="border-r text-start">
             <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">SFC</h1>
             </div>
           </th>
-          <th class="border-r text-start">
+          <th scope="col" class="border-r text-start">
             <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Produksi <br>Netto (MWh)</h1>
             </div>
           </th>
-          <th class="text-start">
+          <th scope="col" class="text-start">
             <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Status Unit <br>Mesin</h1>
             </div>
@@ -232,6 +232,7 @@ import TableComponent from "@/components/ui/Table.vue";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import LamanService from "@/services/laman-service";
 import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
+import { isNull } from "node:util";
 
 const lamanService = new LamanService();
 const teknisData = ref<PengelolaItem[]>([]);

@@ -4,13 +4,12 @@
     <div class="flex flex-col h-full p-6 space-y-4 font-medium bg-white rounded-lg text-md">
       <div class="flex flex-col space-y-4">
         <div class="flex flex-row"
-          v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pusat' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina'">
+          v-if="userLevel === 'Admin' || userLevel === 'Pusat' || userLevel === 'Pengelola' || userLevel === 'Pembina'">
           <SearchBoxSuggestion v-if="listSuggestionSentral.length !== 0" v-model="searchQuery"
-            :source="listSuggestionSentral" @on-key-enter="handleSearch" @on-click="handleSearch" />
+            :source="listSuggestionSentral" @on-key-enter="handleSearch" @on-click-sentral="handleSearch" />
           <ShimmerLoading class="h-8 w-80" v-else-if="listSuggestionSentral.length === 0" />
         </div>
-        <div class="whitespace-nowrap"
-          v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pusat'">
+        <div class="whitespace-nowrap" v-if="userLevel === 'Admin' || userLevel === 'Pusat'">
           <ul class="flex w-full overflow-x-auto" v-if="pengelolaData.length !== 0">
             <li
               class="relative p-2 ml-3 text-xs font-bold text-gray-400 border border-gray-300 rounded-lg cursor-pointer w-fit hover:text-primaryColor first:ml-0 hover:border-primaryColor hover:border-"
@@ -116,7 +115,7 @@
                 <div class="mt-4 border-b"></div>
                 <RouterLink :to="{
                   name: 'detail-unit',
-                  params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(sentralItem.id_sentral) : sentralItem.id_sentral },
+                  params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(sentralItem.id_sentral) : sentralItem.id_sentral },
                   query: { kode_pengelola: sentralItem.kode_pengelola, tab: 'Sentral' },
                 }">
                   <button
@@ -197,7 +196,7 @@
                 <div class="mt-4 border-b"></div>
                 <RouterLink :to="{
                   name: 'detail-unit',
-                  params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(sentralItem.id_sentral) : sentralItem.id_sentral },
+                  params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(sentralItem.id_sentral) : sentralItem.id_sentral },
                   query: { kode_pengelola: sentralItem.kode_pengelola, tab: mesinItem.mesin },
                 }">
                   <button
@@ -268,7 +267,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
-import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import TabWrapperSentral from "@/components/MasterUnitSentral/TabWrapperSentral.vue";
 import TabItem from "@/components/ui/TabItem.vue";
 import DetailSentralService from "@/services/detail-sentral-service";
@@ -282,6 +281,7 @@ const authService = new AuthService();
 import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import SearchBoxSuggestion from "@/components/ui/SearchBoxSuggestion.vue";
+import { usePreferredColorScheme } from "@vueuse/core";
 
 const nodeMode = import.meta.env.MODE;
 const isPembangkitTabOpen = ref<string[]>([]);
@@ -300,6 +300,8 @@ const listSuggestionSentral = ref<any[]>([]);
 const isLoading = ref();
 const selectedAll = ref<string[]>(['ALL']);
 const tahunBerjalan = new Date().getFullYear();
+let encryptStorageRef: any = null;
+const userLevel = ref<string | null>(null);
 
 interface PengelolaItem {
   data: any
@@ -364,7 +366,11 @@ const fetchSentralData = async () => {
     }
     console.log(sentralData.value, 'sentralData')
     for (const val of sentralData.value) {
+      let dayaTerpasangMesin = 0;
+      let dayaMampuNettoMesin = 0;
       for (const key in val.mesins) {
+        dayaTerpasangMesin += val.mesins[key].daya_terpasang;
+        dayaMampuNettoMesin += val.mesins[key].daya_mampu;
         if (val.mesins[key].photo1 !== '') {
           try {
             const response: any = await detailSentralService.getPhoto(val.mesins[key].photo1);
@@ -375,6 +381,10 @@ const fetchSentralData = async () => {
           }
         }
       }
+      val.daya_terpasang = dayaTerpasangMesin;
+      val.daya_mampu = dayaMampuNettoMesin;
+      console.log(dayaTerpasangMesin, "dayaTerpasangMesin")
+      console.log(val, "VALLLL")
     }
     isPembangkitTabOpen.value.push(data[0].kode_sentral);
   } catch (error) {
@@ -528,6 +538,8 @@ watch(searchQuery, async (val) => {
 
 onMounted(async () => {
   isLoading.value = true;
+  encryptStorageRef = await encryptStoragePromise;
+  userLevel.value = await authService.checkLevel();
   await fetchSuggestionSentral();
   await fetchSentralData();
   isLoading.value = true;

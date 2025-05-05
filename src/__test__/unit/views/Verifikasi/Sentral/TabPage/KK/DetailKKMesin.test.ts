@@ -6,7 +6,7 @@ import TabsWrapper from '@/components/ui/TabsWrapperApprove.vue';
 import InfoHeader from '@/components/ui/InfoHeader.vue';
 import TableDataTeknis from '@/components/RekapKertasKerja/TableDataTeknis.vue';
 import TableDataFinansial from '@/components/RekapKertasKerja/TableDataFinansial.vue';
-import { encryptStorage } from '@/utils/app-encrypt-storage';
+import { encryptStoragePromise } from '@/utils/app-encrypt-storage';
 import RekapService from '@/services/rekap-service';
 import { useRoute } from 'vue-router';
 

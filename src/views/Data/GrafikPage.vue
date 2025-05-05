@@ -3,17 +3,16 @@
   <div class="w-full p-4 space-y-3 bg-white border rounded-md h-22">
     <div class="flex justify-between md:flex">
       <div class="flex items-center">
-        <SearchBox v-if="authService.checkLevel() !== 'Sentral'" @on-focus="handleFocus" v-model="selectedSearchQuery"
-          class="w-60" />
+        <SearchBox v-if="userLevel !== 'Sentral'" @on-focus="handleFocus" v-model="selectedSearchQuery" class="w-60" />
         <ModalSearch v-if="isSearchModalOpen" v-model="searchQuery" :show-modal="isSearchModalOpen"
           :source="listDataPeta" @on-click-close="isSearchModalOpen = false" @on-escape="isSearchModalOpen = false"
-          @on-click="selectedSearchQuery = searchQuery; isSearchModalOpen = false; handleChangeSentral()"
+          @on-click-sentral="selectedSearchQuery = searchQuery; isSearchModalOpen = false; handleChangeSentral()"
           @on-key-enter="selectedSearchQuery = searchQuery; isSearchModalOpen = false; handleChangeSentral()" />
       </div>
     </div>
     <div class="bg-white">
       <ul class="flex items-end space-x-8 overflow-auto border-b-2 border-gray-50 whitespace-nowrap scrollbar-hide"
-        :class="authService.checkLevel() === 'Sentral' ? 'mt-14' : 'mt-0'">
+        :class="userLevel === 'Sentral' ? 'mt-14' : 'mt-0'">
         <li v-for="(item, i) in dataUnit" :key="i"
           class="pb-2 text-base font-bold transition-all duration-300 cursor-pointer text-textDisabledColor"
           :class="{ selected: item.mesin === selectedTitle }" @click="changeTabMesin(item.mesin)">
@@ -387,7 +386,7 @@ import { ref, provide, onMounted, watch, onUnmounted } from "vue";
 import router from "@/router";
 import { useRoute } from "vue-router";
 import { useTagSentral, useTagMesin } from "@/store/storeTagGrafik";
-import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import { notifyError } from "@/services/helper/toast-notification";
 import { osDetector } from "@/utils/os-detector";
 import DetailSentralService from "@/services/detail-sentral-service";
@@ -439,9 +438,8 @@ const periodeTahunMesin = ref<any>();
 const selectedYear = ref<any[]>([]);
 const yearResponseMesin = ref<any>();
 const responseLimitTahun = ref<any>();
+const userLevel = ref<string | null>(null);
 
-const levelID = ref(nodeMode === 'production' ? encryptStorage.getItem('level_id') : localStorage.getItem("level_id"));
-const level_ID = ref(levelID.value);
 const isLoading = ref(false);
 const isHover = ref(true);
 const isOver = ref(false);
@@ -521,6 +519,7 @@ interface UnitItem {
 const fetchDataSentral = async () => {
   try {
     isLoading.value = true;
+    const encryptStorage = await encryptStoragePromise;
     selectedYear.value = []
     const response: SentralItem = await petaService.getSentralByKode(
       nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id
@@ -550,6 +549,7 @@ const fetchDataSentral = async () => {
 };
 
 const replaceSentral = async () => {
+  const encryptStorage = await encryptStoragePromise;
   router.push(
     {
       name: "grafik",
@@ -596,6 +596,7 @@ const handleChangeSentral = async () => {
 
 const fetchPeriodeTahunSentral = async () => {
   try {
+    const encryptStorage = await encryptStoragePromise;
     const response: any = await grafikService.getYearSentral({
       kode_sentral: nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id,
     });
@@ -624,6 +625,7 @@ watch(route, async (value) => {
 })
 
 onMounted(async () => {
+  userLevel.value = await authService.checkLevel();
   if (props.tabsTitle) {
     if (props.tabsTitle.length > 0) {
       selectedTitle.value = 'Unit Sentral';

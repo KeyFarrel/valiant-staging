@@ -12,7 +12,7 @@
         <div v-if="approveMesinKK.status === 'Ditolak T1' || approveMesinKK.status === 'Ditolak T2'" class="flex">
           <!-- Revisi Data -->
           <RouterLink
-            :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(approveMesinKK.id_mesin) : approveMesinKK.id_mesin }, query: { id_sentral: route.query.id_sentral } }">
+            :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data-approveKK', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(approveMesinKK.id_mesin) : approveMesinKK.id_mesin }, query: { id_sentral: route.query.id_sentral, tahun: route.query.tahun } }">
             <button class="w-fit p-2 ml-1 flex items-center justify-center bg-[#0099AD] rounded-md text-white">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g clip-path="url(#clip0_8312_23311)">
@@ -36,7 +36,7 @@
         <div v-else-if="approveMesinKK.status === 'Draft'" class="flex">
           <!-- Edit Data -->
           <RouterLink
-            :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(approveMesinKK.id_mesin) : approveMesinKK.id_mesin }, query: { id_sentral: route.query.id_sentral } }">
+            :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data-approveKK', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(approveMesinKK.id_mesin) : approveMesinKK.id_mesin }, query: { id_sentral: route.query.id_sentral, tahun: route.query.tahun } }">
             <button
               class="w-fit p-2 mr-1 flex items-center justify-center border border-[#0099AD] rounded-md text-[#0099AD] duration-300 hover:text-white">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -170,7 +170,7 @@
         :tahun-perolehan-data="mesin.tahun_nilai_perolehan.toString() ? mesin.tahun_nilai_perolehan.toString() : '-'"
         :jumlah-mesin="jumlahMesin" :status-grafik="approveMesinKK.status">
         <TabItem title="Asumsi Makro">
-          <AsumsiMakro @on-click="reloadAsumsiParameter" :data="data"
+          <AsumsiMakro @on-click-reload="reloadAsumsiParameter" :data="data"
             :tahun="tahunTerakhirAsumsi ? parseInt(tahunTerakhirAsumsi) : '-'"
             :status="approveMesinKK.status ? approveMesinKK.status : '-'"
             :corporate-tax-rate="asumsiParameter.corporate_tax_rate" :discount-rate="asumsiParameter.discount_rate"
@@ -179,7 +179,7 @@
             :is-fetching-error="asumsiParameter.isFetchingError" />
         </TabItem>
         <TabItem title="Parameter Teknis & Finansial">
-          <ParameterTeknis @on-click="reloadAsumsiParameter" :data="data"
+          <ParameterTeknis @on-click-reload="reloadAsumsiParameter" :data="data"
             :tahun="tahunTerakhirAsumsi ? parseInt(tahunTerakhirAsumsi) : '-'"
             :status="approveMesinKK.status ? approveMesinKK.status : '-'"
             :daya-terpasang="parameterTeknisFinansial?.daya_terpasang ?? '-'"
@@ -219,7 +219,7 @@
                 <ComponentDraft v-else-if="approveMesinKK.status === 'Draft'" />
               </div>
             </div>
-            <TableDataTeknis @on-click="reloadDataTeknis" :data-teknis="dataTeknis"
+            <TableDataTeknis @on-click-reload="reloadDataTeknis" :data-teknis="dataTeknis"
               :tahun-terakhir-realisasi="tahunBerjalan" :type-periodic="typePeriodic"
               :is-fetching-error="dataTeknis.isFetchingError" />
           </div>
@@ -247,7 +247,7 @@
                 <ComponentDraft v-else-if="approveMesinKK.status === 'Draft'" />
               </div>
             </div>
-            <TableDataFinansial @on-click="reloadDataFinansial" :data-finansial="dataFinansial"
+            <TableDataFinansial @on-click-reload="reloadDataFinansial" :data-finansial="dataFinansial"
               :tahun-terakhir-realisasi="tahunBerjalan" :source="finansialMappingResult"
               :is-fetching-error="dataFinansial.isFetchingError" />
           </div>
@@ -290,12 +290,12 @@
                 </li>
               </ul>
             </nav>
-            <AkhirMasaManfaat @on-click="reloadHasilSimulasi" :irr-on-project="hasilSimulasi.track_irr_project"
+            <AkhirMasaManfaat @on-click-reload="reloadHasilSimulasi" :irr-on-project="hasilSimulasi.track_irr_project"
               :irr-on-equity="hasilSimulasi.track_irr_equity" :npv-on-equity="hasilSimulasi.track_npv_equity"
               :npv-on-project="hasilSimulasi.track_npv_project" :average-ncf="hasilSimulasi.track_average_cf"
               :average-eaf="hasilSimulasi.track_average_eaf" :is-fetching-error="hasilSimulasi.isFetchingError"
               v-show="selectedTab === 'Akhir Masa'" />
-            <TahunBerjalan @on-click="reloadHasilSimulasi" :irr-on-project="hasilSimulasi.now_track_irr_project"
+            <TahunBerjalan @on-click-reload="reloadHasilSimulasi" :irr-on-project="hasilSimulasi.now_track_irr_project"
               :irr-on-equity="hasilSimulasi.now_track_irr_equity" :npv-on-equity="hasilSimulasi.now_track_npv_equity"
               :npv-on-project="hasilSimulasi.now_track_npv_project" :average-ncf="hasilSimulasi.now_track_average_cf"
               :average-eaf="hasilSimulasi.now_track_average_eaf" :is-fetching-error="hasilSimulasi.isFetchingError"
@@ -311,7 +311,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute } from 'vue-router'
-import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import { notifyError } from "@/services/helper/toast-notification";
 import RekapService from "@/services/rekap-service";
 const rekapService = new RekapService();
@@ -354,6 +354,7 @@ const isHover = ref(true);
 const persetujuanService = new PersetujuanService();
 const detailRekapService = new DetailRekapService();
 const tahunGrafik = ref<number>(0);
+let encryptStorageRef: any = null;
 
 const approveSentralKK = ref<ListApprove>();
 const approveMesinKK = ref<ListApprove>({
@@ -469,7 +470,7 @@ const updateMesin = ref<any>();
 const avrIrr = ref<number>();
 const statusMesin = ref<number>(-1);
 
-const idGrafik = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id;
+const idGrafik = ref<any>('');
 const jumlahMesin = ref<number>(0);
 
 interface MesinItem {
@@ -545,7 +546,7 @@ const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 const fetchMesinById = async () => {
   try {
     const response: MesinItem = await detailRekapService.getMesinById(
-      idGrafik
+      idGrafik.value
     )
     try {
       const responsePhoto: any = await detailSentralService.getPhoto(response.data.photo1)
@@ -570,7 +571,7 @@ const fetchPersetujuanKK = async () => {
       tahun: route.query.tahun
     });
     approveSentralKK.value = response.data;
-    approveMesinKK.value = response.data.mesins.filter((val: any) => val.id_mesin == idGrafik)[0];
+    approveMesinKK.value = response.data.mesins.filter((val: any) => val.id_mesin == idGrafik.value)[0];
     tahunTerakhirAsumsi.value = approveMesinKK.value.tahun;
     statusMesin.value = approveMesinKK.value.id_status;
   } catch (error) {
@@ -583,7 +584,7 @@ const fetchAsumsiParameter = async () => {
     const response: AsumsiParameterItem =
       await detailRekapService.getAsumsiParameter(
         parseInt(route.query.tahun?.toString() ?? '0') - 1,
-        parseInt(idGrafik),
+        parseInt(idGrafik.value),
         parseInt(route.query.tahun?.toString() ?? '0')
       )
     asumsiParameter.value = response.data.asumsi_makro
@@ -606,12 +607,12 @@ const fetchDataTeknis = async () => {
   try {
     const response: any = await detailRekapService.getDataTeknis(
       parseInt(route.query.tahun?.toString() ?? '0'),
-      parseInt(idGrafik)
+      parseInt(idGrafik.value)
     )
     if (response.data.tahun[response.data.tahun.length - 1] == tahunBerjalan - 1) {
       const responseTahunRealisasi: any = await detailRekapService.getDataTeknis(
         parseInt(route.query.tahun?.toString() ?? '0') - 1,
-        parseInt(idGrafik)
+        parseInt(idGrafik.value)
       )
       dataTeknis.value = responseTahunRealisasi.data
       tahunGrafik.value = parseInt(route.query.tahun?.toString() ?? '0') - 1
@@ -635,7 +636,7 @@ const fetchDataFinansial = async () => {
     finansialMappingResult.value = []
     const response: any = await detailRekapService.getDataFinansial(
       parseInt(route.query.tahun?.toString() ?? '0'),
-      parseInt(idGrafik)
+      parseInt(idGrafik.value)
     )
     let currentLevel1: any | null = null
     let currentLevel2: any | null = null
@@ -643,7 +644,7 @@ const fetchDataFinansial = async () => {
     if (response.data.tahun[response.data.tahun.length - 1] == tahunBerjalan - 1) {
       const responseTahunRealisasi: any = await detailRekapService.getDataFinansial(
         parseInt(route.query.tahun?.toString() ?? '0') - 1,
-        parseInt(idGrafik)
+        parseInt(idGrafik.value)
       )
       for (const item of responseTahunRealisasi.data.detail) {
         if (item.level === 1) {
@@ -709,7 +710,7 @@ const reloadDataFinansial = () => {
 const fetchHasilSimulasi = async () => {
   try {
     const response: any = await detailRekapService.getHasilSimulasi(
-      parseInt(idGrafik),
+      parseInt(idGrafik.value),
       parseInt(route.query.tahun?.toString() ?? '0'),
       statusMesin.value
     );
@@ -739,7 +740,7 @@ const fetchTypePeriodic = async () => {
 const downloadEvidence = async () => {
   try {
     isLoading.value = true
-    const filePath: any = await rekapService.getEvidencePath(idGrafik, route.query.tahun?.toString() ?? '0', 0)
+    const filePath: any = await rekapService.getEvidencePath(idGrafik.value, route.query.tahun?.toString() ?? '0', 0)
     const finalFileName: any = filePath.data[0].file_name
     const response: any = await rekapService.downloadEvidence(filePath.data[0].dokumen_evidence)
     const contentDisposition = response.headers['content-disposition']
@@ -780,7 +781,7 @@ const updateKK = async () => {
       status_approval: 0,
       keterangan: '',
       tahun: parseInt(route.query.tahun?.toString() ?? '0'),
-      id_mesin: parseInt(idGrafik)
+      id_mesin: parseInt(idGrafik.value)
     })
     updateMesin.value = response.data;
     modalApprove.value = false;
@@ -838,6 +839,8 @@ const fetchUnitPengelola = async () => {
 
 onMounted(async () => {
   isLoading.value = true;
+  encryptStorageRef = await encryptStoragePromise;
+  idGrafik.value = nodeMode === 'production' ? encryptStorageRef.decryptValue(route.params.id.toString()) : route.params.id;
   await fetchMesinById();
   await fetchPersetujuanKK();
   isLoading.value = false;

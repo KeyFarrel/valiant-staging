@@ -77,7 +77,7 @@
     </div>
   </div>
   <ReloadComponent v-else-if="props.isFetchingError && (!props.corporateTaxRate || !props.equityPortion)"
-    @on-click="emit('onClick')" />
+    @on-click="emit('onClick')" @on-key-down="emit('onKeyDown')" />
   <ShimmerLoading v-else class="w-full h-40" />
 </template>
 
@@ -109,7 +109,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   isFetchingError: false
 })
-const emit = defineEmits(['onClick'])
+const emit = defineEmits(['onClick', 'onKeyDown'])
 </script>
 
 <style scoped>

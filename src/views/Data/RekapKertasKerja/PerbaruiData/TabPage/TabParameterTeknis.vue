@@ -10,40 +10,40 @@
     <form class="flex flex-col space-y-6 text-sm">
       <div class="grid grid-cols-4 gap-x-6">
         <div class="space-y-1">
-          <label class="block font-bold text-gray-500">Net Plant Heat Rate (NPHR) <span
-              class="text-warningColor">*</span></label>
+          <span class="block font-bold text-gray-500">Net Plant Heat Rate (NPHR) <span
+              class="text-warningColor">*</span></span>
           <div class="flex items-center justify-end">
             <TextField @on-input="handleInputDecimalRupiah('nphr')" v-model="nphr" class="pr-20"
               :disabled="props.isRealisasiUploaded === true || props.isIntegrasi" />
-            <label class="absolute pr-3 text-sm text-primaryColor">Kcal/kWH</label>
+            <span class="absolute pr-3 text-sm text-primaryColor">Kcal/kWH</span>
           </div>
           <div class="text-xs text-warningColor" v-if="props.error?.nphr === true">NPHR wajib diisi</div>
         </div>
         <div class="space-y-1">
-          <label class="block font-bold text-gray-500">Auxiliary <span class="text-warningColor">*</span></label>
+          <span class="block font-bold text-gray-500">Auxiliary <span class="text-warningColor">*</span></span>
           <div class="flex items-center justify-end">
             <TextField @on-input="handleInputDecimalRupiah('auxiliary')" v-model="auxiliary" class="pr-10"
               :disabled="props.isRealisasiUploaded === true || props.isIntegrasi" />
-            <label class="absolute pr-3 text-sm text-primaryColor">%</label>
+            <span class="absolute pr-3 text-sm text-primaryColor">%</span>
           </div>
           <div class="text-xs text-warningColor" v-if="props.error?.auxiliary === true">Auxiliary wajib diisi</div>
         </div>
         <div class="space-y-1">
-          <label class="block font-bold text-gray-500">Susut Trafo <span class="text-warningColor">*</span></label>
+          <span class="block font-bold text-gray-500">Susut Trafo <span class="text-warningColor">*</span></span>
           <div class="flex items-center justify-end">
             <TextField @on-input="handleInputDecimalRupiah('susutTrafo')" v-model="susutTrafo" class="pr-10"
               :disabled="props.isRealisasiUploaded === true || props.isIntegrasi" />
-            <label class="absolute pr-3 text-sm text-primaryColor">%</label>
+            <span class="absolute pr-3 text-sm text-primaryColor">%</span>
           </div>
           <div class="text-xs text-warningColor" v-if="props.error?.susutTrafo === true">Susut Trafo wajib diisi</div>
         </div>
         <div class="space-y-1">
-          <label class="block font-bold text-gray-500">Pemakaian Sendiri (PS) <span
-              class="text-warningColor">*</span></label>
+          <span class="block font-bold text-gray-500">Pemakaian Sendiri (PS) <span
+              class="text-warningColor">*</span></span>
           <div class="flex items-center justify-end">
             <TextField @on-input="handleInputDecimalRupiah('pemakaianSendiri')" v-model="pemakaianSendiri" class="pr-10"
               :disabled="props.isRealisasiUploaded === true || props.isIntegrasi" />
-            <label class="absolute pr-3 text-sm text-primaryColor">%</label>
+            <span class="absolute pr-3 text-sm text-primaryColor">%</span>
           </div>
           <div class="text-xs text-warningColor" v-if="props.error?.pemakaianSendiri === true">Pemakaian Sendiri wajib
             diisi
@@ -52,48 +52,48 @@
       </div>
       <div class="grid grid-cols-4 gap-x-6">
         <div class="space-y-1">
-          <label class="block font-bold text-gray-500">Electricity Price A <span
-              class="text-warningColor">*</span></label>
+          <span class="block font-bold text-gray-500">Electricity Price A <span
+              class="text-warningColor">*</span></span>
           <div class="flex items-center justify-end">
             <TextField @on-input="handleInputDecimalRupiah('electricityPriceA')" v-model="electricityPriceA"
               class="pr-20" :disabled="props.isRealisasiUploaded === true" />
-            <label class="absolute pr-3 text-sm text-primaryColor">Rp/kW.bln</label>
+            <span class="absolute pr-3 text-sm text-primaryColor">Rp/kW.bln</span>
           </div>
           <div class="text-xs text-warningColor" v-if="props.error?.electricityPriceA === true">Electricity Price A
             wajib
             diisi</div>
         </div>
         <div class="space-y-1">
-          <label class="block font-bold text-gray-500">Electricity Price B <span
-              class="text-warningColor">*</span></label>
+          <span class="block font-bold text-gray-500">Electricity Price B <span
+              class="text-warningColor">*</span></span>
           <div class="flex items-center justify-end">
             <TextField @on-input="handleInputDecimalRupiah('electricityPriceB')" v-model="electricityPriceB"
               class="pr-20" :disabled="props.isRealisasiUploaded === true" />
-            <label class="absolute pr-3 text-sm text-primaryColor">Rp/kW.bln</label>
+            <span class="absolute pr-3 text-sm text-primaryColor">Rp/kW.bln</span>
           </div>
           <div class="text-xs text-warningColor" v-if="props.error?.electricityPriceB === true">Electricity Price B
             wajib
             diisi</div>
         </div>
         <div class="space-y-1">
-          <label class="block font-bold text-gray-500">Electricity Price C <span
-              class="text-warningColor">*</span></label>
+          <span class="block font-bold text-gray-500">Electricity Price C <span
+              class="text-warningColor">*</span></span>
           <div class="flex items-center justify-end">
             <TextField @on-input="handleInputDecimalRupiah('electricityPriceC')" v-model="electricityPriceC"
               class="pr-18" :disabled="props.isRealisasiUploaded === true" />
-            <label class="absolute pr-3 text-sm text-primaryColor">Rp/kWh</label>
+            <span class="absolute pr-3 text-sm text-primaryColor">Rp/kWh</span>
           </div>
           <div class="text-xs text-warningColor" v-if="props.error?.electricityPriceC === true">Electricity Price C
             wajib
             diisi</div>
         </div>
         <div class="space-y-1">
-          <label class="block font-bold text-gray-500">Electricity Price D <span
-              class="text-warningColor">*</span></label>
+          <span class="block font-bold text-gray-500">Electricity Price D <span
+              class="text-warningColor">*</span></span>
           <div class="flex items-center justify-end">
             <TextField @on-input="handleInputDecimalRupiah('electricityPriceD')" v-model="electricityPriceD"
               class="pr-18" :disabled="props.isRealisasiUploaded === true" />
-            <label class="absolute pr-3 text-sm text-primaryColor">Rp/kWh</label>
+            <span class="absolute pr-3 text-sm text-primaryColor">Rp/kWh</span>
           </div>
           <div class="text-xs text-warningColor" v-if="props.error?.electricityPriceD === true">Electricity Price D
             wajib
@@ -105,21 +105,21 @@
       <p class="font-semibold text-gray-500">Bahan Bakar</p>
       <div class="text-xs text-warningColor" v-if="props.error?.bahanBakar === true">Bahan Bakar wajib diisi</div>
       <div class="grid grid-cols-3 gap-5">
-        <template v-for="( bahanBakarItem, bahanBakarIndex ) in bahanBakarsFinal()" :key="bahanBakarIndex">
+        <template v-for="(bahanBakarItem, bahanBakarIndex) in bahanBakarsFinal()" :key="bahanBakarIndex">
           <div class="flex flex-row items-center space-x-3">
             <input type="checkbox" name="" class="rounded-[3.5px] border-primaryColor border cursor-pointer"
               :id="bahanBakarItem.id" :value="bahanBakarItem.id" v-model="checkedBahanBakar" @change="emit('onChecked')"
               v-if="props.isRealisasiUploaded === false && bahanBakarItem.flag_bahan_bakar === 0">
             <div class="flex flex-col w-full space-y-1">
-              <label class="block font-bold text-gray-500">Bahan Bakar {{ bahanBakars.length > 0 ?
+              <span class="block font-bold text-gray-500">Bahan Bakar {{ bahanBakars.length > 0 ?
                 bahanBakarItem.flag_bahan_bakar === 1 ? 'Utama' : bahanBakarIndex + 1 : '-' }}<span
-                  class="text-warningColor">*</span></label>
+                  class="text-warningColor">*</span></span>
               <select
                 class="p-2 text-sm text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
                 @change="emit('onChange')" v-model="bahanBakarItem.kode_bahan_bakar" required
                 :disabled="props.isRealisasiUploaded === true">
                 <option value="" disabled hidden>Pilih Bahan Bakar</option>
-                <option v-for="( comboBahanBakarItem, comboBahanBakarIndex ) in props.comboBahanBakar"
+                <option v-for="(comboBahanBakarItem, comboBahanBakarIndex) in props.comboBahanBakar"
                   :value="(comboBahanBakarItem as any).kode_bahan_bakar" :key="comboBahanBakarIndex"
                   :disabled="bahanBakars.some((e: any) => e.kode_bahan_bakar === comboBahanBakarItem.kode_bahan_bakar && e !== bahanBakarItem)">
                   {{
@@ -130,27 +130,27 @@
             </div>
           </div>
           <div class="space-y-1">
-            <label class="block font-bold text-gray-500">Harga Bahan Bakar {{ bahanBakars.length > 0 ?
+            <span class="block font-bold text-gray-500">Harga Bahan Bakar {{ bahanBakars.length > 0 ?
               bahanBakarItem.flag_bahan_bakar === 1 ? 'Utama' : bahanBakarIndex + 1 : '-' }}<span
                 class="text-warningColor">
-                *</span></label>
+                *</span></span>
             <div class="flex items-center justify-end">
               <TextField @on-input="handleInputDecimalRupiah('hargaBahanBakar', bahanBakarIndex)" class="pr-18"
                 v-model="bahanBakarItem.harga_bahan_bakar" :disabled="props.isRealisasiUploaded === true" />
-              <label class="absolute pr-3 text-sm text-primaryColor">{{
-                labelBahanBakar(bahanBakarItem.kode_bahan_bakar) }}</label>
+              <span class="absolute pr-3 text-sm text-primaryColor">{{
+                labelBahanBakar(bahanBakarItem.kode_bahan_bakar) }}</span>
             </div>
           </div>
           <div class="space-y-1">
-            <label class="block font-bold text-gray-500">Specific Fuel Consumption (SFC) {{ bahanBakars.length > 0 ?
+            <span class="block font-bold text-gray-500">Specific Fuel Consumption (SFC) {{ bahanBakars.length > 0 ?
               bahanBakarItem.flag_bahan_bakar === 1 ? 'Utama' : bahanBakarIndex + 1 : '-' }}<span
-                class="text-warningColor">*</span></label>
+                class="text-warningColor">*</span></span>
             <div class="flex items-center justify-end">
               <TextField @on-input="handleInputDecimalRupiah('sfc', bahanBakarIndex)" class="pr-24"
                 v-model="bahanBakarItem.sfc"
                 :disabled="bahanBakarItem.status_sfc === false || props.isRealisasiUploaded === true || props.isIntegrasi" />
-              <label class="absolute pr-3 text-sm text-primaryColor">{{ labelSFC(bahanBakarItem.kode_bahan_bakar)
-                }}</label>
+              <span class="absolute pr-3 text-sm text-primaryColor">{{ labelSFC(bahanBakarItem.kode_bahan_bakar)
+              }}</span>
             </div>
           </div>
         </template>

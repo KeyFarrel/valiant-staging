@@ -3,7 +3,7 @@
   <div class="space-y-5">
     <div class="flex flex-row items-center justify-between">
       <SearchBox class="w-60" placeholder="Cari sentral..." @on-key-enter="fetchDataAnggaran"
-        @on-click="fetchDataAnggaran" v-model="searchQ" @on-input="fetchDataAnggaran" />
+        @on-click-submit="fetchDataAnggaran" v-model="searchQ" @on-input="fetchDataAnggaran" />
       <div class="flex flex-row items-center space-x-3">
         <div class="flex flex-row items-center space-x-3">
           <label class="text-sm font-semibold text-labelColor" for="">Tahun</label>
@@ -12,7 +12,7 @@
             range />
           <ShimmerLoading class="w-36 h-11" v-else />
         </div>
-        <ButtonComponent @on-click="handleExport" :text="'Export'" :text-color="'text-white'"
+        <ButtonComponent @on-click-submit="handleExport" :text="'Export'" :text-color="'text-white'"
           :hover-text-color="'text-hoverColor'" :bg-color="'bg-primaryColor'" :icon-position="'Left'"
           :hover-bg-color="'bg-hoverColor'" :border-color="'bg-primaryColor'" :hover-border-color="'bg-hoverColor'">
           <svg width="16" height="12" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -26,41 +26,41 @@
     <TableComponent>
       <template v-slot:table-header>
         <tr>
-          <th class="border-r" rowspan="2">
+          <th scope="col" class="border-r" rowspan="2">
             <div class="flex flex-row items-center justify-center space-x-10">
               <h1 class="font-semibold">Unit Induk / Sentral / Mesin</h1>
             </div>
           </th>
-          <th class="border-r" rowspan="2">
+          <th scope="col" class="border-r" rowspan="2">
             <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Jenis Pembangkit</h1>
             </div>
           </th>
-          <th class="border-r" rowspan="2">
+          <th scope="col" class="border-r" rowspan="2">
             <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Tahun</h1>
             </div>
           </th>
-          <th class="font-semibold border-b border-r">Capital Expenditure (CAPEX)</th>
-          <th class="font-semibold border-b" colspan="3">Operational Expenditure (OPEX)</th>
+          <th scope="col" class="font-semibold border-b border-r">Capital Expenditure (CAPEX)</th>
+          <th scope="col" class="font-semibold border-b" colspan="3">Operational Expenditure (OPEX)</th>
         </tr>
         <tr>
-          <th class="border-r">
+          <th scope="col" class="border-r">
             <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Total Capex Rp (Juta)</h1>
             </div>
           </th>
-          <th class="border-r">
+          <th scope="col" class="border-r">
             <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Komponen B Rp (Juta)</h1>
             </div>
           </th>
-          <th class="border-r">
+          <th scope="col" class="border-r">
             <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Komponen C Rp (Juta)</h1>
             </div>
           </th>
-          <th>
+          <th scope="col">
             <div class="flex flex-row items-center justify-center space-x-5">
               <h1 class="font-semibold">Komponen D Rp (Juta)</h1>
             </div>

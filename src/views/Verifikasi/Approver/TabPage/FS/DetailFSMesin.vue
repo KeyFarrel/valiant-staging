@@ -9,7 +9,7 @@
     :kondisi-unit="mesinDataById.kondisi_unit">
 
     <div
-      v-if="approveMesinFS?.status === 'Menunggu Persetujuan T2' && (authService.checkLevel() === 'Admin' || (authService.checkLevel() == 'Pengelola' || authService.checkRole() == 'Approver'))"
+      v-if="approveMesinFS?.status === 'Menunggu Persetujuan T2' && (userLevel === 'Admin' || (userLevel == 'Pengelola' || userRole == 'Approver'))"
       class="flex">
       <!-- Tolak Laporan -->
       <button
@@ -93,7 +93,7 @@
       </ModalWrapper>
     </div>
     <div
-      v-else-if="approveMesinFS?.status === 'Menunggu Persetujuan T1' && (authService.checkLevel() === 'Admin' || (authService.checkLevel() == 'Pembina' || authService.checkRole() == 'Approver'))"
+      v-else-if="approveMesinFS?.status === 'Menunggu Persetujuan T1' && (userLevel === 'Admin' || (userLevel == 'Pembina' || userRole == 'Approver'))"
       class="flex">
       <!-- Tolak Laporan -->
       <button
@@ -342,7 +342,7 @@ import { ref, onMounted } from "vue";
 import { useRoute } from 'vue-router'
 import { Vue3Lottie } from 'vue3-lottie';
 import { notifyError } from "@/services/helper/toast-notification";
-import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import RekapService from "@/services/rekap-service";
 const rekapService = new RekapService();
 import UserService from "@/services/user-service";
@@ -387,6 +387,8 @@ const data = ref('Feasibility Study');
 const detailRekapService = new DetailRekapService();
 const feasibilityStudyService = new FeasibilityStudyService();
 const persetujuanService = new PersetujuanService();
+const userLevel = ref<string | null>(null);
+const userRole = ref<string | null>(null);
 
 const approveSentralFS = ref<ListApprove>();
 const approveMesinFS = ref<ListApprove>();
@@ -435,7 +437,7 @@ const hasilSimulasi = ref();
 const updateMesinFS = ref<any>();
 const tahunData = ref<any>();
 const pesan = ref<string>('');
-const idGrafik = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id;
+const idGrafik = ref<any>('');
 const statusMesin = ref<any>([]);
 const jumlahMesin = ref<any>('');
 
@@ -498,7 +500,7 @@ const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const fetchMesinById = async () => {
   try {
     const response: MesinItem = await feasibilityStudyService.getMesinById(
-      idGrafik
+      idGrafik.value
     );
     try {
       const responsePhoto: any = await detailSentralService.getPhoto(response.data.photo1);
@@ -521,7 +523,7 @@ const fetchPersetujuanFS = async () => {
       tahun: route.query.tahun
     });
     approveSentralFS.value = response.data;
-    approveMesinFS.value = response.data.mesins.filter((val: any) => val.id_mesin == idGrafik)[0];
+    approveMesinFS.value = response.data.mesins.filter((val: any) => val.id_mesin == idGrafik.value)[0];
     // console.log(response.data)
     statusMesin.value = approveMesinFS.value?.id_status;
   } catch (error) {
@@ -533,7 +535,7 @@ const fetchAsumsiFeasibility = async () => {
   try {
     const response: any =
       await feasibilityStudyService.getAsumsiFeasibility(
-        parseInt(idGrafik),
+        parseInt(idGrafik.value),
         parseInt(mesinDataById.value?.tahun_operasi ?? '')
       );
     asumsiMakro.value = {
@@ -584,7 +586,7 @@ const fetchAsumsiFeasibility = async () => {
 const fetchDataTeknis = async () => {
   try {
     const response: any = await feasibilityStudyService.getDataTeknis(
-      parseInt(idGrafik)
+      parseInt(idGrafik.value)
     );
     dataTeknis.value = response.data;
   } catch (error) {
@@ -595,7 +597,7 @@ const fetchDataTeknis = async () => {
 const fetchDataFinansial = async () => {
   try {
     const response: any = await feasibilityStudyService.getDataFinansial(
-      parseInt(idGrafik)
+      parseInt(idGrafik.value)
     );
     let currentLevel1: any | null = null;
     let currentLevel2: any | null = null
@@ -632,7 +634,7 @@ const fetchDataFinansial = async () => {
 const fetchHasilSimulasi = async () => {
   try {
     const response: any = await feasibilityStudyService.getHasilSimulasi(
-      parseInt(idGrafik),
+      parseInt(idGrafik.value),
       parseInt(statusMesin.value)
     );
     hasilSimulasi.value = response.data;
@@ -684,7 +686,7 @@ const fetchUnitPengelola = async () => {
 const downloadEvidence = async () => {
   try {
     isLoading.value = true;
-    const filePath: any = await rekapService.getEvidencePath(idGrafik, tahunBerjalan.toString() ?? '0', 1);
+    const filePath: any = await rekapService.getEvidencePath(idGrafik.value, tahunBerjalan.toString() ?? '0', 1);
     const finalFileName: any = filePath.data[0].file_name;
     const response: any = await rekapService.downloadEvidence(filePath.data[0].dokumen_evidence);
     const contentDisposition = response.headers['content-disposition'];
@@ -723,7 +725,7 @@ const updateFSPengelola = async () => {
     const response: any = await persetujuanService.updateStatusFS({
       status_approval: 4,
       keterangan: '',
-      id_mesin: parseInt(idGrafik)
+      id_mesin: parseInt(idGrafik.value)
     })
     updateMesinFS.value = response.data
     isLoading.value = false;
@@ -749,7 +751,7 @@ const rejectFSPengelola = async () => {
       const response: any = await persetujuanService.updateStatusFS({
         status_approval: 5,
         keterangan: pesan.value,
-        id_mesin: parseInt(idGrafik)
+        id_mesin: parseInt(idGrafik.value)
       })
       updateMesinFS.value = response.data
       isLoading.value = false;
@@ -774,7 +776,7 @@ const updateFSPembina = async () => {
     const response: any = await persetujuanService.updateStatusFS({
       status_approval: 1,
       keterangan: '',
-      id_mesin: parseInt(idGrafik)
+      id_mesin: parseInt(idGrafik.value)
     })
     updateMesinFS.value = response.data
     modalApprove.value = false;
@@ -800,7 +802,7 @@ const rejectFSPembina = async () => {
       const response: any = await persetujuanService.updateStatusFS({
         status_approval: 2,
         keterangan: pesan.value,
-        id_mesin: parseInt(idGrafik)
+        id_mesin: parseInt(idGrafik.value)
       })
       updateMesinFS.value = response.data;
       isLoading.value = false;
@@ -819,6 +821,10 @@ const rejectFSPembina = async () => {
 
 onMounted(async () => {
   isLoading.value = true;
+  const encryptStorage = await encryptStoragePromise;
+  idGrafik.value = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id;
+  userLevel.value = await authService.checkLevel();
+  userRole.value = await authService.checkRole();
   await fetchMesinById();
   await fetchPersetujuanFS();
   await fetchAsumsiFeasibility();

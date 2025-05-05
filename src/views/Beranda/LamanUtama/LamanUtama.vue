@@ -330,7 +330,7 @@
           </svg>
         </button>
       </h2>
-      <SearchBox @on-click="handleSearch" @on-key-enter="handleSearch" v-model="searchQuery" class="w-full" />
+      <SearchBox @on-click-submit="handleSearch" @on-key-enter="handleSearch" v-model="searchQuery" class="w-full" />
       <TableComponent class="max-h-[18rem]">
         <template v-slot:table-header>
           <tr>

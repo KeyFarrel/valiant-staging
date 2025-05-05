@@ -2,28 +2,28 @@
   <TableComponent class="scrollbar-hide">
     <template v-slot:table-header>
       <tr class="text-xs bg-gray-100">
-        <th class="text-center border">No</th>
-        <th class="border">
+        <th scope="col" class="text-center border">No</th>
+        <th scope="col" class="border">
           <div class="flex flex-row items-center justify-center space-x-10 text-center ">
             <h1 class="font-semibold">Periode</h1>
           </div>
         </th>
-        <th class="border">
+        <th scope="col" class="border">
           <div class="flex flex-row items-center justify-center space-x-10 text-center ">
             <h1 class="font-semibold">IRR on Equity (%)</h1>
           </div>
         </th>
-        <th class="border">
+        <th scope="col" class="border">
           <div class="flex flex-row items-center justify-center space-x-10 text-center ">
             <h1 class="font-semibold">NPV on Equity (Rp Juta)</h1>
           </div>
         </th>
-        <th class="border">
+        <th scope="col" class="border">
           <div class="flex flex-row items-center justify-center space-x-10 text-center">
             <h1 class="font-semibold">Status</h1>
           </div>
         </th>
-        <th class="text-center border">Aksi</th>
+        <th scope="col" class="text-center border">Aksi</th>
       </tr>
     </template>
     <template v-slot:table-body v-if="props.source === null">

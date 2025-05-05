@@ -38,5 +38,4 @@ export default class PetaService extends BaseService {
   async getMesinByKode<T>(id: any): Promise<T> {
     return this.get(`${url}peta/detail-mesin?kode_sentral=${id}`);
   }
-
 }

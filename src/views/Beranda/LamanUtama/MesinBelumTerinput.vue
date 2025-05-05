@@ -1,7 +1,7 @@
 <template>
   <Loading v-if="isLoading" />
   <div class="p-6 space-y-5 bg-white rounded-lg">
-    <SearchBox class="w-72" v-model="searchQuery" @on-click="handleSearch" @on-key-enter="handleSearch"
+    <SearchBox class="w-72" v-model="searchQuery" @on-click-submit="handleSearch" @on-key-enter="handleSearch"
       @on-input="handleSearch" />
     <div class="whitespace-nowrap">
       <ul class="flex w-full overflow-x-auto">
@@ -136,7 +136,7 @@ const navigation = ref<{
   totalRecords: 0,
   limit: 10
 });
-var debounceTimeout: any = null;
+let debounceTimeout: any = null;
 
 const fetchMesinBelumInput = async () => {
   isLoading.value = true;

@@ -20,7 +20,7 @@
     </div>
     <ul class="py-2 absolute mt-10 w-full max-h-48 bg-white border-[1.5px] rounded-lg z-[30] overflow-scroll space-y-1 "
       ref="listContainer" v-if="showSuggestion">
-      <li @click="searchQuery = pembangkitItem.sentral; showSuggestion = false; emit('onClick')"
+      <li @click="searchQuery = pembangkitItem.sentral; showSuggestion = false; emit('onClickSentral')"
         :class="{ 'selected-item': pembangkitItem.sentral === selectedSentral }"
         class="px-3 py-1 cursor-pointer hover:bg-primaryColor hover:text-white"
         v-for="(pembangkitItem, pembangkitIndex) in searchResults" :key="pembangkitIndex">{{
@@ -43,7 +43,7 @@ interface Props {
 
 const props = defineProps<Props>();
 const searchQuery: any = defineModel();
-const emit = defineEmits(['onInput', 'onKeyEnter', 'onClick', 'onFocus']);
+const emit = defineEmits(['onInput', 'onKeyEnter', 'onClickSentral', 'onFocus', 'onKeyDown']);
 
 const handleClickOutside = (event: MouseEvent) => {
   if (container.value && !container.value.contains(event.target as Node)) {
