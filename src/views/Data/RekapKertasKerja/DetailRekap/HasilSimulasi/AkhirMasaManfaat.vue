@@ -98,7 +98,7 @@
   </div>
   <ReloadComponent
     v-else-if="props.isFetchingError && (!props.irrOnEquity || !props.npvOnEquity || !props.averageNcf || !props.averageEaf)"
-    @onClick="emit('onClick')" />
+    @onClick="emit('onClick')" @on-key-down="emit('onKeyDown')" />
   <div class="grid grid-cols-2 mt-5 gap-x-10 gap-y-5" v-else>
     <ShimmerLoading class="w-full h-36" />
     <ShimmerLoading class="w-full h-36" />
@@ -116,7 +116,7 @@ import ReloadComponent from '@/components/ui/ReloadComponent.vue';
 const props = withDefaults(defineProps<Props>(), {
   isFetchingError: false
 })
-const emit = defineEmits(['onClick'])
+const emit = defineEmits(['onClick', 'onKeyDown'])
 
 interface Props {
   irrOnProject: number | string

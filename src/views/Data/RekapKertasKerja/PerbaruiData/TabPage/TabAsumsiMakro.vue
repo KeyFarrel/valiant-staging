@@ -9,7 +9,7 @@
     </section>
     <form class="grid grid-cols-4 text-sm gap-x-6">
       <div class="space-y-1">
-        <label class="block font-bold text-gray-500">Interest Rate <span class="text-warningColor">*</span></label>
+        <span class="block font-bold text-gray-500">Interest Rate <span class="text-warningColor">*</span></span>
         <div class="flex items-center justify-end">
           <TextField @on-input="handleInputDecimalRupiah('interestRate')" v-model="interestRate" class="pr-14"
             :disabled="props.isRealisasiUploaded === true" />
@@ -18,7 +18,7 @@
         <div class="text-xs text-warningColor" v-if="props.error?.interestRate === true">Interest Rate wajib diisi</div>
       </div>
       <div class="space-y-1">
-        <label class="block font-bold text-gray-500">Umur Teknis <span class="text-warningColor">*</span></label>
+        <span class="block font-bold text-gray-500">Umur Teknis <span class="text-warningColor">*</span></span>
         <div class="flex items-center justify-end">
           <TextField @on-input="handleInputNumberOnly('umurTeknis')" v-model="umurTeknis" class="pr-14"
             :disabled="props.initValue?.umurTeknis !== ''" />
@@ -27,7 +27,7 @@
         <div class="text-xs text-warningColor" v-if="props.error?.umurTeknis === true">Umur Teknis wajib diisi</div>
       </div>
       <div class="space-y-1">
-        <label class="block font-bold text-gray-500">Loan Tenor <span class="text-warningColor">*</span></label>
+        <span class="block font-bold text-gray-500">Loan Tenor <span class="text-warningColor">*</span></span>
         <div class="flex items-center justify-end">
           <TextField @on-input="handleInputNumberOnly('loanTenor')" v-model="loanTenor" class="pr-14"
             :disabled="props.isRealisasiUploaded === true" />
@@ -36,7 +36,7 @@
         <div class="text-xs text-warningColor" v-if="props.error?.loanTenor === true">Loan Tenor wajib diisi</div>
       </div>
       <div class="space-y-1">
-        <label class="block font-bold text-gray-500">Loan Portion <span class="text-warningColor">*</span></label>
+        <span class="block font-bold text-gray-500">Loan Portion <span class="text-warningColor">*</span></span>
         <div class="flex items-center justify-end">
           <TextField @on-input="handleInputDecimalRupiah('loanPortion')" v-model="loanPortion" class="pr-10"
             :disabled="props.isRealisasiUploaded === true" />

@@ -6,7 +6,7 @@
         <tr class="text-[#0099AD] text-sm text-left border-b-2">
           <th class="sticky left-0 z-10 bg-white pr-96" id="tableHeader">Nama</th>
           <th class="text-center "
-            v-for="( tahunItem, tahunIndex ) in props.dataFinansial.tahun.length === 0 ? 1 : props.dataFinansial.tahun "
+            v-for="(tahunItem, tahunIndex) in props.dataFinansial.tahun.length === 0 ? 1 : props.dataFinansial.tahun"
             :key="tahunIndex" :class="props.tahunTerakhirRealisasi ? {
               'text-warningColor': tahunItem < props.tahunTerakhirRealisasi,
               'text-primaryTextColor': tahunItem === props.tahunTerakhirRealisasi,
@@ -19,7 +19,7 @@
           </th>
         </tr>
       </thead>
-      <tbody v-for="( level1, level1Index ) in props.source" :key="level1Index">
+      <tbody v-for="(level1, level1Index) in props.source" :key="level1Index">
         <tr class="text-sm cursor-pointer bg-strokeColor bg-opacity-40 active:bg-opacity-90"
           @click="toggleRow(level1.id_uraian)">
           <td class="sticky left-0 z-10 border-b">
@@ -42,11 +42,10 @@
             </div>
           </td>
           <td class="border-b"
-            v-for="( tahun, tahunIndex ) in props.dataFinansial.tahun.length === 0 ? 1 : props.dataFinansial.tahun ">
+            v-for="(tahun, tahunIndex) in props.dataFinansial.tahun.length === 0 ? 1 : props.dataFinansial.tahun">
           </td>
         </tr>
-        <template v-for="( level2, level2Index ) in level1.level2 " :key="level2Index"
-          v-if="isRowOpen(level1.id_uraian)">
+        <template v-for="(level2, level2Index) in level1.level2" :key="level2Index" v-if="isRowOpen(level1.id_uraian)">
           <tr class="text-sm cursor-pointer active:bg-strokeColor active:bg-opacity-30"
             @click="toggleRow(level2.id_uraian)">
             <td id="level2" :class="{ selected: level2.level3.length === 0 }" class="sticky left-0 z-10 bg-white">
@@ -69,7 +68,7 @@
               </div>
             </td>
             <td class="text-right"
-              v-for="( tahun, tahunIndex ) in props.dataFinansial.tahun.length === 0 ? 1 : props.dataFinansial.tahun "
+              v-for="(tahun, tahunIndex) in props.dataFinansial.tahun.length === 0 ? 1 : props.dataFinansial.tahun"
               :class="{ 'bg-blue-50': tahun === props.tahunTerakhirRealisasi }">
               {{ props.dataFinansial.tahun ? (level2.uraian.includes('Kalkulasi') ||
                 level2.uraian.includes('kalkulasi')) ? '' : level2['t' +
@@ -79,7 +78,7 @@
                 : '-' }}
             </td>
           </tr>
-          <template v-for="( level3, level3Index ) in level2.level3 " :key="level3Index"
+          <template v-for="(level3, level3Index) in level2.level3" :key="level3Index"
             v-if="isRowOpen(level2.id_uraian)">
             <tr class="text-sm cursor-pointer" @click="toggleRow(level3.id_uraian)">
               <td id="level3" :class="{ selected: level3.level4.length === 0 }" class="sticky left-0 z-10 bg-white">
@@ -102,7 +101,7 @@
                 </div>
               </td>
               <td class="text-right"
-                v-for="( tahun, tahunIndex ) in props.dataFinansial.tahun.length === 0 ? 1 : props.dataFinansial.tahun "
+                v-for="(tahun, tahunIndex) in props.dataFinansial.tahun.length === 0 ? 1 : props.dataFinansial.tahun"
                 :class="{ 'bg-blue-50': tahun === props.tahunTerakhirRealisasi }" :key="tahunIndex">
                 {{ props.dataFinansial.tahun ? (level3.uraian.includes('Kalkulasi') ||
                   level3.uraian.includes('kalkulasi')) ? '' : level3['t' +
@@ -112,12 +111,12 @@
                   : '-' }}
               </td>
             </tr>
-            <template v-for="( level4, level4Index ) in level3.level4 " :key="level4Index"
+            <template v-for="(level4, level4Index) in level3.level4" :key="level4Index"
               v-if="isRowOpen(level3.id_uraian)">
               <tr class="text-sm">
                 <td id="level4" class="sticky left-0 z-10 bg-white">{{ level4.uraian }}</td>
                 <td class="text-right"
-                  v-for="( tahun, tahunIndex ) in props.dataFinansial.tahun.length === 0 ? 1 : props.dataFinansial.tahun "
+                  v-for="(tahun, tahunIndex) in props.dataFinansial.tahun.length === 0 ? 1 : props.dataFinansial.tahun"
                   :class="{ 'bg-blue-50': tahun === props.tahunTerakhirRealisasi }">
                   {{ props.dataFinansial.tahun ? (level4.uraian.includes('Kalkulasi') ||
                     level4.uraian.includes('kalkulasi')) ? '' : level4['t'
@@ -133,7 +132,7 @@
     </table>
   </div>
   <ReloadComponent v-else-if="props.isFetchingError && (!props.source.length && !props.dataFinansial.tahun.length)"
-    @on-click="emit('onClick')" />
+    @on-click="emit('onClickReload')" @on-key-down="emit('onKeyDown')" />
   <ShimmerLoading v-else class="w-full h-40" />
 </template>
 
@@ -157,7 +156,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   isFetchingError: false
 })
-const emit = defineEmits(['onClick']);
+const emit = defineEmits(['onClickReload', 'onKeyDown']);
 
 const toggleRow = (itemId: number) => {
   if (isRowOpen(itemId)) {

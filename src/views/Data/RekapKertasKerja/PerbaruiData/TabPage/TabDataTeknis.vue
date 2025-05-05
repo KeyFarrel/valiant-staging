@@ -24,54 +24,54 @@
           Maintenance wajib diisi</div>
       </div>
       <div class="space-y-1">
-        <label class="block font-bold text-gray-500">Net Capacity Factor (NCF) <span
-            class="text-warningColor">*</span></label>
+        <span class="block font-bold text-gray-500">Net Capacity Factor (NCF) <span
+            class="text-warningColor">*</span></span>
         <div class="flex items-center justify-end">
           <TextField @on-input="handleInputDecimalRupiah('ncf')" v-model="ncf" class="pr-10"
             :disabled="props.isIntegrasi" />
-          <label class="absolute pr-3 text-sm text-primaryColor">%</label>
+          <span class="absolute pr-3 text-sm text-primaryColor">%</span>
         </div>
         <div class="text-xs text-warningColor" v-if="props.error?.ncf === true">Net Capacity Factor wajib diisi</div>
       </div>
       <div class="space-y-1">
-        <label class="block font-bold text-gray-500">Equivalent Availability Factor (EAF) <span
-            class="text-warningColor">*</span></label>
+        <span class="block font-bold text-gray-500">Equivalent Availability Factor (EAF) <span
+            class="text-warningColor">*</span></span>
         <div class="flex items-center justify-end">
           <TextField @on-input="handleInputDecimalRupiah('eaf')" v-model="eaf" class="pr-10"
             :disabled="props.isIntegrasi" />
-          <label class="absolute pr-3 text-sm text-primaryColor">%</label>
+          <span class="absolute pr-3 text-sm text-primaryColor">%</span>
         </div>
         <div class="text-xs text-warningColor" v-if="props.error?.eaf === true">Equivalent Availability Factor wajib
           diisi
         </div>
       </div>
       <div class="space-y-1">
-        <label class="block font-bold text-gray-500">Production (Bruto) <span class="text-warningColor">*</span></label>
+        <span class="block font-bold text-gray-500">Production (Bruto) <span class="text-warningColor">*</span></span>
         <div class="flex items-center justify-end">
           <TextField @on-input="handleInputDecimalRupiah('productionBrutto')" v-model="productionBrutto" class="pr-10"
             :disabled="props.isIntegrasi" />
-          <label class="absolute pr-3 text-sm text-primaryColor">MWh</label>
+          <span class="absolute pr-3 text-sm text-primaryColor">MWh</span>
         </div>
         <div class="text-xs text-warningColor" v-if="props.error?.productionBrutto === true">Production (Brutto) wajib
           diisi</div>
       </div>
       <div class="space-y-1">
-        <label class="block font-bold text-gray-500">Production (Netto) <span class="text-warningColor">*</span></label>
+        <span class="block font-bold text-gray-500">Production (Netto) <span class="text-warningColor">*</span></span>
         <div class="flex items-center justify-end">
           <TextField @on-input="handleInputDecimalRupiah('productionNetto')" v-model="productionNetto" class="pr-10"
             :disabled="props.isIntegrasi" />
-          <label class="absolute pr-3 text-sm text-primaryColor">MWh</label>
+          <span class="absolute pr-3 text-sm text-primaryColor">MWh</span>
         </div>
         <div class="text-xs text-warningColor" v-if="props.error?.productionNetto === true">Production (Netto) wajib
           diisi
         </div>
       </div>
       <div class="space-y-1">
-        <label class="block font-bold text-gray-500">Energy Sales <span class="text-warningColor">*</span></label>
+        <span class="block font-bold text-gray-500">Energy Sales <span class="text-warningColor">*</span></span>
         <div class="flex items-center justify-end">
           <TextField @on-input="handleInputDecimalRupiah('energySales')" v-model="energySales" class="pr-10"
             :disabled="props.isIntegrasi" />
-          <label class="absolute pr-3 text-sm text-primaryColor">MWh</label>
+          <span class="absolute pr-3 text-sm text-primaryColor">MWh</span>
         </div>
         <div class="text-xs text-warningColor" v-if="props.error?.energySales === true">Energy Sales wajib diisi</div>
       </div>
@@ -83,14 +83,14 @@
       <div class="grid grid-cols-3 gap-5">
         <div class="space-y-1" v-for="(fuelConsumptionItem, fuelConsumptionIndex) in fuelConsumption"
           :index="fuelConsumptionIndex">
-          <label class="block font-bold text-gray-500">Fuel Consumption {{ fuelConsumptionItem.bahan_bakar }} <span
+          <span class="block font-bold text-gray-500">Fuel Consumption {{ fuelConsumptionItem.bahan_bakar }} <span
               class="text-warningColor">
-              *</span></label>
+              *</span></span>
           <div class="flex items-center justify-end">
             <TextField @on-input="handleInputDecimalRupiah('fuelConsumption', fuelConsumptionIndex)" class="pr-18"
               v-model="fuelConsumptionItem.value" :disabled="props.isIntegrasi" />
-            <label class="absolute pr-3 text-sm text-primaryColor">{{
-              labelFuelConsumption(fuelConsumptionItem.id_uraian.toString()) }}</label>
+            <span class="absolute pr-3 text-sm text-primaryColor">{{
+              labelFuelConsumption(fuelConsumptionItem.id_uraian.toString()) }}</span>
           </div>
         </div>
       </div>

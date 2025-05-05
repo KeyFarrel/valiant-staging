@@ -2,28 +2,28 @@
   <TableComponent class="scrollbar-hide">
     <template v-slot:table-header>
       <tr class="text-xs">
-        <th class="text-center border-r">No</th>
-        <th class="border-r">
+        <th scope="col" class="text-center border-r">No</th>
+        <th scope="col" class="border-r">
           <div class="flex flex-row items-center justify-center space-x-10 text-center ">
             <h1 class="font-semibold">Periode</h1>
           </div>
         </th>
-        <th class="border-r">
+        <th scope="col" class="border-r">
           <div class="flex flex-row items-center justify-center space-x-10 text-center ">
             <h1 class="font-semibold">IRR on Equity (%)</h1>
           </div>
         </th>
-        <th class="border-r">
+        <th scope="col" class="border-r">
           <div class="flex flex-row items-center justify-center space-x-10 text-center ">
             <h1 class="font-semibold">NPV on Equity (Rp Juta)</h1>
           </div>
         </th>
-        <th class="border-r">
+        <th scope="col" class="border-r">
           <div class="flex flex-row items-center justify-center space-x-10 text-center">
             <h1 class="font-semibold">Status</h1>
           </div>
         </th>
-        <th class="text-center">Aksi</th>
+        <th scope="col" class="text-center">Aksi</th>
       </tr>
     </template>
     <template v-slot:table-body v-if="!props.source?.length">
@@ -77,7 +77,7 @@
         <td class="text-center">
           <div>
             <RouterLink
-              :to="{ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(persetujuanKKItem.id_mesin) : persetujuanKKItem.id_mesin }, query: { id_sentral: persetujuanKKItem.id_sentral, tahun: persetujuanKKItem.tahun } }">
+              :to="{ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(persetujuanKKItem.id_mesin) : persetujuanKKItem.id_mesin }, query: { id_sentral: persetujuanKKItem.id_sentral, tahun: persetujuanKKItem.tahun } }">
               <button>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" clip-rule="evenodd"
@@ -118,7 +118,7 @@
           </svg>
         </button>
       </li>
-      <li id="pagination" v-for="( item, index ) in generatePageList " :key="index"
+      <li id="pagination" v-for="(item, index) in generatePageList" :key="index"
         class="w-8 h-8 mr-2 text-sm leading-8 text-center duration-300 cursor-pointer text hover:bg-blue-500 hover:rounded-md hover:text-white"
         :class="{ selected: item === navigation.currentPage, disabled: item === '...' }" @click="goToPage(item)">
         {{ item }}
@@ -140,8 +140,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { ref, computed, onMounted } from "vue";
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 const nodeMode = import.meta.env.MODE;
 import GlobalFormat from "@/services/format/global-format";
 const globalFormat = new GlobalFormat();
@@ -173,6 +173,7 @@ const navigation = ref<{
   totalRecords: 0,
   limit: 10
 });
+let encryptStorageRef: any = null;
 
 const generatePageList = computed(() => {
   const pageList = []
@@ -224,6 +225,10 @@ const goToNext = () => {
 
 const props = defineProps<Props>()
 
+
+onMounted(async () => {
+  encryptStorageRef = await encryptStoragePromise;
+})
 </script>
 
 <style scoped>

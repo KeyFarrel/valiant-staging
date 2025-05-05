@@ -5,8 +5,8 @@
       <TabItem title="Kertas Kerja">
         <div class="flex flex-row items-center justify-between mb-4">
           <div class="flex flex-row space-x-4">
-            <SearchBox class="w-60" @on-key-enter="changeDataKK" @on-click="changeDataKK" @on-input="changeDataKK"
-              v-model="searchQKK" />
+            <SearchBox class="w-60" @on-key-enter="changeDataKK" @on-click-submit="changeDataKK"
+              @on-input="changeDataKK" v-model="searchQKK" />
             <button type="button" id="hover-button"
               class="text-primaryColor relative bg-white border border-primaryColor hover:bg-primaryColor focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center duration-300 hover:text-white"
               @click="showModalKK = !showModalKK">
@@ -18,11 +18,11 @@
               </svg>
               Filter
               <div v-if="
-                authService.checkLevel() === 'Admin' ||
-                  authService.checkLevel() === 'Pusat'
+                userLevel === 'Admin' ||
+                  userLevel === 'Pusat'
                   ? filterKK.selectedPengelola.length ||
                   filterKK.selectedPersetujuan.length || filterKK.selectedPembina.length
-                  : authService.checkLevel() === 'Pengelola'
+                  : userLevel === 'Pengelola'
                     ? filterKK.selectedPembina.length ||
                     filterKK.selectedPersetujuan.length
                     : filterKK.selectedPersetujuan.length
@@ -50,8 +50,8 @@
                 </div>
               </div>
               <div v-if="
-                authService.checkLevel() === 'Admin' ||
-                authService.checkLevel() === 'Pusat'
+                userLevel === 'Admin' ||
+                userLevel === 'Pusat'
               " class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">
                   Unit Pengelola
@@ -69,9 +69,9 @@
                 </el-select>
               </div>
               <div v-if="
-                authService.checkLevel() === 'Admin' ||
-                authService.checkLevel() === 'Pusat' ||
-                authService.checkLevel() === 'Pengelola'
+                userLevel === 'Admin' ||
+                userLevel === 'Pusat' ||
+                userLevel === 'Pengelola'
               " class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pembina</h3>
                 <el-select v-model="filterKK.selectedPembina" multiple clearable collapse-tags
@@ -123,50 +123,51 @@
           </div>
           <div class="flex flex-row items-center ml-4 space-x-3">
             <label class="text-sm font-semibold text-labelColor" for="">Periode</label>
-            <VueDatePicker class="mr-3 date-picker" v-model="yearPicked" :clearable="false" year-picker :teleport="true"
+            <VueDatePicker class="mr-3 date-picker" v-model="yearPicked" :clearable="false"
+              :yearRange="[2021, tahunBerjalan]" year-picker :teleport="true"
               @update:model-value="fetchPersetujuanKK()" />
           </div>
         </div>
         <TableComponent>
           <template v-slot:table-header>
             <tr class="text-xs">
-              <th class="text-center border-r">No</th>
-              <th class="border-r">
+              <th scope="col" class="text-center border-r">No</th>
+              <th scope="col" class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Pengelola</h1>
                 </div>
               </th>
-              <th class="border-r">
+              <th scope="col" class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Pembina</h1>
                 </div>
               </th>
-              <th class="border-r">
+              <th scope="col" class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Sentral</h1>
                 </div>
               </th>
-              <th class="border-r">
+              <th scope="col" class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Mesin</h1>
                 </div>
               </th>
-              <th class="border-r">
+              <th scope="col" class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">IRR on Equity (%)</h1>
                 </div>
               </th>
-              <th class="border-r">
+              <th scope="col" class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">NPV on Equity (Rp Juta)</h1>
                 </div>
               </th>
-              <th class="border-r">
+              <th scope="col" class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Status</h1>
                 </div>
               </th>
-              <th class="text-center">Aksi</th>
+              <th scope="col" class="text-center">Aksi</th>
             </tr>
           </template>
           <template v-slot:table-body v-if="persetujuanKK.length === 0">
@@ -243,7 +244,7 @@
               <td class="text-center">
                 <div>
                   <RouterLink v-if="
-                    (authService.checkLevel() === 'Admin' || (authService.checkLevel() === 'Pembina' && authService.checkRole() === 'Input')) &&
+                    (userLevel === 'Admin' || (userLevel === 'Pembina' && userRole === 'Input')) &&
                     (item.status_approval === 'Draft' ||
                       item.status_approval === 'Ditolak T1' ||
                       item.status_approval === 'Ditolak T2')
@@ -252,7 +253,7 @@
                     params: {
                       id:
                         nodeMode === 'production'
-                          ? encryptStorage.encryptValue(item.id_mesin)
+                          ? encryptStorageRef.encryptValue(item.id_mesin)
                           : item.id_mesin,
                     },
                     query: { id_sentral: item.id_sentral, tahun: item.tahun },
@@ -270,7 +271,7 @@
                     params: {
                       id:
                         nodeMode === 'production'
-                          ? encryptStorage.encryptValue(item.id_mesin)
+                          ? encryptStorageRef.encryptValue(item.id_mesin)
                           : item.id_mesin,
                     },
                     query: { id_sentral: item.id_sentral, tahun: item.tahun },
@@ -344,7 +345,7 @@
       <TabItem title="Feasibility Study">
         <div class="flex flex-row items-center justify-between mb-4">
           <div class="flex flex-row space-x-4">
-            <SearchBox class="w-60" @on-key-enter="changeFS" @on-click="changeFS" @on-input="changeFS"
+            <SearchBox class="w-60" @on-key-enter="changeFS" @on-click-submit="changeFS" @on-input="changeFS"
               v-model="searchQFS" />
             <button type="button" id="hover-button"
               class="text-primaryColor relative bg-white border border-primaryColor hover:bg-primaryColor focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center duration-300 hover:text-white"
@@ -357,11 +358,11 @@
               </svg>
               Filter
               <div v-if="
-                authService.checkLevel() === 'Admin' ||
-                  authService.checkLevel() === 'Pusat'
+                userLevel === 'Admin' ||
+                  userLevel === 'Pusat'
                   ? filterFS.selectedPengelola.length ||
                   filterFS.selectedPersetujuan.length || filterFS.selectedPembina.length
-                  : authService.checkLevel() === 'Pengelola'
+                  : userLevel === 'Pengelola'
                     ? filterFS.selectedPembina.length ||
                     filterFS.selectedPersetujuan.length
                     : filterFS.selectedPersetujuan.length
@@ -389,8 +390,8 @@
                 </div>
               </div>
               <div v-if="
-                authService.checkLevel() === 'Admin' ||
-                authService.checkLevel() === 'Pusat'
+                userLevel === 'Admin' ||
+                userLevel === 'Pusat'
               " class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">
                   Unit Pengelola
@@ -408,9 +409,9 @@
                 </el-select>
               </div>
               <div v-if="
-                authService.checkLevel() === 'Admin' ||
-                authService.checkLevel() === 'Pusat' ||
-                authService.checkLevel() === 'Pengelola'
+                userLevel === 'Admin' ||
+                userLevel === 'Pusat' ||
+                userLevel === 'Pengelola'
               " class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pembina</h3>
                 <el-select v-model="filterFS.selectedPembina" multiple clearable collapse-tags
@@ -464,43 +465,43 @@
         <TableComponent>
           <template v-slot:table-header>
             <tr class="text-xs">
-              <th class="text-center border-r">No</th>
-              <th class="border-r">
+              <th scope="col" class="text-center border-r">No</th>
+              <th scope="col" class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Pengelola</h1>
                 </div>
               </th>
-              <th class="border-r">
+              <th scope="col" class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Pembina</h1>
                 </div>
               </th>
-              <th class="border-r">
+              <th scope="col" class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Sentral</h1>
                 </div>
               </th>
-              <th class="border-r">
+              <th scope="col" class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Unit Mesin</h1>
                 </div>
               </th>
-              <th class="border-r">
+              <th scope="col" class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">IRR on Equity (%)</h1>
                 </div>
               </th>
-              <th class="border-r">
+              <th scope="col" class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">NPV on Equity (Rp Juta)</h1>
                 </div>
               </th>
-              <th class="border-r">
+              <th scope="col" class="border-r">
                 <div class="flex flex-row items-center justify-center space-x-10 text-center">
                   <h1 class="font-semibold">Status</h1>
                 </div>
               </th>
-              <th class="text-center">Aksi</th>
+              <th scope="col" class="text-center">Aksi</th>
             </tr>
           </template>
           <template v-slot:table-body v-if="persetujuanFS.length === 0">
@@ -576,7 +577,7 @@
               </td>
               <td class="text-center">
                 <div v-if="
-                  (authService.checkLevel() === 'Admin' || (authService.checkLevel() === 'Pembina' && authService.checkRole() === 'Input')) &&
+                  (userLevel === 'Admin' || (userLevel === 'Pembina' && userRole === 'Input')) &&
                   (item.status_approval === 'Draft' ||
                     item.status_approval === 'Ditolak T1' ||
                     item.status_approval === 'Ditolak T2')
@@ -586,7 +587,7 @@
                     params: {
                       id:
                         nodeMode === 'production'
-                          ? encryptStorage.encryptValue(item.id_mesin)
+                          ? encryptStorageRef.encryptValue(item.id_mesin)
                           : item.id_mesin,
                     },
                     query: { id_sentral: item.id_sentral },
@@ -606,7 +607,7 @@
                     params: {
                       id:
                         nodeMode === 'production'
-                          ? encryptStorage.encryptValue(item.id_mesin)
+                          ? encryptStorageRef.encryptValue(item.id_mesin)
                           : item.id_mesin,
                     },
                     query: { id_sentral: item.id_sentral },
@@ -683,7 +684,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from "vue";
-import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import PersetujuanService from "@/services/persetujuan-service";
 import PetaService from "@/services/peta-service";
 import GlobalFormat from "@/services/format/global-format";
@@ -716,6 +717,9 @@ const pengelolaList = ref<any[]>([]);
 const pembinaList = ref<any[]>([]);
 const persetujuanKK = ref<any[]>([]);
 const persetujuanFS = ref<any[]>([]);
+let encryptStorageRef: any = null;
+const userLevel = ref<string | null>(null);
+const userRole = ref<string | null>(null);
 
 const indeterminatePengelola = ref(false);
 const indeterminatePembina = ref(false);
@@ -838,6 +842,7 @@ async function getDataPembina() {
 
 const fetchPersetujuanKK = async (page?: number) => {
   try {
+    isLoading.value = true;
     const response: any = await persetujuanService.getPersetujuanKertasKerja({
       kode_pengelola: filterKK.value.selectedPengelola,
       id_pembina: filterKK.value.selectedPembina,
@@ -855,13 +860,15 @@ const fetchPersetujuanKK = async (page?: number) => {
     navigationKK.value.totalRecords = response.meta.totalRecords;
     navigationKK.value.limit = response.meta.limit;
     showModalKK.value = false;
-    isLoading.value = false;
   } catch (error) {
     console.error("Fetch Persetujuan KK Error : " + error);
+  } finally {
+    isLoading.value = false;
   }
 };
 const fetchPersetujuanFS = async (page?: number) => {
   try {
+    isLoading.value = true;
     const response: any = await persetujuanService.getPersetujuanFS({
       kode_pengelola: filterFS.value.selectedPengelola,
       id_pembina: filterFS.value.selectedPembina,
@@ -880,6 +887,8 @@ const fetchPersetujuanFS = async (page?: number) => {
     showModalFS.value = false;
   } catch (error) {
     console.error("Fetch Persetujuan FS Error : " + error);
+  } finally {
+    isLoading.value = false;
   }
 };
 const changeDataKK = () => {
@@ -1172,6 +1181,9 @@ const goNext = () => {
 
 onMounted(async () => {
   isLoading.value = true;
+  encryptStorageRef = await encryptStoragePromise;
+  userLevel.value = await authService.checkLevel();
+  userRole.value = await authService.checkRole();
   await fetchPersetujuanKK();
   await fetchPersetujuanFS();
   await getDataPengelola();

@@ -8,7 +8,7 @@ export default class RekapService extends BaseService {
     return this.post(`${url}kertas-kerja-detail/all-rekap-kertas-kerja`, {sentral: sentral, pengelola: pengelola, jenis_kit: jenis_kit, id_daya: id_daya, kondisi_mesin: kondisi_mesin, umur: umur, page: page, limit: limit});
   }
   async uploadEvidence<T>(file: any): Promise<T> {
-    return this.postFile(`${url}mutasiasset/s3-amazon-upload-file`, file);
+    return this.postFile(`${url}mutasiasset/s3-amazon-upload-evidence`, file);
   }
   async uploadTemplateAwalKK<T>(file: any): Promise<T> {
     return this.postFile(`${url}kertas-kerja-detail/import-template-awal`, file);

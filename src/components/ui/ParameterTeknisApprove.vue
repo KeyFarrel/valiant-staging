@@ -180,7 +180,7 @@
     </template>
   </div>
   <ReloadComponent v-else-if="props.isFetchingError && (!props.dayaTerpasang || !props.dayaMampuNetto)"
-    @onClick="emit('onClick')" />
+    @onClick="emit('onClick')" @on-key-down="emit('onKeyDown')" />
   <ShimmerLoading v-else class="w-full h-[500px]" />
 </template>
 
@@ -218,7 +218,7 @@ interface Props {
   bahanBakars?: any
 }
 
-const emit = defineEmits(['onChange', 'onClick'])
+const emit = defineEmits(['onChange', 'onClick', 'onKeyDown'])
 const props = withDefaults(defineProps<Props>(), {
   isFetchingError: false
 })

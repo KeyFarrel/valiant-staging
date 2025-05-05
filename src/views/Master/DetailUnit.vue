@@ -38,7 +38,7 @@
             <button
               class="flex items-center px-3 py-2 duration-300 border rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white border-primaryColor"
               @click="toggleEdit('Sentral')"
-              v-if="!isEditOpen('Sentral') && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral' || (authService.checkLevel() === 'Pembina' && authService.checkRole() === 'Input'))">
+              v-if="!isEditOpen('Sentral') && ((userRole === 'Super Admin' && userLevel === 'Pusat') || userLevel === 'Admin' || userLevel === 'Sentral' || (userLevel === 'Pembina' && userRole === 'Input'))">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"
                 class="mr-2">
                 <g clip-path="url(#clip0_1055_14765)">
@@ -83,14 +83,14 @@
               <div>
                 <h6>Daya Terpasang</h6>
                 <p class="font-semibold">
-                  {{ globalFormat.formatRupiah((sentralDataById.daya_terpasang / 1000)) }}
+                  {{ globalFormat.formatRupiah((dayaTerpasangSentral / 1000)) }}
                   <span class="text-textDisabledColor">MW</span>
                 </p>
               </div>
               <div>
                 <h6>Daya Mampu (DMN)</h6>
                 <p class="font-semibold">
-                  {{ globalFormat.formatRupiah((sentralDataById.daya_mampu / 1000)) }}
+                  {{ globalFormat.formatRupiah((dayaMampuSentral / 1000)) }}
                   <span class="text-textDisabledColor">MW</span>
                 </p>
               </div>
@@ -166,7 +166,8 @@
             <button
               class="flex items-center px-3 py-2 duration-300 border rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white border-primaryColor"
               @click="toggleEdit(mesinItem.mesin)"
-              v-if="!isEditOpen(mesinItem.mesin) && (authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Sentral' || (authService.checkLevel() === 'Pembina' && authService.checkRole() === 'Input'))">
+              v-if="!isEditOpen(mesinItem.mesin) && ((userRole === 'Super Admin' && userLevel === 'Pusat') ||
+                userLevel === 'Admin' || userLevel === 'Sentral' || (userLevel === 'Pembina' && userRole === 'Input'))">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"
                 class="mr-2">
                 <g clip-path="url(#clip0_1055_14765)">
@@ -266,12 +267,12 @@
                   class="font-normal text-textDisabledColor"> Rp (Juta)</span></p>
             </div>
             <div>
-              <label class="text-sm" :class="[
+              <span class="text-sm" :class="[
                 isEditOpen(mesinItem.mesin) ? 'text-primaryColor' : 'text-textDisabledColor',
                 isEditOpen(mesinItem.mesin) ? 'font-bold' : 'font-normal',
               ]">
                 Masa Manfaat <span class="text-warningColor">*</span>
-              </label>
+              </span>
               <div v-if="isEditOpen(mesinItem.mesin)" class="flex items-center justify-end mt-2">
                 <input type="text" name="" id=""
                   class="w-full h-10 pl-3 text-sm border border-gray-300 rounded-lg pr-14"
@@ -373,7 +374,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import { notifyError } from "@/services/helper/toast-notification";
 import { useRoute } from "vue-router";
 const route = useRoute();
@@ -402,7 +403,7 @@ import ModalWrapper from "@/components/ui/ModalWrapper.vue";
 import ConfirmationDialog from "@/components/ui/ConfirmationDialog.vue";
 
 const nodeMode = import.meta.env.MODE;
-const id = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id;
+const id = ref<any>('');
 const isSentral = ref(true);
 const showModal = ref(false);
 const isEdit = ref<string[]>([]);
@@ -418,6 +419,8 @@ const tahunBerjalan = new Date().getFullYear();
 const error = ref<any[]>([]);
 const unitPengelola = ref<string>("");
 const nilaiAsetAwalSentral = ref<string>("");
+const dayaTerpasangSentral = ref<any>("");
+const dayaMampuSentral = ref<any>("");
 const namaPembina = ref<string>('');
 const showModalSentral = ref<boolean>(false);
 const imageToUploadSentral = ref<any>();
@@ -440,6 +443,8 @@ const center = ref<{
 });
 const projection = ref("EPSG:4326");
 const rotation = ref(0);
+const userLevel = ref<string | null>(null);
+const userRole = ref<string | null>(null);
 
 interface PembangkitItem {
   data: any
@@ -479,7 +484,7 @@ const fetchPengelola = async () => {
 };
 const getSentralById = async () => {
   try {
-    const response: PembangkitItem = await detailSentralService.getSentralById(id, kode_pengelola);
+    const response: PembangkitItem = await detailSentralService.getSentralById(id.value, kode_pengelola);
     sentralDataById.value = response.data[0];
     center.value.sentral.push(parseFloat(response.data[0].longitude), parseFloat(response.data[0].latitude))
     mesin.value = response.data[0].mesins;
@@ -501,6 +506,8 @@ const getSentralById = async () => {
       console.log(i)
     };
     nilaiAsetAwalSentral.value = response.data[0].mesins.reduce((acc: number, val: any) => acc + val.nilai_asset_awal, 0);
+    dayaTerpasangSentral.value = response.data[0].mesins.reduce((acc: number, val: any) => acc + val.daya_terpasang, 0);
+    dayaMampuSentral.value = response.data[0].mesins.reduce((acc: number, val: any) => acc + val.daya_mampu, 0);
     const allPengelola = await fetchPengelola();
     unitPengelola.value = allPengelola.find((pengelola: any) => pengelola.kode_pengelola === kode_pengelola).pengelola;
     for (const index in mesin.value) {
@@ -519,10 +526,21 @@ const getSentralById = async () => {
 };
 const updateMesinById = async (id_mesin: number, index: number, mesinName: string) => {
   try {
-    if (mesinFormModel.value[index].photoToSubmit && mesinFormModel.value[index].photoToSubmit.size > 2000000) {
-      notifyError('Foto yang dipilih melebihi kapasitas maksimum yaitu 2MB', 5000);
-      isLoading.value = false;
-      return;
+    if (mesinFormModel.value[index].photoToSubmit) {
+      const file = mesinFormModel.value[index].photoToSubmit;
+      const allowedTypes = ['image/jpeg', 'image/png'];
+
+      if (!allowedTypes.includes(file.type)) {
+        notifyError('Tipe file yang dipilih tidak diperbolehkan', 5000);
+        isLoading.value = false;
+        return;
+      }
+
+      if (file.size > 2000000) {
+        notifyError('Foto yang dipilih melebihi kapasitas maksimum yaitu 2MB', 5000);
+        isLoading.value = false;
+        return;
+      }
     }
     isConfirmationOpen.value = false;
     isLoading.value = true;
@@ -566,24 +584,41 @@ const fetchPhotoSentral = async () => {
 }
 const updateSentral = async () => {
   try {
-    if (imageToUploadSentral.value && imageToUploadSentral.value.size <= 2000000) {
-      isConfirmationOpenSentral.value = false;
-      isLoading.value = true;
-      const formData = new FormData();
-      formData.append("file", imageToUploadSentral.value);
-      const responseUpload: any = await detailSentralService.uploadPhoto(formData);
-      await detailSentralService.updateSentral(id, responseUpload.data);
-      // Function akan dijalankan jika sukses mengupdate data
-      await getSentralById();
+    if (imageToUploadSentral.value) {
+      const file = imageToUploadSentral.value;
+      const allowedTypes = ['image/jpeg', 'image/png'];
+
+      if (!allowedTypes.includes(file.type)) {
+        notifyError('Tipe file yang dipilih tidak diperbolehkan', 5000);
+        isLoading.value = false;
+        return;
+      }
+
+      if (file.size > 2000000) {
+        notifyError('Foto yang dipilih melebihi kapasitas maksimum yaitu 2MB', 5000);
+        isLoading.value = false;
+        return;
+      }
+    } else {
+      notifyError('Silahkan pilih foto terlebih dahulu, batalkan jika tidak ingin mengubah foto', 5000);
       isLoading.value = false;
-      showModalSentral.value = true;
-      await wait(1500);
-      isEdit.value = isEdit.value.filter((id) => id !== 'Sentral');
-      imageToUploadSentral.value = null;
-      showModalSentral.value = false;
+      return;
     }
-    else if (imageToUploadSentral.value.size > 2000000) notifyError('Foto yang dipilih melebihi kapasitas maksimum yaitu 2MB', 5000);
-    else notifyError('Silahkan pilih foto terlebih dahulu, batalkan jika tidak ingin mengubah foto', 5000);
+
+    isConfirmationOpenSentral.value = false;
+    isLoading.value = true;
+    const formData = new FormData();
+    formData.append("file", imageToUploadSentral.value);
+    const responseUpload: any = await detailSentralService.uploadPhoto(formData);
+    await detailSentralService.updateSentral(id.value, responseUpload.data);
+    // Function akan dijalankan jika sukses mengupdate data
+    await getSentralById();
+    isLoading.value = false;
+    showModalSentral.value = true;
+    await wait(1500);
+    isEdit.value = isEdit.value.filter((id) => id !== 'Sentral');
+    imageToUploadSentral.value = null;
+    showModalSentral.value = false;
   } catch (error) {
     isLoading.value = false;
     notifyError('Update data sentral gagal, mohon coba lagi!', 3000);
@@ -678,6 +713,10 @@ const onFileChange = (event: Event, index: number) => {
 
 onMounted(async () => {
   isLoading.value = true;
+  const encryptStorage = await encryptStoragePromise;
+  id.value = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id;
+  userLevel.value = await authService.checkLevel();
+  userRole.value = await authService.checkRole();
   await getSentralById();
   await fetchUnitPengelola();
   await fetchPhotoSentral();

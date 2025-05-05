@@ -37,7 +37,7 @@
   <div class="p-6 space-y-5 bg-white rounded-lg">
     <div class="flex items-center justify-between">
       <SearchBox class="w-72" :placeholder="'Cari nama pengguna...'" @on-key-enter="fetchData" v-model="search"
-        @on-click="fetchData" @on-input="handleSearch" />
+        @on-click-submit="fetchData" @on-input="handleSearch" />
       <button @click="showModalCreate = !showModalCreate" type="button"
         class="flex justify-center items-center px-3 py-2 rounded-lg text-sm text-white bg-[#0099AD] space-x-2 duration-300 active:outline-none hover:bg-[#007E8F] active:ring active:ring-[#9ddee7]">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -245,7 +245,8 @@
           <div>
             <label for="nama" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Nama
               Lengkap <span class="text-warningColor">*</span></label>
-            <TextField id="nama" placeholder="Masukkan Nama Lengkap" class="text-xs" v-model="formData.nama_pegawai" />
+            <TextField id="nama" placeholder="Masukkan Nama Lengkap" class="text-xs" @on-input="sanitizeNama"
+              v-model="formData.nama_pegawai" />
           </div>
         </div>
         <!-- Kolom Kanan -->
@@ -253,62 +254,86 @@
           <div>
             <label for="nip" class="block mb-2 text-xs font-semibold text-[#4D5E80]">NIP <span
                 class="text-warningColor">*</span></label>
-            <TextField id="nip" placeholder="Masukkan NIP" class="text-xs" v-model="formData.nip" />
+            <TextField id="nip" placeholder="Masukkan NIP" class="text-xs" @on-input="sanitizeNip"
+              v-model="formData.nip" />
           </div>
         </div>
       </div>
       <div>
         <label for="email" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Email <span
             class="text-warningColor">*</span></label>
-        <TextField id="email" placeholder="Masukkan Email" class="text-xs" v-model="formData.email" />
+        <TextField id="email" placeholder="Masukkan Email" class="text-xs" @on-input="sanitizeEmail"
+          v-model="formData.email" />
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div class="relative">
           <label for="password" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Password <span
               class="text-warningColor">*</span></label>
-          <input id="password" :type="showPassword ? 'text' : 'password'" v-model="formData.password"
+          <input @paste.prevent @copy.prevent @cut.prevent
+            @input="sanitizePassword(); checkPasswordStrength('password')" id="password"
+            :type="showPassword ? 'text' : 'password'" v-model="formData.password"
             class="w-full text-xs h-[38px] border pl-3 text-gray-500 border-gray-300 rounded-lg"
             placeholder="Masukkan Password" />
           <button type="button" @click="togglePasswordVisibility"
-            class="absolute inset-y-0 right-0 flex items-center pt-6 pr-3">
-            <svg v-if="!showPassword" width="16" height="12" viewBox="0 0 16 12" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M8.00051 1.66536C5.20279 1.66536 2.82714 3.47986 1.98946 5.99808C1.98897 5.99955 1.98897 6.00136 1.98946 6.00283C2.82818 8.51923 5.20293 10.332 7.99934 10.332C10.7971 10.332 13.1727 8.51754 14.0104 5.99932C14.0109 5.99785 14.0109 5.99604 14.0104 5.99457C13.1717 3.47817 10.7969 1.66536 8.00051 1.66536ZM0.72429 5.57722C1.73777 2.5305 4.61153 0.332031 8.00051 0.332031C11.3879 0.332031 14.2606 2.52846 15.2753 5.57297C15.3669 5.84785 15.367 6.14524 15.2756 6.42018C14.2621 9.46689 11.3883 11.6654 7.99934 11.6654C4.61194 11.6654 1.73927 9.46894 0.72454 6.42443C0.632921 6.14955 0.632834 5.85216 0.72429 5.57722ZM7.99997 4.66536C7.26359 4.66536 6.66663 5.26232 6.66663 5.9987C6.66663 6.73508 7.26359 7.33203 7.99997 7.33203C8.73635 7.33203 9.3333 6.73508 9.3333 5.9987C9.3333 5.26232 8.73635 4.66536 7.99997 4.66536ZM5.3333 5.9987C5.3333 4.52594 6.52721 3.33203 7.99997 3.33203C9.47273 3.33203 10.6666 4.52594 10.6666 5.9987C10.6666 7.47146 9.47273 8.66536 7.99997 8.66536C6.52721 8.66536 5.3333 7.47146 5.3333 5.9987Z"
-                fill="#0F172A" />
+            class="absolute inset-y-0 right-0 flex items-center pr-3 -top-1">
+            <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" width="16" height="12" viewBox="0 0 16 12"
+              fill="none">
+              <path
+                d="M8 1.16577C10.209 1.16577 12.0275 2.40216 13.3398 3.73427C13.989 4.39332 14.493 5.0549 14.8346 5.55215C14.9529 5.72443 15.0511 5.87613 15.1286 6.00008C15.0511 6.12403 14.9529 6.27574 14.8345 6.44803C14.493 6.94528 13.9889 7.60687 13.3397 8.26592C12.0273 9.59805 10.2088 10.8344 8 10.8344C5.79123 10.8344 3.97267 9.59805 2.66032 8.26592C2.01107 7.60687 1.50703 6.94528 1.16548 6.44803C1.04715 6.27574 0.9489 6.12404 0.871435 6.00008C0.94889 5.87613 1.04712 5.72443 1.16544 5.55215C1.50696 5.0549 2.01096 4.39332 2.66019 3.73427C3.97247 2.40216 5.79103 1.16577 8 1.16577Z"
+                stroke="#989899" stroke-width="1.5" />
+              <ellipse cx="8" cy="6" rx="2.5" ry="2.53833" fill="#989899" />
             </svg>
-            <svg v-if="showPassword" width="16" height="12" viewBox="0 0 16 12" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M8.00051 1.66536C5.20279 1.66536 2.82714 3.47986 1.98946 5.99808C1.98897 5.99955 1.98897 6.00136 1.98946 6.00283C2.82818 8.51923 5.20293 10.332 7.99934 10.332C10.7971 10.332 13.1727 8.51754 14.0104 5.99932C14.0109 5.99785 14.0109 5.99604 14.0104 5.99457C13.1717 3.47817 10.7969 1.66536 8.00051 1.66536ZM0.72429 5.57722C1.73777 2.5305 4.61153 0.332031 8.00051 0.332031C11.3879 0.332031 14.2606 2.52846 15.2753 5.57297C15.3669 5.84785 15.367 6.14524 15.2756 6.42018C14.2621 9.46689 11.3883 11.6654 7.99934 11.6654C4.61194 11.6654 1.73927 9.46894 0.72454 6.42443C0.632921 6.14955 0.632834 5.85216 0.72429 5.57722ZM7.99997 4.66536C7.26359 4.66536 6.66663 5.26232 6.66663 5.9987C6.66663 6.73508 7.26359 7.33203 7.99997 7.33203C8.73635 7.33203 9.3333 6.73508 9.3333 5.9987C9.3333 5.26232 8.73635 4.66536 7.99997 4.66536ZM5.3333 5.9987C5.3333 4.52594 6.52721 3.33203 7.99997 3.33203C9.47273 3.33203 10.6666 4.52594 10.6666 5.9987C10.6666 7.47146 9.47273 8.66536 7.99997 8.66536C6.52721 8.66536 5.3333 7.47146 5.3333 5.9987Z"
-                fill="#0F172A" />
+            <svg v-if="showPassword" xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15"
+              fill="none">
+              <path
+                d="M8 2.27148C10.209 2.27148 12.0275 3.50788 13.3398 4.83999C13.989 5.49903 14.493 6.16061 14.8346 6.65787C14.9529 6.83014 15.0511 6.98184 15.1286 7.10579C15.0511 7.22975 14.9529 7.38145 14.8345 7.55374C14.493 8.051 13.9889 8.71259 13.3397 9.37163C12.0273 10.7038 10.2088 11.9401 8 11.9401C5.79123 11.9401 3.97267 10.7038 2.66032 9.37163C2.01107 8.71259 1.50703 8.051 1.16548 7.55374C1.04715 7.38145 0.9489 7.22975 0.871435 7.10579C0.94889 6.98184 1.04712 6.83014 1.16544 6.65787C1.50696 6.16061 2.01096 5.49903 2.66019 4.83999C3.97247 3.50788 5.79103 2.27148 8 2.27148Z"
+                stroke="#989899" stroke-width="1.5" />
+              <ellipse cx="8" cy="7.10571" rx="2.5" ry="2.53833" fill="#989899" />
               <rect width="1.51154" height="18.1385" rx="0.75"
-                transform="matrix(0.701707 0.712466 -0.701707 0.712466 13.5835 0.105713)" fill="#0F172A" />
+                transform="matrix(0.701707 0.712466 -0.701707 0.712466 13.5835 0.105713)" fill="#989899" />
             </svg>
           </button>
+          <div class="w-full h-2 mt-1 bg-gray-300 rounded-lg">
+            <div :style="{ width: pwStrength.strengthWidth + '%' }" :class="pwStrength.strengthColor"
+              class="h-full transition-all duration-300 rounded-lg"></div>
+          </div>
+          <p class="text-xs mt-0.5" :class="pwStrength.strengthTextColor">
+            {{ pwStrength.strengthMessage }}
+          </p>
         </div>
         <div class="relative">
           <label for="konfirmasiPassword" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Konfirmasi Password
             <span class="text-warningColor">*</span></label>
-          <input id="konfirmasiPassword" :type="showConfirmPassword ? 'text' : 'password'"
-            v-model="formData.konfirmasi_password"
+          <input @paste.prevent @copy.prevent @cut.prevent
+            @input="sanitizeConfirmPassword(); checkPasswordStrength('confirmPassword')" id="konfirmasiPassword"
+            :type="showConfirmPassword ? 'text' : 'password'" v-model="formData.konfirmasi_password"
             class="w-full h-[38px] text-xs text-gray-500 border pl-3 border-gray-300 rounded-lg"
             placeholder="Masukkan Password" />
+          <div class="w-full h-2 mt-1 bg-gray-300 rounded-lg">
+            <div :style="{ width: confirmPasswordStrength.strengthWidth + '%' }"
+              :class="confirmPasswordStrength.strengthColor" class="h-full transition-all duration-300 rounded-lg">
+            </div>
+          </div>
+          <p class="text-xs mt-0.5" :class="confirmPasswordStrength.strengthTextColor">
+            {{ confirmPasswordStrength.strengthMessage }}
+          </p>
           <button type="button" @click="toggleConfirmPasswordVisibility"
-            class="absolute inset-y-0 right-0 flex items-center pt-6 pr-3">
-            <svg v-if="!showConfirmPassword" width="16" height="12" viewBox="0 0 16 12" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M8.00051 1.66536C5.20279 1.66536 2.82714 3.47986 1.98946 5.99808C1.98897 5.99955 1.98897 6.00136 1.98946 6.00283C2.82818 8.51923 5.20293 10.332 7.99934 10.332C10.7971 10.332 13.1727 8.51754 14.0104 5.99932C14.0109 5.99785 14.0109 5.99604 14.0104 5.99457C13.1717 3.47817 10.7969 1.66536 8.00051 1.66536ZM0.72429 5.57722C1.73777 2.5305 4.61153 0.332031 8.00051 0.332031C11.3879 0.332031 14.2606 2.52846 15.2753 5.57297C15.3669 5.84785 15.367 6.14524 15.2756 6.42018C14.2621 9.46689 11.3883 11.6654 7.99934 11.6654C4.61194 11.6654 1.73927 9.46894 0.72454 6.42443C0.632921 6.14955 0.632834 5.85216 0.72429 5.57722ZM7.99997 4.66536C7.26359 4.66536 6.66663 5.26232 6.66663 5.9987C6.66663 6.73508 7.26359 7.33203 7.99997 7.33203C8.73635 7.33203 9.3333 6.73508 9.3333 5.9987C9.3333 5.26232 8.73635 4.66536 7.99997 4.66536ZM5.3333 5.9987C5.3333 4.52594 6.52721 3.33203 7.99997 3.33203C9.47273 3.33203 10.6666 4.52594 10.6666 5.9987C10.6666 7.47146 9.47273 8.66536 7.99997 8.66536C6.52721 8.66536 5.3333 7.47146 5.3333 5.9987Z"
-                fill="#0F172A" />
+            class="absolute inset-y-0 right-0 flex items-center pr-3 -top-1">
+            <svg v-if="!showConfirmPassword" xmlns="http://www.w3.org/2000/svg" width="16" height="12"
+              viewBox="0 0 16 12" fill="none">
+              <path
+                d="M8 1.16577C10.209 1.16577 12.0275 2.40216 13.3398 3.73427C13.989 4.39332 14.493 5.0549 14.8346 5.55215C14.9529 5.72443 15.0511 5.87613 15.1286 6.00008C15.0511 6.12403 14.9529 6.27574 14.8345 6.44803C14.493 6.94528 13.9889 7.60687 13.3397 8.26592C12.0273 9.59805 10.2088 10.8344 8 10.8344C5.79123 10.8344 3.97267 9.59805 2.66032 8.26592C2.01107 7.60687 1.50703 6.94528 1.16548 6.44803C1.04715 6.27574 0.9489 6.12404 0.871435 6.00008C0.94889 5.87613 1.04712 5.72443 1.16544 5.55215C1.50696 5.0549 2.01096 4.39332 2.66019 3.73427C3.97247 2.40216 5.79103 1.16577 8 1.16577Z"
+                stroke="#989899" stroke-width="1.5" />
+              <ellipse cx="8" cy="6" rx="2.5" ry="2.53833" fill="#989899" />
             </svg>
-            <svg v-if="showConfirmPassword" width="16" height="12" viewBox="0 0 16 12" fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M8.00051 1.66536C5.20279 1.66536 2.82714 3.47986 1.98946 5.99808C1.98897 5.99955 1.98897 6.00136 1.98946 6.00283C2.82818 8.51923 5.20293 10.332 7.99934 10.332C10.7971 10.332 13.1727 8.51754 14.0104 5.99932C14.0109 5.99785 14.0109 5.99604 14.0104 5.99457C13.1717 3.47817 10.7969 1.66536 8.00051 1.66536ZM0.72429 5.57722C1.73777 2.5305 4.61153 0.332031 8.00051 0.332031C11.3879 0.332031 14.2606 2.52846 15.2753 5.57297C15.3669 5.84785 15.367 6.14524 15.2756 6.42018C14.2621 9.46689 11.3883 11.6654 7.99934 11.6654C4.61194 11.6654 1.73927 9.46894 0.72454 6.42443C0.632921 6.14955 0.632834 5.85216 0.72429 5.57722ZM7.99997 4.66536C7.26359 4.66536 6.66663 5.26232 6.66663 5.9987C6.66663 6.73508 7.26359 7.33203 7.99997 7.33203C8.73635 7.33203 9.3333 6.73508 9.3333 5.9987C9.3333 5.26232 8.73635 4.66536 7.99997 4.66536ZM5.3333 5.9987C5.3333 4.52594 6.52721 3.33203 7.99997 3.33203C9.47273 3.33203 10.6666 4.52594 10.6666 5.9987C10.6666 7.47146 9.47273 8.66536 7.99997 8.66536C6.52721 8.66536 5.3333 7.47146 5.3333 5.9987Z"
-                fill="#0F172A" />
+            <svg v-if="showConfirmPassword" xmlns="http://www.w3.org/2000/svg" width="16" height="15"
+              viewBox="0 0 16 15" fill="none">
+              <path
+                d="M8 2.27148C10.209 2.27148 12.0275 3.50788 13.3398 4.83999C13.989 5.49903 14.493 6.16061 14.8346 6.65787C14.9529 6.83014 15.0511 6.98184 15.1286 7.10579C15.0511 7.22975 14.9529 7.38145 14.8345 7.55374C14.493 8.051 13.9889 8.71259 13.3397 9.37163C12.0273 10.7038 10.2088 11.9401 8 11.9401C5.79123 11.9401 3.97267 10.7038 2.66032 9.37163C2.01107 8.71259 1.50703 8.051 1.16548 7.55374C1.04715 7.38145 0.9489 7.22975 0.871435 7.10579C0.94889 6.98184 1.04712 6.83014 1.16544 6.65787C1.50696 6.16061 2.01096 5.49903 2.66019 4.83999C3.97247 3.50788 5.79103 2.27148 8 2.27148Z"
+                stroke="#989899" stroke-width="1.5" />
+              <ellipse cx="8" cy="7.10571" rx="2.5" ry="2.53833" fill="#989899" />
               <rect width="1.51154" height="18.1385" rx="0.75"
-                transform="matrix(0.701707 0.712466 -0.701707 0.712466 13.5835 0.105713)" fill="#0F172A" />
+                transform="matrix(0.701707 0.712466 -0.701707 0.712466 13.5835 0.105713)" fill="#989899" />
             </svg>
           </button>
         </div>
@@ -433,7 +458,8 @@
           <div>
             <label for="nama" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Nama
               Lengkap <span class="text-warningColor">*</span></label>
-            <TextField id="nama" placeholder="Masukkan Nama Lengkap" class="text-xs" v-model="formData.nama_pegawai" />
+            <TextField id="nama" placeholder="Masukkan Nama Lengkap" class="text-xs" @on-input="sanitizeNama"
+              v-model="formData.nama_pegawai" />
           </div>
         </div>
         <!-- Kolom Kanan -->
@@ -441,14 +467,16 @@
           <div>
             <label for="nip" class="block mb-2 text-xs font-semibold text-[#4D5E80]">NIP <span
                 class="text-warningColor">*</span></label>
-            <TextField id="nip" placeholder="Masukkan NIP" class="text-xs" v-model="formData.nip" />
+            <TextField id="nip" placeholder="Masukkan NIP" class="text-xs" @on-input="sanitizeNip"
+              v-model="formData.nip" />
           </div>
         </div>
       </div>
       <div>
         <label for="email" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Email <span
             class="text-warningColor">*</span></label>
-        <TextField id="email" placeholder="Masukkan Email" class="text-xs" v-model="formData.email" />
+        <TextField id="email" placeholder="Masukkan Email" class="text-xs" @on-input="sanitizeEmail"
+          v-model="formData.email" />
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div>
@@ -642,9 +670,6 @@ const formData = ref({
   konfirmasi_password: "",
   role_id: "",
   level_id: "",
-  id_ranting: 1,
-  id_mesin: "",
-  id_cabang: "",
   id_pembina: "",
   id_sentral: "",
   id_pengelola: "",
@@ -660,9 +685,6 @@ const resetFormData = () => {
     konfirmasi_password: "",
     role_id: "",
     level_id: "",
-    id_ranting: 1,
-    id_mesin: "",
-    id_cabang: "",
     id_pembina: "",
     id_sentral: "",
     id_pengelola: "",
@@ -816,6 +838,7 @@ const closeModal = () => {
   showPassword.value = false;
   showConfirmPassword.value = false;
   resetFormData();
+  resetPasswordIndicator();
   errors.value = [];
   comboRole.value = [
     {
@@ -843,6 +866,34 @@ const handleSearch = () => {
   debounceTimeout = setTimeout(() => {
     fetchData();
   }, 500);
+}
+
+const sanitizeNama = () => {
+  formData.value.nama_pegawai = formData.value.nama_pegawai
+    .replace(/[^a-zA-Z\s]/g, '')
+    .replace(/\s{2,}/g, ' ')
+};
+
+const sanitizeNip = () => {
+  formData.value.nip = formData.value.nip
+    .replace(/[^a-zA-Z0-9\s]/g, '')
+    .replace(/\s{2,}/g, ' ')
+}
+
+const sanitizeEmail = () => {
+  formData.value.email = formData.value.email.replace(/[^a-zA-Z0-9@._-]/g, '')
+}
+
+const sanitizePassword = () => {
+  formData.value.password = formData.value.password
+    .replace(/['"\\`\0\n\r\t]/g, '')
+    .replace(/\s{2,}/g, ' ')
+}
+
+const sanitizeConfirmPassword = () => {
+  formData.value.konfirmasi_password = formData.value.konfirmasi_password
+    .replace(/['"\\`\0\n\r\t]/g, '')
+    .replace(/\s{2,}/g, ' ')
 }
 
 const fetchData = async () => {
@@ -899,9 +950,6 @@ const openEditModals = async (id: number) => {
     formData.value.email = response.data.email;
     formData.value.role_id = response.data.role_id;
     formData.value.level_id = response.data.level_id.toString();
-    formData.value.id_ranting = response.data.id_ranting;
-    formData.value.id_mesin = response.data.id_mesin;
-    formData.value.id_cabang = response.data.id_cabang;
     formData.value.id_pembina = response.data.id_pembina;
     formData.value.id_pengelola = response.data.id_pengelola;
     formData.value.id_sentral = response.data.id_sentral;
@@ -980,14 +1028,11 @@ const editUserDataAndCloseModal = async () => {
       let dataToPost = {};
       if (formData.value.level_id === '1' || formData.value.level_id === '5') {
         dataToPost = {
-          nama_pegawai: formData.value.nama_pegawai,
-          nip: formData.value.nip,
-          email: formData.value.email,
+          nama_pegawai: formData.value.nama_pegawai.trim(),
+          nip: formData.value.nip.trim(),
+          email: formData.value.email.toLowerCase().trim(),
           role_id: parseInt(formData.value.role_id),
           level_id: parseInt(formData.value.level_id),
-          id_ranting: formData.value.id_ranting,
-          id_mesin: parseInt(formData.value.id_mesin),
-          id_cabang: parseInt(formData.value.id_cabang),
           id_pembina: null,
           id_sentral: null,
           id_pengelola: null,
@@ -997,14 +1042,11 @@ const editUserDataAndCloseModal = async () => {
       }
       else if (hiddenPembina.includes(formData.value.level_id)) {
         dataToPost = {
-          nip: formData.value.nip,
-          nama_pegawai: formData.value.nama_pegawai,
-          email: formData.value.email,
+          nip: formData.value.nip.trim(),
+          nama_pegawai: formData.value.nama_pegawai.trim(),
+          email: formData.value.email.toLowerCase().trim(),
           role_id: parseInt(formData.value.role_id),
-          id_ranting: formData.value.id_ranting,
           level_id: parseInt(formData.value.level_id),
-          id_cabang: parseInt(formData.value.id_cabang),
-          id_mesin: parseInt(formData.value.id_mesin),
           id_sentral: null,
           id_pembina: null,
           status: formData.value.status,
@@ -1013,14 +1055,11 @@ const editUserDataAndCloseModal = async () => {
         }
       } else if (hiddenSentral.includes(formData.value.level_id)) {
         dataToPost = {
-          nama_pegawai: formData.value.nama_pegawai,
-          nip: formData.value.nip,
-          email: formData.value.email,
+          nama_pegawai: formData.value.nama_pegawai.trim(),
+          nip: formData.value.nip.trim(),
+          email: formData.value.email.toLowerCase().trim(),
           role_id: parseInt(formData.value.role_id),
           level_id: parseInt(formData.value.level_id),
-          id_ranting: formData.value.id_ranting,
-          id_mesin: parseInt(formData.value.id_mesin),
-          id_cabang: parseInt(formData.value.id_cabang),
           id_pembina: parseInt(formData.value.id_pembina),
           id_sentral: null,
           id_pengelola: parseInt(formData.value.id_pengelola),
@@ -1029,15 +1068,12 @@ const editUserDataAndCloseModal = async () => {
         }
       } else {
         dataToPost = {
-          nama_pegawai: formData.value.nama_pegawai,
-          email: formData.value.email,
-          nip: formData.value.nip,
+          nama_pegawai: formData.value.nama_pegawai.trim(),
+          email: formData.value.email.toLowerCase().trim(),
+          nip: formData.value.nip.trim(),
           level_id: parseInt(formData.value.level_id),
           role_id: parseInt(formData.value.role_id),
-          id_mesin: parseInt(formData.value.id_mesin),
-          id_ranting: formData.value.id_ranting,
           id_pembina: parseInt(formData.value.id_pembina),
-          id_cabang: parseInt(formData.value.id_cabang),
           id_pengelola: parseInt(formData.value.id_pengelola),
           id_sentral: parseInt(formData.value.id_sentral),
           status: formData.value.status,
@@ -1050,6 +1086,7 @@ const editUserDataAndCloseModal = async () => {
       if (responseData.success) {
         isModalEdit.value = false;
         resetFormData();
+        resetPasswordIndicator();
         await fetchData();
         isEditSuccess.value = true;
         await wait(3000);
@@ -1085,11 +1122,16 @@ const saveUserDataAndCloseModal = async () => {
 
   const passwordPattern =
     /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+[\]{}|;':"<>?,./]).{8,}$/;
+  const badChars = /['"\\`\0\n\r\t]/;
   if (!formData.value.password) {
     errors.value.push("Password wajib diisi.");
+  } else if (/^\s|\s$/.test(formData.value.password)) {
+    errors.value.push("Password tidak boleh diawali atau diakhiri dengan spasi.");
+  } else if (badChars.test(formData.value.password)) {
+    errors.value.push("Password mengandung karakter yang tidak diizinkan.");
   } else if (!passwordPattern.test(formData.value.password)) {
     errors.value.push(
-      "Password harus mengandung angka, karakter, huruf besar, dan huruf kecil."
+      "Password harus mengandung angka, karakter, huruf besar, huruf kecil dan minimal 8 karakter."
     );
   }
   if (!formData.value.konfirmasi_password) {
@@ -1101,29 +1143,28 @@ const saveUserDataAndCloseModal = async () => {
   if (!formData.value.role_id) {
     errors.value.push("Role wajib diisi.");
   }
+
   if (errors.value.length === 0) {
     try {
       const dataToPost = {
-        nip: formData.value.nip,
-        email: formData.value.email,
-        nama_pegawai: formData.value.nama_pegawai,
+        nip: formData.value.nip.trim(),
+        email: formData.value.email.toLowerCase().trim(),
+        nama_pegawai: formData.value.nama_pegawai.trim(),
         konfirmasi_password: formData.value.konfirmasi_password,
         role_id: parseInt(formData.value.role_id),
         password: formData.value.password,
-        id_ranting: formData.value.id_ranting,
-        id_mesin: parseInt(formData.value.id_mesin),
         level_id: parseInt(formData.value.level_id),
         id_pembina: parseInt(formData.value.id_pembina),
         id_sentral: parseInt(formData.value.id_sentral),
-        id_cabang: parseInt(formData.value.id_cabang),
         id_pengelola: parseInt(formData.value.id_pengelola),
         status: formData.value.status,
       };
       const response = await userService.createUser(dataToPost);
       const responseData: any = response;
       if (responseData.success) {
-        resetFormData();
         showModalCreate.value = false;
+        resetFormData();
+        resetPasswordIndicator();
         await fetchData();
         isLoading.value = false;
         isSuccess.value = true;
@@ -1135,12 +1176,28 @@ const saveUserDataAndCloseModal = async () => {
       }
     } catch (error) {
       isLoading.value = false;
+      notifyError(`Gagal menambahkan akun, ${error.response.data.message}`, 3000)
       console.error("Error saat mengirim data:", error);
     }
   } else {
     isLoading.value = false;
   }
 };
+
+const resetPasswordIndicator = () => {
+  pwStrength.value = {
+    strengthMessage: 'Masukkan Password',
+    strengthWidth: 0,
+    strengthColor: '',
+    strengthTextColor: 'text-gray-500'
+  }
+  confirmPasswordStrength.value = {
+    strengthMessage: 'Masukkan Konfirmasi Password',
+    strengthWidth: 0,
+    strengthColor: '',
+    strengthTextColor: 'text-gray-500'
+  }
+}
 
 const handleChangePengelola = async () => {
   try {
@@ -1227,6 +1284,126 @@ const goToPrevious = () => {
 const goToNext = () => {
   if (navigation.value.currentPage < navigation.value.totalPages) {
     goToPage(navigation.value.currentPage + 1);
+  }
+};
+
+const pwStrength = ref<{
+  strengthMessage: string
+  strengthWidth: number
+  strengthColor: string
+  strengthTextColor: string
+}>({
+  strengthMessage: 'Masukkan Password',
+  strengthWidth: 0,
+  strengthColor: '',
+  strengthTextColor: 'text-gray-500'
+})
+
+const confirmPasswordStrength = ref<{
+  strengthMessage: string
+  strengthWidth: number
+  strengthColor: string
+  strengthTextColor: string
+}>({
+  strengthMessage: 'Masukkan Konfirmasi Password',
+  strengthWidth: 0,
+  strengthColor: '',
+  strengthTextColor: 'text-gray-500'
+})
+
+const checkPasswordStrength = (formPasswordType: string) => {
+  let strength = 0;
+  let value = formPasswordType === 'password'
+    ? formData.value.password
+    : formData.value.konfirmasi_password;
+
+  // Hapus spasi langsung dari input
+  const sanitizedValue = value
+
+  // Hitung kekuatan password
+  if (sanitizedValue.length >= 8) strength++;
+  if (/[A-Z]/.test(sanitizedValue)) strength++;
+  if (/[a-z]/.test(sanitizedValue)) strength++;
+  if (/\d/.test(sanitizedValue)) strength++;
+  if (/[^A-Za-z0-9]/.test(sanitizedValue)) strength++;
+
+  // Atur status kekuatan password
+  if (formPasswordType === 'password') {
+    switch (strength) {
+      case 1:
+        pwStrength.value.strengthMessage = 'Sangat Lemah';
+        pwStrength.value.strengthWidth = 20;
+        pwStrength.value.strengthColor = 'bg-red-500';
+        pwStrength.value.strengthTextColor = 'text-red-500';
+        break;
+      case 2:
+        pwStrength.value.strengthMessage = 'Lemah';
+        pwStrength.value.strengthWidth = 40;
+        pwStrength.value.strengthColor = 'bg-orange-500';
+        pwStrength.value.strengthTextColor = 'text-orange-500';
+        break;
+      case 3:
+        pwStrength.value.strengthMessage = 'Menengah';
+        pwStrength.value.strengthWidth = 60;
+        pwStrength.value.strengthColor = 'bg-yellow-500';
+        pwStrength.value.strengthTextColor = 'text-yellow-500';
+        break;
+      case 4:
+        pwStrength.value.strengthMessage = 'Kuat';
+        pwStrength.value.strengthWidth = 80;
+        pwStrength.value.strengthColor = 'bg-green-500';
+        pwStrength.value.strengthTextColor = 'text-green-500';
+        break;
+      case 5:
+        pwStrength.value.strengthMessage = 'Sangat Kuat';
+        pwStrength.value.strengthWidth = 100;
+        pwStrength.value.strengthColor = 'bg-blue-500';
+        pwStrength.value.strengthTextColor = 'text-blue-500';
+        break;
+      default:
+        pwStrength.value.strengthMessage = 'Masukkan Password';
+        pwStrength.value.strengthWidth = 0;
+        pwStrength.value.strengthColor = 'bg-gray-300';
+        pwStrength.value.strengthTextColor = 'text-gray-500';
+    }
+  } else {
+    switch (strength) {
+      case 1:
+        confirmPasswordStrength.value.strengthMessage = 'Sangat Lemah';
+        confirmPasswordStrength.value.strengthWidth = 20;
+        confirmPasswordStrength.value.strengthColor = 'bg-red-500';
+        confirmPasswordStrength.value.strengthTextColor = 'text-red-500';
+        break;
+      case 2:
+        confirmPasswordStrength.value.strengthMessage = 'Lemah';
+        confirmPasswordStrength.value.strengthWidth = 40;
+        confirmPasswordStrength.value.strengthColor = 'bg-orange-500';
+        confirmPasswordStrength.value.strengthTextColor = 'text-orange-500';
+        break;
+      case 3:
+        confirmPasswordStrength.value.strengthMessage = 'Menengah';
+        confirmPasswordStrength.value.strengthWidth = 60;
+        confirmPasswordStrength.value.strengthColor = 'bg-yellow-500';
+        confirmPasswordStrength.value.strengthTextColor = 'text-yellow-500';
+        break;
+      case 4:
+        confirmPasswordStrength.value.strengthMessage = 'Kuat';
+        confirmPasswordStrength.value.strengthWidth = 80;
+        confirmPasswordStrength.value.strengthColor = 'bg-green-500';
+        confirmPasswordStrength.value.strengthTextColor = 'text-green-500';
+        break;
+      case 5:
+        confirmPasswordStrength.value.strengthMessage = 'Sangat Kuat';
+        confirmPasswordStrength.value.strengthWidth = 100;
+        confirmPasswordStrength.value.strengthColor = 'bg-blue-500';
+        confirmPasswordStrength.value.strengthTextColor = 'text-blue-500';
+        break;
+      default:
+        confirmPasswordStrength.value.strengthMessage = 'Masukkan Konfirmasi Password';
+        confirmPasswordStrength.value.strengthWidth = 0;
+        confirmPasswordStrength.value.strengthColor = 'bg-gray-300';
+        confirmPasswordStrength.value.strengthTextColor = 'text-gray-500';
+    }
   }
 };
 
@@ -1317,14 +1494,6 @@ const togglePasswordVisibility = () => {
 
 const toggleConfirmPasswordVisibility = () => {
   showConfirmPassword.value = !showConfirmPassword.value;
-};
-
-const toggleEditPasswordVisibility = () => {
-  showEditPassword.value = !showEditPassword.value;
-};
-
-const toggleEditConfirmPasswordVisibility = () => {
-  showEditConfirmPassword.value = !showEditConfirmPassword.value;
 };
 
 const groupedData = computed(() => {

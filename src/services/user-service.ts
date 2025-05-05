@@ -39,4 +39,10 @@ export default class UserService extends BaseService {
     async getSentralByPengelola<T>(idPengelola: number, idPembina: number): Promise<T> {
         return this.get(`${url}filter/combo-sentral`, {id_pengelola: idPengelola, id_pembina: idPembina});
     }
+    async sendEmailOtp<T>(): Promise<T> {
+        return this.post(`${url}user/otp-change-password`);
+    }
+    async verifyOtp<T>(otp: string): Promise<T> {
+        return this.post(`${url}user/verify-otp-change-password`, {otp: otp});
+    }
 }

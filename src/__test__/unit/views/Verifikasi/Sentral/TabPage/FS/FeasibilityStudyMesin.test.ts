@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import FeasibilityStudyMesin from '@/views/Verifikasi/Sentral/TabPage/FS/FeasibilityStudyMesin.vue';
 import TableComponent from '@/components/ui/Table.vue';
-import { encryptStorage } from '@/utils/app-encrypt-storage';
+import { encryptStoragePromise } from '@/utils/app-encrypt-storage';
 
 // Mock encryptStorage
 jest.mock('@/utils/app-encrypt-storage', () => ({

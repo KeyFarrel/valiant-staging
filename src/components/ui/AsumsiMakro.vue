@@ -24,7 +24,7 @@
         <p class="text-gray-500">Corporate Tax Rate</p>
         <p class="font-bold">{{ props.corporateTaxRate !== '-' ? globalFormat.formatEnergy(props.corporateTaxRate) :
           '-'
-          }}
+        }}
           <span class="text-gray-400">%</span>
         </p>
       </div>
@@ -61,7 +61,7 @@
     </div>
   </div>
   <ReloadComponent v-else-if="props.isFetchingError && (!props.corporateTaxRate || !props.equityPortion)"
-    @on-click="emit('onClick')" />
+    @on-click="emit('onClickReload')" @on-key-down="emit('onKeyDown')" />
   <ShimmerLoading v-else class="w-full h-40" />
 </template>
 
@@ -89,5 +89,5 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   isFetchingError: false
 })
-const emit = defineEmits(['onChange', 'onClick'])
+const emit = defineEmits(['onChange', 'onClickReload', 'onKeyDown'])
 </script>

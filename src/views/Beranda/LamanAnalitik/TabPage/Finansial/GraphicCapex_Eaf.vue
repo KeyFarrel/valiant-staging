@@ -294,7 +294,7 @@ onMounted(async () => {
             </el-select>
           </div>
           <div v-show="value.includes('PLTU')" class="flex flex-col space-y-1">
-            <label class="font-semibold text-labelColor">DMN</label>
+            <span class="font-semibold text-labelColor">DMN</span>
             <el-select v-model="dmn" multiple clearable collapse-tags placeholder="Pilih DMN"
               popper-class="custom-header" :max-collapse-tags="15" class="w-full text-primaryTextColor">
               <template #header>

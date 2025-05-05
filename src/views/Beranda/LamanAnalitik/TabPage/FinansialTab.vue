@@ -59,6 +59,7 @@ const yearRange = ref<number[]>([])
 
 async function getCategory() {
   try {
+    isLoading.value = true
     const response: any = await grafikService.getComboKategoriPembangkit()
     await grafikService.getFilterDaya()
     if (response.success) {
@@ -84,6 +85,8 @@ async function getCategory() {
     itemsCategory.value.reverse()
   } catch (e) {
     console.log("Fetch items filter Kategori Error : " + e)
+  } finally {
+    isLoading.value = false
   }
 }
 

@@ -14,7 +14,7 @@ variables:
 
 # Caching Build
 .npm-cache:
-  image: node:18.14.2-alpine
+  image: harbor.pln.co.id/library/node:18.17.0-alpine
   cache:  # Cache modules in between jobs
     key: $CI_COMMIT_REF_SLUG
     paths:
@@ -132,10 +132,10 @@ sonarqube-check:
 
 build-image:
   image: 
-    name: docker:24.0.7
+    name: harbor.pln.co.id/library/docker:24.0.7
   stage: build-image
   services:
-    - docker:24.0.7-dind
+    - harbor.pln.co.id/library/docker:24.0.7-dind
   variables:
     DOCKER_HOST: "tcp://localhost:2375"
   before_script:
@@ -155,7 +155,7 @@ build-image:
 
 deploy-stag:
   image:
-    name : alpine/git
+    name : harbor.pln.co.id/library/alpine:git
     entrypoint : [""]
   stage: update-tag-stag
   before_script:
@@ -243,7 +243,7 @@ approval_sre:
 
 deploy-prod:
   image:
-    name : alpine/git
+    name : harbor.pln.co.id/library/alpine:git
     entrypoint : [""]
   stage: update-tag-prod
   needs:

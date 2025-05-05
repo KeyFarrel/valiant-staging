@@ -2,7 +2,7 @@ import { shallowMount } from '@vue/test-utils';
 import VerifikasiSSO from '@/views/VerifikasiSSO.vue';
 import ModalNotification from '@/components/ui/ModalNotification.vue';
 import LoginService from '@/services/auth-service';
-import { encryptStorage } from '@/utils/app-encrypt-storage';
+import { encryptStoragePromise } from '@/utils/app-encrypt-storage';
 import router from '@/router';
 import { useRoute } from 'vue-router';
 

@@ -1,10 +1,10 @@
 <template>
   <div class="relative">
     <SearchBox v-model="searchQuery" @on-input="isOpen = true" @on-key-enter="emit('onKeyEnter')"
-      @on-click="emit('onClick')" />
+      @on-click-submit="emit('onClickSubmit')" />
     <ul class="bg-white p-3 w-[17rem] max-h-48 border rounded-md absolute z-40 overflow-y-auto"
       v-show="searchResults.length && isOpen">
-      <li class="text-sm p-2 cursor-pointer hover:bg-strokeColor hover:bg-opacity-50"
+      <li class="p-2 text-sm cursor-pointer hover:bg-strokeColor hover:bg-opacity-50"
         v-for="(resultItem, resultIndex) in searchResults" :key="resultIndex" @click="setSelected(resultItem.sentral)">
         {{ resultItem.sentral }}</li>
     </ul>
@@ -17,7 +17,7 @@ import SearchBox from '@/components/ui/SearchBox.vue';
 
 const isOpen = ref(false);
 const searchQuery: any = defineModel();
-const emit = defineEmits(['onKeyEnter', 'onClick']);
+const emit = defineEmits(['onKeyEnter', 'onClickSubmit']);
 
 const props = defineProps({
   data: {

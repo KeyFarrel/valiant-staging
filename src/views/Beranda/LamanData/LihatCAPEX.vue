@@ -35,19 +35,19 @@
         <table class="w-full">
           <thead class="text-sm border-b text-labelColor">
             <tr>
-              <th class="font-semibold border-r" rowspan="2">No</th>
-              <th class="font-semibold border-r" rowspan="2">Judul Program</th>
-              <th class="font-semibold border-b" colspan="2">Investasi</th>
+              <th scope="col" class="font-semibold border-r" rowspan="2">No</th>
+              <th scope="col" class="font-semibold border-r" rowspan="2">Judul Program</th>
+              <th scope="col" class="font-semibold border-b" colspan="2">Investasi</th>
             </tr>
             <tr>
-              <th class="border-r">
+              <th scope="col" class="border-r">
                 <div class="flex flex-row items-center justify-between">
                   <span class="font-semibold">AI <span class="font-normal">Rp (Juta)</span>
                   </span>
                   <SortingIcon />
                 </div>
               </th>
-              <th>
+              <th scope="col">
                 <div class="flex flex-row items-center justify-between">
                   <span class="font-semibold">Realisasi AKI <span class="font-normal">Rp (Juta)</span>
                   </span>
@@ -57,7 +57,7 @@
             </tr>
           </thead>
           <tbody v-if="detailCAPEX" class="text-xs text-primaryTextColor">
-            <tr class="border-b" v-for="( detailCAPEXItem, detailCAPEXIndex) in detailCAPEX" :key="detailCAPEXIndex">
+            <tr class="border-b" v-for="(detailCAPEXItem, detailCAPEXIndex) in detailCAPEX" :key="detailCAPEXIndex">
               <td class="text-center">{{ detailCAPEXIndex + 1 }}</td>
               <td>{{ detailCAPEXItem.judul_program }}</td>
               <td class="text-end">{{ globalFormat.formatRupiah(detailCAPEXItem.ai) }}</td>

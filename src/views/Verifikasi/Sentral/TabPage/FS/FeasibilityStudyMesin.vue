@@ -2,28 +2,28 @@
   <TableComponent class="scrollbar-hide">
     <template v-slot:table-header>
       <tr class="text-xs">
-        <th class="text-center border-r">No</th>
-        <th class="border-r">
+        <th scope="col" class="text-center border-r">No</th>
+        <th scope="col" class="border-r">
           <div class="flex flex-row items-center justify-center space-x-10 text-center ">
             <h1 class="font-semibold">Periode</h1>
           </div>
         </th>
-        <th class="border-r">
+        <th scope="col" class="border-r">
           <div class="flex flex-row items-center justify-center space-x-10 text-center ">
             <h1 class="font-semibold">IRR on Equity (%)</h1>
           </div>
         </th>
-        <th class="border-r">
+        <th scope="col" class="border-r">
           <div class="flex flex-row items-center justify-center space-x-10 text-center ">
             <h1 class="font-semibold">NPV on Equity (Rp Juta)</h1>
           </div>
         </th>
-        <th class="border-r">
+        <th scope="col" class="border-r">
           <div class="flex flex-row items-center justify-center space-x-10 text-center">
             <h1 class="font-semibold">Status</h1>
           </div>
         </th>
-        <th class="text-center">Aksi</th>
+        <th scope="col" class="text-center">Aksi</th>
       </tr>
     </template>
     <template v-slot:table-body v-if="!props.source?.length">
@@ -77,7 +77,7 @@
         <td class="text-center">
           <div>
             <RouterLink
-              :to="{ name: 'persetujuan-fs', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(persetujuanFSItem.id_mesin) : persetujuanFSItem.id_mesin }, query: { id_sentral: persetujuanFSItem.id_sentral } }">
+              :to="{ name: 'persetujuan-fs', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(persetujuanFSItem.id_mesin) : persetujuanFSItem.id_mesin }, query: { id_sentral: persetujuanFSItem.id_sentral } }">
               <button>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" clip-rule="evenodd"
@@ -118,7 +118,7 @@
           </svg>
         </button>
       </li>
-      <li id="pagination" v-for="( item, index ) in generatePageList " :key="index"
+      <li id="pagination" v-for="(item, index) in generatePageList" :key="index"
         class="w-8 h-8 mr-2 text-sm leading-8 text-center duration-300 cursor-pointer text hover:bg-blue-500 hover:rounded-md hover:text-white"
         :class="{ selected: item === navigation.currentPage, disabled: item === '...' }" @click="goToPage(item)">
         {{ item }}
@@ -140,13 +140,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { ref, computed, onMounted } from "vue";
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 const nodeMode = import.meta.env.MODE;
 import TableComponent from "@/components/ui/Table.vue";
 import GlobalFormat from "@/services/format/global-format";
 
 const globalFormat = new GlobalFormat();
+let encryptStorageRef: any = null;
 interface Props {
   source: PersetujuanFSItem[]
 }
@@ -181,30 +182,28 @@ const generatePageList = computed(() => {
     for (let i = 1; i <= navigation.value.totalPages; i++) {
       pageList.push(i)
     };
-  } else {
-    if (navigation.value.currentPage <= 3) {
-      for (let i = 1; i <= Math.min(navigation.value.totalPages, maxPages - 1); i++) {
-        pageList.push(i)
-      };
-      if (navigation.value.totalPages > maxPages) {
-        pageList.push('...')
-        pageList.push(navigation.value.totalPages);
-      }
-    } else if (navigation.value.currentPage >= navigation.value.totalPages - 2) {
-      pageList.push(1);
-      pageList.push('...')
-      for (let i = navigation.value.totalPages - (maxPages - 2); i <= navigation.value.totalPages; i++) {
-        pageList.push(i);
-      }
-    } else {
-      pageList.push(1);
-      pageList.push('...')
-      for (let i = navigation.value.currentPage - 1; i <= navigation.value.currentPage + 1; i++) {
-        pageList.push(i);
-      }
+  } else if (navigation.value.currentPage <= 3) {
+    for (let i = 1; i <= Math.min(navigation.value.totalPages, maxPages - 1); i++) {
+      pageList.push(i)
+    }
+    if (navigation.value.totalPages > maxPages) {
       pageList.push('...');
       pageList.push(navigation.value.totalPages)
     }
+  } else if (navigation.value.currentPage >= navigation.value.totalPages - 2) {
+    pageList.push(1);
+    pageList.push('...')
+    for (let i = navigation.value.totalPages - (maxPages - 2); i <= navigation.value.totalPages; i++) {
+      pageList.push(i)
+    };
+  } else {
+    pageList.push(1)
+    pageList.push('...')
+    for (let i = navigation.value.currentPage - 1; i <= navigation.value.currentPage + 1; i++) {
+      pageList.push(i);
+    }
+    pageList.push('...')
+    pageList.push(navigation.value.totalPages);
   }
   return pageList;
 })
@@ -224,6 +223,10 @@ const goToNext = () => {
 }
 
 const props = defineProps<Props>();
+
+onMounted(async () => {
+  encryptStorageRef = await encryptStoragePromise;
+})
 
 </script>
 

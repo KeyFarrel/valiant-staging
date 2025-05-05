@@ -2,14 +2,14 @@
   <Loading v-if="isLoading" />
   <div class="p-4 space-y-4 bg-white border rounded-md min-h-[75dvh]">
     <div class="flex justify-between"
-      v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pusat' || authService.checkLevel() === 'Pengelola' || authService.checkLevel() === 'Pembina'">
+      v-if="userLevel === 'Admin' || userLevel === 'Pusat' || userLevel === 'Pengelola' || userLevel === 'Pembina'">
       <div class="flex items-center">
         <SearchBox @on-focus="handleFocus" v-model="selectedSearchQuery" class="w-72" />
         <ModalSearch v-if="isSearchModalOpen" v-model="searchQuery" :show-modal="isSearchModalOpen"
           :source="listDataPeta"
           @on-click-close="isSearchModalOpen = false; selectedSearchQuery === '' ? null : fetchPetaSentral(); searchQuery === '' ? selectedSearchQuery = '' : selectedSearchQuery = searchQuery"
           @on-escape="isSearchModalOpen = false"
-          @on-click="selectedSearchQuery = searchQuery; isSearchModalOpen = false; fetchPetaSentral()"
+          @on-click-sentral="selectedSearchQuery = searchQuery; isSearchModalOpen = false; fetchPetaSentral()"
           @on-key-enter="selectedSearchQuery = searchQuery; isSearchModalOpen = false; fetchPetaSentral()" />
         <button type="button" id="hover-button"
           class="text-[#0099AD] bg-white relative border border-[#0099AD] hover:bg-[#0099AD] hover:text-white duration-300 focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center"
@@ -43,7 +43,7 @@
               </button>
             </div>
           </div>
-          <div class="mt-4" v-if="authService.checkLevel() === 'Admin' || authService.checkLevel() === 'Pusat'">
+          <div class="mt-4" v-if="userLevel === 'Admin' || userLevel === 'Pusat'">
             <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Induk / Subholding / Anak Perusahaan</h3>
             <el-select v-model="pengelola" multiple clearable collapse-tags
               placeholder="Pilih Unit Induk / Subholding / Anak Perusahaan" popper-class="custom-header"
@@ -132,7 +132,7 @@
         <ol-tile-layer>
           <ol-source-osm />
         </ol-tile-layer>
-        <ol-overlay v-for="( item, i ) in dataPeta " :key="i" :position="[item.lng, item.lat]">
+        <ol-overlay v-for="(item, i) in dataPeta" :key="i" :position="[item.lng, item.lat]">
           <img v-if="item.kode_jenis_energi === 'EBT'" @mouseenter="showByIndex = i"
             @click="getDetailSentral(item.kode_sentral)" alt="Preview" src="../../assets/img/ebt.png"
             class="rounded-full cursor-pointer" :class="zoom >= 15 ? 'w-5 h-5' : 'w-3 h-3'">
@@ -140,7 +140,7 @@
             src="../../assets/img/Non-EBT.png" alt="Preview" class="rounded-full cursor-pointer"
             :class="zoom >= 15 ? 'w-5 h-5' : 'w-3 h-3'">
         </ol-overlay>
-        <ol-overlay v-for="( item, i ) in dataPeta " :position="[item.lng, item.lat]" :key="i" :insertFirst="false">
+        <ol-overlay v-for="(item, i) in dataPeta" :position="[item.lng, item.lat]" :key="i" :insertFirst="false">
           <div v-if="showByIndex === i" @mouseenter="showByIndex = i, showByIndexModal = i"
             @mouseleave="showByIndex = null, showByIndexModal = null"
             :class="parseFloat(item.lat) < 0 || parseFloat(item.lng) > 138 ? 'bottom-0 right-0' : 'top-2.5 left-2'"
@@ -241,7 +241,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
-import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import { notifyError } from "@/services/helper/toast-notification";
 import type { CheckboxValueType } from 'element-plus';
 import PetaService from "@/services/peta-service";
@@ -284,6 +284,7 @@ const indeterminatePengelola = ref(false)
 const indeterminatePembangkit = ref(false)
 const indeterminateDmn = ref(false)
 const indeterminateUmur = ref(false)
+const userLevel = ref<string | null>(null);
 const itemsPengelola = ref<{ id: string; name: string; }[]>([])
 const itemsPembangkit = ref<{ id: string; name: string; power?: string }[]>([])
 const itemsDmn = ref<{
@@ -295,6 +296,7 @@ const pengelola = ref<CheckboxValueType[]>([])
 const pembangkit = ref<CheckboxValueType[]>([])
 const dmn = ref<CheckboxValueType[]>([1, 2, 3])
 const umur = ref<CheckboxValueType[]>([])
+let encryptStorageRef: any = null;
 
 interface PetaItem {
   data: any;
@@ -317,6 +319,7 @@ interface PetaItem {
 const fetchPetaSentral = async () => {
   try {
     isLoading.value = true;
+    const encryptStorage = await encryptStoragePromise;
     const response: any = await petaService.getPetaSentral({ sentral: searchQuery.value, pengelola: [], pembina: [], jenis_kit: [], id_daya: [], umur: [] });
     if (listDataPeta.value.length === 0) {
       listDataPeta.value = response.data;
@@ -348,7 +351,7 @@ function getDetailSentral(kode: string) {
     petaService.getSentralByKode(kode);
     return router.push({
       name: "grafik",
-      params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(kode) : kode },
+      params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(kode) : kode },
     });
   } catch (error) {
     console.error('Fetch Detail Sentral By Kode Error : ' + error);
@@ -564,12 +567,21 @@ async function changeDataNoDMN() {
 
 onMounted(async () => {
   isLoading.value = true;
+  encryptStorageRef = await encryptStoragePromise;
+  userLevel.value = await authService.checkLevel();
   await fetchPetaSentral();
   getDataPengelola()
   getDataPembangkit()
   getDataUmurMesin()
   isLoading.value = false;
 });
+
+// encryptStoragePromise.then((instance) => {
+//   encryptStorageRef = instance;
+//   
+// }).catch((err) => {
+//   console.error("Gagal inisialisasi encryptStorage:", err);
+// });
 </script>
 
 <style lang="scss">

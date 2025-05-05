@@ -416,7 +416,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute } from 'vue-router';
-import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { encryptStoragePromise } from '@/utils/app-encrypt-storage';
 import { Vue3Lottie } from 'vue3-lottie';
 import { notifyError } from "@/services/helper/toast-notification";
 import UserService from "@/services/user-service";
@@ -503,7 +503,7 @@ const tahunBerjalan = new Date().getFullYear();
 const tahunTerakhirRealisasi = ref<any>();
 const tahunData = ref<any>();
 const arrMesin = ref<any>({});
-const idGrafik = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id;
+const idGrafik = ref<any>('');
 const updateMesin = ref<any>();
 const jumlahMesin = ref<any>('');
 
@@ -611,7 +611,7 @@ const fetchAsumsiFeasibility = async () => {
   try {
     const response: any =
       await feasibilityStudyService.getAsumsiFeasibility(
-        parseInt(idGrafik),
+        parseInt(idGrafik.value),
         parseInt(tahunTerakhirRealisasi.value)
       );
     asumsiMakro.value = {
@@ -654,7 +654,7 @@ const formatBytes = (bytes: any) => {
 const fetchDataTeknis = async () => {
   try {
     const response: any = await feasibilityStudyService.getDataTeknis(
-      parseInt(idGrafik)
+      parseInt(idGrafik.value)
     );
     dataTeknis.value = response.data;
   } catch (error) {
@@ -667,7 +667,7 @@ const uploadFileEvidence = async () => {
     const formData = new FormData();
     formData.append('file', selectedFileEvidence.value);
     const response: any = await rekapService.uploadEvidence(formData);
-    await rekapService.updateEvidencePath(parseInt(idGrafik), tahunBerjalan.toString(), response.data, 1, selectedFileEvidence.value.name);
+    await rekapService.updateEvidencePath(parseInt(idGrafik.value), tahunBerjalan.toString(), response.data, 1, selectedFileEvidence.value.name);
     isLoading.value = false
     isEvidenceSuccess.value = true;
     await wait(1500)
@@ -681,7 +681,7 @@ const uploadFileEvidence = async () => {
 const downloadEvidence = async () => {
   try {
     isLoading.value = true;
-    const filePath: any = await rekapService.getEvidencePath(idGrafik, tahunBerjalan.toString() ?? '0', 1);
+    const filePath: any = await rekapService.getEvidencePath(idGrafik.value, tahunBerjalan.toString() ?? '0', 1);
     const finalFileName: any = filePath.data[0].file_name;
     const response: any = await rekapService.downloadEvidence(filePath.data[0].dokumen_evidence);
     const contentDisposition = response.headers['content-disposition'];
@@ -708,7 +708,7 @@ const fetchDataFinansial = async () => {
     dataFinansial.value = undefined
     finansialMappingResult.value = [];
     const response: any = await feasibilityStudyService.getDataFinansial(
-      parseInt(idGrafik)
+      parseInt(idGrafik.value)
     )
     let currentLevel1: any | null = null;
     let currentLevel2: any | null = null
@@ -745,7 +745,7 @@ const fetchDataFinansial = async () => {
 const fetchHasilSimulasi = async () => {
   try {
     const response: any = await feasibilityStudyService.getHasilSimulasi(
-      parseInt(idGrafik),
+      parseInt(idGrafik.value),
       parseInt(statusMesin.value)
     );
     hasilSimulasi.value = response.data;
@@ -838,10 +838,10 @@ const uploadFileFS = async () => {
 const handleDownloadTemplateFS = async () => {
   try {
     isLoading.value = true;
-    const response: any = await rekapService.downloadTemplateFS(tahunBerjalan, idGrafik, mesinDataById.value?.kode_jenis_pembangkit);
+    const response: any = await rekapService.downloadTemplateFS(tahunBerjalan, idGrafik.value, mesinDataById.value?.kode_jenis_pembangkit);
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
-    const fileName = fileNameMatch ? fileNameMatch[1] : `Kertas Kerja FS - ${mesinDataById.value?.mesin}_${globalFormat.formatNumberFiveDigits(parseInt(idGrafik))}.xlsx`;
+    const fileName = fileNameMatch ? fileNameMatch[1] : `Kertas Kerja FS - ${mesinDataById.value?.mesin}_${globalFormat.formatNumberFiveDigits(parseInt(idGrafik.value))}.xlsx`;
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a')
@@ -886,7 +886,7 @@ const updateFS = async () => {
     const response: any = await persetujuanService.updateStatusFS({
       status_approval: 0,
       keterangan: '',
-      id_mesin: parseInt(idGrafik)
+      id_mesin: parseInt(idGrafik.value)
     })
     isLoading.value = false;
     updateMesin.value = response.data
@@ -905,6 +905,8 @@ const updateFS = async () => {
 
 onMounted(async () => {
   isLoading.value = true;
+  const encryptStorage = await encryptStoragePromise;
+  idGrafik.value = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id;
   await fetchMesinById();
   await fetchPersetujuanFS();
   await fetchAsumsiFeasibility();

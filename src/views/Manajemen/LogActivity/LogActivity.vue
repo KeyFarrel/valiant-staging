@@ -20,7 +20,7 @@
             </div>
           </button>
           <div v-if="showModalFilter"
-            class="absolute left-0 w-56 overflow-y-auto bg-white border rounded-lg shadow-md top-11 max-h-60">
+            class="absolute left-0 z-20 w-56 overflow-y-auto bg-white border rounded-lg shadow-md top-11 max-h-60">
             <button v-for="(itemData, itemIndex) in filterData.activity" @click="processValue(itemData)"
               class="flex items-center w-full p-3 space-x-2 border-b cursor-pointer">
               <input type="checkbox" @change="handleChangeFilter" v-model="filterValue.selectedActivity"
@@ -56,14 +56,13 @@
       </div>
       <!-- Konten -->
       <div class="flex flex-col space-y-8">
-        <div v-for="(itemData, itemIndex) in logData" class="flex space-x-3 text-sm"
-          :class="{ 'items-center': itemData.action === 'Login' || itemData.action === 'Logout' || itemData.action === 'Unduh Data' || itemData.action === 'Tambah' || itemData.action === 'Setujui Data' || itemData.action === 'Kirim Data' }">
+        <div v-for="(itemData, itemIndex) in logData" class="flex space-x-3 text-sm">
           <div class="flex flex-col flex-shrink-0 text-xs">
             <p class="whitespace-pre-line text-textFieldColor text-end">{{ dateFormat.formatDate(itemData.created_at) }}
             </p>
           </div>
           <div class="flex items-center justify-center flex-shrink-0 w-12 h-12 rounded-full"
-            :class="{ 'bg-[#EBF6FF]': itemData.action === 'Login', 'bg-[#FCEEF2]': itemData.action === 'Logout', 'bg-[#E7F1FD]': itemData.action === 'Draft Data', 'bg-[#FFF2FF]': itemData.action === 'Revisi Data', 'bg-[#EFF3F4]': itemData.action === 'Kirim Data', 'bg-[#FFE5E6]': itemData.action.includes('Tolak'), 'bg-[#E5E5E5]': itemData.action === 'Unduh Data', 'bg-[#E2FCF3]': itemData.action === 'Setujui Data', 'bg-[#FFF8EB]': itemData.action === 'Tambah', 'bg-[#F5F5FF]': itemData.action === 'Edit' }">
+            :class="{ 'bg-[#EBF6FF]': itemData.action === 'Login', 'bg-[#FCEEF2]': itemData.action === 'Logout', 'bg-[#E7F1FD]': itemData.action === 'Draft Data', 'bg-[#FFF2FF]': itemData.action === 'Revisi Data', 'bg-[#EFF3F4]': itemData.action === 'Kirim Data', 'bg-[#FFE5E6]': itemData.action.includes('Tolak'), 'bg-[#E5E5E5]': itemData.action === 'Unduh Data', 'bg-[#E2FCF3]': itemData.action === 'Setujui Data', 'bg-[#FFF8EB]': itemData.action === 'Tambah', 'bg-[#F5F5FF]': itemData.action === 'Edit', 'bg-[#005CAD0D]': itemData.action === 'Upload Data', 'bg-[#FFFCCC]': itemData.action === 'Aktivitas Lain' }">
             <IconDraft v-if="itemData.action === 'Draft Data'" />
             <IconEditMaster v-else-if="itemData.action === 'Edit'" />
             <IconKirim v-else-if="itemData.action === 'Kirim Data'" />
@@ -74,9 +73,11 @@
             <IconTambahUser v-else-if="itemData.action === 'Tambah'" />
             <IconTolak v-else-if="itemData.action.includes('Tolak')" />
             <IconUnduh v-else-if="itemData.action === 'Unduh Data'" />
+            <IconUpload v-else-if="itemData.action === 'Upload Data'" />
+            <IconOtherActivity v-else-if="itemData.action === 'Aktivitas Lain'" />
           </div>
-          <div class="flex flex-col space-y-1">
-            <div class="flex items-center space-x-1.5 ">
+          <div class="flex flex-col w-full space-y-1" v-auto-animate>
+            <div class="flex items-center space-x-1.5">
               <p class="flex items-center space-x-1.5 font-medium text-black">{{ itemData.action }}</p>
               <div class="w-[1.5px] h-[18px] bg-black ml-1.5"></div>
               <span class="font-normal text-textFieldColor">Oleh: {{ itemData.user }} ({{ itemData.role }}<span
@@ -84,9 +85,14 @@
                     'Administrator' ? null :
                     itemData.sentral ? itemData.sentral : itemData.pembina ?
                       itemData.pembina : itemData.pengelola
-                }})</span>
+                  }})</span>
+              <button class="p-1.5 border rounded-lg h-fit active:ring-1 active:ring-[#E7F1FD] active:duration-0"
+                @click="itemData.isShowDetail = !itemData.isShowDetail">
+                <IconChevronDown v-if="!itemData.isShowDetail" />
+                <IconChevronUp v-else-if="itemData.isShowDetail" />
+              </button>
             </div>
-            <p class="w-full text-xs" v-if="itemData.action !== 'Login' && itemData.action !== 'Logout'">
+            <p class="w-full text-xs">
               {{ itemData.message }}</p>
             <div class="flex flex-col space-y-1" v-if="itemData.action === 'Tolak Data'">
               <p class="text-xs font-medium text-textFieldColor">Keterangan Ditolak:</p>
@@ -101,7 +107,7 @@
                   <IconDocument />
                 </div>
                 <p class="text-xs text-[#0A448F]">Excel {{ itemData.status_fs == 0 ? 'KK' : 'FS' }} {{ itemData.sentral
-                  }}.xlsx</p>
+                }}.xlsx</p>
               </button>
               <button
                 class="flex items-center space-x-1.5 bg-[#F7FBFC] rounded-md w-fit px-2 py-1 active:ring-1 active:ring-[#E7F1FD]"
@@ -111,6 +117,29 @@
                 </div>
                 <p class="text-xs text-[#0A448F]">{{ itemData.nama_evidence }}</p>
               </button>
+            </div>
+            <div class="w-full h-fit p-3 rounded-lg bg-[#F7FBFC] grid grid-cols-3 gap-x-10 gap-y-5"
+              v-if="itemData.isShowDetail">
+              <div class="flex flex-col space-y-0.5 text-xs">
+                <p class="font-medium text-textDisabledColor">Kode Status</p>
+                <p class="text-textPrimaryColor">{{ itemData.status_code }}</p>
+              </div>
+              <div class="flex flex-col space-y-0.5 text-xs">
+                <p class="font-medium text-textDisabledColor">API Endpoint</p>
+                <p class="text-textPrimaryColor">{{ itemData.api_endpoint }}</p>
+              </div>
+              <div class="flex flex-col space-y-0.5 text-xs">
+                <p class="font-medium text-textDisabledColor">Method</p>
+                <p class="text-textPrimaryColor">{{ itemData.method }}</p>
+              </div>
+              <div class="flex flex-col space-y-0.5 text-xs">
+                <p class="font-medium text-textDisabledColor">Alamat IP</p>
+                <p class="text-textPrimaryColor">{{ itemData.ip_address }}</p>
+              </div>
+              <div class="flex flex-col space-y-0.5 text-xs">
+                <p class="font-medium text-textDisabledColor">Pesan</p>
+                <p class="text-textPrimaryColor">{{ itemData.message }}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -127,6 +156,7 @@
           <option value="30">30</option>
           <option value="40">40</option>
           <option value="50">50</option>
+          <option value="100">100</option>
         </select>
         <span>dari <span class="font-bold">{{ navigation.totalRecords }}</span> data</span>
       </div>
@@ -144,7 +174,7 @@
             </svg>
           </button>
         </li>
-        <li id="pagination" v-for="( item, index ) in generatePageList " :key="index"
+        <li id="pagination" v-for="(item, index) in generatePageList" :key="index"
           class="w-8 h-8 mr-2 text-sm leading-8 text-center duration-300 cursor-pointer text hover:bg-blue-500 hover:rounded-md hover:text-white"
           :class="{ selected: item === navigation.currentPage, disabled: item === '...' }" @click="goToPage(item)">
           {{ item }}
@@ -194,6 +224,10 @@ import IconTambahUser from '@/components/icons/LogActivity/IconTambahUser.vue';
 import IconTolak from '@/components/icons/LogActivity/IconTolak.vue';
 import IconUnduh from '@/components/icons/LogActivity/IconUnduh.vue';
 import IconDocument from '@/components/icons/LogActivity/IconDocument.vue';
+import IconUpload from '@/components/icons/LogActivity/IconUpload.vue';
+import IconOtherActivity from '@/components/icons/LogActivity/IconOtherActivity.vue';
+import IconChevronUp from '@/components/icons/LogActivity/IconChevronUp.vue';
+import IconChevronDown from '@/components/icons/LogActivity/IconChevronDown.vue';
 
 const date = new Date();
 const isLoading = ref<boolean>(false);
@@ -238,11 +272,16 @@ const logData = ref<{
   level: string
   id_mesin: number
   status_fs: number
+  ip_address: string
+  status_code: number
+  api_endpoint: string
+  method: string
+  isShowDetail: boolean
 }[]>([]);
 const filterData = ref<{
   activity: string[]
 }>({
-  activity: ['Login', 'Logout', 'Draft Data', 'Revisi Data', 'Kirim Data', 'Tolak Data', 'Unduh Data', 'Setujui Data', 'Tambah', 'Edit']
+  activity: ['Login', 'Logout', 'Draft Data', 'Revisi Data', 'Kirim Data', 'Tolak Data', 'Upload Data', 'Unduh Data', 'Setujui Data', 'Tambah', 'Edit', 'Aktivitas Lain']
 });
 let debounceTimeout: any = null;
 
@@ -383,7 +422,11 @@ const fetchLogActivity = async () => {
       limit: navigation.value.limit,
       page: navigation.value.currentPage
     });
-    logData.value = response.data;
+    logData.value = response.data.map((item: any) => ({
+      ...item,
+      isShowDetail: false
+    }));
+    console.log(logData.value, "LOGGG")
     navigation.value.currentPage = response.meta.page;
     navigation.value.totalPages = response.meta.totalPages;
     navigation.value.totalRecords = response.meta.totalRecords
@@ -525,5 +568,11 @@ ul li#pagination.selected {
 ul li.selected {
   color: #0099AD;
   border-color: #0099AD;
+}
+
+ul li.disabled {
+  pointer-events: none;
+  cursor: not-allowed;
+  color: #D1D1DB;
 }
 </style>

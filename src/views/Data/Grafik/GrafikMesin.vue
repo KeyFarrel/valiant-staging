@@ -27,10 +27,9 @@
           </h1>
           <StatusGrafik :status-grafik="statusApprove" class="ml-4 mt-1.5" />
         </div>
-        <div class="flex items-center justify-center px-6"
-          v-if="props.tahunData && authService.checkRole() !== 'Approver'">
+        <div class="flex items-center justify-center px-6" v-if="props.tahunData && userRole !== 'Approver'">
           <RouterLink
-            :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(props.idMesin) : props.idMesin }, query: { tahun: props.tahunData } }">
+            :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(props.idMesin) : props.idMesin }, query: { tahun: props.tahunData } }">
             <button type="button" id="lihat-data-button" :disabled="statusApprove === 'Data belum terisi'"
               class="space-x-2 text-[#0099AD] hover:text-white hover:bg-primaryColor bg-white border border-[#0099AD] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2.5 flex justify-center items-center duration-300 focus:outline-none">
               <p class="font-semibold">Lihat Data</p>
@@ -114,7 +113,7 @@
         </div>
         <div class="flex items-center justify-center px-6">
           <RouterLink
-            :to="{ name: 'feasibility-study', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(props.idMesin) : props.idMesin } }">
+            :to="{ name: 'feasibility-study', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(props.idMesin) : props.idMesin } }">
             <button type="button" id="lihat-data-button" :disabled="statusApprovePlanning === 'Data belum terisi'"
               class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center focus:outline-none">
               <svg id="lihat-data-svg" width="8" height="12" viewBox="0 0 8 12" fill="none"
@@ -182,7 +181,7 @@
         </div>
         <div class="flex items-center justify-center px-6">
           <RouterLink
-            :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(props.idMesin) : props.idMesin }, query: { tahun: props.tahunData } }">
+            :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(props.idMesin) : props.idMesin }, query: { tahun: props.tahunData } }">
             <button type="button" id="lihat-data-button" :disabled="statusApprove === 'Data belum terisi'"
               class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center focus:outline-none">
               <svg id="lihat-data-svg" width="8" height="12" viewBox="0 0 8 12" fill="none"
@@ -232,7 +231,7 @@
         </div>
         <div class="flex items-center justify-center px-6">
           <RouterLink
-            :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(props.idMesin) : props.idMesin }, query: { tahun: props.tahunData } }">
+            :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(props.idMesin) : props.idMesin }, query: { tahun: props.tahunData } }">
             <button id="lihat-data-button" type="button" :disabled="statusApprove === 'Data belum terisi'"
               class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center focus:outline-none">
               <svg id="lihat-data-svg" width="8" height="12" viewBox="0 0 8 12" fill="none"
@@ -306,9 +305,9 @@
         <TableComponent>
           <template v-slot:table-header>
             <tr>
-              <th class="px-8 py-2 text-left">Deskripsi</th>
-              <th class="px-1 py-2 text-right">Realisasi + Proyeksi (Rp (Juta))</th>
-              <th class="px-1 py-2 text-right">Planning (Rp (Juta))</th>
+              <th scope="col" class="px-8 py-2 text-left">Deskripsi</th>
+              <th scope="col" class="px-1 py-2 text-right">Realisasi + Proyeksi (Rp (Juta))</th>
+              <th scope="col" class="px-1 py-2 text-right">Planning (Rp (Juta))</th>
             </tr>
           </template>
           <template v-slot:table-body>
@@ -359,9 +358,9 @@
         <TableComponent>
           <template v-slot:table-header>
             <tr>
-              <th class="px-8 py-2 text-left">Deskripsi</th>
-              <th class="px-1 py-2 text-right">Realisasi + Proyeksi (Rp (Juta))</th>
-              <th class="px-1 py-2 text-right">Planning (Rp (Juta))</th>
+              <th scope="col" class="px-8 py-2 text-left">Deskripsi</th>
+              <th scope="col" class="px-1 py-2 text-right">Realisasi + Proyeksi (Rp (Juta))</th>
+              <th scope="col" class="px-1 py-2 text-right">Planning (Rp (Juta))</th>
             </tr>
           </template>
           <template v-slot:table-body>
@@ -412,8 +411,8 @@
         <TableComponent>
           <template v-slot:table-header>
             <tr>
-              <th class="px-8 py-2 text-left">Deskripsi</th>
-              <th class="px-1 py-2 text-right">Planning (Rp (Juta))</th>
+              <th scope="col" class="px-8 py-2 text-left">Deskripsi</th>
+              <th scope="col" class="px-1 py-2 text-right">Planning (Rp (Juta))</th>
             </tr>
           </template>
           <template v-slot:table-body>
@@ -463,8 +462,8 @@
         <TableComponent>
           <template v-slot:table-header>
             <tr>
-              <th class="px-8 py-2 text-left">Deskripsi</th>
-              <th class="px-1 py-2 text-right">Planning (Rp (Juta))</th>
+              <th scope="col" class="px-8 py-2 text-left">Deskripsi</th>
+              <th scope="col" class="px-1 py-2 text-right">Planning (Rp (Juta))</th>
             </tr>
           </template>
           <template v-slot:table-body>
@@ -514,9 +513,9 @@
         <TableComponent>
           <template v-slot:table-header>
             <tr>
-              <th class="px-8 py-2 text-left">Deskripsi</th>
-              <th class="px-1 py-2 text-right">Realisasi + Proyeksi (Rp (Juta))</th>
-              <th class="px-1 py-2 text-right">Planning (Rp (Juta))</th>
+              <th scope="col" class="px-8 py-2 text-left">Deskripsi</th>
+              <th scope="col" class="px-1 py-2 text-right">Realisasi + Proyeksi (Rp (Juta))</th>
+              <th scope="col" class="px-1 py-2 text-right">Planning (Rp (Juta))</th>
             </tr>
           </template>
           <template v-slot:table-body>
@@ -567,9 +566,9 @@
         <TableComponent>
           <template v-slot:table-header>
             <tr>
-              <th class="px-8 py-2 text-left">Deskripsi</th>
-              <th class="px-1 py-2 text-right">Realisasi + Proyeksi (Rp (Juta))</th>
-              <th class="px-1 py-2 text-right">Planning (Rp (Juta))</th>
+              <th scope="col" class="px-8 py-2 text-left">Deskripsi</th>
+              <th scope="col" class="px-1 py-2 text-right">Realisasi + Proyeksi (Rp (Juta))</th>
+              <th scope="col" class="px-1 py-2 text-right">Planning (Rp (Juta))</th>
             </tr>
           </template>
           <template v-slot:table-body>
@@ -587,7 +586,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, nextTick, computed, watch } from "vue";
-import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import AOS from 'aos'
 import { VueEcharts } from "vue3-echarts";
 import { useTagMesin } from "@/store/storeTagGrafik";
@@ -606,8 +605,6 @@ import WaitingGraikT2 from '@/components/Status/Grafik/WaitingGrafikT2.vue';
 import DitolakGrafikT1 from '@/components/Status/Grafik/DitolakGrafikT1.vue';
 import DitolakGrafikT2 from '@/components/Status/Grafik/DitolakGrafikT2.vue';
 import TableComponent from "@/components/ui/Table.vue";
-import { legacy_createStore } from "redux";
-
 const stored = useTagMesin();
 const grafikService = new GrafikService();
 const globalFormat = new GlobalFormat();
@@ -648,6 +645,7 @@ const tabGraphic = ref("Semua");
 const tabGraphicFS = ref("Semua");
 const statusApprove = ref<any>('');
 const statusApprovePlanning = ref<any>('');
+let encryptStorageRef: any = null;
 
 interface Mesin {
   idMesin: any;
@@ -694,6 +692,7 @@ const fuelComWLCMesin = ref<any>([]);
 const yAxisWlc = ref<any>([]);
 const maxWlcBep = ref<any>([]);
 const maxWlcOpt = ref<any>([]);
+const userRole = ref<string | null>(null);
 
 const chartDetailWLCAllMesin = ref();
 const updateDetailWLCAllMesin = ref(true);
@@ -6650,6 +6649,8 @@ const fetchPlanningMesin = async () => {
 onMounted(async () => {
   AOS.init();
   isLoading.value = true;
+  encryptStorageRef = await encryptStoragePromise;
+  userRole.value = await authService.checkRole()
   await fetchGrafikWLCAllMesin();
   await fetchGrafikWLCKomMesin();
   await fetchGrafikPlanMesin();

@@ -2,7 +2,7 @@ import { shallowMount } from '@vue/test-utils';
 import FeasibilityStudy from '@/views/Data/RekapKertasKerja/FeasibilityStudy/FeasibilityStudy.vue';
 import FeasibilityStudyService from '@/services/feasibility-study';
 import UserService from '@/services/user-service';
-import { encryptStorage } from "@/utils/app-encrypt-storage";
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import { useRoute } from 'vue-router';
 import Loading from '@/components/ui/LoadingSpinner.vue';
 import InfoHeader from '@/components/ui/InfoHeader.vue';

@@ -27,12 +27,12 @@
     <TableComponent>
       <template v-slot:table-header>
         <tr>
-          <th>No</th>
-          <th>Tahun</th>
-          <th>Discount Rate (%)</th>
-          <th>Corporate Tax Rate (%)</th>
-          <th>Status</th>
-          <th>Aksi</th>
+          <th scope="col">No</th>
+          <th scope="col">Tahun</th>
+          <th scope="col">Discount Rate (%)</th>
+          <th scope="col">Corporate Tax Rate (%)</th>
+          <th scope="col">Status</th>
+          <th scope="col">Aksi</th>
         </tr>
       </template>
       <template v-slot:table-body>

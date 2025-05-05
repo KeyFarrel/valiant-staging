@@ -85,7 +85,7 @@ export default class GlobalFormat {
     }
 
     const commaSplit = inputValues.split(',');
-    commaSplit[0] = commaSplit[0].replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+    commaSplit[0] = Number(commaSplit[0]).toLocaleString("id-ID"); // Perlu debugging lebih dalam untuk verifikasi error atau tidak
 
     inputValues = commaSplit.join(',');
 

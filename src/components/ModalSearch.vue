@@ -25,7 +25,7 @@
           class="px-3 py-2.5 text-xs text-primaryTextColor duration-200 cursor-pointer rounded-[3px] hover:bg-primaryColor hover:text-white"
           v-for="(pembangkitItem, pembangkitIndex) in searchResults" :key="pembangkitIndex"
           :class="{ 'selected-item': pembangkitItem.sentral === selectedSentral }"
-          @click="searchQuery = pembangkitItem.sentral; selectedSentral = pembangkitItem.sentral; emit('onClick')">
+          @click="searchQuery = pembangkitItem.sentral; selectedSentral = pembangkitItem.sentral; emit('onClickSentral')">
           {{ pembangkitItem.sentral }}
         </li>
       </ul>
@@ -49,7 +49,7 @@ interface Props {
 
 const props = defineProps<Props>();
 const searchQuery: any = defineModel();
-const emit = defineEmits(['onClick', 'onClickClose', 'onKeyEnter', 'onEscape']);
+const emit = defineEmits(['onClickSentral', 'onClickClose', 'onKeyEnter', 'onEscape', 'onKeyDown']);
 
 const searchResults: any = computed(() => {
   if (searchQuery.value === '') {

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import AnalyticService from '@/services/analytic-service';  // Sesuaikan dengan path Anda
-import { encryptStorage } from '@/utils/app-encrypt-storage';  // Sesuaikan path
+import { encryptStoragePromise } from '@/utils/app-encrypt-storage';  // Sesuaikan path
 
 jest.mock('axios');
 jest.mock('@/utils/app-encrypt-storage');
