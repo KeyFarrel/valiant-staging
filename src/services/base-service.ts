@@ -94,7 +94,7 @@ export default class BaseService {
         const response: AxiosResponse = await axios({
           method: "POST",
           url: path,
-        // withCredentials: withCredentials,
+        withCredentials: withCredentials,
         data: encryptAES(JSON.stringify(payload)),
         headers,
         timeout: TIME_OUT,
