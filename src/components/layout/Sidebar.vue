@@ -240,6 +240,8 @@ import { RouterView } from "vue-router";
 import { useNavbarLabelStore } from "@/store/storeNavbar";
 import { useRekapSearchStore } from "@/store/storeRekapKertasKerja";
 import { useIdle, useTimestamp } from '@vueuse/core'
+import { useMenuStore } from "@/store/storeMenu";
+const menuStore = useMenuStore();
 import { VueCookies } from "vue-cookies";
 const $cookies = inject<VueCookies>('$cookies');
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
@@ -377,8 +379,8 @@ onMounted(async () => {
   const encryptStorage = await encryptStoragePromise;
   levelSentral.value = nodeMode === 'production' ? await encryptStorage.getItem('level_sentral') : localStorage.getItem('level_sentral');
   namaPegawai.value = nodeMode === 'production' ? await encryptStorage.getItem('nama_pegawai') : localStorage.getItem('nama_pegawai');
-  menuList.value = nodeMode === 'production' ? await encryptStorage.getItem('menu') : JSON.parse(localStorage.getItem('menu') || '[]');
   userLevel.value = await authService.checkLevel();
+  menuList.value = menuStore.menuList;
   initFlowbite();
   fetchPersetujuanKK();
   fetchPersetujuanFS();

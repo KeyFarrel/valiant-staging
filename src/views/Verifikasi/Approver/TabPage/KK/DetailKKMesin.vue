@@ -250,8 +250,9 @@
                 <ComponentDraft v-else-if="arrMesin.status === 'Draft'" />
               </div>
             </div>
-            <TableDataTeknis @on-click-reload="reloadDataTeknis" :tahun-terakhir-realisasi="tahunBerjalan"
-              :data-teknis="dataTeknis" :type-periodic="typePeriodic" :is-fetching-error="dataTeknis.isFetchingError" />
+            <TableDataTeknis @on-click-reload="reloadDataTeknis"
+              :tahun-terakhir-realisasi="parseInt(route.query.tahun?.toString() ?? '0')" :data-teknis="dataTeknis"
+              :type-periodic="typePeriodic" :is-fetching-error="dataTeknis.isFetchingError" />
           </div>
         </TabItem>
         <TabItem title="Data Finansial">
@@ -279,8 +280,8 @@
               </div>
             </div>
             <TableDataFinansial @on-click-reload="reloadDataFinansial" :data-finansial="dataFinansial"
-              :tahun-terakhir-realisasi="tahunBerjalan" :source="finansialMappingResult"
-              :is-fetching-error="dataFinansial.isFetchingError" />
+              :tahun-terakhir-realisasi="parseInt(route.query.tahun?.toString() ?? '0')"
+              :source="finansialMappingResult" :is-fetching-error="dataFinansial.isFetchingError" />
           </div>
         </TabItem>
         <TabItem title="Hasil Simulasi">
@@ -571,7 +572,7 @@ const fetchMesinById = async () => {
     )
     try {
       const responsePhoto: any = await detailSentralService.getPhoto(response.data.photo1);
-      const blob = new Blob([responsePhoto]);
+      const blob = new Blob([responsePhoto.data]);
       response.data.photo2 = URL.createObjectURL(blob)
     } catch (error) {
       console.error('Error Fetch Photo: ', error)

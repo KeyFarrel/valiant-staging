@@ -18,8 +18,8 @@ export default class UserService extends BaseService {
     async getInduk<T>(): Promise<T> {
         return this.get(`${url}filter/combo-pengelola`);
     }
-    async getPembina<T>(idPengelola: any): Promise<T> {
-        return this.get(`${url}filter/combo-pembina`, {id_pengelola: idPengelola});
+    async getPembina<T>(param?: any): Promise<T> {
+        return this.get(`${url}filter/combo-pembina`, param);
     }
     async getMesin<T>(): Promise<T> {
         return this.get(`${url}filter/combo-mesin`);
@@ -34,7 +34,7 @@ export default class UserService extends BaseService {
         return this.post(`${url}user/reset-password`, {email_confirm: emailConfirm, email: emailReset});
     }
     async updateUser<T>(id: number, data: any): Promise<T> {
-        return this.patch(`${url}user/${id}`, data);
+        return this.post(`${url}user/${id}`, data);
     }
     async getSentralByPengelola<T>(idPengelola: number, idPembina: number): Promise<T> {
         return this.get(`${url}filter/combo-sentral`, {id_pengelola: idPengelola, id_pembina: idPembina});

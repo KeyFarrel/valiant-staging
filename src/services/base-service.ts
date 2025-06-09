@@ -7,7 +7,37 @@ const fpPromise = FingerprintJS.load()
 const getFingerprint = async () => {
   const fp = await fpPromise
   const result = await fp.get()
-  return result.visitorId;
+  
+  // List komponen yang dianggap stabil dan tidak berubah
+  const stableComponents = {
+    // Hardware identifiers
+    hardwareConcurrency: result.components.hardwareConcurrency,
+    deviceMemory: result.components.deviceMemory,
+    platform: result.components.platform,
+    architecture: result.components.architecture,
+    screenResolution: result.components.screenResolution,
+    
+    // Browser identifiers
+    vendor: result.components.vendor,
+    vendorFlavors: result.components.vendorFlavors,
+    colorDepth: result.components.colorDepth,
+    
+    // Feature support
+    canvas: result.components.canvas,
+    webGlBasics: result.components.webGlBasics,
+    timezone: result.components.timezone,
+    touchSupport: result.components.touchSupport,
+    
+    // Browser settings
+    cookiesEnabled: result.components.cookiesEnabled,
+    localStorage: result.components.localStorage,
+    sessionStorage: result.components.sessionStorage,
+    colorGamut: result.components.colorGamut,
+    hdr: result.components.hdr,
+  };
+  
+  const visitorId = FingerprintJS.hashComponents(stableComponents)
+  return visitorId;
 };
 
 const nodeMode: any = import.meta.env.MODE;
@@ -53,7 +83,8 @@ export default class BaseService {
         params: params,
         responseType: responseType
       });
-      return response.data;
+      console.log("Response Method Get:", response);
+      return response.data.response;
     } catch (error) {
       console.error("Error:", error);
       throw error;
@@ -94,12 +125,13 @@ export default class BaseService {
         const response: AxiosResponse = await axios({
           method: "POST",
           url: path,
-        // withCredentials: withCredentials,
+        withCredentials: withCredentials,
         data: encryptAES(JSON.stringify(payload)),
         headers,
         timeout: TIME_OUT,
       });
-      return response.data;
+      console.log("Response Method Post:", response);
+      return response.data.response;
     } catch (error) {
       console.error("Error:", error);
       throw error;

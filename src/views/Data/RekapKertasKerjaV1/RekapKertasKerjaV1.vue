@@ -178,7 +178,7 @@
                         <p class="text-sm text-gray-400">
                           <span class="font-semibold text-primaryTextColor">{{ mesinItem.nilai_asset_awal === '-' ?
                             mesinItem.nilai_asset_awal : globalFormat.formatRupiah(mesinItem.nilai_asset_awal / 1000000)
-                            }}</span> Rp (Juta)
+                          }}</span> Rp (Juta)
                         </p>
                       </div>
                       <div>
@@ -941,7 +941,7 @@ const fetchMesinByIdSentral = async (idSentral: any) => {
       if (item.photo1 !== '') {
         try {
           const response: any = await detailSentralService.getPhoto(item.photo1)
-          const blob = new Blob([response])
+          const blob = new Blob([response.data])
           item.photo2 = URL.createObjectURL(blob)
         } catch (error) {
           console.error('Error Fetch Photo: ', error)

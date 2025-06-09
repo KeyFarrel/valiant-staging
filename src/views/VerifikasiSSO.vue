@@ -86,11 +86,22 @@ const verifikasiSSO = async () => {
     } else {
       isError.value = true;
       await wait(5000);
+      if (nodeMode === "production") {
+        encryptStorage.clear();
+      } else {
+        localStorage.clear();
+      }
       router.push('/login');
     }
   } catch (error) {
+    const encryptStorage = await encryptStoragePromise;
     isError.value = true;
     await wait(5000);
+    if (nodeMode === "production") {
+      encryptStorage.clear();
+    } else {
+      localStorage.clear();
+    }
     router.push('/login');
     console.error("Error fetching data:", error);
     throw error;

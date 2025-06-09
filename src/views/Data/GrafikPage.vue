@@ -534,7 +534,7 @@ const fetchDataSentral = async () => {
       tahunMesin.value.push(item.tahun_data)
       try {
         const responsePhoto: any = await detailSentralService.getPhoto(item.photo1);
-        const blob = new Blob([responsePhoto]);
+        const blob = new Blob([responsePhoto.data]);
         item.photo2 = URL.createObjectURL(blob);
       } catch (error) {
         console.error('Error Fetch Photo: ', error)

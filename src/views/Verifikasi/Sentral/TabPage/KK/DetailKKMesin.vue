@@ -220,7 +220,7 @@
               </div>
             </div>
             <TableDataTeknis @on-click-reload="reloadDataTeknis" :data-teknis="dataTeknis"
-              :tahun-terakhir-realisasi="tahunBerjalan" :type-periodic="typePeriodic"
+              :tahun-terakhir-realisasi="parseInt(route.query.tahun?.toString() ?? '0')" :type-periodic="typePeriodic"
               :is-fetching-error="dataTeknis.isFetchingError" />
           </div>
         </TabItem>
@@ -248,8 +248,8 @@
               </div>
             </div>
             <TableDataFinansial @on-click-reload="reloadDataFinansial" :data-finansial="dataFinansial"
-              :tahun-terakhir-realisasi="tahunBerjalan" :source="finansialMappingResult"
-              :is-fetching-error="dataFinansial.isFetchingError" />
+              :tahun-terakhir-realisasi="parseInt(route.query.tahun?.toString() ?? '0')"
+              :source="finansialMappingResult" :is-fetching-error="dataFinansial.isFetchingError" />
           </div>
         </TabItem>
         <TabItem title="Hasil Simulasi">
@@ -550,7 +550,7 @@ const fetchMesinById = async () => {
     )
     try {
       const responsePhoto: any = await detailSentralService.getPhoto(response.data.photo1)
-      const blob = new Blob([responsePhoto])
+      const blob = new Blob([responsePhoto.data])
       response.data.photo2 = URL.createObjectURL(blob)
     } catch (error) {
       console.error('Photo Error: ', error)
