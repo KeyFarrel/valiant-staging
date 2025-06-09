@@ -358,7 +358,8 @@ const fetchSentralData = async () => {
     for (const val of sentralData.value) {
       try {
         const response: any = await detailSentralService.getPhoto(val.photo);
-        const blob = new Blob([response]);
+        console.log(response, "RESPONSE PHOTO")
+        const blob = new Blob([response.data]);
         val.photo2 = URL.createObjectURL(blob);
       } catch (error) {
         console.error('Error Fetch Photo: ', error);
@@ -374,7 +375,7 @@ const fetchSentralData = async () => {
         if (val.mesins[key].photo1 !== '') {
           try {
             const response: any = await detailSentralService.getPhoto(val.mesins[key].photo1);
-            const blob = new Blob([response]);
+            const blob = new Blob([response.data]);
             val.mesins[key].photo2 = URL.createObjectURL(blob);
           } catch (error) {
             console.error('Error Fetch Photo: ', error);

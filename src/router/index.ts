@@ -3,47 +3,53 @@ import CryptoJS from "crypto-js";
 import { useNavbarLabelStore } from "@/store/storeNavbar";
 import { useRekapNavigationStore } from "@/store/storeRekapKertasKerja";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
+import { useMenuStore } from "@/store/storeMenu";
 import Sidebar from "@/components/layout/Sidebar.vue";
-import PetaSebaran from "@/views/Beranda/PetaSebaran.vue";
-import LamanUtama from "@/views/Beranda/LamanUtama/LamanUtama.vue";
-import LamanData from "@/views/Beranda/LamanData/LamanData.vue";
-import LamanAnalitik from "@/views/Beranda/LamanAnalitik/LamanAnalitik.vue";
-import GraphicPage from "@/views/Data/GrafikPage.vue";
-import RekapKertasKerja from "@/views/Data/RekapKertasKerja/RekapKertasKerja.vue";
-import RekapKertasKerjaV1 from "@/views/Data/RekapKertasKerjaV1/RekapKertasKerjaV1.vue";
-import FeasibilityStudy from "@/views/Data/RekapKertasKerja/FeasibilityStudy/FeasibilityStudy.vue";
-import FeasibilityStudySentral from "@/views/Data/RekapKertasKerja/FeasibilityStudy/FeasibilityStudySentral.vue";
-import VerifikasiApprover from "@/views/Verifikasi/Approver/VerifikasiPersetujuan.vue";
-import ApproveDetailFS from "@/views/Verifikasi/Approver/TabPage/FS/DetailFS.vue";
-import ApproveDetailKk from "@/views/Verifikasi/Approver/TabPage/KK/DetailKK.vue";
-import ApproveDetailFSMesin from "@/views/Verifikasi/Approver/TabPage/FS/DetailFSMesin.vue";
-import ApproveDetailKkMesin from "@/views/Verifikasi/Approver/TabPage/KK/DetailKKMesin.vue";
-//Persetujuan By Sentral
-import VerifikasiSentral from "@/views/Verifikasi/Sentral/VerifikasiPersetujuan.vue";
-import PersetujuanFS from "@/views/Verifikasi/Sentral/TabPage/FS/DetailFS.vue";
-import PersetujuanKk from "@/views/Verifikasi/Sentral/TabPage/KK/DetailKK.vue";
-import PersetujuanFSMesin from "@/views/Verifikasi/Sentral/TabPage/FS/DetailFSMesin.vue";
-import PersetujuanKkMesin from "@/views/Verifikasi/Sentral/TabPage/KK/DetailKKMesin.vue";
-import InputAsumsiKKApprove from "@/views/Verifikasi/Sentral/TabPage/KK/InputAsumsiParameter.vue";
-import PerbaruiDataKKApprove from "@/views/Verifikasi/Sentral/TabPage/KK/PerbaruiData.vue";
-import SentralAdmin from "@/views/Master/SentralAdmin.vue";
-import DetailUnit from "@/views/Master/DetailUnit.vue";
-import DetailRekap from "@/views/Data/RekapKertasKerja/DetailRekap/DetailRekap.vue";
-import DetailRekapSentral from "@/views/Data/RekapKertasKerja/DetailRekap/DetailRekapSentral.vue";
-import PerbaruiData from "@/views/Data/RekapKertasKerja/PerbaruiData/PerbaruiData.vue";
-import InputAsumsiParameter from "@/views/Data/RekapKertasKerja/InputAsumsiParameter.vue";
-import LihatCAPEX from "@/views/Beranda/LamanData/LihatCAPEX.vue";
-import LihatOPEX from "@/views/Beranda/LamanData/LihatOPEX.vue";
-import Parameter from "@/views/Master/Parameter.vue";
-import ProfileUser from "@/views/Manajemen/Pengguna/ProfileUser.vue";
-import Pengguna from "@/views/Manajemen/Pengguna/Pengguna.vue";
-import Role from "@/views/Manajemen/Pengguna/RolePage.vue";
-import EditPermission from "@/views/Manajemen/Pengguna/EditPermission.vue";
-import LogActivity from "@/views/Manajemen/LogActivity/LogActivity.vue";
-import MesinBelumTerinput from "@/views/Beranda/LamanUtama/MesinBelumTerinput.vue";
+
+// Lazy load komponen halaman untuk meningkatkan kecepatan loading awal
+// Halaman login dan error tidak lazy load karena penting untuk akses cepat
 import Login from "../views/Login.vue";
-import VerifikasiSSO from "@/views/VerifikasiSSO.vue";
 import Error404Page from "@/views/404Page.vue";
+
+// Lazy load semua komponen view lainnya
+const PetaSebaran = () => import("@/views/Beranda/PetaSebaran.vue");
+const LamanUtama = () => import("@/views/Beranda/LamanUtama/LamanUtama.vue");
+const LamanData = () => import("@/views/Beranda/LamanData/LamanData.vue");
+const LamanAnalitik = () => import("@/views/Beranda/LamanAnalitik/LamanAnalitik.vue");
+const GraphicPage = () => import("@/views/Data/GrafikPage.vue");
+const RekapKertasKerja = () => import("@/views/Data/RekapKertasKerja/RekapKertasKerja.vue");
+const RekapKertasKerjaV1 = () => import("@/views/Data/RekapKertasKerjaV1/RekapKertasKerjaV1.vue");
+const FeasibilityStudy = () => import("@/views/Data/RekapKertasKerja/FeasibilityStudy/FeasibilityStudy.vue");
+const FeasibilityStudySentral = () => import("@/views/Data/RekapKertasKerja/FeasibilityStudy/FeasibilityStudySentral.vue");
+const VerifikasiApprover = () => import("@/views/Verifikasi/Approver/VerifikasiPersetujuan.vue");
+const ApproveDetailFS = () => import("@/views/Verifikasi/Approver/TabPage/FS/DetailFS.vue");
+const ApproveDetailKk = () => import("@/views/Verifikasi/Approver/TabPage/KK/DetailKK.vue");
+const ApproveDetailFSMesin = () => import("@/views/Verifikasi/Approver/TabPage/FS/DetailFSMesin.vue");
+const ApproveDetailKkMesin = () => import("@/views/Verifikasi/Approver/TabPage/KK/DetailKKMesin.vue");
+//Persetujuan By Sentral
+const VerifikasiSentral = () => import("@/views/Verifikasi/Sentral/VerifikasiPersetujuan.vue");
+const PersetujuanFS = () => import("@/views/Verifikasi/Sentral/TabPage/FS/DetailFS.vue");
+const PersetujuanKk = () => import("@/views/Verifikasi/Sentral/TabPage/KK/DetailKK.vue");
+const PersetujuanFSMesin = () => import("@/views/Verifikasi/Sentral/TabPage/FS/DetailFSMesin.vue");
+const PersetujuanKkMesin = () => import("@/views/Verifikasi/Sentral/TabPage/KK/DetailKKMesin.vue");
+const InputAsumsiKKApprove = () => import("@/views/Verifikasi/Sentral/TabPage/KK/InputAsumsiParameter.vue");
+const PerbaruiDataKKApprove = () => import("@/views/Verifikasi/Sentral/TabPage/KK/PerbaruiData.vue");
+const SentralAdmin = () => import("@/views/Master/SentralAdmin.vue");
+const DetailUnit = () => import("@/views/Master/DetailUnit.vue");
+const DetailRekap = () => import("@/views/Data/RekapKertasKerja/DetailRekap/DetailRekap.vue");
+const DetailRekapSentral = () => import("@/views/Data/RekapKertasKerja/DetailRekap/DetailRekapSentral.vue");
+const PerbaruiData = () => import("@/views/Data/RekapKertasKerja/PerbaruiData/PerbaruiData.vue");
+const InputAsumsiParameter = () => import("@/views/Data/RekapKertasKerja/InputAsumsiParameter.vue");
+const LihatCAPEX = () => import("@/views/Beranda/LamanData/LihatCAPEX.vue");
+const LihatOPEX = () => import("@/views/Beranda/LamanData/LihatOPEX.vue");
+const Parameter = () => import("@/views/Master/Parameter.vue");
+const ProfileUser = () => import("@/views/Manajemen/Pengguna/ProfileUser.vue");
+const Pengguna = () => import("@/views/Manajemen/Pengguna/Pengguna.vue");
+const Role = () => import("@/views/Manajemen/Pengguna/RolePage.vue");
+const EditPermission = () => import("@/views/Manajemen/Pengguna/EditPermission.vue");
+const LogActivity = () => import("@/views/Manajemen/LogActivity/LogActivity.vue");
+const MesinBelumTerinput = () => import("@/views/Beranda/LamanUtama/MesinBelumTerinput.vue");
+const VerifikasiSSO = () => import("@/views/VerifikasiSSO.vue");
 import AuthService from "@/services/auth-service";
 
 const nodeMode: any = import.meta.env.MODE;
@@ -463,6 +469,7 @@ declare module "vue-router" {
 
 router.beforeEach(async(to, _, next) => {
   const storeNavbar = useNavbarLabelStore();
+  const menuStore = useMenuStore();
   const authService = new AuthService();
   const encryptStorage = await encryptStoragePromise;
   const token =
@@ -470,42 +477,24 @@ router.beforeEach(async(to, _, next) => {
       ? encryptStorage.getItem("token")
       : localStorage.getItem("token");
   storeNavbar.label = to.meta.label;
+
+  if (token && !menuStore.isMenuLoaded) {
+    await menuStore.initializeMenu();
+  }
+
   const storage = nodeMode === "production" ? encryptStorage : localStorage;
-  const menuData =
-    nodeMode === "production"
-      ? encryptStorage.getItem("menu")
-      : localStorage.getItem("menu");
-
-  const menuList = menuData != null
-  ? typeof menuData === "string"
-    ? JSON.parse(menuData)
-    : menuData
-  : [];
-
-  const getAllAccessibleRoutes = () => {
-    return menuList
-      .flatMap((menu) => menu.sub_menus || [])
-      .map((submenu) => submenu.url);
-  };
-
-  const accessibleRoutes = getAllAccessibleRoutes();
-
-  const isMenuAccessible = (menuName: any) =>
-    accessibleRoutes.includes(menuName);
 
   if (token) {
     let role: any;
     let level: any;
     let levelSentral: any;
     let namaPegawai: any;
-    let menu: any;
     let storedHash: any;
     const getStorage = (storage: any) => {
       role = storage.getItem("role");
       level = storage.getItem("level");
       levelSentral = storage.getItem("level_sentral");
       namaPegawai = storage.getItem("nama_pegawai");
-      menu = storage.getItem("menu");
       storedHash = storage.getItem("user_hash");
     };
     getStorage(storage);
@@ -517,8 +506,7 @@ router.beforeEach(async(to, _, next) => {
       levelSentral === null ||
       levelSentral === undefined ||
       !namaPegawai ||
-      !storedHash ||
-      !menu
+      !storedHash 
     ) {
       console.warn("⚠️ Data tidak lengkap, logout user...");
       authService.logout();
@@ -526,13 +514,16 @@ router.beforeEach(async(to, _, next) => {
     }
 
     // hitung ulang hash dengan secret key
-    const dataString = `${role}:${level}:${levelSentral}:${namaPegawai}:${typeof storage.getItem("menu") === "string" ? storage.getItem("menu") : JSON.stringify(storage.getItem("menu"))}`;
+    const dataString = `${role}:${level}:${levelSentral}:${namaPegawai}`;
+
     const currentHash = CryptoJS.HmacSHA512(
       dataString,
       (window as any).userHashSecretKey(),
     ).toString();
 
     // jika hash berbeda, berarti ada manipulasi
+    console.log("Current Hash:", currentHash);
+    console.log("Stored Hash:", storedHash);
     if (storedHash != currentHash) {
       console.warn("⚠️ Data telah dimanipulasi! Logout user...");
       console.log(storedHash, currentHash);
@@ -547,9 +538,10 @@ router.beforeEach(async(to, _, next) => {
       return next({ name: "login" });
     }
     return next();
-  }  else if (!isMenuAccessible(to.name) && token) {
+  } else if (token && !menuStore.isMenuAccessible(to.name.toString())) {
     next({ name: "peta" });
   } else {
+    console.log(menuStore.menuList, "menuList");
     next();
   }
 });

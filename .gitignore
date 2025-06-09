@@ -8,6 +8,17 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Local development files
+*.local
+.history
+.temp
+.cache
+
 .vscode
 dist-ssr
 *.local
@@ -28,3 +39,31 @@ reports
 *.njsproj
 *.sln
 *.sw?
+
+# Testing and debugging
+*.spec.js.snap
+__snapshots__/
+*.heapsnapshot
+*.cpuprofile
+
+# Build artifacts
+.build-tmp/
+.deploy/
+
+# Security and sensitive files
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Temporary files
+.tmp/
+.temp/
+.eslintcache
+.stylelintcache
+.prettiercache
+

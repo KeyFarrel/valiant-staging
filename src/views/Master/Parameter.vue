@@ -1,18 +1,22 @@
 <template>
   <Loading v-if="isLoading" />
   <ModalWrapper :show-modal="showModalSubmit" ref="modal" :width="'w-80'" :height="'h-auto'">
-    <Vue3Lottie :width="200" :height="200" :loop="false" :speed="0.8" :animationData="jsonData" />
-    <h1 class="mb-3 text-lg font-semibold text-gray-700">
-      Data Berhasil disimpan
-    </h1>
-    <p class="text-sm text-gray-500">Data telah berhasil ditambahkan</p>
+    <div class="flex flex-col items-center justify-center">
+      <Vue3Lottie :width="200" :height="200" :loop="false" :speed="0.8" :animationData="jsonData" />
+      <h1 class="mb-3 text-lg font-semibold text-gray-700">
+        Data Berhasil disimpan
+      </h1>
+      <p class="text-sm text-gray-500">Data telah berhasil ditambahkan</p>
+    </div>
   </ModalWrapper>
   <ModalWrapper :showModal="showModalEdit" ref="modal" :width="'w-80'" :height="'h-auto'">
-    <Vue3Lottie :animationData="jsonData" :width="200" :height="200" :loop="false" :speed="0.8" />
-    <h1 class="mb-3 text-lg font-semibold text-gray-700">
-      Data Berhasil Disimpan
-    </h1>
-    <p class="text-sm text-gray-500">Data telah berhasil dikirimkan</p>
+    <div class="flex flex-col items-center justify-center">
+      <Vue3Lottie :animationData="jsonData" :width="200" :height="200" :loop="false" :speed="0.8" />
+      <h1 class="mb-3 text-lg font-semibold text-gray-700">
+        Data Berhasil Disimpan
+      </h1>
+      <p class="text-sm text-gray-500">Data telah berhasil diubah</p>
+    </div>
   </ModalWrapper>
   <div class="p-6 space-y-5 bg-white rounded-lg">
     <button @click="isModalOpen = true" type="button"
@@ -262,7 +266,7 @@
           @click="closeModalEdit">
           Batal
         </button>
-        <button
+        <button type="button"
           class="px-5 py-2 text-sm font-semibold text-white duration-300 border rounded-lg border-primaryColor bg-primaryColor hover:bg-hoverColor hover:border-hoverColor"
           @click="submitEditForm">
           Simpan Data
@@ -407,7 +411,7 @@ const formData = ref({
 
 // Handler untuk mengirim formulir
 const submitForm = async () => {
-  errors.value = []; // Mengosongkan pesan kesalahan sebelum validasi
+  errors.value = [];
   if (!formData.value.tahun) {
     errors.value.push("Tahun harus diisi.");
   }
@@ -513,6 +517,9 @@ const generatePageList = computed(() => {
   }
   return pageList;
 });
+
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 const submitEditForm = async () => {
   errors.value = [] // Mengosongkan pesan kesalahan sebelum validasi
   if (!formData.value.tahun) {
@@ -544,37 +551,31 @@ const submitEditForm = async () => {
   }
   if (errors.value.length === 0) {
     try {
-      // Mengambil data dari formData
-      //const statusValue = formData.value.status ? 1 : 0;
+      isLoading.value = true;
       const dataToPut = {
         discount_rate: parseFloat(formData.value.discount_rate),
         corporate_tax_rate: parseFloat(formData.value.corporate_tax_rate),
         status: detailData.value.status,
       };
-      // Mengirim permintaan PUT ke API dengan ID parameter yang dipilih
       const idParameter = selectedParameterId.value;
       const response: any = await parameterService.editParameter(idParameter, dataToPut);
-      console.log("PUT response:", response.data);
-      // Reset formulir setelah berhasil
       formData.value.tahun = currentYear.toString();
       formData.value.discount_rate = "";
       formData.value.corporate_tax_rate = "";
       errors.value = [];
       errors_CT.value = [];
       errors_DT.value = [];
-      //formData.value.status = 0;
-      // Tutup modal edit setelah berhasil
+      isLoading.value = false;
       isModalEdit.value = false;
       showModalEdit.value = true;
-      setTimeout(() => {
-        showModalEdit.value = false;
-      }, 1000);
-      // Ambil ulang data setelah perubahan
+      await wait(3000);
+      showModalEdit.value = false;
       const data = await fetchData();
       parameter.value = data;
       filteredParameter.value = parameter.value;
     } catch (error) {
       console.error("Error updating data:", error);
+      isLoading.value = false;
       throw error;
     }
   }
@@ -611,17 +612,16 @@ const fetchDetailData = async (Id: string) => {
   }
 };
 const openEditModals = async (id_parameter: string) => {
-  selectedParameterId.value = id_parameter;
-  isModalEdit.value = true;
   try {
-    // Panggil API untuk mendapatkan data detail
+    selectedParameterId.value = id_parameter;
+    isLoading.value = true;
     await fetchDetailData(id_parameter);
-    // Inisialisasi formData dengan data yang diterima
+    isLoading.value = false;
+    isModalEdit.value = true;
     if (detailData.value) {
       formData.value.tahun = detailData.value.tahun;
       formData.value.discount_rate = detailData.value.discount_rate;
       formData.value.corporate_tax_rate = detailData.value.corporate_tax_rate;
-      //formData.value.status = detailData.value.data.status
     }
   } catch (error) {
     console.error("Failed to open modal detail:", error);

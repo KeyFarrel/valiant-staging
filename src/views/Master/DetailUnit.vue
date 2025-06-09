@@ -513,7 +513,7 @@ const getSentralById = async () => {
     for (const index in mesin.value) {
       try {
         const response: any = await detailSentralService.getPhoto(mesin.value[index].photo1);
-        const blob = new Blob([response]);
+        const blob = new Blob([response.data]);
         mesin.value[index].photo2 = URL.createObjectURL(blob);
       } catch (error) {
         console.error('Error Fetch Photo: ', error);
@@ -575,7 +575,7 @@ const fetchPhotoSentral = async () => {
   try {
     if (sentralDataById.value?.photo !== '') {
       const response: any = await detailSentralService.getPhoto(sentralDataById.value?.photo);
-      const blob = new Blob([response]);
+      const blob = new Blob([response.data]);
       imageUrlSentral.value = URL.createObjectURL(blob);
     }
   } catch (error) {

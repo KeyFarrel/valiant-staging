@@ -10,20 +10,20 @@ export default class PersetujuanService extends BaseService {
     return this.post(url + "persetujuan/all-persetujuan-fs", param);
   }
   // Persetujuan Update
-  async updateStatusKK<T>(param: any): Promise<T> {    
-    return this.patch(url + "persetujuan/update-status", param);
+  async updateStatusKK<T>(param: any): Promise<T> {
+    return this.post(url + "persetujuan/update-status", param);
   }
-  async updateStatusFS<T>(param: any): Promise<T> {    
-    return this.patch(url + "persetujuan/update-status-fs", param);
+  async updateStatusFS<T>(param: any): Promise<T> {
+    return this.post(url + "persetujuan/update-status-fs", param);
   }
   // Persetujuan Detail
-  async getPersetujuanKKSentral<T>(param: any): Promise<T> {    
+  async getPersetujuanKKSentral<T>(param: any): Promise<T> {
     return this.get(url + "persetujuan/detail-persetujuan", param);
   }
-  async getPersetujuanFSSentral<T>(param: any): Promise<T> {    
+  async getPersetujuanFSSentral<T>(param: any): Promise<T> {
     return this.get(url + "persetujuan/detail-persetujuan-fs", param);
   }
-  async getDetailMesinAppr<T>(param: any): Promise<T> {    
+  async getDetailMesinAppr<T>(param: any): Promise<T> {
     return this.get(url + "persetujuan/detail-sentral", param);
   }
   async getPengelolaData<T>(): Promise<T> {

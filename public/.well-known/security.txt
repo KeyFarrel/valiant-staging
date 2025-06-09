@@ -1,0 +1,6 @@
+Contact: mailto:support.valiant@pln.co.id
+Encryption: https://valiant.pln.co.id/pgp-key.txt
+Acknowledgements: https://valiant.pln.co.id/hall-of-fame
+Policy: https://valiant.pln.co.id/security
+Preferred-Languages: en, id
+Expires: 2026-06-05T22:46:45+07:00

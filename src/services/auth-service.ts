@@ -14,16 +14,8 @@ export default class AuthService extends BaseService {
       if (response.message === 'Anda terdeteksi menggunakan device baru, silahkan lakukan verifikasi OTP'){
         return response;
       }
+      console.log("Login Response:", response);
       const token = response.data.token;
-      let menu;
-      if (!response.data.is_reset) {
-        const responseMenu: any = await axios.get(`${url}menu`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        menu = responseMenu.data.data;
-      }
       const namaPegawai = response.data.nama_pegawai;
       const levelSentral =
         response.data.id_sentral === "" || response.data.id_sentral === "0"
@@ -56,7 +48,7 @@ export default class AuthService extends BaseService {
         role = "Input";
       }
 
-      const dataString = `${role}:${level}:${levelSentral}:${namaPegawai}:${JSON.stringify(menu)}`;
+      const dataString = `${role}:${level}:${levelSentral}:${namaPegawai}`;
       const hash = CryptoJS.HmacSHA512(
         dataString,
         (window as any).userHashSecretKey(),
@@ -68,7 +60,6 @@ export default class AuthService extends BaseService {
         storage.setItem("role", role);
         storage.setItem("nama_pegawai", namaPegawai);
         storage.setItem("level_sentral", levelSentral);
-        storage.setItem("menu", JSON.stringify(menu));
         storage.setItem("user_hash", hash);
       };
 

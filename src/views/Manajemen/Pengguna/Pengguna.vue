@@ -356,7 +356,7 @@
             class="w-full p-2.5 text-xs text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
             @change="handleChangePengelola">
             <option value="" disable hidden>Pilih Pengelola</option>
-            <option v-for="item in comboInduk" :key="item.id_pengelola" :value="item.id_pengelola">
+            <option v-for="item in comboPengelola" :key="item.id_pengelola" :value="item.id_pengelola">
               {{ item.pengelola }}
             </option>
           </select>
@@ -379,7 +379,7 @@
             class="w-full p-2.5 text-xs text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
             @change="handleChangePembina">
             <option value="" disable hidden>Pilih Pembina</option>
-            <option v-for="item in comboPengelola" :key="item.id_pembina" :value="item.id_pembina">
+            <option v-for="item in comboPembina" :key="item.id_pembina" :value="item.id_pembina">
               {{ item.pembina }}
             </option>
           </select>
@@ -498,7 +498,7 @@
             class="w-full p-2.5 text-xs text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
             @change="handleChangePengelola">
             <option value="" disable hidden>Pilih Pengelola</option>
-            <option v-for="item in comboInduk" :key="item.id_pengelola" :value="item.id_pengelola">
+            <option v-for="item in comboPengelola" :key="item.id_pengelola" :value="item.id_pengelola">
               {{ item.pengelola }}
             </option>
           </select>
@@ -521,7 +521,7 @@
             class="w-full p-2.5 text-xs text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
             @change="handleChangePembina">
             <option value="" disable hidden>Pilih Pembina</option>
-            <option v-for="item in comboPengelola" :key="item.id_pembina" :value="item.id_pembina">
+            <option v-for="item in comboPembina" :key="item.id_pembina" :value="item.id_pembina">
               {{ item.pembina }}
             </option>
           </select>
@@ -610,8 +610,6 @@ import { notifyError } from "@/services/helper/toast-notification";
 const userService = new UserService();
 const isSuccess = ref<boolean>(false);
 const isEditSuccess = ref<boolean>(false);
-const userRole = ref(userService.role_id);
-const userData = ref({ role_id: null });
 const showModalCreate = ref(false);
 const hiddenSentral = ["2", "1", "4", "5"];
 const hiddenPembina = ["2", "1", "5"];
@@ -621,23 +619,21 @@ const filteredPengguna = ref<PenggunaItem[]>([]);
 const isLoading = ref(false);
 const search = ref<string>("");
 const selectedUserId = ref<number | null>(null);
-const showPasswordFields = ref(false);
 const errors = ref<string[]>([]);
 const errorsEdit = ref<string[]>([]);
 const comboSentral = ref<SentralItem[]>([]);
 const sentralMappings = ref<{ [key: string]: string }>({});
-const comboPengelola = ref<PengelolaItem[]>([]);
-const pengelolaMappings = ref<{ [key: number]: number }>({});
+const comboPembina = ref<PembinaItem[]>([]);
+const pembinaMappings = ref<{ [key: number]: number }>({});
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 const showEditPassword = ref(false);
 const showEditConfirmPassword = ref(false);
 const comboLevel = ref<LevelItem[]>([]);
 const levelMappings = ref<{ [key: string]: string }>({});
-const comboMesin = ref<MesinItem[]>([]);
 const mesinMappings = ref<{ [key: string]: string }>({});
 const comboRole = ref<RoleItem[]>([]);
-const comboInduk = ref<IndukItem[]>([]);
+const comboPengelola = ref<PengelolaItem[]>([]);
 const indukMappings = ref<{ [key: number]: number }>({});
 const listPembina = ref<any[]>([]);
 const isConfirmResetShow = ref<boolean>(false);
@@ -730,49 +726,34 @@ interface SentralItem {
   id_sentral: number
   sentral: string
 }
-interface GroupedData {
-  [key: string]: PenggunaItem[]
-}
-interface MinimizedGroups {
-  [key: string]: boolean
-}
+
 interface RoleItem {
   id: number
   role: string
 }
+
 interface MesinItem {
   id_mesin: string
   mesin: string
 }
-interface IndukItem {
+
+interface PengelolaItem {
   id_pengelola: number
   pengelola: string
 }
+
 interface LevelItem {
   kode_level: string
   level: string
 }
-interface PengelolaItem {
+
+interface PembinaItem {
   id_pembina: number
   pembina: string
 }
+
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-onMounted(() => {
-  showPasswordFields.value = userRole.value === "1";
-});
-
-onMounted(async () => {
-  isLoading.value = true;
-  try {
-    userData.value = await userService.getUserData();
-    userRole.value = userData.value.role_id;
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-  } finally {
-    isLoading.value = false;
-  }
-});
 const generatePageList = computed(() => {
   const pageList = [];
   const maxPages = 5;
@@ -978,7 +959,11 @@ const openEditModals = async (id: number) => {
 
 const fetchPembina = async () => {
   try {
-    const response: any = await userService.getPembina('');
+    const response: any = await userService.getPembina();
+    comboPembina.value = response.data;
+    comboPembina.value.forEach((item) => {
+      pembinaMappings.value[item.id_pembina] = item.id_pembina;
+    });
     listPembina.value = response.data;
   } catch (error) {
     console.error(error);
@@ -1150,7 +1135,6 @@ const saveUserDataAndCloseModal = async () => {
         nip: formData.value.nip.trim(),
         email: formData.value.email.toLowerCase().trim(),
         nama_pegawai: formData.value.nama_pegawai.trim(),
-        konfirmasi_password: formData.value.konfirmasi_password,
         role_id: parseInt(formData.value.role_id),
         password: formData.value.password,
         level_id: parseInt(formData.value.level_id),
@@ -1202,16 +1186,16 @@ const resetPasswordIndicator = () => {
 const handleChangePengelola = async () => {
   try {
     isLoading.value = true;
-    const response: any = await userService.getPembina(formData.value.id_pengelola);
-    comboPengelola.value = response.data;
-    comboPengelola.value.forEach((item) => {
-      pengelolaMappings.value[item.id_pembina] = item.id_pembina;
+    const response: any = await userService.getPembina({ id_pengelola: formData.value.id_pengelola });
+    comboPembina.value = response.data;
+    comboPembina.value.forEach((item) => {
+      pembinaMappings.value[item.id_pembina] = item.id_pembina;
     });
     formData.value.id_pembina = "";
     formData.value.id_sentral = "";
     comboSentral.value = [];
   } catch (error) {
-    console.error("Error fetching combo pengelola: ", error);
+    console.error("Error fetching combo pembina: ", error);
   } finally {
     isLoading.value = false;
   }
@@ -1407,75 +1391,28 @@ const checkPasswordStrength = (formPasswordType: string) => {
   }
 };
 
-onMounted(async () => {
-  fetchData();
-  await fetchPembina();
-});
-
-const calculateRowNumber = (group: string, index: number) => {
-  let totalPreviousItems = 0;
-  for (const key in groupedData.value) {
-    console.log(key)
-    if (key === group) break;
-    totalPreviousItems += groupedData.value[key].length;
-  }
-  const offset = (navigation.value.currentPage - 1) * navigation.value.limit;
-  return totalPreviousItems + index + 1 + offset;
-};
-
-onMounted(async () => {
-  try {
-    await userService.getSentral();
-  } catch (error) {
-    console.error("Error fetching combo sentral:", error);
-  }
-});
-
-onMounted(async () => {
-  try {
-    const response: any = await userService.getMesin();
-    comboMesin.value = response.data;
-    comboMesin.value.forEach((item) => {
-      mesinMappings.value[item.id_mesin] = item.mesin;
-    });
-  } catch (error) {
-    console.error("Error fetching combo mesin:", error);
-  }
-});
-
-onMounted(async () => {
+const fetchRole = async () => {
   try {
     const response: any = await userService.getRole();
-    console.log(response.data, 'role')
     comboRole.value = response.data;
   } catch (error) {
     console.error("Error fetching combo role:", error);
   }
-});
+};
 
-onMounted(async () => {
+const fetchInduk = async () => {
   try {
     const response: any = await userService.getInduk();
-    comboInduk.value = response.data;
-    comboInduk.value.forEach((item) => {
+    comboPengelola.value = response.data;
+    comboPengelola.value.forEach((item) => {
       indukMappings.value[item.id_pengelola] = item.id_pengelola;
     });
   } catch (error) {
     console.error("Error fetching combo induk:", error);
   }
-});
-onMounted(async () => {
-  try {
-    const response: any = await userService.getPembina(formData.value.id_pengelola);
-    comboPengelola.value = response.data;
-    comboPengelola.value.forEach((item) => {
-      pengelolaMappings.value[item.id_pembina] = item.id_pembina;
-    });
-  } catch (error) {
-    console.error("Error fetching combo pengelola:", error);
-  }
-});
-onMounted(async () => {
+};
+
+const fetchLevel = async () => {
   try {
     const response: any = await userService.getLevel();
     comboLevel.value = response.data.filter((item: any) => item.kode_level !== '1');
@@ -1486,7 +1423,7 @@ onMounted(async () => {
     console.error("Error fetching combo submenu:", error);
     throw error;
   }
-});
+};
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
@@ -1496,23 +1433,15 @@ const toggleConfirmPasswordVisibility = () => {
   showConfirmPassword.value = !showConfirmPassword.value;
 };
 
-const groupedData = computed(() => {
-  const result: GroupedData = {};
-  pengguna.value.forEach((user) => {
-    let userRole = user.role[0]?.role || "Tidak tersedia";
-    if (!result[userRole]) {
-      result[userRole] = [];
-    }
-    result[userRole].push(user);
-  });
-  return result;
+onMounted(async () => {
+  fetchData();
+  fetchLevel();
+  fetchRole();
+  fetchInduk();
+  fetchPembina();
 });
-setTimeout(() => {
-  console.log(groupedData.value);
-  console.log(pengguna.value);
-  console.log((navigation.value.currentPage - 1) * navigation.value.limit);
-}, 5000);
 </script>
+
 <style scoped>
 td {
   padding: 0.85rem;

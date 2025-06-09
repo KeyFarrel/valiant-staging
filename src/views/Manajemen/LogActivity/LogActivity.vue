@@ -92,7 +92,7 @@
                 <IconChevronUp v-else-if="itemData.isShowDetail" />
               </button>
             </div>
-            <p class="w-full text-xs">
+            <p class="w-full overflow-hidden text-xs break-words whitespace-normal overflow-wrap-anywhere">
               {{ itemData.message }}</p>
             <div class="flex flex-col space-y-1" v-if="itemData.action === 'Tolak Data'">
               <p class="text-xs font-medium text-textFieldColor">Keterangan Ditolak:</p>
@@ -138,7 +138,8 @@
               </div>
               <div class="flex flex-col space-y-0.5 text-xs">
                 <p class="font-medium text-textDisabledColor">Pesan</p>
-                <p class="text-textPrimaryColor">{{ itemData.message }}</p>
+                <p class="overflow-hidden break-words whitespace-normal text-textPrimaryColor overflow-wrap-anywhere">{{
+                  itemData.message }}</p>
               </div>
             </div>
           </div>
@@ -574,5 +575,9 @@ ul li.disabled {
   pointer-events: none;
   cursor: not-allowed;
   color: #D1D1DB;
+}
+
+.overflow-wrap-anywhere {
+  overflow-wrap: anywhere;
 }
 </style>

@@ -504,7 +504,7 @@ const fetchMesinById = async () => {
     );
     try {
       const responsePhoto: any = await detailSentralService.getPhoto(response.data.photo1);
-      const blob = new Blob([responsePhoto]);
+      const blob = new Blob([responsePhoto.data]);
       response.data.photo2 = URL.createObjectURL(blob);
     } catch (error) {
       console.error('Error Fetch Photo: ', error);

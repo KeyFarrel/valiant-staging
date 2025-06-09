@@ -388,7 +388,7 @@ import { ref, onMounted, onUnmounted, nextTick } from "vue";
 import { initFlowbite } from "flowbite";
 import axios from "axios";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
-import { encryptAES } from "@/services/helper/encryption";
+import { encryptAES, decryptAES } from "@/services/helper/encryption";
 import { notifyError, notifySuccess } from "@/services/helper/toast-notification";
 import TimeFormatOtp from '../services/format/time-format-otp';
 const timeFormatOtp = new TimeFormatOtp();
@@ -650,8 +650,21 @@ const generateCaptcha = async () => {
     captchaData.value.thumbHeight = response.tile_height;
     captchaData.value.image = response.image_base64;
     captchaData.value.thumb = response.tile_base64;
-  } catch (error) {
-    console.error('Error Generate Captcha : ', error);
+  } catch (error: any) {
+    // Hanya log error di development mode
+    if (import.meta.env.MODE === 'development') {
+      console.error('Error Generate Captcha : ', error);
+    }
+    
+    // Tampilkan pesan error yang user-friendly
+    if (error?.message === 'Network Error') {
+      notifyError('Tidak dapat memuat captcha. Silakan coba lagi nanti.', 3000);
+      // Coba lagi setelah beberapa detik
+      setTimeout(generateCaptcha, 5000);
+    } else {
+      // Untuk error lainnya, tampilkan pesan umum
+      notifyError('Terjadi kesalahan saat memuat captcha.', 3000);
+    }
   }
 }
 
@@ -748,7 +761,7 @@ const fetchDataProfile = async () => {
         Authorization: `Bearer ${sessionStorage.getItem('token')}`,
       }
     });
-    userData.value = response.data.data;
+    userData.value = response.data.response.data;
     isLoadingSpinner.value = false;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -846,10 +859,10 @@ const changePassword = async () => {
       });
       isOldPasswordWrong.value = false;
       isLoadingSpinner.value = false;
-      isModalChangePasswordShow.value = false;
       resetInputAndAttribute();
+      isModalChangePasswordShow.value = false;
       isChangePasswordSuccess.value = true;
-      await wait(3000);
+      await wait(5000);
       isChangePasswordSuccess.value = false;
       nodeMode === 'production' ? encryptStorage.clear() : localStorage.clear();
     } catch (error: any) {
@@ -860,6 +873,9 @@ const changePassword = async () => {
       }
       if (error.response.data.message === 'password tidak boleh sama dengan 15 password terakhir') {
         notifyError("Password baru tidak boleh sama dengan 15 password terakhir yang pernah anda gunakan!", 7000);
+      }
+      if (error.response.data.message === 'password anda terlalu umum dan banyak digunakan, mohon mencoba password lainnya') {
+        notifyError("Password baru anda terlalu umum dan banyak digunakan, mohon mencoba password lainnya!", 7000);
       }
       isLoadingSpinner.value = false;
     } finally {
@@ -891,6 +907,7 @@ const onCaptchaVerified = async () => {
 
     try {
       const response: any = await authService.login(param);
+      console.log("Response Login: ", response);
       if (response.message === 'Anda terdeteksi menggunakan device baru, silahkan lakukan verifikasi OTP') {
         notifyError(response.message, 7000);
         isShowCounter.value = false;
@@ -913,7 +930,7 @@ const onCaptchaVerified = async () => {
         }, 500);
       }
     } catch (error: any) {
-      console.error("Error: ", error.response)
+      console.error("Error: ", error)
       notifyError(error.response.data.message, 5000);
       isShowCaptchaModal.value = false;
       isLoadingButton.value = false;
@@ -991,6 +1008,8 @@ const onDeclinePrivacy = async () => {
 
 onMounted(async () => {
   initFlowbite();
+  const res = decryptAES("CuB1qHz9HSvVz7/t8dk9vA==:b5ASQOFdf9esYQlFvmGK+23biUqJ3Iu2RpBe3TzxkyzACh5DEOs+XiHGMCkEqrHhg4NY7JBQgtfEEtlZNzAnCZZ5PIm1NHlcprDe0+YNgh+po+3kBbhwpmjqEEx/0x5z4cu09PTUeYwJQtFOezJOowtOeyyJtgS6Ef5U7UXofOOvuVq3yqVGUKbCG1frrMM1gJSgms4dLzjghLmwsr3kxqY4ACMY9uIcviffIZBSpjRExEYJCTpi0i7kzuZww2qIBpP6Pz+I365yjZ/92ILCnoNGFslsNjXFNF7YM6HL83owCwn5J6jPQ165DhwtAIrB/MQ2SWcqQGj8v2RgAbcOCZYy0HgiDHC6CXTBYulLU38nMC4y7216A6XKvS1UilRDUeY+YdgIKcJW100FrPQatbwk28fiwmW2rMT3K91NXrNiLrh5MdXZHUs76AWgbZ6fjiexcdeVB59KBpmA7uF7q0QYUWj29m31azJJpIQYaJWmmP8wSP4h9RJIVww4mNUlzRSpXWzCuq+9MuOYXeHm2SAKP90lVvtrSo9TwkDB8CQjvuHatNw+PK6UlkcgqyN6UtZWGB/vKiIDuGMuzTFe95Tj/pkaJuAEPyXakh+w/lB1jBdKd7vfRaX/K7ajmmSCsrcuGAYpCKuJX4tSpp0kUSiiN6itf51eopoTj8SkgaP0kMmLrn9vW8mPZJWkIysu0PXImQIWutyjGn7x5QMiGZx8G11Zx/ROCUUKJmKroSwlpTVla2A/3iKzCZ/Exub3n3iRWrwm5i7QLUX6vwKVU078jPe6aqyKf0NvEdDpVLtfiPtKUcQQKc3e4iLn6ZrE54qLfsMVd6pBWv8hFAeZ7OsuiJxXFY0C/DH5bLGrY72H9YloYS0lgG7fR5bvCtqQ9RlNHyiEGi+B7/dUrbTKdIxNgWTO8biVogI39F30Uxb/q1I8pgcAR6dnf4p+C7WlYLeJx4SAaflnTgcM0qVgGrrxL6M1rqGuoyKFJZ2NaIS/bx3wFtBCnw1I3UtHE7oY0N/3/TMa+eh8uBTXWwMH0A==");
+  console.log("Decrypt AES: ", res);
   generateCaptcha();
   userRole.value = await authService.checkRole();
   const hasRefreshed = sessionStorage.getItem('hasRefreshed');

@@ -542,6 +542,11 @@ const verifyEmailOtp = async () => {
         notifyError(`Gagal mengganti password! ${error.response.data.message}`, 5000);
       }
       isModalOtpShow.value = false;
+      clearInterval(expiredOtpInterval);
+      clearInterval(resetOtpInterval);
+      expiredOtpTimer.value = 300;
+      resetOtpTimer.value = 60;
+      otp.value = Array(8).fill(null);
       return;
     }
   } catch (error) {
@@ -556,6 +561,8 @@ const closeModalOtp = () => {
   isModalOtpShow.value = false
   clearInterval(expiredOtpInterval);
   clearInterval(resetOtpInterval);
+  expiredOtpTimer.value = 300;
+  resetOtpTimer.value = 60;
 }
 
 const verifyRequirementPassword = () => {

@@ -26,17 +26,38 @@ import ModalWrapper from './components/ui/ModalWrapper.vue';
 import NoConnectionLottie from '@/assets/lottie/no-connection.json';
 import ServerError from '@/assets/lottie/server-error.json';
 import AuthService from '@/services/auth-service';
+import { notifyError } from '@/services/helper/toast-notification';
 const authService = new AuthService();
 
 const isVaultConnected = ref<boolean>(true)
+const isShowingNetworkError = ref<boolean>(false)
 
 const checkVaultStatus = async () => {
   try {
     const response: any = await authService.checkStatus();
     isVaultConnected.value = response.vault_status;
+    // Reset network error flag if connection is restored
+    if (isShowingNetworkError.value) {
+      isShowingNetworkError.value = false;
+    }
   } catch (error: any) {
-    console.error('Gagal mengecek status Vault:', error)
-    isVaultConnected.value = error.response.data.vault_status;
+    // Hanya log error di development mode
+    if (import.meta.env.MODE === 'development') {
+      console.error('Gagal mengecek status Vault:', error);
+    }
+    
+    // Safely access nested properties with optional chaining
+    isVaultConnected.value = error?.response?.data?.vault_status ?? false;
+    
+    // Show network error notification if it's a network error and not already showing
+    if (error?.message === 'Network Error' && !isShowingNetworkError.value) {
+      // Tampilkan notifikasi hanya sekali
+      isShowingNetworkError.value = true;
+      // Gunakan notifyError dengan timeout yang lebih pendek di production
+      const timeout = import.meta.env.MODE === 'development' ? 5000 : 3000;
+      notifyError('Tidak dapat terhubung ke server. Pastikan koneksi internet Anda aktif.', timeout);
+    }
+    
     setTimeout(checkVaultStatus, 5000);
   }
 }
