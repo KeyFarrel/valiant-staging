@@ -4,51 +4,75 @@ import { useNavbarLabelStore } from "@/store/storeNavbar";
 import { useRekapNavigationStore } from "@/store/storeRekapKertasKerja";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import { useMenuStore } from "@/store/storeMenu";
+import { useUserAuthStore } from "@/store/storeUserAuth";
 import Sidebar from "@/components/layout/Sidebar.vue";
 
-// Lazy load komponen halaman untuk meningkatkan kecepatan loading awal
-// Halaman login dan error tidak lazy load karena penting untuk akses cepat
 import Login from "../views/Login.vue";
 import Error404Page from "@/views/404Page.vue";
 
-// Lazy load semua komponen view lainnya
 const PetaSebaran = () => import("@/views/Beranda/PetaSebaran.vue");
 const LamanUtama = () => import("@/views/Beranda/LamanUtama/LamanUtama.vue");
 const LamanData = () => import("@/views/Beranda/LamanData/LamanData.vue");
-const LamanAnalitik = () => import("@/views/Beranda/LamanAnalitik/LamanAnalitik.vue");
+const LamanAnalitik = () =>
+  import("@/views/Beranda/LamanAnalitik/LamanAnalitik.vue");
 const GraphicPage = () => import("@/views/Data/GrafikPage.vue");
-const RekapKertasKerja = () => import("@/views/Data/RekapKertasKerja/RekapKertasKerja.vue");
-const RekapKertasKerjaV1 = () => import("@/views/Data/RekapKertasKerjaV1/RekapKertasKerjaV1.vue");
-const FeasibilityStudy = () => import("@/views/Data/RekapKertasKerja/FeasibilityStudy/FeasibilityStudy.vue");
-const FeasibilityStudySentral = () => import("@/views/Data/RekapKertasKerja/FeasibilityStudy/FeasibilityStudySentral.vue");
-const VerifikasiApprover = () => import("@/views/Verifikasi/Approver/VerifikasiPersetujuan.vue");
-const ApproveDetailFS = () => import("@/views/Verifikasi/Approver/TabPage/FS/DetailFS.vue");
-const ApproveDetailKk = () => import("@/views/Verifikasi/Approver/TabPage/KK/DetailKK.vue");
-const ApproveDetailFSMesin = () => import("@/views/Verifikasi/Approver/TabPage/FS/DetailFSMesin.vue");
-const ApproveDetailKkMesin = () => import("@/views/Verifikasi/Approver/TabPage/KK/DetailKKMesin.vue");
-//Persetujuan By Sentral
-const VerifikasiSentral = () => import("@/views/Verifikasi/Sentral/VerifikasiPersetujuan.vue");
-const PersetujuanFS = () => import("@/views/Verifikasi/Sentral/TabPage/FS/DetailFS.vue");
-const PersetujuanKk = () => import("@/views/Verifikasi/Sentral/TabPage/KK/DetailKK.vue");
-const PersetujuanFSMesin = () => import("@/views/Verifikasi/Sentral/TabPage/FS/DetailFSMesin.vue");
-const PersetujuanKkMesin = () => import("@/views/Verifikasi/Sentral/TabPage/KK/DetailKKMesin.vue");
-const InputAsumsiKKApprove = () => import("@/views/Verifikasi/Sentral/TabPage/KK/InputAsumsiParameter.vue");
-const PerbaruiDataKKApprove = () => import("@/views/Verifikasi/Sentral/TabPage/KK/PerbaruiData.vue");
+const RekapKertasKerja = () =>
+  import("@/views/Data/RekapKertasKerja/RekapKertasKerja.vue");
+const RekapKertasKerjaV1 = () =>
+  import("@/views/Data/RekapKertasKerjaV1/RekapKertasKerjaV1.vue");
+const FeasibilityStudy = () =>
+  import("@/views/Data/RekapKertasKerja/FeasibilityStudy/FeasibilityStudy.vue");
+const FeasibilityStudySentral = () =>
+  import(
+    "@/views/Data/RekapKertasKerja/FeasibilityStudy/FeasibilityStudySentral.vue"
+  );
+const VerifikasiApprover = () =>
+  import("@/views/Verifikasi/Approver/VerifikasiPersetujuan.vue");
+const ApproveDetailFS = () =>
+  import("@/views/Verifikasi/Approver/TabPage/FS/DetailFS.vue");
+const ApproveDetailKk = () =>
+  import("@/views/Verifikasi/Approver/TabPage/KK/DetailKK.vue");
+const ApproveDetailFSMesin = () =>
+  import("@/views/Verifikasi/Approver/TabPage/FS/DetailFSMesin.vue");
+const ApproveDetailKkMesin = () =>
+  import("@/views/Verifikasi/Approver/TabPage/KK/DetailKKMesin.vue");
+
+const VerifikasiSentral = () =>
+  import("@/views/Verifikasi/Sentral/VerifikasiPersetujuan.vue");
+const PersetujuanFS = () =>
+  import("@/views/Verifikasi/Sentral/TabPage/FS/DetailFS.vue");
+const PersetujuanKk = () =>
+  import("@/views/Verifikasi/Sentral/TabPage/KK/DetailKK.vue");
+const PersetujuanFSMesin = () =>
+  import("@/views/Verifikasi/Sentral/TabPage/FS/DetailFSMesin.vue");
+const PersetujuanKkMesin = () =>
+  import("@/views/Verifikasi/Sentral/TabPage/KK/DetailKKMesin.vue");
+const InputAsumsiKKApprove = () =>
+  import("@/views/Verifikasi/Sentral/TabPage/KK/InputAsumsiParameter.vue");
+const PerbaruiDataKKApprove = () =>
+  import("@/views/Verifikasi/Sentral/TabPage/KK/PerbaruiData.vue");
 const SentralAdmin = () => import("@/views/Master/SentralAdmin.vue");
 const DetailUnit = () => import("@/views/Master/DetailUnit.vue");
-const DetailRekap = () => import("@/views/Data/RekapKertasKerja/DetailRekap/DetailRekap.vue");
-const DetailRekapSentral = () => import("@/views/Data/RekapKertasKerja/DetailRekap/DetailRekapSentral.vue");
-const PerbaruiData = () => import("@/views/Data/RekapKertasKerja/PerbaruiData/PerbaruiData.vue");
-const InputAsumsiParameter = () => import("@/views/Data/RekapKertasKerja/InputAsumsiParameter.vue");
+const DetailRekap = () =>
+  import("@/views/Data/RekapKertasKerja/DetailRekap/DetailRekap.vue");
+const DetailRekapSentral = () =>
+  import("@/views/Data/RekapKertasKerja/DetailRekap/DetailRekapSentral.vue");
+const PerbaruiData = () =>
+  import("@/views/Data/RekapKertasKerja/PerbaruiData/PerbaruiData.vue");
+const InputAsumsiParameter = () =>
+  import("@/views/Data/RekapKertasKerja/InputAsumsiParameter.vue");
 const LihatCAPEX = () => import("@/views/Beranda/LamanData/LihatCAPEX.vue");
 const LihatOPEX = () => import("@/views/Beranda/LamanData/LihatOPEX.vue");
 const Parameter = () => import("@/views/Master/Parameter.vue");
 const ProfileUser = () => import("@/views/Manajemen/Pengguna/ProfileUser.vue");
 const Pengguna = () => import("@/views/Manajemen/Pengguna/Pengguna.vue");
 const Role = () => import("@/views/Manajemen/Pengguna/RolePage.vue");
-const EditPermission = () => import("@/views/Manajemen/Pengguna/EditPermission.vue");
-const LogActivity = () => import("@/views/Manajemen/LogActivity/LogActivity.vue");
-const MesinBelumTerinput = () => import("@/views/Beranda/LamanUtama/MesinBelumTerinput.vue");
+const EditPermission = () =>
+  import("@/views/Manajemen/Pengguna/EditPermission.vue");
+const LogActivity = () =>
+  import("@/views/Manajemen/LogActivity/LogActivity.vue");
+const MesinBelumTerinput = () =>
+  import("@/views/Beranda/LamanUtama/MesinBelumTerinput.vue");
 const VerifikasiSSO = () => import("@/views/VerifikasiSSO.vue");
 import AuthService from "@/services/auth-service";
 
@@ -216,7 +240,7 @@ const routes: RouteRecordRaw[] = [
           label: "Feasibility Study",
         },
       },
-      // Persetujuan By Approver
+
       {
         path: "/persetujuan-by-approve",
         name: "persetujuan-by-approve",
@@ -226,24 +250,7 @@ const routes: RouteRecordRaw[] = [
           label: "Persetujuan",
         },
       },
-      // {
-      //   path: "/approver-fs",
-      //   name: "approver-fs",
-      //   component: ApproverFS,
-      //   meta: {
-      //     requiresAuth: true,
-      //     label: 'Persetujuan Feasibility Study',
-      //   },
-      // },
-      // {
-      //   path: "/approver-kk",
-      //   name: "approver-kk",
-      //   component: ApproverKK,
-      //   meta: {
-      //     requiresAuth: true,
-      //     label: 'Persetujuan Kertas Kerja',
-      //   },
-      // },
+
       {
         path: "/app-fs-sentral",
         name: "app-fs-sentral",
@@ -280,7 +287,7 @@ const routes: RouteRecordRaw[] = [
           label: "Detail Persetujuan Kertas Kerja",
         },
       },
-      // Persetujuan By Sentral
+
       {
         path: "/persetujuan",
         name: "persetujuan",
@@ -417,15 +424,7 @@ const routes: RouteRecordRaw[] = [
           label: "Log Aktivitas",
         },
       },
-      // {
-      //   path: "/query",
-      //   name: "query",
-      //   component: Query,
-      //   meta: {
-      //     requiresAuth: true,
-      //     label: 'Query',
-      //   },
-      // },
+
       {
         path: "/mesin-belum-terinput",
         name: "mesin-belum-terinput",
@@ -467,9 +466,10 @@ declare module "vue-router" {
   }
 }
 
-router.beforeEach(async(to, _, next) => {
+router.beforeEach(async (to, _, next) => {
   const storeNavbar = useNavbarLabelStore();
   const menuStore = useMenuStore();
+  const userAuthStore = useUserAuthStore();
   const authService = new AuthService();
   const encryptStorage = await encryptStoragePromise;
   const token =
@@ -490,38 +490,32 @@ router.beforeEach(async(to, _, next) => {
     let levelSentral: any;
     let namaPegawai: any;
     let storedHash: any;
+    await userAuthStore.fetchUserAuth();
     const getStorage = (storage: any) => {
-      role = storage.getItem("role");
-      level = storage.getItem("level");
       levelSentral = storage.getItem("level_sentral");
       namaPegawai = storage.getItem("nama_pegawai");
       storedHash = storage.getItem("user_hash");
     };
     getStorage(storage);
 
-    // jika data tidak lengkap, langsung logout
     if (
-      !role ||
-      !level ||
       levelSentral === null ||
       levelSentral === undefined ||
       !namaPegawai ||
-      !storedHash 
+      !storedHash
     ) {
       console.warn("⚠️ Data tidak lengkap, logout user...");
       authService.logout();
       return;
     }
 
-    // hitung ulang hash dengan secret key
-    const dataString = `${role}:${level}:${levelSentral}:${namaPegawai}`;
+    const dataString = `${levelSentral}:${namaPegawai}`;
 
     const currentHash = CryptoJS.HmacSHA512(
       dataString,
       (window as any).userHashSecretKey(),
     ).toString();
 
-    // jika hash berbeda, berarti ada manipulasi
     console.log("Current Hash:", currentHash);
     console.log("Stored Hash:", storedHash);
     if (storedHash != currentHash) {
@@ -541,7 +535,6 @@ router.beforeEach(async(to, _, next) => {
   } else if (token && !menuStore.isMenuAccessible(to.name.toString())) {
     next({ name: "peta" });
   } else {
-    console.log(menuStore.menuList, "menuList");
     next();
   }
 });

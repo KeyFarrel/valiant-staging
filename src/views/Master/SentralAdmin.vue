@@ -4,12 +4,13 @@
     <div class="flex flex-col h-full p-6 space-y-4 font-medium bg-white rounded-lg text-md">
       <div class="flex flex-col space-y-4">
         <div class="flex flex-row"
-          v-if="userLevel === 'Admin' || userLevel === 'Pusat' || userLevel === 'Pengelola' || userLevel === 'Pembina'">
+          v-if="userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Zp@5Kw_9' || userAuthStore.levelAlias === 'Gk#92lV&' || userAuthStore.levelAlias === 'Dr^3Zn$!'">
           <SearchBoxSuggestion v-if="listSuggestionSentral.length !== 0" v-model="searchQuery"
             :source="listSuggestionSentral" @on-key-enter="handleSearch" @on-click-sentral="handleSearch" />
           <ShimmerLoading class="h-8 w-80" v-else-if="listSuggestionSentral.length === 0" />
         </div>
-        <div class="whitespace-nowrap" v-if="userLevel === 'Admin' || userLevel === 'Pusat'">
+        <div class="whitespace-nowrap"
+          v-if="userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Zp@5Kw_9'">
           <ul class="flex w-full overflow-x-auto" v-if="pengelolaData.length !== 0">
             <li
               class="relative p-2 ml-3 text-xs font-bold text-gray-400 border border-gray-300 rounded-lg cursor-pointer w-fit hover:text-primaryColor first:ml-0 hover:border-primaryColor hover:border-"
@@ -268,6 +269,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
+import { useUserAuthStore } from "@/store/storeUserAuth";
+const userAuthStore = useUserAuthStore();
 import TabWrapperSentral from "@/components/MasterUnitSentral/TabWrapperSentral.vue";
 import TabItem from "@/components/ui/TabItem.vue";
 import DetailSentralService from "@/services/detail-sentral-service";
@@ -281,7 +284,6 @@ const authService = new AuthService();
 import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import SearchBoxSuggestion from "@/components/ui/SearchBoxSuggestion.vue";
-import { usePreferredColorScheme } from "@vueuse/core";
 
 const nodeMode = import.meta.env.MODE;
 const isPembangkitTabOpen = ref<string[]>([]);
@@ -301,7 +303,6 @@ const isLoading = ref();
 const selectedAll = ref<string[]>(['ALL']);
 const tahunBerjalan = new Date().getFullYear();
 let encryptStorageRef: any = null;
-const userLevel = ref<string | null>(null);
 
 interface PengelolaItem {
   data: any
@@ -540,7 +541,6 @@ watch(searchQuery, async (val) => {
 onMounted(async () => {
   isLoading.value = true;
   encryptStorageRef = await encryptStoragePromise;
-  userLevel.value = await authService.checkLevel();
   await fetchSuggestionSentral();
   await fetchSentralData();
   isLoading.value = true;

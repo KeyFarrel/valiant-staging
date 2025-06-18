@@ -215,7 +215,7 @@
         </li>
         <li class="flex items-center justify-center h-12 rounded-lg"
           :class="{ selected: store.label === 'Pengguna' || store.label === 'Log Aktivitas' }"
-          v-if="userLevel === 'Admin'">
+          v-if="userAuthStore.levelAlias === 'Xf!8qP@7'">
           <svg width="24" height="24" class="cursor-pointer" viewBox="0 0 24 24" fill="none"
             xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" clip-rule="evenodd"
@@ -238,6 +238,8 @@ import { ref, onMounted, inject, computed, watch } from "vue";
 import { initFlowbite } from "flowbite";
 import { RouterView } from "vue-router";
 import { useNavbarLabelStore } from "@/store/storeNavbar";
+import { useUserAuthStore } from "@/store/storeUserAuth";
+const userAuthStore = useUserAuthStore();
 import { useRekapSearchStore } from "@/store/storeRekapKertasKerja";
 import { useIdle, useTimestamp } from '@vueuse/core'
 import { useMenuStore } from "@/store/storeMenu";
@@ -264,7 +266,6 @@ const totalPersetujuanKK = ref<number>(0);
 const totalPersetujuanFS = ref<number>(0);
 const menuList = ref<any>('');
 const isLoading = ref<boolean>(false);
-const userLevel = ref<string | null>(null);
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
@@ -319,7 +320,7 @@ watch(timeLeft, async (remainingTime) => {
 
 const fetchPersetujuanKK = async () => {
   try {
-    if (userLevel.value === 'Sentral') {
+    if (userAuthStore.levelAlias === 'Mb*0yT%3') {
       const response: any = await persetujuanService.getPersetujuanKKSentral({ id_sentral: levelSentral.value, tahun: tahunBerjalan });
       totalPersetujuanKK.value = response.data.mesins !== null ? response.data.mesins.filter((val: any) => val.status_approval !== 'Disetujui').length : 0;
     } else {
@@ -341,7 +342,7 @@ const fetchPersetujuanKK = async () => {
 
 const fetchPersetujuanFS = async () => {
   try {
-    if (userLevel.value === 'Sentral') {
+    if (userAuthStore.levelAlias === 'Mb*0yT%3') {
       const response: any = await persetujuanService.getPersetujuanFSSentral({ id_sentral: levelSentral.value });
       totalPersetujuanFS.value = response.data.mesins !== null ? response.data.mesins.filter((val: any) => val.status_approval !== 'Disetujui').length : 0;
     } else {
@@ -379,7 +380,6 @@ onMounted(async () => {
   const encryptStorage = await encryptStoragePromise;
   levelSentral.value = nodeMode === 'production' ? await encryptStorage.getItem('level_sentral') : localStorage.getItem('level_sentral');
   namaPegawai.value = nodeMode === 'production' ? await encryptStorage.getItem('nama_pegawai') : localStorage.getItem('nama_pegawai');
-  userLevel.value = await authService.checkLevel();
   menuList.value = menuStore.menuList;
   initFlowbite();
   fetchPersetujuanKK();

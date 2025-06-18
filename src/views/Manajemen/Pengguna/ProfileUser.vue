@@ -22,7 +22,7 @@
         <div class="flex flex-col space-y-1">
           <p class="text-base font-medium text-primaryTextColor">{{ data.nama_pegawai }}</p>
           <p class="text-sm text-textDisabledColor">{{ data.email }}</p>
-          <Chips :title="'Role'" :content="userRole" class="w-fit" />
+          <Chips :title="'Role'" :content="userAuthStore.roleName" class="w-fit" />
         </div>
       </div>
       <div class="flex w-full space-x-5">
@@ -204,13 +204,13 @@
       <div class="flex flex-col justify-between w-full h-full">
         <div class="flex flex-row items-center justify-between w-full">
           <p class="text-sm font-semibold text-labelColor">Level</p>
-          <p class="text-sm">{{ userLevel }}</p>
+          <p class="text-sm">{{ userAuthStore.levelName }}</p>
         </div>
         <div class="flex flex-row items-center justify-between w-full">
           <p class="text-sm font-semibold text-labelColor">Role</p>
           <div
             class="w-fit px-1.5 py-1 flex items-center justify-center text-xs font-semibold bg-[#F7FBFC] border border-primaryColor rounded-full text-primaryColor">
-            {{ userRole }}
+            {{ userAuthStore.roleName }}
           </div>
         </div>
         <div class="flex flex-row items-center justify-between w-full">
@@ -278,6 +278,8 @@ import { ref, onMounted, onUnmounted, nextTick } from "vue";
 import { notifyError } from "@/services/helper/toast-notification";
 import { notifySuccess } from '../../../services/helper/toast-notification';
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
+import { useUserAuthStore } from "@/store/storeUserAuth";
+const userAuthStore = useUserAuthStore();
 import router from "@/router";
 import ModalWrapper from "@/components/ui/ModalWrapper.vue";
 import ModalNotification from "@/components/ui/ModalNotification.vue";
@@ -324,8 +326,6 @@ const isPasswordMatched = ref<boolean>(false);
 const isSuccess = ref<boolean>(false);
 const isOldPasswordWrong = ref<boolean>(false);
 const activeDate = ref<any>('');
-const userRole = ref<string | null>(null);
-const userLevel = ref<string | null>(null);
 
 interface DataItemInterface {
   data: any
@@ -629,8 +629,6 @@ const changePassword = async () => {
 
 onMounted(async () => {
   await fetchDataProfile();
-  userRole.value = await authService.checkRole();
-  userLevel.value = await authService.checkLevel();
 });
 
 onUnmounted(() => {

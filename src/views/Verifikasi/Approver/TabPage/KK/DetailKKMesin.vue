@@ -31,7 +31,7 @@
       :umur-teknis="mesin.masa_manfaat ? mesin.masa_manfaat : '-'" :nama-pembina="namaPembina"
       :kondisi-unit="mesin.kondisi_unit">
       <div
-        v-if="arrMesin.status === 'Menunggu Persetujuan T2' && (userLevel == 'Admin' || (userLevel == 'Pengelola' && userRole == 'Approver'))"
+        v-if="arrMesin.status === 'Menunggu Persetujuan T2' && (userAuthStore.levelAlias == 'Xf!8qP@7' || (userAuthStore.levelAlias == 'Gk#92lV&' && userAuthStore.roleAlias == 'Vx_91$pN'))"
         class="flex">
         <!-- Tolak Laporan -->
         <button
@@ -98,7 +98,7 @@
         </ModalWrapper>
       </div>
       <div
-        v-else-if="arrMesin.status === 'Menunggu Persetujuan T1' && (userLevel == 'Admin' || (userLevel == 'Pembina' && userRole == 'Approver'))"
+        v-else-if="arrMesin.status === 'Menunggu Persetujuan T1' && (userAuthStore.levelAlias == 'Xf!8qP@7' || (userAuthStore.levelAlias == 'Dr^3Zn$!' && userAuthStore.roleAlias == 'Vx_91$pN'))"
         class="flex">
         <!-- Tolak Laporan -->
         <button
@@ -344,6 +344,8 @@ import { ref, onMounted } from "vue";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import { Vue3Lottie } from 'vue3-lottie';
 import { notifyError } from "@/services/helper/toast-notification";
+import { useUserAuthStore } from "@/store/storeUserAuth";
+const userAuthStore = useUserAuthStore();
 import { useRoute } from 'vue-router';
 import UserService from "@/services/user-service";
 const userService = new UserService();
@@ -386,8 +388,6 @@ const selectedTab = ref("Akhir Masa");
 const data = ref('Kertas Kerja')
 const persetujuanService = new PersetujuanService();
 const detailRekapService = new DetailRekapService();
-const userLevel = ref<string | null>(null);
-const userRole = ref<string | null>(null);
 
 const approveSentralKK = ref<ListApprove>();
 const approveMesinKK = ref<ListApprove>();
@@ -969,8 +969,6 @@ onMounted(async () => {
   isLoading.value = true;
   const encryptStorage = await encryptStoragePromise;
   idGrafik.value = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id;
-  userLevel.value = await authService.checkLevel();
-  userRole.value = await authService.checkRole();
   await fetchPersetujuanKK();
   await fetchMesinById();
   isLoading.value = false;
