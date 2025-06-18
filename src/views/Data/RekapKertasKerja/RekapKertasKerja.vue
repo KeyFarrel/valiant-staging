@@ -2,7 +2,7 @@
   <Loading v-if="isLoading" />
   <div class="flex flex-col h-full p-6 space-y-5 font-medium bg-white rounded-lg text-md">
     <div class="flex flex-row space-x-4"
-      v-if="userLevel === 'Admin' || userLevel === 'Pusat' || userLevel === 'Pengelola' || userLevel === 'Pembina'">
+      v-if="userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Zp@5Kw_9' || userAuthStore.levelAlias === 'Gk#92lV&' || userAuthStore.levelAlias === 'Dr^3Zn$!'">
       <SearchBoxSuggestion v-if="listSuggestionSentral" v-model="store.searchRekapQuery" :source="listSuggestionSentral"
         @on-key-enter="store.selectedRekapSearchQuery = store.searchRekapQuery; handleSearch()"
         @on-click-sentral="store.selectedRekapSearchQuery = store.searchRekapQuery; handleSearch()" />
@@ -114,7 +114,8 @@
         </div>
       </ModalWrapper>
     </div>
-    <div class="whitespace-nowrap" v-if="userLevel === 'Admin' || userLevel === 'Pusat'">
+    <div class="whitespace-nowrap"
+      v-if="userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Zp@5Kw_9'">
       <ul class="flex flex-row w-full overflow-x-auto" v-if="pengelolaData.length !== 0">
         <li v-for="(pengelola, pengelolaIndex) in pengelolaData" :key="pengelolaIndex"
           class="relative p-2 ml-3 overflow-hidden text-xs font-bold text-gray-400 border border-gray-300 rounded-lg cursor-pointer w-fit hover:text-primaryColor first:ml-0 hover:border-primaryColor active:bg-primaryColor active:bg-opacity-20"
@@ -178,7 +179,7 @@
                         <p class="text-sm text-gray-400">
                           <span class="font-semibold text-primaryTextColor">{{ mesinItem.nilai_asset_awal === '-' ?
                             mesinItem.nilai_asset_awal : globalFormat.formatRupiah(mesinItem.nilai_asset_awal / 1000000)
-                          }}</span> Rp (Juta)
+                            }}</span> Rp (Juta)
                         </p>
                       </div>
                       <div>
@@ -298,12 +299,12 @@
                     </div>
                   </div>
                 </div>
-                <div class="mt-4 border-b" v-if="userRole !== 'Approver'"></div>
+                <div class="mt-4 border-b" v-if="userAuthStore.roleAlias !== 'Vx_91$pN'"></div>
                 <div class="flex mt-2 space-x-3"
                   v-if="listStatusInputAsumsiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0]">
                   <RouterLink
                     :to="checkUnggahRequiredProp(mesinItem.nilai_asset_awal, mesinItem.tahun_nilai_perolehan, mesinItem.masa_manfaat) ? '' : { name: 'input-asumsi-parameter', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(mesinItem.id_mesin) : mesinItem.id_mesin } }"
-                    v-if="userLevel === 'Admin' || userLevel === 'Sentral' || (userLevel === 'Pembina' && userRole === 'Input')">
+                    v-if="userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Mb*0yT%3' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k')">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
                       id="hover-button"
@@ -322,7 +323,7 @@
                   <button
                     class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
                     id="hover-button"
-                    v-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum terisi' && (userLevel === 'Admin' || userLevel === 'Sentral' || (userLevel === 'Pembina' && userRole === 'Input'))"
+                    v-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum terisi' && (userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Mb*0yT%3' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k'))"
                     @click="checkUnggahRequiredProp(mesinItem.nilai_asset_awal, mesinItem.tahun_nilai_perolehan, mesinItem.masa_manfaat) ? isRequiredPropsComplete = true : isFSDialogOpen = true; currentIdMesin = mesinItem.id_mesin; currentNamaMesin = mesinItem.mesin; currentIdSentral = sentralItem.id_sentral; currentKodeJenisPembangkit = mesinItem.kode_jenis_pembangkit; currentKodePengelola = sentralItem.kode_pengelola">
                     <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -335,7 +336,7 @@
                     name: 'feasibility-study', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(mesinItem.id_mesin) : mesinItem.id_mesin },
                   }
                     "
-                    v-else-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data sudah update' && userRole !== 'Approver'">
+                    v-else-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data sudah update' && userAuthStore.roleAlias !== 'Vx_91$pN'">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
                       id="hover-button">
@@ -350,7 +351,7 @@
                   <button
                     class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
                     id="hover-button"
-                    v-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum terisi' && (userLevel === 'Admin' || userLevel === 'Sentral' || (userLevel === 'Pembina' && userRole === 'Input'))"
+                    v-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum terisi' && (userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Mb*0yT%3' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k'))"
                     @click="checkUnggahRequiredProp(mesinItem.nilai_asset_awal, mesinItem.tahun_nilai_perolehan, mesinItem.masa_manfaat) ? isRequiredPropsComplete = true : checkInputAsumsi(mesinItem.id_mesin) ? isRekapDialogOpen = true : isNotAlreadyInput = true; currentIdMesin = mesinItem.id_mesin; currentNamaMesin = mesinItem.mesin; currentIdSentral = sentralItem.id_sentral; currentKodePengelola = sentralItem.kode_pengelola">
                     <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -361,7 +362,7 @@
                   </button>
                   <RouterLink
                     :to="{ name: 'perbarui-data', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(mesinItem.id_mesin) : mesinItem.id_mesin } }"
-                    v-else-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum update' && (userLevel === 'Admin' || userLevel === 'Sentral' || (userLevel === 'Pembina' && userRole === 'Input'))">
+                    v-else-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum update' && (userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Mb*0yT%3' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k'))">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
                       id="hover-button">
@@ -382,7 +383,7 @@
                   </RouterLink>
                   <RouterLink
                     :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(mesinItem.id_mesin) : mesinItem.id_mesin }, query: { tahun: tahunBerjalan } }"
-                    v-else-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data sudah update' && userRole !== 'Approver'">
+                    v-else-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data sudah update' && userAuthStore.roleAlias !== 'Vx_91$pN'">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
                       id="hover-button">
@@ -776,6 +777,8 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 import { Vue3Lottie } from "vue3-lottie";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
+import { useUserAuthStore } from "@/store/storeUserAuth";
+const userAuthStore = useUserAuthStore();
 import { useWindowScroll } from '@vueuse/core'
 const { x, y } = useWindowScroll()
 import { useRekapSearchStore, useRekapNavigationStore } from "@/store/storeRekapKertasKerja";
@@ -871,8 +874,6 @@ const isRekapUploadSuccess = ref(false);
 const totalPagesRef = ref(1);
 const totalRecords = ref(0);
 const totalPages = ref(0);
-const userLevel = ref<string | null>(null);
-const userRole = ref<string | null>(null);
 let encryptStorageRef: any = null;
 
 interface PengelolaItem {
@@ -1239,7 +1240,7 @@ const uploadFile = async () => {
     await fetchStatusRealisasiSentral();
     await fetchStatusRealisasiMesin();
     selectedFileEvidence.value = null;
-    if (userLevel.value === 'Sentral' || userLevel.value === 'Admin' || (userLevel.value === 'Pembina' && userRole.value === 'Input')) {
+    if (userAuthStore.levelAlias === 'Mb*0yT%3' || userAuthStore.levelAlias === 'Xf!8qP@7' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k')) {
       router.push({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { id_sentral: currentIdSentral.value, tahun: tahunBerjalan.value } });
     }
     else {
@@ -1282,7 +1283,7 @@ const uploadFileFS = async () => {
     await fetchStatusFSSentral();
     await fetchStatusFSMesin();
     selectedFileEvidence.value = null
-    if (userLevel.value === 'Sentral') {
+    if (userAuthStore.levelAlias === 'Mb*0yT%3') {
       router.push({ name: 'persetujuan-fs', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { id_sentral: currentIdSentral.value } });
     } else {
       router.push({ name: 'persetujuan-by-approve' });
@@ -1519,8 +1520,6 @@ onBeforeUnmount(() => {
 onMounted(async () => {
   isLoading.value = true;
   encryptStorageRef = await encryptStoragePromise;
-  userLevel.value = await authService.checkLevel();
-  userRole.value = await authService.checkRole();
   await fetchStatusFSSentral();
   await fetchStatusFSMesin();
   await fetchStatusRealisasiSentral();

@@ -38,7 +38,7 @@
             <button
               class="flex items-center px-3 py-2 duration-300 border rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white border-primaryColor"
               @click="toggleEdit('Sentral')"
-              v-if="!isEditOpen('Sentral') && ((userRole === 'Super Admin' && userLevel === 'Pusat') || userLevel === 'Admin' || userLevel === 'Sentral' || (userLevel === 'Pembina' && userRole === 'Input'))">
+              v-if="!isEditOpen('Sentral') && ((userAuthStore.roleAlias === 'zT4*Mb!6' && userAuthStore.levelAlias === 'Zp@5Kw_9') || userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Mb*0yT%3' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k'))">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"
                 class="mr-2">
                 <g clip-path="url(#clip0_1055_14765)">
@@ -166,8 +166,8 @@
             <button
               class="flex items-center px-3 py-2 duration-300 border rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white border-primaryColor"
               @click="toggleEdit(mesinItem.mesin)"
-              v-if="!isEditOpen(mesinItem.mesin) && ((userRole === 'Super Admin' && userLevel === 'Pusat') ||
-                userLevel === 'Admin' || userLevel === 'Sentral' || (userLevel === 'Pembina' && userRole === 'Input'))">
+              v-if="!isEditOpen(mesinItem.mesin) && ((userAuthStore.roleAlias === 'zT4*Mb!6' && userAuthStore.levelAlias === 'Zp@5Kw_9') ||
+                userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Mb*0yT%3' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k'))">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"
                 class="mr-2">
                 <g clip-path="url(#clip0_1055_14765)">
@@ -376,6 +376,8 @@
 import { ref, onMounted } from "vue";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import { notifyError } from "@/services/helper/toast-notification";
+import { useUserAuthStore } from "@/store/storeUserAuth";
+const userAuthStore = useUserAuthStore();
 import { useRoute } from "vue-router";
 const route = useRoute();
 const kode_pengelola = route.query.kode_pengelola;
@@ -443,8 +445,6 @@ const center = ref<{
 });
 const projection = ref("EPSG:4326");
 const rotation = ref(0);
-const userLevel = ref<string | null>(null);
-const userRole = ref<string | null>(null);
 
 interface PembangkitItem {
   data: any
@@ -715,8 +715,6 @@ onMounted(async () => {
   isLoading.value = true;
   const encryptStorage = await encryptStoragePromise;
   id.value = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id;
-  userLevel.value = await authService.checkLevel();
-  userRole.value = await authService.checkRole();
   await getSentralById();
   await fetchUnitPengelola();
   await fetchPhotoSentral();

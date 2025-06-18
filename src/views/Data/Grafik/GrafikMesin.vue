@@ -27,7 +27,8 @@
           </h1>
           <StatusGrafik :status-grafik="statusApprove" class="ml-4 mt-1.5" />
         </div>
-        <div class="flex items-center justify-center px-6" v-if="props.tahunData && userRole !== 'Approver'">
+        <div class="flex items-center justify-center px-6"
+          v-if="props.tahunData && userAuthStore.roleAlias !== 'Vx_91$pN'">
           <RouterLink
             :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(props.idMesin) : props.idMesin }, query: { tahun: props.tahunData } }">
             <button type="button" id="lihat-data-button" :disabled="statusApprove === 'Data belum terisi'"
@@ -589,6 +590,8 @@ import { ref, onMounted, nextTick, computed, watch } from "vue";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import AOS from 'aos'
 import { VueEcharts } from "vue3-echarts";
+import { useUserAuthStore } from "@/store/storeUserAuth";
+const userAuthStore = useUserAuthStore();
 import { useTagMesin } from "@/store/storeTagGrafik";
 import AuthService from "@/services/auth-service";
 const authService = new AuthService();
@@ -692,7 +695,6 @@ const fuelComWLCMesin = ref<any>([]);
 const yAxisWlc = ref<any>([]);
 const maxWlcBep = ref<any>([]);
 const maxWlcOpt = ref<any>([]);
-const userRole = ref<string | null>(null);
 
 const chartDetailWLCAllMesin = ref();
 const updateDetailWLCAllMesin = ref(true);
@@ -6650,7 +6652,6 @@ onMounted(async () => {
   AOS.init();
   isLoading.value = true;
   encryptStorageRef = await encryptStoragePromise;
-  userRole.value = await authService.checkRole()
   await fetchGrafikWLCAllMesin();
   await fetchGrafikWLCKomMesin();
   await fetchGrafikPlanMesin();

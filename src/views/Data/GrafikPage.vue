@@ -3,7 +3,8 @@
   <div class="w-full p-4 space-y-3 bg-white border rounded-md h-22">
     <div class="flex justify-between md:flex">
       <div class="flex items-center">
-        <SearchBox v-if="userLevel !== 'Sentral'" @on-focus="handleFocus" v-model="selectedSearchQuery" class="w-60" />
+        <SearchBox v-if="userAuthStore.levelAlias !== 'Mb*0yT%3'" @on-focus="handleFocus" v-model="selectedSearchQuery"
+          class="w-60" />
         <ModalSearch v-if="isSearchModalOpen" v-model="searchQuery" :show-modal="isSearchModalOpen"
           :source="listDataPeta" @on-click-close="isSearchModalOpen = false" @on-escape="isSearchModalOpen = false"
           @on-click-sentral="selectedSearchQuery = searchQuery; isSearchModalOpen = false; handleChangeSentral()"
@@ -12,7 +13,7 @@
     </div>
     <div class="bg-white">
       <ul class="flex items-end space-x-8 overflow-auto border-b-2 border-gray-50 whitespace-nowrap scrollbar-hide"
-        :class="userLevel === 'Sentral' ? 'mt-14' : 'mt-0'">
+        :class="userAuthStore.levelAlias === 'Mb*0yT%3' ? 'mt-14' : 'mt-0'">
         <li v-for="(item, i) in dataUnit" :key="i"
           class="pb-2 text-base font-bold transition-all duration-300 cursor-pointer text-textDisabledColor"
           :class="{ selected: item.mesin === selectedTitle }" @click="changeTabMesin(item.mesin)">
@@ -387,6 +388,8 @@ import router from "@/router";
 import { useRoute } from "vue-router";
 import { useTagSentral, useTagMesin } from "@/store/storeTagGrafik";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
+import { useUserAuthStore } from "@/store/storeUserAuth";
+const userAuthStore = useUserAuthStore();
 import { notifyError } from "@/services/helper/toast-notification";
 import { osDetector } from "@/utils/os-detector";
 import DetailSentralService from "@/services/detail-sentral-service";
@@ -438,7 +441,6 @@ const periodeTahunMesin = ref<any>();
 const selectedYear = ref<any[]>([]);
 const yearResponseMesin = ref<any>();
 const responseLimitTahun = ref<any>();
-const userLevel = ref<string | null>(null);
 
 const isLoading = ref(false);
 const isHover = ref(true);
@@ -625,7 +627,6 @@ watch(route, async (value) => {
 })
 
 onMounted(async () => {
-  userLevel.value = await authService.checkLevel();
   if (props.tabsTitle) {
     if (props.tabsTitle.length > 0) {
       selectedTitle.value = 'Unit Sentral';

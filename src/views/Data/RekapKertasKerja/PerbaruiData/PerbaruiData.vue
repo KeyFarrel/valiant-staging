@@ -304,7 +304,7 @@
             </div>
           </div>
           <p v-if="isShowRejected && approveMesinKK" class="mt-2 ml-6 text-sm capitalize">{{ approveMesinKK.keterangan
-            }}</p>
+          }}</p>
         </div>
       </div>
       <TabsWrapper :laman-data="false" class="w-full">
@@ -645,6 +645,8 @@
 import { ref, onMounted, watch, onUnmounted, watchEffect } from "vue";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import { notifyError } from "@/services/helper/toast-notification";
+import { useUserAuthStore } from "@/store/storeUserAuth";
+const userAuthStore = useUserAuthStore();
 import { usePerbaruiTabStore } from "@/store/storeRekapKertasKerja";
 const storePerbaruiTab = usePerbaruiTabStore();
 import { useRoute, useRouter } from "vue-router";
@@ -863,7 +865,6 @@ const revenueKompD = ref<string>('');
 const isAudited = ref<boolean>(false);
 const formFinansialSimulasi1 = ref();
 const formFinansialSimulasi2 = ref();
-const userLevel = ref<string | null>(null);
 const dataFinansialInit = ref<{
   costComponentA: string,
   biayaPeriodicMaintenance: string,
@@ -2438,7 +2439,7 @@ const handleFinalSubmit = async () => {
     isFinalSubmitSuccess.value = true;
     await wait(3000);
     isFinalSubmitSuccess.value = false;
-    if (userLevel.value === 'Sentral') {
+    if (userAuthStore.levelAlias === 'Mb*0yT%3') {
       router.replace({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(idMesin.value) : idMesin.value }, query: { id_sentral: idSentral.value, tahun: tahunBerjalan } });
     } else {
       router.replace({ name: 'persetujuan-by-approve' });
@@ -2532,7 +2533,6 @@ onUnmounted(() => {
 onMounted(async () => {
   const encryptStorage = await encryptStoragePromise;
   idMesin.value = parseInt(nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString());
-  userLevel.value = await authService.checkLevel();
   await fetchMesinById();
   await fetchUnitPengelola();
   await fetchPersetujuanKK();

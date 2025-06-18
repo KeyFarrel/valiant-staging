@@ -10,6 +10,7 @@
  * - Provides type safety for environment variables
  * - Logs access attempts to non-whitelisted variables
  */
+const nodeMode = import.meta.env.MODE;
 
 // Define types for environment variables
 interface EnvVariables {
@@ -81,21 +82,21 @@ export const getEnvironment = (): 'development' | 'staging' | 'production' => {
  * Check if the current environment is production
  */
 export const isProduction = (): boolean => {
-  return getEnvironment() === 'production';
+  return nodeMode === 'production';
 };
 
 /**
  * Check if the current environment is staging
  */
 export const isStaging = (): boolean => {
-  return getEnvironment() === 'staging';
+  return nodeMode === 'staging';
 };
 
 /**
  * Check if the current environment is development
  */
 export const isDevelopment = (): boolean => {
-  return getEnvironment() === 'development';
+  return nodeMode === 'development';
 };
 
 /**

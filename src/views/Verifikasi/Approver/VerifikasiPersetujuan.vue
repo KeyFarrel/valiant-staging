@@ -18,11 +18,11 @@
               </svg>
               Filter
               <div v-if="
-                userLevel === 'Admin' ||
-                  userLevel === 'Pusat'
+                userAuthStore.levelAlias === 'Xf!8qP@7' ||
+                  userAuthStore.levelAlias === 'Zp@5Kw_9'
                   ? filterKK.selectedPengelola.length ||
                   filterKK.selectedPersetujuan.length || filterKK.selectedPembina.length
-                  : userLevel === 'Pengelola'
+                  : userAuthStore.levelAlias === 'Gk#92lV&'
                     ? filterKK.selectedPembina.length ||
                     filterKK.selectedPersetujuan.length
                     : filterKK.selectedPersetujuan.length
@@ -50,8 +50,8 @@
                 </div>
               </div>
               <div v-if="
-                userLevel === 'Admin' ||
-                userLevel === 'Pusat'
+                userAuthStore.levelAlias === 'Xf!8qP@7' ||
+                userAuthStore.levelAlias === 'Zp@5Kw_9'
               " class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">
                   Unit Pengelola
@@ -69,9 +69,9 @@
                 </el-select>
               </div>
               <div v-if="
-                userLevel === 'Admin' ||
-                userLevel === 'Pusat' ||
-                userLevel === 'Pengelola'
+                userAuthStore.levelAlias === 'Xf!8qP@7' ||
+                userAuthStore.levelAlias === 'Zp@5Kw_9' ||
+                userAuthStore.levelAlias === 'Gk#92lV&'
               " class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pembina</h3>
                 <el-select v-model="filterKK.selectedPembina" multiple clearable collapse-tags
@@ -244,7 +244,7 @@
               <td class="text-center">
                 <div>
                   <RouterLink v-if="
-                    (userLevel === 'Admin' || (userLevel === 'Pembina' && userRole === 'Input')) &&
+                    (userAuthStore.levelAlias === 'Xf!8qP@7' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k')) &&
                     (item.status_approval === 'Draft' ||
                       item.status_approval === 'Ditolak T1' ||
                       item.status_approval === 'Ditolak T2')
@@ -358,11 +358,11 @@
               </svg>
               Filter
               <div v-if="
-                userLevel === 'Admin' ||
-                  userLevel === 'Pusat'
+                userAuthStore.levelAlias === 'Xf!8qP@7' ||
+                  userAuthStore.levelAlias === 'Zp@5Kw_9'
                   ? filterFS.selectedPengelola.length ||
                   filterFS.selectedPersetujuan.length || filterFS.selectedPembina.length
-                  : userLevel === 'Pengelola'
+                  : userAuthStore.levelAlias === 'Gk#92lV&'
                     ? filterFS.selectedPembina.length ||
                     filterFS.selectedPersetujuan.length
                     : filterFS.selectedPersetujuan.length
@@ -390,8 +390,8 @@
                 </div>
               </div>
               <div v-if="
-                userLevel === 'Admin' ||
-                userLevel === 'Pusat'
+                userAuthStore.levelAlias === 'Xf!8qP@7' ||
+                userAuthStore.levelAlias === 'Zp@5Kw_9'
               " class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">
                   Unit Pengelola
@@ -409,9 +409,9 @@
                 </el-select>
               </div>
               <div v-if="
-                userLevel === 'Admin' ||
-                userLevel === 'Pusat' ||
-                userLevel === 'Pengelola'
+                userAuthStore.levelAlias === 'Xf!8qP@7' ||
+                userAuthStore.levelAlias === 'Zp@5Kw_9' ||
+                userAuthStore.levelAlias === 'Gk#92lV&'
               " class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pembina</h3>
                 <el-select v-model="filterFS.selectedPembina" multiple clearable collapse-tags
@@ -577,7 +577,7 @@
               </td>
               <td class="text-center">
                 <div v-if="
-                  (userLevel === 'Admin' || (userLevel === 'Pembina' && userRole === 'Input')) &&
+                  (userAuthStore.levelAlias === 'Xf!8qP@7' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k')) &&
                   (item.status_approval === 'Draft' ||
                     item.status_approval === 'Ditolak T1' ||
                     item.status_approval === 'Ditolak T2')
@@ -685,6 +685,8 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from "vue";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
+import { useUserAuthStore } from "@/store/storeUserAuth";
+const userAuthStore = useUserAuthStore();
 import PersetujuanService from "@/services/persetujuan-service";
 import PetaService from "@/services/peta-service";
 import GlobalFormat from "@/services/format/global-format";
@@ -718,8 +720,6 @@ const pembinaList = ref<any[]>([]);
 const persetujuanKK = ref<any[]>([]);
 const persetujuanFS = ref<any[]>([]);
 let encryptStorageRef: any = null;
-const userLevel = ref<string | null>(null);
-const userRole = ref<string | null>(null);
 
 const indeterminatePengelola = ref(false);
 const indeterminatePembina = ref(false);
@@ -1182,8 +1182,6 @@ const goNext = () => {
 onMounted(async () => {
   isLoading.value = true;
   encryptStorageRef = await encryptStoragePromise;
-  userLevel.value = await authService.checkLevel();
-  userRole.value = await authService.checkRole();
   await fetchPersetujuanKK();
   await fetchPersetujuanFS();
   await getDataPengelola();

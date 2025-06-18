@@ -97,7 +97,7 @@
         <div class="flex flex-col space-y-1">
           <p class="text-base font-medium text-primaryTextColor">{{ userData.nama_pegawai }}</p>
           <p class="text-sm text-textDisabledColor">{{ userData.email }}</p>
-          <Chips :title="'Role'" :content="userRole" class="w-fit" />
+          <Chips :title="'Role'" :content="userAuthStore.roleName" class="w-fit" />
         </div>
       </div>
       <div class="flex w-full space-x-5">
@@ -227,37 +227,38 @@
         <!-- Carousel wrapper -->
         <div class="relative h-screen overflow-hidden md:h-screen">
           <div class="relative z-50 p-10">
-            <img src="../assets/img/LogoPLN.png" class="w-26" alt="logo-pln" />
+            <!-- Critical logo preloaded -->
+            <img src="../assets/img/LogoPLN.png" class="w-26" alt="logo-pln" fetchpriority="high" />
           </div>
-          <!-- Item 1 -->
+          <!-- Item 1 - First carousel image preloaded -->
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
             <img src="../assets/img/Carousel2.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-              alt="..." />
+              alt="Carousel image 1" fetchpriority="high" />
           </div>
-          <!-- Item 2 -->
+          <!-- Item 2 - Lazy loaded -->
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
             <img src="../assets/img/carousel4.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-              alt="..." />
+              loading="lazy" decoding="async" alt="Carousel image 2" />
           </div>
-          <!-- Item 3 -->
+          <!-- Item 3 - Lazy loaded -->
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
             <img src="../assets/img/carousel5.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-              alt="..." />
+              loading="lazy" decoding="async" alt="Carousel image 3" />
           </div>
-          <!-- Item 4 -->
+          <!-- Item 4 - Lazy loaded -->
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
             <img src="../assets/img/carousel6.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-              alt="..." />
+              loading="lazy" decoding="async" alt="Carousel image 4" />
           </div>
-          <!-- Item 5 -->
+          <!-- Item 5 - Lazy loaded -->
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
             <img src="../assets/img/Carousel3.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-              alt="..." />
+              loading="lazy" decoding="async" alt="Carousel image 5" />
           </div>
         </div>
         <!-- Slider indicators -->
@@ -388,14 +389,14 @@ import { ref, onMounted, onUnmounted, nextTick } from "vue";
 import { initFlowbite } from "flowbite";
 import axios from "axios";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
-import { encryptAES, decryptAES } from "@/services/helper/encryption";
+import { encryptAES } from "@/services/helper/encryption";
+import { useUserAuthStore } from "@/store/storeUserAuth";
+const userAuthStore = useUserAuthStore();
 import { notifyError, notifySuccess } from "@/services/helper/toast-notification";
 import TimeFormatOtp from '../services/format/time-format-otp';
 const timeFormatOtp = new TimeFormatOtp();
 import AuthService from "@/services/auth-service";
 const authService = new AuthService();
-import UserService from "@/services/user-service";
-const userService = new UserService();
 import ModalWrapper from "@/components/ui/ModalWrapper.vue";
 import TextField from "@/components/ui/TextField.vue";
 import IconRoundedChecked from "@/components/icons/IconRoundedChecked.vue";
@@ -493,7 +494,6 @@ const captchaData = ref<any>({
   image: "",
   thumb: "",
 });
-const userRole = ref<string | null>(null);
 
 // Event Handling
 const eventCaptcha: Partial<{
@@ -655,7 +655,7 @@ const generateCaptcha = async () => {
     if (import.meta.env.MODE === 'development') {
       console.error('Error Generate Captcha : ', error);
     }
-    
+
     // Tampilkan pesan error yang user-friendly
     if (error?.message === 'Network Error') {
       notifyError('Tidak dapat memuat captcha. Silakan coba lagi nanti.', 3000);
@@ -1008,10 +1008,7 @@ const onDeclinePrivacy = async () => {
 
 onMounted(async () => {
   initFlowbite();
-  const res = decryptAES("CuB1qHz9HSvVz7/t8dk9vA==:b5ASQOFdf9esYQlFvmGK+23biUqJ3Iu2RpBe3TzxkyzACh5DEOs+XiHGMCkEqrHhg4NY7JBQgtfEEtlZNzAnCZZ5PIm1NHlcprDe0+YNgh+po+3kBbhwpmjqEEx/0x5z4cu09PTUeYwJQtFOezJOowtOeyyJtgS6Ef5U7UXofOOvuVq3yqVGUKbCG1frrMM1gJSgms4dLzjghLmwsr3kxqY4ACMY9uIcviffIZBSpjRExEYJCTpi0i7kzuZww2qIBpP6Pz+I365yjZ/92ILCnoNGFslsNjXFNF7YM6HL83owCwn5J6jPQ165DhwtAIrB/MQ2SWcqQGj8v2RgAbcOCZYy0HgiDHC6CXTBYulLU38nMC4y7216A6XKvS1UilRDUeY+YdgIKcJW100FrPQatbwk28fiwmW2rMT3K91NXrNiLrh5MdXZHUs76AWgbZ6fjiexcdeVB59KBpmA7uF7q0QYUWj29m31azJJpIQYaJWmmP8wSP4h9RJIVww4mNUlzRSpXWzCuq+9MuOYXeHm2SAKP90lVvtrSo9TwkDB8CQjvuHatNw+PK6UlkcgqyN6UtZWGB/vKiIDuGMuzTFe95Tj/pkaJuAEPyXakh+w/lB1jBdKd7vfRaX/K7ajmmSCsrcuGAYpCKuJX4tSpp0kUSiiN6itf51eopoTj8SkgaP0kMmLrn9vW8mPZJWkIysu0PXImQIWutyjGn7x5QMiGZx8G11Zx/ROCUUKJmKroSwlpTVla2A/3iKzCZ/Exub3n3iRWrwm5i7QLUX6vwKVU078jPe6aqyKf0NvEdDpVLtfiPtKUcQQKc3e4iLn6ZrE54qLfsMVd6pBWv8hFAeZ7OsuiJxXFY0C/DH5bLGrY72H9YloYS0lgG7fR5bvCtqQ9RlNHyiEGi+B7/dUrbTKdIxNgWTO8biVogI39F30Uxb/q1I8pgcAR6dnf4p+C7WlYLeJx4SAaflnTgcM0qVgGrrxL6M1rqGuoyKFJZ2NaIS/bx3wFtBCnw1I3UtHE7oY0N/3/TMa+eh8uBTXWwMH0A==");
-  console.log("Decrypt AES: ", res);
   generateCaptcha();
-  userRole.value = await authService.checkRole();
   const hasRefreshed = sessionStorage.getItem('hasRefreshed');
   if (!hasRefreshed) {
     sessionStorage.setItem('hasRefreshed', 'true');

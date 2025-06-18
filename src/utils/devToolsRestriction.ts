@@ -105,13 +105,11 @@ const disableDevTools = (): void => {
  * Initialize dev tools restrictions based on environment
  * Uses secure environment variables to prevent exposure of sensitive information
  */
-export const initDevToolsRestriction = (): void => {
-  const environment = getEnvironment();
-  
+export const initDevToolsRestriction = (): void => {  
   if (isProduction() || isStaging()) {
     // Use a generic message that doesn't expose specific environment details
     console.log('Developer tools restricted in this environment');
-    disableDevTools();
+    // disableDevTools();
   } else {
     // Generic message for development
     console.log('Developer tools enabled');

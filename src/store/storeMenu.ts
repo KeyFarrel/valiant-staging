@@ -1,7 +1,7 @@
-import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
-import { encryptStoragePromise } from '@/utils/app-encrypt-storage';
-import AuthService from '@/services/auth-service';
+import { defineStore } from "pinia";
+import { ref, computed } from "vue";
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
+import AuthService from "@/services/auth-service";
 import router from "@/router";
 
 const nodeMode: any = import.meta.env.MODE;
@@ -13,41 +13,39 @@ export interface MenuItem {
   sub_menus?: MenuItem[];
 }
 
-export const useMenuStore = defineStore('menu', () => {
-  // State
+export const useMenuStore = defineStore("menu", () => {
   const menuList = ref<MenuItem[]>([]);
   const isMenuLoaded = ref(false);
-  
-  // Getters
+
   const accessibleRoutes = computed(() => {
     return menuList.value
       .flatMap((menu) => menu.sub_menus || [])
       .map((submenu) => submenu.url);
   });
-  
+
   const isMenuAccessible = (menuName: string) => {
     return accessibleRoutes.value.includes(menuName);
   };
-  
-  // Actions
+
   async function initializeMenu() {
     if (isMenuLoaded.value) return;
-    
+
     try {
-        await fetchMenuFromAPI();
+      await fetchMenuFromAPI();
     } catch (error) {
       console.error("Failed to initialize menu:", error);
     }
   }
-  
+
   async function fetchMenuFromAPI() {
     try {
       const authService = new AuthService();
       const encryptStorage = await encryptStoragePromise;
-      const token = nodeMode === "production" 
-        ? encryptStorage.getItem("token") 
-        : localStorage.getItem("token");
-      
+      const token =
+        nodeMode === "production"
+          ? encryptStorage.getItem("token")
+          : localStorage.getItem("token");
+
       if (token) {
         const response: any = await authService.getMenu();
         if (response && response.data) {
@@ -63,30 +61,27 @@ export const useMenuStore = defineStore('menu', () => {
       router.push("/login");
     }
   }
-  
+
   function setMenu(menu: MenuItem[]) {
     menuList.value = menu;
     isMenuLoaded.value = true;
   }
-  
+
   function clearMenu() {
     menuList.value = [];
     isMenuLoaded.value = false;
   }
-  
+
   return {
-    // State
     menuList,
     isMenuLoaded,
-    
-    // Getters
+
     accessibleRoutes,
     isMenuAccessible,
-    
-    // Actions
+
     initializeMenu,
     fetchMenuFromAPI,
     setMenu,
-    clearMenu
+    clearMenu,
   };
 });

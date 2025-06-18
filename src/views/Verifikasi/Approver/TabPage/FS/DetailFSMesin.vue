@@ -9,7 +9,7 @@
     :kondisi-unit="mesinDataById.kondisi_unit">
 
     <div
-      v-if="approveMesinFS?.status === 'Menunggu Persetujuan T2' && (userLevel === 'Admin' || (userLevel == 'Pengelola' || userRole == 'Approver'))"
+      v-if="approveMesinFS?.status === 'Menunggu Persetujuan T2' && (userAuthStore.levelAlias === 'Xf!8qP@7' || (userAuthStore.levelAlias == 'Gk#92lV&' || userAuthStore.roleAlias == 'Vx_91$pN'))"
       class="flex">
       <!-- Tolak Laporan -->
       <button
@@ -93,7 +93,7 @@
       </ModalWrapper>
     </div>
     <div
-      v-else-if="approveMesinFS?.status === 'Menunggu Persetujuan T1' && (userLevel === 'Admin' || (userLevel == 'Pembina' || userRole == 'Approver'))"
+      v-else-if="approveMesinFS?.status === 'Menunggu Persetujuan T1' && (userAuthStore.levelAlias === 'Xf!8qP@7' || (userAuthStore.levelAlias == 'Dr^3Zn$!' || userAuthStore.roleAlias == 'Vx_91$pN'))"
       class="flex">
       <!-- Tolak Laporan -->
       <button
@@ -343,6 +343,8 @@ import { useRoute } from 'vue-router'
 import { Vue3Lottie } from 'vue3-lottie';
 import { notifyError } from "@/services/helper/toast-notification";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
+import { useUserAuthStore } from "@/store/storeUserAuth";
+const userAuthStore = useUserAuthStore();
 import RekapService from "@/services/rekap-service";
 const rekapService = new RekapService();
 import UserService from "@/services/user-service";
@@ -387,8 +389,6 @@ const data = ref('Feasibility Study');
 const detailRekapService = new DetailRekapService();
 const feasibilityStudyService = new FeasibilityStudyService();
 const persetujuanService = new PersetujuanService();
-const userLevel = ref<string | null>(null);
-const userRole = ref<string | null>(null);
 
 const approveSentralFS = ref<ListApprove>();
 const approveMesinFS = ref<ListApprove>();
@@ -823,8 +823,6 @@ onMounted(async () => {
   isLoading.value = true;
   const encryptStorage = await encryptStoragePromise;
   idGrafik.value = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id;
-  userLevel.value = await authService.checkLevel();
-  userRole.value = await authService.checkRole();
   await fetchMesinById();
   await fetchPersetujuanFS();
   await fetchAsumsiFeasibility();

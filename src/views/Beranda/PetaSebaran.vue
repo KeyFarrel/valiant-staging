@@ -2,7 +2,7 @@
   <Loading v-if="isLoading" />
   <div class="p-4 space-y-4 bg-white border rounded-md min-h-[75dvh]">
     <div class="flex justify-between"
-      v-if="userLevel === 'Admin' || userLevel === 'Pusat' || userLevel === 'Pengelola' || userLevel === 'Pembina'">
+      v-if="userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Zp@5Kw_9' || userAuthStore.levelAlias === 'Gk#92lV&' || userAuthStore.levelAlias === 'Dr^3Zn$!'">
       <div class="flex items-center">
         <SearchBox @on-focus="handleFocus" v-model="selectedSearchQuery" class="w-72" />
         <ModalSearch v-if="isSearchModalOpen" v-model="searchQuery" :show-modal="isSearchModalOpen"
@@ -43,7 +43,7 @@
               </button>
             </div>
           </div>
-          <div class="mt-4" v-if="userLevel === 'Admin' || userLevel === 'Pusat'">
+          <div class="mt-4" v-if="userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Zp@5Kw_9'">
             <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Induk / Subholding / Anak Perusahaan</h3>
             <el-select v-model="pengelola" multiple clearable collapse-tags
               placeholder="Pilih Unit Induk / Subholding / Anak Perusahaan" popper-class="custom-header"
@@ -241,6 +241,8 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
+import { useUserAuthStore } from "@/store/storeUserAuth";
+const userAuthStore = useUserAuthStore();
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import { notifyError } from "@/services/helper/toast-notification";
 import type { CheckboxValueType } from 'element-plus';
@@ -284,7 +286,6 @@ const indeterminatePengelola = ref(false)
 const indeterminatePembangkit = ref(false)
 const indeterminateDmn = ref(false)
 const indeterminateUmur = ref(false)
-const userLevel = ref<string | null>(null);
 const itemsPengelola = ref<{ id: string; name: string; }[]>([])
 const itemsPembangkit = ref<{ id: string; name: string; power?: string }[]>([])
 const itemsDmn = ref<{
@@ -568,7 +569,6 @@ async function changeDataNoDMN() {
 onMounted(async () => {
   isLoading.value = true;
   encryptStorageRef = await encryptStoragePromise;
-  userLevel.value = await authService.checkLevel();
   await fetchPetaSentral();
   getDataPengelola()
   getDataPembangkit()

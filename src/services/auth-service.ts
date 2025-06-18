@@ -21,34 +21,8 @@ export default class AuthService extends BaseService {
         response.data.id_sentral === "" || response.data.id_sentral === "0"
           ? 0
           : response.data.id_sentral;
-      let level: string;
-      let role: string;
 
-      if (response.data.id_level === "3") {
-        level = "Sentral";
-      } else if (response.data.id_level === "4") {
-        level = "Pembina";
-      } else if (response.data.id_level === "2") {
-        level = "Pengelola";
-      } else if (response.data.id_level === "1") {
-        level = "Admin";
-      } else if (response.data.id_level === "5") {
-        level = "Pusat";
-      }
-
-      if (response.data.role_id === "138") {
-        role = "Staff";
-      } else if (response.data.role_id === "140") {
-        role = "Approver";
-      } else if (response.data.role_id === "141") {
-        role = "Super Admin";
-      } else if (response.data.role_id === "142") {
-        role = "Monitoring";
-      } else if (response.data.role_id === "143") {
-        role = "Input";
-      }
-
-      const dataString = `${role}:${level}:${levelSentral}:${namaPegawai}`;
+      const dataString = `${levelSentral}:${namaPegawai}`;
       const hash = CryptoJS.HmacSHA512(
         dataString,
         (window as any).userHashSecretKey(),
@@ -56,8 +30,6 @@ export default class AuthService extends BaseService {
 
       const setStorage = (storage: any) => {
         storage.setItem("token", token);
-        storage.setItem("level", level);
-        storage.setItem("role", role);
         storage.setItem("nama_pegawai", namaPegawai);
         storage.setItem("level_sentral", levelSentral);
         storage.setItem("user_hash", hash);
@@ -83,23 +55,6 @@ export default class AuthService extends BaseService {
   }
   async profile<T>(): Promise<T> {
     return this.get(`${url}user/me`);
-  }
-  async checkLevel() {
-    const encryptStorage = await encryptStoragePromise;
-    const level =
-      nodeMode === "production"
-        ? encryptStorage.getItem("level")
-        : localStorage.getItem("level");
-    return level;
-  }
-
-  async checkRole() {
-    const encryptStorage = await encryptStoragePromise;
-    const role =
-      nodeMode === "production"
-        ? encryptStorage.getItem("role")
-        : localStorage.getItem("role");
-    return role;
   }
 
   async logout<T>(): Promise<T> {
