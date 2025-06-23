@@ -10,7 +10,7 @@ export default class AuthService extends BaseService {
   async login<T>(payload: any): Promise<T> {
     try {
       const encryptStorage = await encryptStoragePromise;
-      const response: any = await this.post(`${url}auth/login`, payload, true);
+      const response: any = await this.post(`${url}auth/login`, payload);
       if (response.message === 'Anda terdeteksi menggunakan device baru, silahkan lakukan verifikasi OTP'){
         return response;
       }
@@ -35,26 +35,35 @@ export default class AuthService extends BaseService {
         storage.setItem("user_hash", hash);
       };
 
-      if (response.data.is_reset) {
-        sessionStorage.setItem("token", token);
-      } else {
+      // if (response.data.is_reset) {
+        // sessionStorage.setItem("token", token);
+      // } else {
+      if (!response.data.is_reset){
         const storage =
           nodeMode === "production" ? encryptStorage : localStorage;
         setStorage(storage);
       }
+      // }
 
       console.log(response);
       return response;
     } catch (error) {
       console.error("Login Error", error);
-      if(error.response.data.message === "Anda belum mengisi privacy policy"){
-        sessionStorage.setItem("token", error.response.data.data.token);
-      }
+      // if(error.response.data.message === "Anda belum mengisi privacy policy"){
+      //   sessionStorage.setItem("token", error.response.data.data.token);
+      // }
       throw error;
     }
   }
   async profile<T>(): Promise<T> {
     return this.get(`${url}user/me`);
+  }
+  async preProfile<T>(): Promise<T> {
+    return this.get(`${url}user/pre-me`);
+  }
+
+  async privacyPolicy<T>(isAccept: boolean): Promise<T> {
+    return this.post(`${url}auths/privacy-policy`, { is_accept: isAccept });
   }
 
   async logout<T>(): Promise<T> {
@@ -76,7 +85,7 @@ export default class AuthService extends BaseService {
     return this.post(`${url}auth/verifikasi-token`, { code: code });
   }
   async generateCaptcha<T>(): Promise<T> {
-    return this.post(`${url}auth/generate-captcha`);
+    return this.post(`${url}auth/generate-captcha`, null, true);
   }
   async getPublicKey<T>(): Promise<T> {
     return this.post(`${url}auth/public-key`);
@@ -93,6 +102,17 @@ export default class AuthService extends BaseService {
     token: string,
   ): Promise<T> {
     return this.post(`${url}user/change-password`, {
+      password_old: oldPassword,
+      password_new: newPassword,
+      token: token,
+    });
+  }
+  async changePrePassword<T>(
+    oldPassword: string,
+    newPassword: string,
+    token: string,
+  ): Promise<T> {
+    return this.post(`${url}user/pre-change-password`, {
       password_old: oldPassword,
       password_new: newPassword,
       token: token,

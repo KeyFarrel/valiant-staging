@@ -756,11 +756,13 @@ const resetEmailOtp = async () => {
 const fetchDataProfile = async () => {
   try {
     isLoadingSpinner.value = true;
-    const response: DataItem = await axios.get(`${url}user/me`, {
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-      }
-    });
+    const response: DataItem = await authService.preProfile()
+    // a
+    // xios.get(`${url}user/me`, {
+    //   headers: {
+    //     Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+    //   }
+    // });
     userData.value = response.data.response.data;
     isLoadingSpinner.value = false;
   } catch (error) {
@@ -846,17 +848,18 @@ const changePassword = async () => {
   } else {
     try {
       isLoadingSpinner.value = true;
-      await axios.post(`${url}user/change-password`,
-        encryptAES(JSON.stringify({
-          password_old: oldPassword.value,
-          password_new: newPassword.value,
-          token: "this-is-reset"
-        })), {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-        }
-      });
+      await authService.changePrePassword(oldPassword.value, newPassword.value, "this-is-reset")
+      // axios.post(`${url}user/change-password`,
+      //   encryptAES(JSON.stringify({
+      //     password_old: oldPassword.value,
+      //     password_new: newPassword.value,
+      //     token: "this-is-reset"
+      //   })), {
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+      //   }
+      // });
       isOldPasswordWrong.value = false;
       isLoadingSpinner.value = false;
       resetInputAndAttribute();
@@ -886,7 +889,6 @@ const changePassword = async () => {
 
 const onCaptchaVerified = async () => {
   if (isLoadingButton.value) return;
-
   const maxAttempt = 5;
   if (valEmail.value === "") {
     valEmailErr.value = "Email kosong mohon diisi";
@@ -958,15 +960,16 @@ const onCaptchaVerified = async () => {
 const onAcceptPrivacy = async () => {
   try {
     isLoadingSpinner.value = true;
-    await axios.post(`${url}auths/privacy-policy`,
-      encryptAES(JSON.stringify({
-        is_accept: true
-      })), {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-      }
-    });
+    await authService.privacyPolicy(true);
+    // axios.post(`${url}auths/privacy-policy`,
+    //   encryptAES(JSON.stringify({
+    //     is_accept: true
+    //   })), {
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+    //   }
+    // });
     const param = {
       email: valEmail.value,
       password: valPassword.value,
@@ -986,15 +989,16 @@ const onAcceptPrivacy = async () => {
 const onDeclinePrivacy = async () => {
   try {
     isLoadingSpinner.value = true;
-    await axios.post(`${url}auths/privacy-policy`,
-      encryptAES(JSON.stringify({
-        is_accept: false
-      })), {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-      }
-    });
+    await authService.privacyPolicy(false);
+    // axios.post(`${url}auths/privacy-policy`,
+    //   encryptAES(JSON.stringify({
+    //     is_accept: false
+    //   })), {
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+    //   }
+    // });
     sessionStorage.clear();
     notifyError("Anda tidak dapat menggunakan aplikasi ini sebelum menyetujui kebijakan privasi", 7000);
   } catch (error) {

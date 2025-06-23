@@ -244,8 +244,6 @@ import { useRekapSearchStore } from "@/store/storeRekapKertasKerja";
 import { useIdle, useTimestamp } from '@vueuse/core'
 import { useMenuStore } from "@/store/storeMenu";
 const menuStore = useMenuStore();
-import { VueCookies } from "vue-cookies";
-const $cookies = inject<VueCookies>('$cookies');
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 const rekapStore = useRekapSearchStore();
 const store = useNavbarLabelStore();
@@ -307,7 +305,6 @@ watch(timeLeft, async (remainingTime) => {
         isLoading.value = true;
         await authService.logout();
         nodeMode === "production" ? encryptStorage.clear() : localStorage.clear();
-        $cookies.remove('token');
         router.push("/login");
       } catch (error) {
         console.error("Logout Gagal", error);
@@ -367,7 +364,6 @@ const handleLogout = async () => {
     isLoading.value = true
     await authService.logout();
     nodeMode === "production" ? encryptStorage.clear() : localStorage.clear();
-    $cookies.remove('token');
     router.push("/login");
   } catch (error) {
     console.error("Error logout", error)
