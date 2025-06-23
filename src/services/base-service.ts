@@ -69,7 +69,7 @@ export default class BaseService {
     const encryptStorage = await encryptStoragePromise;
     const fingerprintID = await getFingerprint();
     const headers: any = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
       "Content-Type": "application/json",
       "X-Fingerprint-ID": fingerprintID,
     };
@@ -80,6 +80,7 @@ export default class BaseService {
         url: path,
         headers,
         timeout: TIME_OUT,
+        withCredentials: true,
         params: params,
         responseType: responseType
       });
@@ -93,7 +94,7 @@ export default class BaseService {
   async getFile<T>(path: string, params?: any, responseType?: any): Promise<T> {
     const encryptStorage = await encryptStoragePromise;
     const headers: any = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
     };
 
     try {
@@ -102,6 +103,7 @@ export default class BaseService {
         url: path,
         headers,
         timeout: TIME_OUT,
+        withCredentials: true,
         params: params,
         responseType: responseType
       });
@@ -116,16 +118,15 @@ export default class BaseService {
     const encryptStorage = await encryptStoragePromise;
     const fingerprintID = await getFingerprint();
     const headers: any = {
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
         "Content-Type": "application/json",
-        // 'Access-Control-Allow-Origin': '*',
         "X-Fingerprint-ID": fingerprintID,
       };
       try {
         const response: AxiosResponse = await axios({
           method: "POST",
           url: path,
-        // withCredentials: withCredentials,
+        withCredentials: true,
         data: encryptAES(JSON.stringify(payload)),
         headers,
         timeout: TIME_OUT,
@@ -142,7 +143,7 @@ export default class BaseService {
     const encryptStorage = await encryptStoragePromise;
     const headers: any = {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
     };
 
     try {
@@ -152,6 +153,7 @@ export default class BaseService {
         data: payload,
         headers,
         timeout: TIME_OUT,
+        withCredentials: true,
       });
       return response.data;
     } catch (error) {
@@ -164,7 +166,7 @@ export default class BaseService {
     const encryptStorage = await encryptStoragePromise;
     const headers: any = {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
     };
 
     try {
@@ -174,6 +176,7 @@ export default class BaseService {
         data: encryptAES(JSON.stringify(payload)),
         headers,
         timeout: TIME_OUT,
+        withCredentials: true,
       });
       return response.data;
     } catch (error) {
@@ -186,7 +189,7 @@ export default class BaseService {
     const encryptStorage = await encryptStoragePromise;
     const headers: any = {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
     };
 
     try {
@@ -195,6 +198,7 @@ export default class BaseService {
         url: path,
         headers,
         timeout: TIME_OUT,
+        withCredentials: true,
       });
       return response.data;
     } catch (error) {
@@ -207,7 +211,7 @@ export default class BaseService {
     const encryptStorage = await encryptStoragePromise;
     const headers: any = {
       "Content-Type": "multipart/form-data",
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
     };
 
     try {
@@ -217,6 +221,7 @@ export default class BaseService {
         data: payload,
         headers,
         timeout: TIME_OUT,
+        withCredentials: true,
       });
       return response.data;
     } catch (error) {
@@ -229,7 +234,7 @@ export default class BaseService {
     const encryptStorage = await encryptStoragePromise;
     const headers: any = {
       "Content-Type": "multipart/form-data",
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
     };
 
     try {
@@ -239,6 +244,7 @@ export default class BaseService {
         data: payload,
         headers,
         timeout: TIME_OUT,
+        withCredentials: true,
       });
       return response.data;
     } catch (error) {
@@ -251,7 +257,7 @@ export default class BaseService {
     const encryptStorage = await encryptStoragePromise;
     const headers: any = {
       "Content-Type": "application/octet-stream",
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
     };
 
     try {
@@ -261,6 +267,7 @@ export default class BaseService {
         data: payload,
         headers,
         timeout: TIME_OUT,
+        withCredentials: true,
       });
       return response.data;
     } catch (error) {
@@ -273,7 +280,7 @@ export default class BaseService {
     const encryptStorage = await encryptStoragePromise;
     const headers: any = {
       "Content-Type": "application/octet-stream",
-      Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
     };
 
     try {
@@ -283,6 +290,7 @@ export default class BaseService {
         data: payload,
         headers,
         timeout: TIME_OUT,
+        withCredentials: true,
       });
       return response.data;
     } catch (error) {

@@ -115,13 +115,11 @@ const loadNonEssentialResources = async () => {
   const [
     ElementPlus,
     VueDatePicker,
-    VueCookies,
     autoAnimatePlugin,
     OpenLayersMap,
   ] = await Promise.all([
     import("element-plus"),
     import("@vuepic/vue-datepicker"),
-    import("vue-cookies"),
     import("@formkit/auto-animate/vue").then((m) => m.autoAnimatePlugin),
     import("vue3-openlayers"),
   ]);
@@ -134,11 +132,6 @@ const loadNonEssentialResources = async () => {
 
   app
     .use(ElementPlus.default)
-    .use(VueCookies.default, {
-      expires: "7d",
-      sameSite: "Strict",
-      secure: true,
-    })
     .use(autoAnimatePlugin)
     .use(OpenLayersMap.default)
     .component("VueDatePicker", VueDatePicker.default)
