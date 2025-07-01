@@ -647,11 +647,6 @@ td {
   padding: 0.85rem;
 }
 
-:disabled {
-  background-color: #F5F5F5;
-  cursor: not-allowed;
-}
-
 ul li#pagination.selected {
   background-color: #0099AD;
   border-radius: 6px;

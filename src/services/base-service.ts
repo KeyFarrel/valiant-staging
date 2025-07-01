@@ -85,7 +85,7 @@ export default class BaseService {
         responseType: responseType
       });
       console.log("Response Method Get:", response);
-      return nodeMode !== 'development' ? response.data.response : response.data;
+      return response.data;
     } catch (error) {
       console.error("Error:", error);
       throw error;
@@ -127,12 +127,12 @@ export default class BaseService {
           method: "POST",
           url: path,
         withCredentials: true,
-        data: nodeMode !== 'development' ? encryptAES(JSON.stringify(payload)) : payload,
+        data: payload,
         headers,
         timeout: TIME_OUT,
       });
       console.log("Response Method Post:", response);
-      return nodeMode !== 'development' ? response.data.response : response.data;
+      return response.data;
     } catch (error) {
       console.error("Error:", error);
       throw error;
