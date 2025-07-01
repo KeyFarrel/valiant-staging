@@ -41,7 +41,7 @@ const getFingerprint = async () => {
 };
 
 const nodeMode: any = import.meta.env.MODE;
-const TIME_OUT = 120000;
+const TIME_OUT = 120000; // 120 seconds timeout for API requests
 
 export default class BaseService {
   async api<T>(
@@ -85,7 +85,7 @@ export default class BaseService {
         responseType: responseType
       });
       console.log("Response Method Get:", response);
-      return response.data.response;
+      return nodeMode !== 'development' ? response.data.response : response.data;
     } catch (error) {
       console.error("Error:", error);
       throw error;
@@ -127,12 +127,12 @@ export default class BaseService {
           method: "POST",
           url: path,
         withCredentials: true,
-        data: encryptAES(JSON.stringify(payload)),
+        data: nodeMode !== 'development' ? encryptAES(JSON.stringify(payload)) : payload,
         headers,
         timeout: TIME_OUT,
       });
       console.log("Response Method Post:", response);
-      return response.data.response;
+      return nodeMode !== 'development' ? response.data.response : response.data;
     } catch (error) {
       console.error("Error:", error);
       throw error;
