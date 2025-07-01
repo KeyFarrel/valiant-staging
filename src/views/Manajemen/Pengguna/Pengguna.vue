@@ -1454,11 +1454,6 @@ ul li#pagination.selected {
   transition: 300ms;
 }
 
-:disabled {
-  background-color: #F5F5F5;
-  cursor: not-allowed;
-}
-
 ul li.disabled {
   pointer-events: none;
   cursor: not-allowed;
