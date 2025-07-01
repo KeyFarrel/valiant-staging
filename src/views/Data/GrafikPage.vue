@@ -568,7 +568,7 @@ const fetchPetaSentral = async () => {
       pengelola: [],
       pembina: [],
       jenis_kit: [],
-      daya_mampu: [],
+      id_daya: [],
       umur: []
     });
     if (listDataPeta.value.length === 0) {
