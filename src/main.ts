@@ -60,7 +60,6 @@ axios.interceptors.response.use(
   async (response: any) => {
     try {
       if (
-        nodeMode !== 'development' &&
         response.data.response &&
         typeof response.data.response === "string"
       ) {
