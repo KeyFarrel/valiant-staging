@@ -570,7 +570,7 @@ const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const fetchMesinById = async () => {
   try {
     const response: MesinItem = await detailRekapService.getMesinById(
-      idGrafik
+      idGrafik.value
     );
     try {
       const responsePhoto: any = await detailSentralService.getPhoto(response.data.photo1);
