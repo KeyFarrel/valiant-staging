@@ -487,7 +487,7 @@ interface TableInterface {
 onMounted(async () => {
   grafikService
     .getGrafikPlanMesin({
-      id_mesin: props.idMesin,
+      uuid_mesin: props.idMesin,
       tahun_realisasi: props.tahunGrafik
     })
     .then((res: any) => {
@@ -889,7 +889,7 @@ onMounted(async () => {
 
   grafikService
     .getGrafikPlanKomMesin({
-      id_mesin: props.idMesin,
+      uuid_mesin: props.idMesin,
     })
     .then((res: any) => {
       dataPlanKomMesin.value = res.data;
@@ -1044,7 +1044,7 @@ function handleClickPlan(param: any) {
 
   grafikService
     .getGrafikPlanDetailMesin({
-      id_mesin: props.idMesin,
+      uuid_mesin: props.idMesin,
       tahun_realisasi: props.tahunGrafik,
       tahun: tahunPlanningMesin.value[param.dataIndex],
     })
@@ -1142,7 +1142,7 @@ function handleClickPlanKom(param: any) {
 
   grafikService
     .getGrafikPlanKomDetailMesin({
-      id_mesin: props.idMesin,
+      uuid_mesin: props.idMesin,
       tahun: tahunPlanKomMesin.value[param.dataIndex],
     })
     .then((res: any) => {

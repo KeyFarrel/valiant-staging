@@ -6,7 +6,7 @@
         Sentral
       </li>
       <li class="pb-2 mr-10 text-gray-500 transition-all duration-300 cursor-pointer"
-        v-for="(tab, index) in props.tabsTitles " :key="index" @click="selectedTitle = tab.mesin;"
+        v-for="(tab, index) in props.tabsTitles" :key="index" @click="selectedTitle = tab.mesin;"
         :class="{ selected: tab.mesin === selectedTitle }">
         <div class="flex flex-row items-center space-x-2">
           <span class="font-semibold">{{ tab.mesin }}</span>
@@ -32,7 +32,7 @@ const selectedTitle = ref('Sentral');
 interface Tab {
   mesin: string
   kode_mesin: string
-  id_mesin: number
+  uuid_mesin: number
   status_fs: string
   status_realisasi: string
 }

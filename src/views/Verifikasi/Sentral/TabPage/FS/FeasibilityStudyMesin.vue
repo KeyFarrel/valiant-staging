@@ -77,7 +77,7 @@
         <td class="text-center">
           <div>
             <RouterLink
-              :to="{ name: 'persetujuan-fs', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(persetujuanFSItem.id_mesin) : persetujuanFSItem.id_mesin }, query: { id_sentral: persetujuanFSItem.id_sentral } }">
+              :to="{ name: 'persetujuan-fs', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(persetujuanFSItem.uuid_mesin) : persetujuanFSItem.uuid_mesin }, query: { uuid_sentral: persetujuanFSItem.uuid_sentral } }">
               <button>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" clip-rule="evenodd"
@@ -159,8 +159,8 @@ interface PersetujuanFSItem {
   irr_on_equity: number | string
   status: string
   npv_on_equity: number
-  id_sentral: any
-  id_mesin: any
+  uuid_sentral: any
+  uuid_mesin: any
 }
 
 const navigation = ref<{

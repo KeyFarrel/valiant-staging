@@ -513,7 +513,7 @@ const eventCaptcha: Partial<{
     console.log("Captcha ditutup");
   },
   confirm: (point, reset) => {
-    verifyCaptcha(point.x);
+    onCaptchaVerified(point.x);
   },
 };
 
@@ -686,24 +686,24 @@ const startTimers = () => {
   }, 1000);
 };
 
-const verifyCaptcha = async (tile_x: number) => {
-  try {
-    isLoadingSpinner.value = true;
-    await authService.verifCaptcha({
-      captcha_key: captchaKey.value,
-      tile_x: tile_x
-    });
-    isCaptchaVerified.value = true;
-    await onCaptchaVerified();
-    isShowCaptchaModal.value = false;
-  } catch (error) {
-    generateCaptcha();
-    console.error('Error Verify Captcha : ', error);
-  } finally {
-    domRef.value?.clear();
-    isLoadingSpinner.value = false;
-  }
-}
+// const verifyCaptcha = async (tile_x: number) => {
+//   try {
+//     isLoadingSpinner.value = true;
+//     await authService.verifCaptcha({
+//       captcha_key: captchaKey.value,
+//       tile_x: tile_x
+//     });
+//     isCaptchaVerified.value = true;
+//     await onCaptchaVerified();
+//     isShowCaptchaModal.value = false;
+//   } catch (error) {
+//     generateCaptcha();
+//     console.error('Error Verify Captcha : ', error);
+//   } finally {
+//     domRef.value?.clear();
+//     isLoadingSpinner.value = false;
+//   }
+// }
 
 const handleInput = (index, event) => {
   let value = event.target.value.replace(/\D/g, '');
@@ -757,12 +757,6 @@ const fetchDataProfile = async () => {
   try {
     isLoadingSpinner.value = true;
     const response: DataItem = await authService.preProfile()
-    // a
-    // xios.get(`${url}user/me`, {
-    //   headers: {
-    //     Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-    //   }
-    // });
     userData.value = response.data.response.data;
     isLoadingSpinner.value = false;
   } catch (error) {
@@ -849,17 +843,6 @@ const changePassword = async () => {
     try {
       isLoadingSpinner.value = true;
       await authService.changePrePassword(oldPassword.value, newPassword.value, "this-is-reset")
-      // axios.post(`${url}user/change-password`,
-      //   encryptAES(JSON.stringify({
-      //     password_old: oldPassword.value,
-      //     password_new: newPassword.value,
-      //     token: "this-is-reset"
-      //   })), {
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-      //   }
-      // });
       isOldPasswordWrong.value = false;
       isLoadingSpinner.value = false;
       resetInputAndAttribute();
@@ -887,7 +870,9 @@ const changePassword = async () => {
   }
 };
 
-const onCaptchaVerified = async () => {
+const onCaptchaVerified = async (tileX: number) => {
+  isLoadingSpinner.value = true;
+  isCaptchaVerified.value = true;
   if (isLoadingButton.value) return;
   const maxAttempt = 5;
   if (valEmail.value === "") {
@@ -905,11 +890,13 @@ const onCaptchaVerified = async () => {
     param = {
       email: valEmail.value,
       password: valPassword.value,
+      captcha_key: captchaKey.value,
+      tile_x: tileX
     };
 
     try {
       const response: any = await authService.login(param);
-      console.log("Response Login: ", response);
+      isShowCaptchaModal.value = false;
       if (response.message === 'Anda terdeteksi menggunakan device baru, silahkan lakukan verifikasi OTP') {
         notifyError(response.message, 7000);
         isShowCounter.value = false;
@@ -933,8 +920,13 @@ const onCaptchaVerified = async () => {
       }
     } catch (error: any) {
       console.error("Error: ", error)
-      notifyError(error.response.data.message, 5000);
-      isShowCaptchaModal.value = false;
+      if (error.response.data.message !== 'Captcha verification failed') {
+        notifyError(error.response.data.message, 5000);
+        isShowCaptchaModal.value = false;
+      } else if (error.response.data.message === 'Captcha verification failed') {
+        notifyError("Verifikasi captcha gagal, mohon coba lagi", 5000);
+        generateCaptcha();
+      }
       isLoadingButton.value = false;
       if (error.response.data.data.temp_loc && error.response.data.data.temp_loc !== 0) {
         isShowCounter.value = true;
@@ -953,6 +945,9 @@ const onCaptchaVerified = async () => {
         await wait(5000);
         isShowLocked.value = false;
       }
+    } finally {
+      domRef.value?.clear();
+      isLoadingSpinner.value = false;
     }
   }
 }

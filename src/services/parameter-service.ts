@@ -11,12 +11,12 @@ export default class ParameterService extends BaseService {
     });
   }
 
-  async getParameterByID<T>(id: any): Promise<T> {
-    return this.get(`${url}parameter/${id}`);
+  async getParameterByID<T>(uuid: any): Promise<T> {
+    return this.get(`${url}parameter/${uuid}`);
   }
 
-  async editParameter<T>(id: any, data: any): Promise<T> {
-    return this.post(`${url}parameter/${id}`, data);
+  async editParameter<T>(uuid: any, data: any): Promise<T> {
+    return this.post(`${url}parameter/${uuid}`, data);
   }
 
   async addParameter<T>(data: any): Promise<T> {

@@ -8,7 +8,7 @@ export default class RekapService extends BaseService {
     return this.post(`${url}kertas-kerja-detail/all-rekap-kertas-kerja`, {sentral: sentral, pengelola: pengelola, jenis_kit: jenis_kit, id_daya: id_daya, kondisi_mesin: kondisi_mesin, umur: umur, page: page, limit: limit});
   }
   async uploadEvidence<T>(file: any): Promise<T> {
-    return this.postFile(`${url}mutasiasset/s3-amazon-upload-evidence`, file);
+    return this.postFile(`${url}mutasiasset/upload-evidence`, file);
   }
   async uploadTemplateAwalKK<T>(file: any): Promise<T> {
     return this.postFile(`${url}kertas-kerja-detail/import-template-awal`, file);
@@ -23,34 +23,34 @@ export default class RekapService extends BaseService {
     return this.postFile(`${url}kertas-kerja-detail/import-template-simulasi`, file);
   }
   async downloadSimulasi1<T>(tahunBerjalan: any, tahunRealisasi: any, idMesin: any): Promise<T> {
-    return this.getFile(`${url}kertas-kerja-detail/export-template-simulasi1`, { tahun: tahunBerjalan, tahun_realisasi: tahunRealisasi, id_mesin: idMesin }, 'arraybuffer');
+    return this.getFile(`${url}kertas-kerja-detail/export-template-simulasi1`, { tahun: tahunBerjalan, tahun_realisasi: tahunRealisasi, uuid_mesin: idMesin }, 'arraybuffer');
   }
   async downloadSimulasi2<T>(tahunBerjalan: any, tahunRealisasi: any, idMesin: any): Promise<T> {
-    return this.getFile(`${url}kertas-kerja-detail/export-template-simulasi2`, { tahun: tahunBerjalan, tahun_realisasi: tahunRealisasi, id_mesin: idMesin }, 'arraybuffer');
+    return this.getFile(`${url}kertas-kerja-detail/export-template-simulasi2`, { tahun: tahunBerjalan, tahun_realisasi: tahunRealisasi, uuid_mesin: idMesin }, 'arraybuffer');
   }
   async downloadTemplateRekap<T>(tahunBerjalan: any, tahunRealisasi: any, idMesin: any): Promise<T> {
-    return this.getFile(`${url}kertas-kerja-detail/export-template-first`, { tahun: tahunBerjalan, tahun_realisasi: tahunRealisasi, id_mesin: idMesin }, 'arraybuffer');
+    return this.getFile(`${url}kertas-kerja-detail/export-template-first`, { tahun: tahunBerjalan, tahun_realisasi: tahunRealisasi, uuid_mesin: idMesin }, 'arraybuffer');
   }
   async downloadTemplateFS<T>(tahunBerjalan: any, idMesin: any, kodeJenisPembangkit: any): Promise<T> {
-    return this.getFile(`${url}kertas-kerja-detail/export-template-fs`, { tahun: tahunBerjalan, id_mesin: idMesin, kode_jenis_pembangkit: kodeJenisPembangkit}, 'arraybuffer');
+    return this.getFile(`${url}kertas-kerja-detail/export-template-fs`, { tahun: tahunBerjalan, uuid_mesin: idMesin, kode_jenis_pembangkit: kodeJenisPembangkit}, 'arraybuffer');
   }
   async downloadExcelKK<T>(tahunBerjalan: any, tahunRealisasi: any, idMesin: any): Promise<T> {
-    return this.getFile(`${url}kertas-kerja-detail/export-template-awal`, { tahun: tahunBerjalan, tahun_realisasi: tahunRealisasi, id_mesin: idMesin }, 'arraybuffer');
+    return this.getFile(`${url}kertas-kerja-detail/export-template-awal`, { tahun: tahunBerjalan, tahun_realisasi: tahunRealisasi, uuid_mesin: idMesin }, 'arraybuffer');
   }
   async downloadEvidence<T>(file: string): Promise<T> {
-    return this.getFile(`${url}mutasiasset/s3-amazon-download/${file}`, {}, 'arraybuffer');
+    return this.getFile(`${url}mutasiasset/download-evidence/${file}`, {}, 'arraybuffer');
   }
-  async getEvidencePath<T>(id_mesin: string, tahun: string, status_fs: any): Promise<T> {
-    return this.get(`${url}evidence`, {id_mesin: id_mesin, tahun: tahun, status_fs: status_fs});
+  async getEvidencePath<T>(uuid_mesin: string, tahun: string, status_fs: any): Promise<T> {
+    return this.get(`${url}evidence`, {uuid_mesin: uuid_mesin, tahun: tahun, status_fs: status_fs});
   }
-  async updateEvidencePath<T>(id_mesin: any, tahun_upload: any, dokumen_evidence: any, status_fs: any, file_name: string): Promise<T> {
-    return this.post(`${url}evidence`, {id_mesin: id_mesin, tahun_upload: tahun_upload, dokumen_evidence: dokumen_evidence, status_fs: status_fs, file_name: file_name});
+  async updateEvidencePath<T>(uuid_mesin: any, tahun_upload: any, dokumen_evidence: any, status_fs: any, file_name: string): Promise<T> {
+    return this.post(`${url}evidence`, {uuid_mesin: uuid_mesin, tahun_upload: tahun_upload, dokumen_evidence: dokumen_evidence, status_fs: status_fs, file_name: file_name});
   }
   async getPengelolaData<T>(): Promise<T> {
     return this.get(`${url}filter/combo-pengelola`);
   }
-  async getMesinByIdSentral<T>(id_sentral: any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/all-rekap-kertas-kerja-mesin`, {id_sentral: id_sentral});
+  async getMesinByIdSentral<T>(uuidSentral: any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/all-rekap-kertas-kerja-mesin`, {uuid_sentral: uuidSentral});
   }
   async getComboKategoriPembangkit<T>(): Promise<T> {
     return this.get(`${url}filter/combo-jenis-kit`);

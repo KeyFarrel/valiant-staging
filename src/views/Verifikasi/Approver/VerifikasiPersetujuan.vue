@@ -253,10 +253,10 @@
                     params: {
                       id:
                         nodeMode === 'production'
-                          ? encryptStorageRef.encryptValue(item.id_mesin)
-                          : item.id_mesin,
+                          ? encryptStorageRef.encryptValue(item.uuid_mesin)
+                          : item.uuid_mesin,
                     },
-                    query: { id_sentral: item.id_sentral, tahun: item.tahun },
+                    query: { uuid_sentral: item.uuid_sentral, tahun: item.tahun },
                   }">
                     <button>
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -271,10 +271,10 @@
                     params: {
                       id:
                         nodeMode === 'production'
-                          ? encryptStorageRef.encryptValue(item.id_mesin)
-                          : item.id_mesin,
+                          ? encryptStorageRef.encryptValue(item.uuid_mesin)
+                          : item.uuid_mesin,
                     },
-                    query: { id_sentral: item.id_sentral, tahun: item.tahun },
+                    query: { uuid_sentral: item.uuid_sentral, tahun: item.tahun },
                   }">
                     <button>
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -587,10 +587,10 @@
                     params: {
                       id:
                         nodeMode === 'production'
-                          ? encryptStorageRef.encryptValue(item.id_mesin)
-                          : item.id_mesin,
+                          ? encryptStorageRef.encryptValue(item.uuid_mesin)
+                          : item.uuid_mesin,
                     },
-                    query: { id_sentral: item.id_sentral },
+                    query: { uuid_sentral: item.uuid_sentral },
                   }">
                     <button>
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -607,10 +607,10 @@
                     params: {
                       id:
                         nodeMode === 'production'
-                          ? encryptStorageRef.encryptValue(item.id_mesin)
-                          : item.id_mesin,
+                          ? encryptStorageRef.encryptValue(item.uuid_mesin)
+                          : item.uuid_mesin,
                     },
-                    query: { id_sentral: item.id_sentral },
+                    query: { uuid_sentral: item.uuid_sentral },
                   }">
                     <button>
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -829,7 +829,7 @@ async function getDataPembina() {
       if (response.data.length > 0) {
         response.data.map((item: any) => {
           itemsPembina.value.push({
-            id: item.id_pembina,
+            id: item.uuid_pembina,
             name: item.pembina,
           });
         });
@@ -845,7 +845,7 @@ const fetchPersetujuanKK = async (page?: number) => {
     isLoading.value = true;
     const response: any = await persetujuanService.getPersetujuanKertasKerja({
       kode_pengelola: filterKK.value.selectedPengelola,
-      id_pembina: filterKK.value.selectedPembina,
+      uuid_pembina: filterKK.value.selectedPembina,
       status: filterKK.value.selectedPersetujuan,
       page: page || navigationKK.value.currentPage,
       limit: navigationKK.value.limit,
@@ -871,7 +871,7 @@ const fetchPersetujuanFS = async (page?: number) => {
     isLoading.value = true;
     const response: any = await persetujuanService.getPersetujuanFS({
       kode_pengelola: filterFS.value.selectedPengelola,
-      id_pembina: filterFS.value.selectedPembina,
+      uuid_pembina: filterFS.value.selectedPembina,
       status: filterFS.value.selectedPersetujuan,
       page: page || navigationFS.value.currentPage,
       limit: navigationFS.value.limit,

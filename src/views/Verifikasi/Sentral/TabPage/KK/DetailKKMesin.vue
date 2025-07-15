@@ -12,7 +12,7 @@
         <div v-if="approveMesinKK.status === 'Ditolak T1' || approveMesinKK.status === 'Ditolak T2'" class="flex">
           <!-- Revisi Data -->
           <RouterLink
-            :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data-approveKK', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(approveMesinKK.id_mesin) : approveMesinKK.id_mesin }, query: { id_sentral: route.query.id_sentral, tahun: route.query.tahun } }">
+            :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data-approveKK', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(approveMesinKK.uuid_mesin) : approveMesinKK.uuid_mesin }, query: { uuid_sentral: route.query.uuid_sentral, tahun: route.query.tahun } }">
             <button class="w-fit p-2 ml-1 flex items-center justify-center bg-[#0099AD] rounded-md text-white">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g clip-path="url(#clip0_8312_23311)">
@@ -36,7 +36,7 @@
         <div v-else-if="approveMesinKK.status === 'Draft'" class="flex">
           <!-- Edit Data -->
           <RouterLink
-            :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data-approveKK', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(approveMesinKK.id_mesin) : approveMesinKK.id_mesin }, query: { id_sentral: route.query.id_sentral, tahun: route.query.tahun } }">
+            :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data-approveKK', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(approveMesinKK.uuid_mesin) : approveMesinKK.uuid_mesin }, query: { uuid_sentral: route.query.uuid_sentral, tahun: route.query.tahun } }">
             <button
               class="w-fit p-2 mr-1 flex items-center justify-center border border-[#0099AD] rounded-md text-[#0099AD] duration-300 hover:text-white">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -365,7 +365,7 @@ const approveMesinKK = ref<ListApprove>({
   tahun: '',
   status: '',
   keterangan: '',
-  id_mesin: '',
+  uuid_mesin: '',
   id_status: -1
 });
 const mesin = ref<MesinItem>()
@@ -373,7 +373,7 @@ const asumsiParameter = ref<AsumsiParameterItem>({
   id_asumsi: 0,
   data: {},
   kode_mesin: '',
-  id_mesin: 0,
+  uuid_mesin: 0,
   corporate_tax_rate: 0,
   status: '',
   interest_rate: 0,
@@ -475,7 +475,7 @@ const jumlahMesin = ref<number>(0);
 
 interface MesinItem {
   data: any
-  id_mesin: number
+  uuid_mesin: number
   kode_sentral: string
   kode_mesin: string
   mesin: string
@@ -499,14 +499,14 @@ interface ListApprove {
   tahun: string
   status: string
   keterangan: string
-  id_mesin: string
+  uuid_mesin: string
   id_status: number
 }
 
 interface AsumsiParameterItem {
   data: any
   id_asumsi: number
-  id_mesin: number
+  uuid_mesin: number
   kode_mesin: string
   status: string
   corporate_tax_rate: number
@@ -567,11 +567,11 @@ const fetchMesinById = async () => {
 const fetchPersetujuanKK = async () => {
   try {
     const response: ListApprove = await persetujuanService.getPersetujuanKKSentral({
-      id_sentral: route.query.id_sentral,
+      uuid_sentral: route.query.uuid_sentral,
       tahun: route.query.tahun
     });
     approveSentralKK.value = response.data;
-    approveMesinKK.value = response.data.mesins.filter((val: any) => val.id_mesin == idGrafik.value)[0];
+    approveMesinKK.value = response.data.mesins.filter((val: any) => val.uuid_mesin == idGrafik.value)[0];
     tahunTerakhirAsumsi.value = approveMesinKK.value.tahun;
     statusMesin.value = approveMesinKK.value.id_status;
   } catch (error) {
@@ -584,7 +584,7 @@ const fetchAsumsiParameter = async () => {
     const response: AsumsiParameterItem =
       await detailRekapService.getAsumsiParameter(
         parseInt(route.query.tahun?.toString() ?? '0') - 1,
-        parseInt(idGrafik.value),
+        idGrafik.value,
         parseInt(route.query.tahun?.toString() ?? '0')
       )
     asumsiParameter.value = response.data.asumsi_makro
@@ -607,12 +607,12 @@ const fetchDataTeknis = async () => {
   try {
     const response: any = await detailRekapService.getDataTeknis(
       parseInt(route.query.tahun?.toString() ?? '0'),
-      parseInt(idGrafik.value)
+      idGrafik.value
     )
     if (response.data.tahun[response.data.tahun.length - 1] == tahunBerjalan - 1) {
       const responseTahunRealisasi: any = await detailRekapService.getDataTeknis(
         parseInt(route.query.tahun?.toString() ?? '0') - 1,
-        parseInt(idGrafik.value)
+        idGrafik.value
       )
       dataTeknis.value = responseTahunRealisasi.data
       tahunGrafik.value = parseInt(route.query.tahun?.toString() ?? '0') - 1
@@ -636,7 +636,7 @@ const fetchDataFinansial = async () => {
     finansialMappingResult.value = []
     const response: any = await detailRekapService.getDataFinansial(
       parseInt(route.query.tahun?.toString() ?? '0'),
-      parseInt(idGrafik.value)
+      idGrafik.value
     )
     let currentLevel1: any | null = null
     let currentLevel2: any | null = null
@@ -644,7 +644,7 @@ const fetchDataFinansial = async () => {
     if (response.data.tahun[response.data.tahun.length - 1] == tahunBerjalan - 1) {
       const responseTahunRealisasi: any = await detailRekapService.getDataFinansial(
         parseInt(route.query.tahun?.toString() ?? '0') - 1,
-        parseInt(idGrafik.value)
+        idGrafik.value
       )
       for (const item of responseTahunRealisasi.data.detail) {
         if (item.level === 1) {
@@ -710,7 +710,7 @@ const reloadDataFinansial = () => {
 const fetchHasilSimulasi = async () => {
   try {
     const response: any = await detailRekapService.getHasilSimulasi(
-      parseInt(idGrafik.value),
+      idGrafik.value,
       parseInt(route.query.tahun?.toString() ?? '0'),
       statusMesin.value
     );
@@ -781,7 +781,7 @@ const updateKK = async () => {
       status_approval: 0,
       keterangan: '',
       tahun: parseInt(route.query.tahun?.toString() ?? '0'),
-      id_mesin: parseInt(idGrafik.value)
+      uuid_mesin: idGrafik.value
     })
     updateMesin.value = response.data;
     modalApprove.value = false;
@@ -828,9 +828,9 @@ const fetchUnitPengelola = async () => {
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola
       )
       namaPengelola.value = pengelola[0].pengelola
-      const idPembina = pembangkitResponse.data.id_pembina
+      const idPembina = pembangkitResponse.data.uuid_pembina
       const pembinaList: any = await fetchListPembina()
-      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina
     }
   } catch (error) {
     console.error("Fetch Unit Pengelola Error : " + error)
@@ -841,6 +841,7 @@ onMounted(async () => {
   isLoading.value = true;
   encryptStorageRef = await encryptStoragePromise;
   idGrafik.value = nodeMode === 'production' ? encryptStorageRef.decryptValue(route.params.id.toString()) : route.params.id;
+  console.log(idGrafik.value);
   await fetchMesinById();
   await fetchPersetujuanKK();
   isLoading.value = false;

@@ -148,7 +148,7 @@ const namaPembina = ref<string>('');
 const asumsiParameter = ref<AsumsiParameterItem>({
   data: {},
   id_asumsi: 0,
-  id_mesin: 0,
+  uuid_mesin: 0,
   kode_mesin: "",
   status: "",
   corporate_tax_rate: 0,
@@ -252,7 +252,7 @@ const listtahunRealisasi = ref<any[]>([]);
 
 interface MesinItem {
   data: any
-  id_mesin: number
+  uuid_mesin: number
   kode_sentral: string
   kode_mesin: string
   mesin: string
@@ -266,7 +266,7 @@ interface MesinItem {
 interface AsumsiParameterItem {
   data: any
   id_asumsi: number
-  id_mesin: number
+  uuid_mesin: number
   kode_mesin: string
   status: string
   corporate_tax_rate: number
@@ -304,7 +304,7 @@ const fetchMesinById = async () => {
     );
     mesin.value = response.data;
     kodeMesin.value = response.data.kode_mesin;
-    idMesin.value = response.data.id_mesin;
+    idMesin.value = response.data.uuid;
     kodeJenisPembangkit.value = response.data.kode_jenis_pembangkit;
     tahunTerakhirAsumsi.value = parseInt(response.data.tahun_asumsi);
     tahunTerakhirRealisasi.value = parseInt(response.data.tahun_realisasi);
@@ -513,9 +513,9 @@ const fetchUnitPengelola = async () => {
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola
       );
       namaPengelola.value = pengelola[0].pengelola;
-      const idPembina = pembangkitResponse.data.id_pembina;
+      const idPembina = pembangkitResponse.data.uuid_pembina;
       const pembinaList: any = await fetchListPembina();
-      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina;
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina;
     }
   } catch (error) {
     console.error("Fetch Unit Pengelola Error : " + error);

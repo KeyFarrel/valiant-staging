@@ -56,7 +56,7 @@ interface ListApprove {
 const fetchPersetujuanFS = async () => {
   try {
     const response: ListApprove = await persetujuanService.getPersetujuanFSSentral({
-      id_sentral: route.query.id_sentral
+      uuid_sentral: route.query.uuid_sentral
     })
     approveSentralFS.value = response.data
   } catch (error) {

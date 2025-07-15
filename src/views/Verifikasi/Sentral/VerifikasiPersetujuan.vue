@@ -110,7 +110,7 @@ const isHover = ref(true);
 
 const fetchDetailMesin = async () => {
   try {
-    const response: any = await persetujuanService.getDetailMesinAppr({ id_sentral: levelSentral.value });
+    const response: any = await persetujuanService.getDetailMesinAppr({ uuid_sentral: levelSentral.value });
     if (response.success) {
       detailMesin.value = response.data.mesins;
       namaSentral.value = response.data.sentral;
@@ -123,7 +123,7 @@ const fetchDetailMesin = async () => {
 }
 const fetchPersetujuanKK = async () => {
   try {
-    const response: any = await persetujuanService.getPersetujuanKKSentral({ id_sentral: levelSentral.value, tahun: year });
+    const response: any = await persetujuanService.getPersetujuanKKSentral({ uuid_sentral: levelSentral.value, tahun: year });
     if (response.success) {
       approveSentralKK.value = response.data;
       approveMesinKK.value = response.data.mesins;
@@ -134,7 +134,7 @@ const fetchPersetujuanKK = async () => {
 }
 const fetchPersetujuanFS = async () => {
   try {
-    const response: any = await persetujuanService.getPersetujuanFSSentral({ id_sentral: levelSentral.value });
+    const response: any = await persetujuanService.getPersetujuanFSSentral({ uuid_sentral: levelSentral.value });
     approveSentralFS.value = response.data;
     approveMesinFS.value = response.data.mesins;
   } catch (error) {

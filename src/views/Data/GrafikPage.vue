@@ -365,17 +365,17 @@
             </div>
           </div>
           <div v-if="isHover" class="mt-3">
-            <TagMesin :id-mesin="item.id_mesin" :tahun-data="parseInt(selectedYear[i].tahun)"
+            <TagMesin :id-mesin="item.uuid_mesin" :tahun-data="parseInt(selectedYear[i].tahun)"
               v-if="dataUnit.length !== 0" />
           </div>
         </div>
       </div>
       <div class="w-full py-3 mt-2 bg-white border rounded-md h-1/2">
-        <GrafikMesin :id-mesin="item.id_mesin" :tahun-data="parseInt(selectedYear[i].tahun)"
+        <GrafikMesin :id-mesin="item.uuid_mesin" :tahun-data="parseInt(selectedYear[i].tahun)"
           v-if="dataUnit.length !== 0" />
       </div>
       <div class="grid grid-cols-3 gap-2 mt-2">
-        <InfoMesin :id-mesin="item.id_mesin" :tahun-data="parseInt(selectedYear[i].tahun)"
+        <InfoMesin :id-mesin="item.uuid_mesin" :tahun-data="parseInt(selectedYear[i].tahun)"
           v-if="dataUnit.length !== 0" />
       </div>
     </div>
@@ -481,7 +481,7 @@ const handleFocus = () => {
 interface SentralItem {
   data: any
   kode_sentral: string
-  id_sentral: string
+  uuid_sentral: string
   sentral: string
   pengelola: string
   pembina: string
@@ -499,7 +499,7 @@ interface SentralItem {
 interface UnitItem {
   kode_sentral: string
   mesin: string
-  id_mesin: number
+  uuid_mesin: number
   sentral: string
   pengelola: string
   pembina: string
@@ -527,12 +527,12 @@ const fetchDataSentral = async () => {
       nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id
     );
     dataSentral.value = response.data;
-    idSentral.value = response.data.id_sentral;
+    idSentral.value = response.data.uuid_sentral;
     tahunSentral.value = response.data.tahun_data;
     namaMesin.value = response.data.mesins[0].mesin;
     jumlahMesin.value = response.data.jumlah_mesin
     for (const item of response.data.mesins) {
-      idMesin.value.push(item.id_mesin)
+      idMesin.value.push(item.uuid_mesin)
       tahunMesin.value.push(item.tahun_data)
       try {
         const responsePhoto: any = await detailSentralService.getPhoto(item.photo1);
@@ -606,7 +606,7 @@ const fetchPeriodeTahunSentral = async () => {
     yearPickedSentral.value = response.data[response.data.length - 1].tahun;
     for (const item of dataUnit.value) {
       responseLimitTahun.value = await grafikService.getYearMesin({
-        id_mesin: item.id_mesin
+        uuid_mesin: item.uuid_mesin
       });
       if (responseLimitTahun.value.data !== null) {
         selectedYear.value.push({ tahun: responseLimitTahun.value.data[responseLimitTahun.value.data.length - 1].tahun, range: [responseLimitTahun.value.data[0].tahun, responseLimitTahun.value.data[responseLimitTahun.value.data.length - 1].tahun] })

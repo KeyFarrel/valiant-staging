@@ -71,7 +71,7 @@
         </tr>
       </template>
       <template v-slot:table-body v-else>
-        <tr v-for="(user, index) in pengguna" :key="user.id">
+        <tr v-for="(user, index) in pengguna" :key="user.uuid">
           <td class="text-center whitespace-nowrap">
             {{ index + 1 }}
           </td>
@@ -147,7 +147,7 @@
           </td>
           <td>
             <div class="flex items-center justify-center" v-if="user.level_id != 1">
-              <button type="button" @click="openEditModals(user.id)"
+              <button type="button" @click="openEditModals(user.uuid)"
                 class="flex items-center justify-center hover:bg-blue-100">
                 <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <g clip-path="url(#clip0_14293_14997)">
@@ -266,7 +266,7 @@
           v-model="formData.email" />
       </div>
       <div class="grid grid-cols-2 gap-4">
-        <div class="relative">
+        <!-- <div class="relative">
           <label for="password" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Password <span
               class="text-warningColor">*</span></label>
           <input @paste.prevent @copy.prevent @cut.prevent
@@ -300,8 +300,8 @@
           <p class="text-xs mt-0.5" :class="pwStrength.strengthTextColor">
             {{ pwStrength.strengthMessage }}
           </p>
-        </div>
-        <div class="relative">
+        </div> -->
+        <!-- <div class="relative">
           <label for="konfirmasiPassword" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Konfirmasi Password
             <span class="text-warningColor">*</span></label>
           <input @paste.prevent @copy.prevent @cut.prevent
@@ -336,7 +336,7 @@
                 transform="matrix(0.701707 0.712466 -0.701707 0.712466 13.5835 0.105713)" fill="#989899" />
             </svg>
           </button>
-        </div>
+        </div> -->
         <div>
           <label for="level" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Level <span
               class="text-warningColor">*</span></label>
@@ -662,8 +662,8 @@ const formData = ref({
   nama_pegawai: "",
   nip: "",
   email: "",
-  password: "",
-  konfirmasi_password: "",
+  // password: "",
+  // konfirmasi_password: "",
   role_id: "",
   level_id: "",
   id_pembina: "",
@@ -677,8 +677,8 @@ const resetFormData = () => {
     nama_pegawai: "",
     nip: "",
     email: "",
-    password: "",
-    konfirmasi_password: "",
+    // password: "",
+    // konfirmasi_password: "",
     role_id: "",
     level_id: "",
     id_pembina: "",
@@ -693,7 +693,7 @@ let debounceTimeout: any = null;
 interface PenggunaItem {
   data: any
   meta: any
-  id: number
+  uuid: number
   nama_pegawai: string
   email: string
   status: boolean
@@ -865,17 +865,17 @@ const sanitizeEmail = () => {
   formData.value.email = formData.value.email.replace(/[^a-zA-Z0-9@._-]/g, '')
 }
 
-const sanitizePassword = () => {
-  formData.value.password = formData.value.password
-    .replace(/['"\\`\0\n\r\t]/g, '')
-    .replace(/\s{2,}/g, ' ')
-}
+// const sanitizePassword = () => {
+//   formData.value.password = formData.value.password
+//     .replace(/['"\\`\0\n\r\t]/g, '')
+//     .replace(/\s{2,}/g, ' ')
+// }
 
-const sanitizeConfirmPassword = () => {
-  formData.value.konfirmasi_password = formData.value.konfirmasi_password
-    .replace(/['"\\`\0\n\r\t]/g, '')
-    .replace(/\s{2,}/g, ' ')
-}
+// const sanitizeConfirmPassword = () => {
+//   formData.value.konfirmasi_password = formData.value.konfirmasi_password
+//     .replace(/['"\\`\0\n\r\t]/g, '')
+//     .replace(/\s{2,}/g, ' ')
+// }
 
 const fetchData = async () => {
   try {
@@ -922,10 +922,10 @@ const handleChangeConfirmPassword = () => {
   }
 };
 
-const openEditModals = async (id: number) => {
+const openEditModals = async (uuid: number) => {
   try {
     isLoading.value = true;
-    const response: any = await userService.getUserById(id);
+    const response: any = await userService.getUserById(uuid);
     formData.value.nama_pegawai = response.data.nama_pegawai;
     formData.value.nip = response.data.nip;
     formData.value.email = response.data.email;
@@ -949,7 +949,7 @@ const openEditModals = async (id: number) => {
     console.log('formulir', formData.value);
     console.log('sentral', formData.value.id_sentral);
     isModalEdit.value = true;
-    selectedUserId.value = id;
+    selectedUserId.value = uuid;
     isLoading.value = false;
   } catch (error) {
     console.error("Error fetching role data:", error);
@@ -1065,8 +1065,8 @@ const editUserDataAndCloseModal = async () => {
           is_locked: formData.value.isLocked
         }
       }
-      const idUser: any = selectedUserId.value;
-      const response = await userService.updateUser(idUser, dataToPost);
+      const uuidUser: any = selectedUserId.value;
+      const response = await userService.updateUser(uuidUser, dataToPost);
       const responseData: any = response;
       if (responseData.success) {
         isModalEdit.value = false;
@@ -1108,23 +1108,23 @@ const saveUserDataAndCloseModal = async () => {
   const passwordPattern =
     /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+[\]{}|;':"<>?,./]).{8,}$/;
   const badChars = /['"\\`\0\n\r\t]/;
-  if (!formData.value.password) {
-    errors.value.push("Password wajib diisi.");
-  } else if (/^\s|\s$/.test(formData.value.password)) {
-    errors.value.push("Password tidak boleh diawali atau diakhiri dengan spasi.");
-  } else if (badChars.test(formData.value.password)) {
-    errors.value.push("Password mengandung karakter yang tidak diizinkan.");
-  } else if (!passwordPattern.test(formData.value.password)) {
-    errors.value.push(
-      "Password harus mengandung angka, karakter, huruf besar, huruf kecil dan minimal 8 karakter."
-    );
-  }
-  if (!formData.value.konfirmasi_password) {
-    errors.value.push("Konfirmasi Password wajib diisi.");
-  }
-  if (formData.value.password !== formData.value.konfirmasi_password) {
-    errors.value.push("Password dan Konfirmasi Password tidak cocok.");
-  }
+  // if (!formData.value.password) {
+  //   errors.value.push("Password wajib diisi.");
+  // } else if (/^\s|\s$/.test(formData.value.password)) {
+  //   errors.value.push("Password tidak boleh diawali atau diakhiri dengan spasi.");
+  // } else if (badChars.test(formData.value.password)) {
+  //   errors.value.push("Password mengandung karakter yang tidak diizinkan.");
+  // } else if (!passwordPattern.test(formData.value.password)) {
+  //   errors.value.push(
+  //     "Password harus mengandung angka, karakter, huruf besar, huruf kecil dan minimal 8 karakter."
+  //   );
+  // }
+  // if (!formData.value.konfirmasi_password) {
+  //   errors.value.push("Konfirmasi Password wajib diisi.");
+  // }
+  // if (formData.value.password !== formData.value.konfirmasi_password) {
+  //   errors.value.push("Password dan Konfirmasi Password tidak cocok.");
+  // }
   if (!formData.value.role_id) {
     errors.value.push("Role wajib diisi.");
   }
@@ -1136,7 +1136,7 @@ const saveUserDataAndCloseModal = async () => {
         email: formData.value.email.toLowerCase().trim(),
         nama_pegawai: formData.value.nama_pegawai.trim(),
         role_id: parseInt(formData.value.role_id),
-        password: formData.value.password,
+        // password: formData.value.password,
         level_id: parseInt(formData.value.level_id),
         id_pembina: parseInt(formData.value.id_pembina),
         id_sentral: parseInt(formData.value.id_sentral),
@@ -1298,18 +1298,18 @@ const confirmPasswordStrength = ref<{
 const checkPasswordStrength = (formPasswordType: string) => {
   let strength = 0;
   let value = formPasswordType === 'password'
-    ? formData.value.password
-    : formData.value.konfirmasi_password;
+  // ? formData.value.password
+  // : formData.value.konfirmasi_password;
 
   // Hapus spasi langsung dari input
   const sanitizedValue = value
 
   // Hitung kekuatan password
-  if (sanitizedValue.length >= 8) strength++;
-  if (/[A-Z]/.test(sanitizedValue)) strength++;
-  if (/[a-z]/.test(sanitizedValue)) strength++;
-  if (/\d/.test(sanitizedValue)) strength++;
-  if (/[^A-Za-z0-9]/.test(sanitizedValue)) strength++;
+  // if (sanitizedValue.length >= 8) strength++;
+  // if (/[A-Z]/.test(sanitizedValue)) strength++;
+  // if (/[a-z]/.test(sanitizedValue)) strength++;
+  // if (/\d/.test(sanitizedValue)) strength++;
+  // if (/[^A-Za-z0-9]/.test(sanitizedValue)) strength++;
 
   // Atur status kekuatan password
   if (formPasswordType === 'password') {

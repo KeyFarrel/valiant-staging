@@ -137,7 +137,7 @@ type Line = {
 }
 
 type DataComponent = {
-    id_mesin: string
+    uuid_mesin: string
     nama_mesin: string
     kode_jenis_kit: string
     data: DataValue

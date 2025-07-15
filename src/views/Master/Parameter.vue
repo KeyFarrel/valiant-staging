@@ -64,8 +64,7 @@
             </div>
           </td>
           <td class="text-center">
-            <button type="button" @click="openEditModals(item.id_parameter)"
-              v-if="item.tahun == currentYear.toString()">
+            <button type="button" @click="openEditModals(item.uuid)" v-if="item.tahun == currentYear.toString()">
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g clip-path="url(#clip0_14293_14997)">
                   <path fill-rule="evenodd" clip-rule="evenodd"
@@ -316,7 +315,7 @@ const navigation = ref<{
 });
 
 interface ParameterItem {
-  id_parameter: string;
+  uuid: string;
   tahun: string;
   discount_rate: string;
   corporate_tax_rate: string;
@@ -557,8 +556,8 @@ const submitEditForm = async () => {
         corporate_tax_rate: parseFloat(formData.value.corporate_tax_rate),
         status: detailData.value.status,
       };
-      const idParameter = selectedParameterId.value;
-      const response: any = await parameterService.editParameter(idParameter, dataToPut);
+      const uuidParameter = selectedParameterId.value;
+      await parameterService.editParameter(uuidParameter, dataToPut);
       formData.value.tahun = currentYear.toString();
       formData.value.discount_rate = "";
       formData.value.corporate_tax_rate = "";
@@ -602,20 +601,20 @@ const closeModalEdit = () => {
   errors_CT.value = [];
   errors_DT.value = [];
 };
-const fetchDetailData = async (Id: string) => {
+const fetchDetailData = async (uuid: string) => {
   try {
-    const response: any = await parameterService.getParameterByID(Id);
+    const response: any = await parameterService.getParameterByID(uuid);
     detailData.value = response.data; // Menyimpan data detail yang diterima dari API
   } catch (error) {
     console.error("Error fetching detail data:", error);
     throw error;
   }
 };
-const openEditModals = async (id_parameter: string) => {
+const openEditModals = async (uuid: string) => {
   try {
-    selectedParameterId.value = id_parameter;
+    selectedParameterId.value = uuid;
     isLoading.value = true;
-    await fetchDetailData(id_parameter);
+    await fetchDetailData(uuid);
     isLoading.value = false;
     isModalEdit.value = true;
     if (detailData.value) {

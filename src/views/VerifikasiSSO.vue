@@ -31,9 +31,9 @@ const verifikasiSSO = async () => {
       const token = response.data.token;
       const namaPegawai = response.data.nama_pegawai;
       const levelSentral =
-        response.data.id_sentral === "" || response.data.id_sentral === "0"
+        response.data.uuid_sentral === "" || response.data.uuid_sentral === "0"
           ? 0
-          : response.data.id_sentral;
+          : response.data.uuid_sentral;
 
       const dataString = `${levelSentral}:${namaPegawai}`;
       const hash = CryptoJS.HmacSHA512(dataString, (window as any).userHashSecretKey()).toString();

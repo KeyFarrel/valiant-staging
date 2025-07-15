@@ -12,62 +12,62 @@ export default class PerbaruiDataService extends BaseService {
   async getPengelolaData<T>(): Promise<T> {
     return this.get(`${url}filter/combo-pengelola`);
   }
-  async getCheckIntegrasi<T>(tahun: any, id_mesin: any): Promise<T> {
-    return this.get(`${url}filter/data-integrasi`, {tahun: tahun, id_mesin: id_mesin});
+  async getCheckIntegrasi<T>(tahun: any, uuid_mesin: any): Promise<T> {
+    return this.get(`${url}filter/data-integrasi`, {tahun: tahun, uuid_mesin: uuid_mesin});
   }
-  async getAsumsiParameterData<T>(tahun_realisasi:any, id_mesin:any, tahun: any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/asumsi-parameter`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin, tahun: tahun});
+  async getAsumsiParameterData<T>(tahun_realisasi:any, uuidMesin:any, tahun: any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/asumsi-parameter`, {tahun_realisasi: tahun_realisasi, uuid_mesin: uuidMesin, tahun: tahun});
   }
-  async getDataTeknisData<T>(tahun: any, id_mesin: any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/data-teknis`, {tahun: tahun, id_mesin: id_mesin});
+  async getDataTeknisData<T>(tahun: any, uuid_mesin: any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/data-teknis`, {tahun: tahun, uuid_mesin: uuid_mesin});
   }
-  async getDataTeknisByPeriode<T>(tahun_realisasi:number, id_mesin:number): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/data-teknis-periode`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
+  async getDataTeknisByPeriode<T>(tahun_realisasi:number, uuid_mesin:number): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/data-teknis-periode`, {tahun_realisasi: tahun_realisasi, uuid_mesin: uuid_mesin});
   }
-  async getDataTeknisByPeriodeSimulasi1<T>(tahun_realisasi:number, id_mesin:number): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/data-teknis-periode-simulasi`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
+  async getDataTeknisByPeriodeSimulasi1<T>(tahun_realisasi:number, uuid_mesin:number): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/data-teknis-periode-simulasi`, {tahun_realisasi: tahun_realisasi, uuid_mesin: uuid_mesin});
   }
-  async getDataTeknisByPeriodeSimulasi2<T>(tahun_realisasi:number, id_mesin:number): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/data-teknis-periode-simulasi2`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
+  async getDataTeknisByPeriodeSimulasi2<T>(tahun_realisasi:number, uuid_mesin:number): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/data-teknis-periode-simulasi2`, {tahun_realisasi: tahun_realisasi, uuid_mesin: uuid_mesin});
   }
-  async getDataFinansialDetail<T>(tahun_realisasi:any, id_mesin:any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/data-finansial-detail`, {tahun: tahun_realisasi, id_mesin: id_mesin});
+  async getDataFinansialDetail<T>(tahun_realisasi:any, uuid_mesin:any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/data-finansial-detail`, {tahun: tahun_realisasi, uuid_mesin: uuid_mesin});
   }
-  async getDataFinansialDetailSimulasi1<T>(tahun_realisasi:any, id_mesin:any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/data-finansial-detail-simulasi`, {tahun: tahun_realisasi, id_mesin: id_mesin});
+  async getDataFinansialDetailSimulasi1<T>(tahun_realisasi:any, uuid_mesin:any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/data-finansial-detail-simulasi`, {tahun: tahun_realisasi, uuid_mesin: uuid_mesin});
   }
-  async getDataFinansialDetailSimulasi2<T>(tahun_realisasi:any, id_mesin:any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/data-finansial-detail-simulasi2`, {tahun: tahun_realisasi, id_mesin: id_mesin});
+  async getDataFinansialDetailSimulasi2<T>(tahun_realisasi:any, uuid_mesin:any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/data-finansial-detail-simulasi2`, {tahun: tahun_realisasi, uuid_mesin: uuid_mesin});
   }
   // Data Asumsi Parameter Simulasi 1 & 2 value sama
-  async getAsumsiParameterSimulasi<T>(tahun_realisasi: any, id_mesin: any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/asumsi-parameter-simulasi`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
+  async getAsumsiParameterSimulasi<T>(tahun_realisasi: any, uuid_mesin: any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/asumsi-parameter-simulasi`, {tahun_realisasi: tahun_realisasi, uuid_mesin: uuid_mesin});
   }
   // Data Teknis Simulasi 1
-  async getDataTeknisSimulasi1<T>(tahun: any, id_mesin: any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/data-teknis`, {tahun: tahun, id_mesin: id_mesin});
+  async getDataTeknisSimulasi1<T>(tahun: any, uuid_mesin: any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/data-teknis`, {tahun: tahun, uuid_mesin: uuid_mesin});
   }
   // Data Teknis Simulasi 2
-  async getDataTeknisSimulasi2<T>(tahun: any, id_mesin: any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/data-teknis-simulasi`, {tahun: tahun, id_mesin: id_mesin});
+  async getDataTeknisSimulasi2<T>(tahun: any, uuid_mesin: any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/data-teknis-simulasi`, {tahun: tahun, uuid_mesin: uuid_mesin});
   }
   // Data Finansial Simulasi 1
-  async getDataFinansialSimulasi1<T>(tahun: any, id_mesin: any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/data-finansial`, {tahun: tahun, id_mesin: id_mesin});
+  async getDataFinansialSimulasi1<T>(tahun: any, uuid_mesin: any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/data-finansial`, {tahun: tahun, uuid_mesin: uuid_mesin});
   }
   // Data Finansial Simulasi 2
-  async getDataFinansialSimulasi2<T>(tahun: any, id_mesin: any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/data-finansial-simulasi`, {tahun: tahun, id_mesin: id_mesin});
+  async getDataFinansialSimulasi2<T>(tahun: any, uuid_mesin: any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/data-finansial-simulasi`, {tahun: tahun, uuid_mesin: uuid_mesin});
   }
   // Hasil Simulasi
-  async getHasilSimulasi<T>(id_mesin: number, tahun: number, status: number): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/simulasi-cod`, {id_mesin: id_mesin, tahun: tahun, status: status});
+  async getHasilSimulasi<T>(uuid_mesin: number, tahun: number, status: number): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/simulasi-cod`, {uuid_mesin: uuid_mesin, tahun: tahun, status: status});
   }
-  async downloadSimulasi1Excel<T>(tahun_realisasi: any, id_mesin: any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/export-template-simulasi1`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
+  async downloadSimulasi1Excel<T>(tahun_realisasi: any, uuid_mesin: any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/export-template-simulasi1`, {tahun_realisasi: tahun_realisasi, uuid_mesin: uuid_mesin});
   }
-  async downloadSimulasi2Excel<T>(tahun_realisasi: any, id_mesin: any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/export-template-simulasi2`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
+  async downloadSimulasi2Excel<T>(tahun_realisasi: any, uuid_mesin: any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/export-template-simulasi2`, {tahun_realisasi: tahun_realisasi, uuid_mesin: uuid_mesin});
   }
   async getComboTypePeriodicData<T>(jenis_pembangkit:any): Promise<T> {
     return this.get(`${url}filter/combo-type-periodic`, {jenis_pembangkit: jenis_pembangkit});

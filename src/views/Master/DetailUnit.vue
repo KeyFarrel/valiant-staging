@@ -3,7 +3,7 @@
   <ModalWrapper :show-modal="isConfirmationOpen" :width="'w-auto'" :height="'h-auto'">
     <ConfirmationDialog :title="'Konfirmasi'" :subtitle="'Apakah anda yakin menyimpan data mesin tersebut? \n'"
       :button-title="'Kirim'" @on-batal-click="isConfirmationOpen = false"
-      @on-accept-click="updateMesinById(selectedMesin.idMesin, selectedMesin.mesinIndex, selectedMesin.namaMesin)" />
+      @on-accept-click="updateMesinById(selectedMesin.uuidMesin, selectedMesin.mesinIndex, selectedMesin.namaMesin)" />
   </ModalWrapper>
   <ModalWrapper :show-modal="isConfirmationOpenSentral" :width="'w-auto'" :height="'h-auto'">
     <ConfirmationDialog :title="'Konfirmasi'" :subtitle="'Apakah anda yakin menyimpan data sentral tersebut? \n'"
@@ -363,7 +363,7 @@
           </button>
           <button
             class="px-3 py-2 mr-2 text-sm font-semibold text-white duration-300 border rounded-lg border-primaryColor hover:border-blue-600 bg-primaryColor hover:bg-blue-600"
-            @click="selectedMesin.idMesin = mesinItem.id_mesin; selectedMesin.namaMesin = mesinItem.mesin; selectedMesin.mesinIndex = mesinIndex; isConfirmationOpen = true;">
+            @click="selectedMesin.uuidMesin = mesinItem.uuid; selectedMesin.namaMesin = mesinItem.mesin; selectedMesin.mesinIndex = mesinIndex; isConfirmationOpen = true;">
             Simpan Data
           </button>
         </div>
@@ -428,11 +428,11 @@ const showModalSentral = ref<boolean>(false);
 const imageToUploadSentral = ref<any>();
 const imageUrlSentral = ref<any>(null);
 const selectedMesin = ref<{
-  idMesin: number,
+  uuidMesin: any,
   namaMesin: string,
   mesinIndex: number
 }>({
-  idMesin: -1,
+  uuidMesin: "",
   namaMesin: "",
   mesinIndex: -1
 });
@@ -448,7 +448,7 @@ const rotation = ref(0);
 
 interface PembangkitItem {
   data: any
-  id_sentral: number
+  uuid_sentral: number
   kode_sentral: string
   nama_sentral: string
   provinsi: string
@@ -467,7 +467,7 @@ interface PembangkitItem {
   tahun_nilai_perolehan: number
   sisa_masa_manfaat: any
   nilai_asset_awal: any
-  id_mesin: any
+  uuid: any
   photo: any
   photo1: any
   photo2: any
@@ -524,7 +524,7 @@ const getSentralById = async () => {
     console.error(error);
   }
 };
-const updateMesinById = async (id_mesin: number, index: number, mesinName: string) => {
+const updateMesinById = async (uuid_mesin: any, index: number, mesinName: string) => {
   try {
     if (mesinFormModel.value[index].photoToSubmit) {
       const file = mesinFormModel.value[index].photoToSubmit;
@@ -554,9 +554,9 @@ const updateMesinById = async (id_mesin: number, index: number, mesinName: strin
       formData.append("file", mesinFormModel.value[index].photoToSubmit);
       console.log(formData);
       const responseUpload: any = await detailSentralService.uploadPhoto(formData);
-      await detailSentralService.updateMesinById(id_mesin, nilaiAsetAwal, masaManfaat, tahunDataAwal, mesinFormModel.value[index].latitude, mesinFormModel.value[index].longitude, responseUpload.data);
+      await detailSentralService.updateMesinById(uuid_mesin, nilaiAsetAwal, masaManfaat, tahunDataAwal, mesinFormModel.value[index].latitude, mesinFormModel.value[index].longitude, responseUpload.data);
     } else {
-      await detailSentralService.updateMesinById(id_mesin, nilaiAsetAwal, masaManfaat, tahunDataAwal, mesinFormModel.value[index].latitude, mesinFormModel.value[index].longitude, mesin.value[index].photo1);
+      await detailSentralService.updateMesinById(uuid_mesin, nilaiAsetAwal, masaManfaat, tahunDataAwal, mesinFormModel.value[index].latitude, mesinFormModel.value[index].longitude, mesin.value[index].photo1);
     }
     await getSentralById();
     isLoading.value = false;
@@ -677,9 +677,9 @@ const fetchUnitPengelola = async () => {
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola.value
       );
       namaPengelola.value = pengelola[0].pengelola
-      const idPembina = pembangkitResponse.data.id_pembina;
+      const idPembina = pembangkitResponse.data.uuid_pembina;
       const pembinaList: any = await fetchListPembina()
-      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina;
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina;
     }
   } catch (error) {
     console.error("Fetch Unit Pengelola Error : " + error)

@@ -400,7 +400,7 @@ const asumsiParameter = ref<AsumsiParameterItem>({
   id_asumsi: 0,
   corporate_tax_rate: 0,
   status: '',
-  id_mesin: 0,
+  uuid_mesin: 0,
   discount_rate: 0,
   loan_portion: 0,
   interest_rate: 0,
@@ -504,7 +504,7 @@ const tahunGrafik = ref<number>(0);
 
 interface MesinItem {
   data: any
-  id_mesin: number
+  uuid_mesin: number
   kode_sentral: string
   kode_mesin: string
   mesin: string
@@ -532,7 +532,7 @@ interface ListApprove {
 interface AsumsiParameterItem {
   data: any
   id_asumsi: number
-  id_mesin: number
+  uuid_mesin: number
   kode_mesin: string
   status: string
   corporate_tax_rate: number
@@ -587,11 +587,11 @@ const fetchMesinById = async () => {
 
 const fetchPersetujuanKK = async () => {
   try {
-    const response: ListApprove = await persetujuanService.getPersetujuanKKSentral({ id_sentral: route.query.id_sentral, tahun: route.query.tahun });
+    const response: ListApprove = await persetujuanService.getPersetujuanKKSentral({ uuid_sentral: route.query.uuid_sentral, tahun: route.query.tahun });
     approveSentralKK.value = response.data;
     console.log(approveSentralKK.value);
-    approveMesinKK.value = response.data.mesins.filter((val: any) => val.id_mesin == idGrafik.value);
-    arrMesin.value = response.data.mesins.filter((val: any) => val.id_mesin == idGrafik.value)[0];
+    approveMesinKK.value = response.data.mesins.filter((val: any) => val.uuid_mesin == idGrafik.value);
+    arrMesin.value = response.data.mesins.filter((val: any) => val.uuid_mesin == idGrafik.value)[0];
     tahunTerakhirAsumsi.value = arrMesin.value?.tahun;
     statusMesin.value = arrMesin.value?.id_status;
     console.log(arrMesin.value);
@@ -605,7 +605,7 @@ const fetchAsumsiParameter = async () => {
     const response: AsumsiParameterItem =
       await detailRekapService.getAsumsiParameter(
         parseInt(route.query.tahun?.toString() ?? '0') - 1,
-        parseInt(idGrafik.value),
+        idGrafik.value,
         parseInt(route.query.tahun?.toString() ?? '0')
       );
     asumsiParameter.value = response.data.asumsi_makro;
@@ -628,12 +628,12 @@ const fetchDataTeknis = async () => {
   try {
     const response: any = await detailRekapService.getDataTeknis(
       parseInt(route.query.tahun?.toString() ?? '0'),
-      parseInt(idGrafik.value)
+      idGrafik.value
     );
     if (response.data.tahun[response.data.tahun.length - 1] == tahunBerjalan - 1) {
       const responseTahunRealisasi: any = await detailRekapService.getDataTeknis(
         parseInt(route.query.tahun?.toString() ?? '0') - 1,
-        parseInt(idGrafik.value)
+        idGrafik.value
       );
       dataTeknis.value = responseTahunRealisasi.data;
       tahunGrafik.value = parseInt(route.query.tahun?.toString() ?? '0') - 1;
@@ -657,7 +657,7 @@ const fetchDataFinansial = async () => {
     finansialMappingResult.value = []
     const response: any = await detailRekapService.getDataFinansial(
       parseInt(route.query.tahun?.toString() ?? '0'),
-      parseInt(idGrafik.value),
+      idGrafik.value,
     );
     let currentLevel1: any | null = null
     let currentLevel2: any | null = null;
@@ -665,7 +665,7 @@ const fetchDataFinansial = async () => {
     if (response.data.tahun[response.data.tahun.length - 1] == tahunBerjalan - 1) {
       const responseTahunRealisasi: any = await detailRekapService.getDataFinansial(
         parseInt(route.query.tahun?.toString() ?? '0') - 1,
-        parseInt(idGrafik.value),
+        idGrafik.value,
       )
       for (const item of responseTahunRealisasi.data.detail) {
         if (item.level === 1) {
@@ -731,7 +731,7 @@ const reloadDataFinansial = () => {
 const fetchHasilSimulasi = async () => {
   try {
     const response: any = await detailRekapService.getHasilSimulasi(
-      parseInt(idGrafik.value),
+      idGrafik.value,
       parseInt(route.query.tahun?.toString() ?? '0'),
       parseInt(statusMesin.value)
     );
@@ -768,9 +768,9 @@ const fetchUnitPengelola = async () => {
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola
       )
       namaPengelola.value = pengelola[0].pengelola;
-      const idPembina = pembangkitResponse.data.id_pembina
+      const idPembina = pembangkitResponse.data.uuid_pembina
       const pembinaList: any = await fetchListPembina();
-      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina
     };
   } catch (error) {
     console.error("Fetch Unit Pengelola Error : " + error)
@@ -805,7 +805,7 @@ const updateKKPengelola = async () => {
       status_approval: 4,
       keterangan: '',
       tahun: parseInt(route.query.tahun?.toString() ?? '0'),
-      id_mesin: parseInt(idGrafik.value)
+      uuid_mesin: idGrafik.value
     })
     updateMesinKK.value = response.data
     modalApprove.value = false;
@@ -869,7 +869,7 @@ const rejectKKPengelola = async () => {
         status_approval: 5,
         keterangan: pesan.value,
         tahun: parseInt(route.query.tahun?.toString() ?? '0'),
-        id_mesin: parseInt(idGrafik.value)
+        uuid_mesin: idGrafik.value
       })
       updateMesinKK.value = response.data
       modalCancel.value = false;
@@ -901,7 +901,7 @@ const updateKKPembina = async () => {
       status_approval: 1,
       keterangan: '',
       tahun: parseInt(route.query.tahun?.toString() ?? '0'),
-      id_mesin: parseInt(idGrafik.value)
+      uuid_mesin: idGrafik.value
     })
     updateMesinKK.value = response.data
     modalApprove.value = false;
@@ -940,7 +940,7 @@ const rejectKKPembina = async () => {
         status_approval: 2,
         keterangan: pesan.value,
         tahun: parseInt(route.query.tahun?.toString() ?? '0'),
-        id_mesin: parseInt(idGrafik.value)
+        uuid_mesin: idGrafik.value
       })
       updateMesinKK.value = response.data
       modalCancel.value = false;

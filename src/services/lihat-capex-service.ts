@@ -12,14 +12,14 @@ export default class LihatCAPEXService extends BaseService {
   async getPengelolaData<T>(): Promise<T> {
     return this.get(`${url}filter/combo-pengelola`);
   }
-  async getAsumsiParameterData<T>(tahun_realisasi:any, id_mesin:any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/asumsi-parameter`, {tahun_realisasi: tahun_realisasi, id_mesin: id_mesin});
+  async getAsumsiParameterData<T>(tahun_realisasi:any, uuidMesin:any): Promise<T> {
+    return this.post(`${url}kertas-kerja-detail/asumsi-parameter`, {tahun_realisasi: tahun_realisasi, uuid_mesin: uuidMesin});
   }
-  async getAnggaranDetailCAPEX<T>(tahun_realisasi:any, id_mesin:any): Promise<T> {
-    return this.get(`${url}laman/data/anggaran/capex`, {tahun: tahun_realisasi, id_mesin: id_mesin});
+  async getAnggaranDetailCAPEX<T>(tahun_realisasi:any, uuid_mesin:any): Promise<T> {
+    return this.get(`${url}laman/data/anggaran/capex`, {tahun: tahun_realisasi, uuid_mesin: uuid_mesin});
   }
-  async getTotalReplacement<T>(tahun_realisasi:any, id_mesin:any): Promise<T> {
-    return this.get(`${url}laman/data/anggaran/capex-replacement`, {tahun: tahun_realisasi, id_mesin: id_mesin});
+  async getTotalReplacement<T>(tahun_realisasi:any, uuid_mesin:any): Promise<T> {
+    return this.get(`${url}laman/data/anggaran/capex-replacement`, {tahun: tahun_realisasi, uuid_mesin: uuid_mesin});
   }
   async getTahunAnggaran<T>(): Promise<T> {
     return this.get(`${url}laman/data/anggaran/tahun`);

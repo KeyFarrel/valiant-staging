@@ -1053,7 +1053,7 @@ const error = ref<{
 
 interface MesinItem {
   data: any
-  id_mesin: number
+  uuid_mesin: number
   kode_sentral: string
   kode_mesin: string
   mesin: string
@@ -1068,7 +1068,7 @@ interface MesinItem {
 interface AsumsiParameterItem {
   data: any
   id_asumsi: number
-  id_mesin: number
+  uuid_mesin: number
   kode_mesin: string
   status: string
   asumsi_makro: AsumsiMakroItem
@@ -1145,16 +1145,16 @@ const fetchUnitPengelola = async () => {
       const pembangkitResponse: any =
         await perbaruiDataService.getPembangkitByKode(kodeSentral);
       kodePengelola.value = pembangkitResponse.data.kode_pengelola;
-      idSentral.value = pembangkitResponse.data.id_sentral;
+      idSentral.value = pembangkitResponse.data.uuid_sentral;
       const pengelolaResponse: any =
         await perbaruiDataService.getPengelolaData();
       const pengelola = pengelolaResponse.data.filter(
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola.value
       );
       namaPengelola.value = pengelola[0].pengelola;
-      const idPembina = pembangkitResponse.data.id_pembina;
+      const idPembina = pembangkitResponse.data.uuid_pembina;
       const pembinaList: any = await fetchListPembina();
-      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina;
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina;
     }
   } catch (error) {
     console.error("Fetch Unit Pengelola Error : " + error);
@@ -1163,10 +1163,10 @@ const fetchUnitPengelola = async () => {
 const fetchPersetujuanKK = async () => {
   try {
     const response: any = await persetujuanService.getPersetujuanKKSentral({
-      id_sentral: idSentral.value,
+      uuid_sentral: idSentral.value,
       tahun: tahunBerjalan
     });
-    approveMesinKK.value = response.data.mesins.filter((val: any) => val.id_mesin == idMesin.value)[0];
+    approveMesinKK.value = response.data.mesins.filter((val: any) => val.uuid_mesin == idMesin.value)[0];
     statusMesin.value = approveMesinKK.value.id_status;
   } catch (error) {
     console.error('Fetch Persetujuan KK Sentral Error : ' + error);
@@ -1343,7 +1343,7 @@ const fetchDataTeknisByPeriode = async () => {
         })
       }
       dataTeknisSimulasi1.value = {
-        id_mesin: idMesin.value,
+        uuid_mesin: idMesin.value,
         tahun: tahunBerjalan,
         tahun_realisasi: tahunBerjalan - 1,
         id_type_periodic: typePeriodic.value,
@@ -1375,7 +1375,7 @@ const fetchDataTeknisByPeriode = async () => {
         })
       }
       dataTeknisSimulasi2.value = {
-        id_mesin: idMesin.value,
+        uuid_mesin: idMesin.value,
         tahun: tahunBerjalan,
         tahun_realisasi: tahunBerjalan - 1,
         id_type_periodic: typePeriodic2,
@@ -1419,7 +1419,7 @@ const fetchDataFinansialDetail = async () => {
     );
     const response: ComboTypePeriodicItem = await perbaruiDataService.getDataFinansialDetail(tahunTerakhirRealisasi.value, idMesin.value);
     isAudited.value = response.data.is_audited;
-    if (responseSimulasi1.data.id_mesin === 0 || responseSimulasi2.data.id_mesin === 0) {
+    if (responseSimulasi1.data.uuid_mesin === 0 || responseSimulasi2.data.uuid_mesin === 0) {
       statusDataFinansial.value = 'Permanent';
       dataFinansialDetail.value = response.data;
       costComponentA.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_a);
@@ -1494,14 +1494,14 @@ const fetchDataFinansialDetail = async () => {
       dataFinansialInit.value.costComponentC = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_c);
       dataFinansialInit.value.costComponentD = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_d);
       formFinansialSimulasi1.value = {
-        id_mesin: idMesin.value,
+        uuid_mesin: idMesin.value,
         tahun: tahunBerjalan - 1,
         status_b_d: responseSimulasi1.data.status_b_d,
         cost_component_a: responseSimulasi1.data.cost_component_a,
         cost_component_b: responseSimulasi1.data.cost_component_b,
         cost_component_b_detail: {
           id_ao: 0,
-          id_mesin: idMesin.value,
+          uuid_mesin: idMesin.value,
           tahun: tahunBerjalan - 1,
           biaya_kepegawaian: responseSimulasi1.data.cost_component_b_detail.biaya_kepegawaian,
           biaya_pemeliharaan_rutin: responseSimulasi1.data.cost_component_b_detail.biaya_pemeliharaan_rutin,
@@ -1516,7 +1516,7 @@ const fetchDataFinansialDetail = async () => {
         cost_component_d: responseSimulasi1.data.cost_component_d,
         cost_component_d_detail: {
           id_pelumas_bahan_kimia: 0,
-          id_mesin: idMesin.value,
+          uuid_mesin: idMesin.value,
           tahun: tahunBerjalan - 1,
           biaya_pelumas: responseSimulasi1.data.cost_component_d_detail.biaya_pelumas,
           biaya_bahan_kimia: responseSimulasi1.data.cost_component_d_detail.biaya_bahan_kimia,
@@ -1530,14 +1530,14 @@ const fetchDataFinansialDetail = async () => {
         opsi_simulasi: 1
       };
       formFinansialSimulasi2.value = {
-        id_mesin: idMesin.value,
+        uuid_mesin: idMesin.value,
         tahun: tahunBerjalan - 1,
         status_b_d: responseSimulasi2.data.status_b_d,
         cost_component_a: responseSimulasi2.data.cost_component_a,
         cost_component_b: responseSimulasi2.data.cost_component_b,
         cost_component_b_detail: {
           id_ao: 0,
-          id_mesin: idMesin.value,
+          uuid_mesin: idMesin.value,
           tahun: tahunBerjalan - 1,
           biaya_kepegawaian: responseSimulasi2.data.cost_component_b_detail.biaya_kepegawaian,
           biaya_pemeliharaan_rutin: responseSimulasi2.data.cost_component_b_detail.biaya_pemeliharaan_rutin,
@@ -1552,7 +1552,7 @@ const fetchDataFinansialDetail = async () => {
         cost_component_d: responseSimulasi2.data.cost_component_d,
         cost_component_d_detail: {
           id_pelumas_bahan_kimia: 0,
-          id_mesin: idMesin.value,
+          uuid_mesin: idMesin.value,
           tahun: tahunBerjalan - 1,
           biaya_pelumas: responseSimulasi2.data.cost_component_d_detail.biaya_pelumas,
           biaya_bahan_kimia: responseSimulasi2.data.cost_component_d_detail.biaya_bahan_kimia,
@@ -1573,7 +1573,7 @@ const fetchDataFinansialDetail = async () => {
 const fetchHasilSimulasi1 = async () => {
   try {
     const response: any = await perbaruiDataService.getHasilSimulasi(idMesin.value, tahunBerjalan, 6);
-    hasilSimulasi1.value.idMesin = response.data.id_mesin;
+    hasilSimulasi1.value.idMesin = response.data.uuid_mesin;
     hasilSimulasi1.value.trackAverageEaf = response.data.track_average_eaf;
     hasilSimulasi1.value.trackAverageNcf = response.data.track_average_cf;
     hasilSimulasi1.value.trackIrrEquity = response.data.track_irr_equity;
@@ -1587,7 +1587,7 @@ const fetchHasilSimulasi1 = async () => {
 const fetchHasilSimulasi2 = async () => {
   try {
     const response: any = await perbaruiDataService.getHasilSimulasi(idMesin.value, tahunBerjalan, 7);
-    hasilSimulasi2.value.idMesin = response.data.id_mesin;
+    hasilSimulasi2.value.idMesin = response.data.uuid_mesin;
     hasilSimulasi2.value.trackAverageEaf = response.data.track_average_eaf;
     hasilSimulasi2.value.trackAverageNcf = response.data.track_average_cf;
     hasilSimulasi2.value.trackIrrEquity = response.data.track_irr_equity;
@@ -1733,7 +1733,7 @@ function handleTambahBahanBakar() {
   bahanBakarGroup.value.bahanBakars.push({
     flag_bahan_bakar: 0,
     harga_bahan_bakar: "0",
-    id_mesin: idMesin.value,
+    uuid_mesin: idMesin.value,
     kode_bahan_bakar: "",
     sfc: "0",
     tahun: (tahunBerjalan - 1).toString(),
@@ -1745,7 +1745,7 @@ function handleTambahBahanBakar() {
     value: "0"
   });
   bahanBakarGroup.value.costCDetail.push({
-    id_mesin: idMesin.value,
+    uuid_mesin: idMesin.value,
     tahun: tahunBerjalan - 1,
     kode_bahan_bakar: "",
     fuel_cost: "0"
@@ -2112,7 +2112,7 @@ const handleSubmit = async () => {
           tahun: tahunBerjalan,
           // Tahun Realisasi
           tahun_realisasi: tahunBerjalan - 1,
-          id_mesin: idMesin.value,
+          uuid_mesin: idMesin.value,
           interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
           umur_teknis: parseInt(masaManfaat.value),
           loan_tenor: parseInt(asumsiParameter.value.asumsiMakro.loanTenor),
@@ -2139,7 +2139,7 @@ const handleSubmit = async () => {
           tahun: tahunBerjalan,
           // Tahun Realisasi
           tahun_realisasi: tahunBerjalan - 1,
-          id_mesin: idMesin.value,
+          uuid_mesin: idMesin.value,
           interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
           umur_teknis: parseInt(masaManfaat.value),
           loan_tenor: parseInt(asumsiParameter.value.asumsiMakro.loanTenor),
@@ -2181,7 +2181,7 @@ const handleSubmit = async () => {
       let formParameterUpdate = {};
       formParameterUpdate = {
         id_asumsi: idAsumsi.value,
-        id_mesin: idMesin.value,
+        uuid_mesin: idMesin.value,
         tahun: tahunBerjalan,
         tahun_realisasi: tahunBerjalan - 1,
         nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
@@ -2197,7 +2197,7 @@ const handleSubmit = async () => {
       // } else {
       //   formParameterUpdate = {
       //     id_asumsi: idAsumsi.value,
-      //     id_mesin: idMesin.value,
+      //     uuid_mesin: idMesin.value,
       //     tahun: tahunBerjalan,
       //     tahun_realisasi: tahunBerjalan - 1,
       //     nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
@@ -2229,7 +2229,7 @@ const handleSubmit = async () => {
       const finalEnergySales = energySales.value.includes('.') ? energySales.value.replace(/[.]/g, '') : energySales.value;
 
       const formDataTeknisUpdate = {
-        id_mesin: idMesin.value,
+        uuid_mesin: idMesin.value,
         tahun: tahunBerjalan,
         tahun_realisasi: tahunBerjalan - 1,
         id_type_periodic: typePeriodic.value,
@@ -2283,7 +2283,7 @@ const handleSubmit = async () => {
         const formattedFuelCost = item.fuel_cost.includes('.') ? item.fuel_cost.replace(/[.]/g, '') : item.fuel_cost;
         console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail', item.fuel_cost)
         finalCostComponentCDetail.push({
-          id_mesin: idMesin.value,
+          uuid_mesin: idMesin.value,
           tahun: tahunBerjalan - 1,
           kode_bahan_bakar: item.kode_bahan_bakar,
           fuel_cost: parseFloat(formattedFuelCost.replace(/,/g, '.'))
@@ -2300,14 +2300,14 @@ const handleSubmit = async () => {
 
       let formDataFinansialUpdate;
       formDataFinansialUpdate = {
-        id_mesin: idMesin.value,
+        uuid_mesin: idMesin.value,
         tahun: tahunBerjalan - 1,
         status_b_d: 2,
         cost_component_a: parseFloat(finalCostComponentA.replace(/,/g, '.')),
         cost_component_b: parseFloat(finalCostComponentB.replace(/,/g, '.')),
         cost_component_b_detail: {
           id_ao: 0,
-          id_mesin: idMesin.value,
+          uuid_mesin: idMesin.value,
           tahun: tahunBerjalan - 1,
           biaya_kepegawaian: parseFloat(finalBiayaKepegawaian.replace(/,/g, '.')),
           biaya_pemeliharaan_rutin: parseFloat(finalBiayaPemeliharaanRutin.replace(/,/g, '.')),
@@ -2322,7 +2322,7 @@ const handleSubmit = async () => {
         cost_component_d: parseFloat(finalCostComponentD.replace(/,/g, '.')),
         cost_component_d_detail: {
           id_pelumas_bahan_kimia: 0,
-          id_mesin: idMesin.value,
+          uuid_mesin: idMesin.value,
           tahun: tahunBerjalan - 1,
           biaya_pelumas: parseFloat(finalBiayaPelumas.replace(/,/g, '.')),
           biaya_bahan_kimia: parseFloat(finalBahanKimia.replace(/,/g, '.')),
@@ -2336,14 +2336,14 @@ const handleSubmit = async () => {
       }
       // } else {
       //   formDataFinansialUpdate = {
-      //     id_mesin: idMesin.value,
+      //     uuid_mesin: idMesin.value,
       //     tahun: tahunBerjalan - 1,
       //     status_b_d: 1,
       //     cost_component_a: parseFloat(finalCostComponentA.replace(/,/g, '.')),
       //     cost_component_b: parseFloat(finalCostComponentB.replace(/,/g, '.')),
       //     cost_component_b_detail: {
       //       id_ao: 0,
-      //       id_mesin: idMesin.value,
+      //       uuid_mesin: idMesin.value,
       //       tahun: tahunBerjalan - 1,
       //       biaya_kepegawaian: 0,
       //       biaya_pemeliharaan_rutin: 0,
@@ -2358,7 +2358,7 @@ const handleSubmit = async () => {
       //     cost_component_d: 0,
       //     cost_component_d_detail: {
       //       id_pelumas_bahan_kimia: 0,
-      //       id_mesin: idMesin.value,
+      //       uuid_mesin: idMesin.value,
       //       tahun: tahunBerjalan - 1,
       //       biaya_pelumas: 0,
       //       biaya_bahan_kimia: 0,
@@ -2412,7 +2412,7 @@ const handleFinalSubmit = async () => {
       for (const item of formFinansialSimulasi1.value.cost_component_c_detail) {
         const formattedFuelCost = item.fuel_cost.includes('.') ? item.fuel_cost.replace(/[.]/g, '') : item.fuel_cost;
         finalCostComponentCDetail.push({
-          id_mesin: idMesin.value,
+          uuid_mesin: idMesin.value,
           tahun: tahunBerjalan - 1,
           kode_bahan_bakar: item.kode_bahan_bakar,
           fuel_cost: parseFloat(formattedFuelCost.replace(/,/g, '.'))
@@ -2440,7 +2440,7 @@ const handleFinalSubmit = async () => {
     await wait(3000);
     isFinalSubmitSuccess.value = false;
     if (userAuthStore.levelAlias === 'Mb*0yT%3') {
-      router.replace({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(idMesin.value) : idMesin.value }, query: { id_sentral: idSentral.value, tahun: tahunBerjalan } });
+      router.replace({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(idMesin.value) : idMesin.value }, query: { uuid_sentral: idSentral.value, tahun: tahunBerjalan } });
     } else {
       router.replace({ name: 'persetujuan-by-approve' });
     }

@@ -318,12 +318,12 @@ watch(timeLeft, async (remainingTime) => {
 const fetchPersetujuanKK = async () => {
   try {
     if (userAuthStore.levelAlias === 'Mb*0yT%3') {
-      const response: any = await persetujuanService.getPersetujuanKKSentral({ id_sentral: levelSentral.value, tahun: tahunBerjalan });
+      const response: any = await persetujuanService.getPersetujuanKKSentral({ uuid_sentral: levelSentral.value, tahun: tahunBerjalan });
       totalPersetujuanKK.value = response.data.mesins !== null ? response.data.mesins.filter((val: any) => val.status_approval !== 'Disetujui').length : 0;
     } else {
       const response: any = await persetujuanService.getPersetujuanKertasKerja({
         kode_pengelola: [],
-        id_pembina: [],
+        uuid_pembina: [],
         status: [],
         page: 1,
         limit: 10,
@@ -340,12 +340,12 @@ const fetchPersetujuanKK = async () => {
 const fetchPersetujuanFS = async () => {
   try {
     if (userAuthStore.levelAlias === 'Mb*0yT%3') {
-      const response: any = await persetujuanService.getPersetujuanFSSentral({ id_sentral: levelSentral.value });
+      const response: any = await persetujuanService.getPersetujuanFSSentral({ uuid_sentral: levelSentral.value });
       totalPersetujuanFS.value = response.data.mesins !== null ? response.data.mesins.filter((val: any) => val.status_approval !== 'Disetujui').length : 0;
     } else {
       const response: any = await persetujuanService.getPersetujuanFS({
         kode_pengelola: [],
-        id_pembina: [],
+        uuid_pembina: [],
         status: [],
         page: 1,
         limit: 10,

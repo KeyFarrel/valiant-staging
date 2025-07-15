@@ -186,7 +186,7 @@
         <TabParameterTeknis :is-perbarui-data="false" :tahun-realisasi="year" :init-pemakaian-sendiri="pemakaianSendiri"
           :init-auxiliary="auxiliary" :init-susut-trafo="susutTrafo" :combo-bahan-bakar="comboBahanBakar"
           :bahan-bakars="bahanBakars"
-          :id_mesin="nodeMode === 'production' ? encryptStorageRef.decryptValue(route.params.id.toString()) : route.params.id"
+          :uuid_mesin="nodeMode === 'production' ? encryptStorageRef.decryptValue(route.params.id.toString()) : route.params.id"
           :is-input-asumsi-parameter="true" :mesin="mesin.mesin" v-model:pickedValue="pickedParameterValue"
           v-model:checkedBahanBakar="checkedBahanBakar" v-model:nphr="nphr" v-model:auxiliary="auxiliary"
           v-model:susut-trafo="susutTrafo" v-model:pemakaian-sendiri="pemakaianSendiri"
@@ -313,7 +313,7 @@ const checkedBahanBakar = ref<number[]>([]);
 const bahanBakars = ref<any[]>([
   {
     id: 1,
-    id_mesin: idMesin.value,
+    uuid_mesin: idMesin.value,
     tahun: year.toString(),
     kode_bahan_bakar: "",
     harga_bahan_bakar: "",
@@ -331,8 +331,8 @@ function toggleButton() {
 
 const fetchPersetujuanKK = async () => {
   try {
-    const response: any = await persetujuanService.getPersetujuanKKSentral({ id_sentral: route.query.id_sentral, tahun: year });
-    approveMesinKK.value = response.data.mesins.filter((val: any) => val.id_mesin == idMesin.value)[0];
+    const response: any = await persetujuanService.getPersetujuanKKSentral({ uuid_sentral: route.query.uuid_sentral, tahun: year });
+    approveMesinKK.value = response.data.mesins.filter((val: any) => val.uuid_mesin == idMesin.value)[0];
   } catch (error) {
     console.error('Fetch Persetujuan KK Sentral Error : ' + error);
   }
@@ -435,9 +435,9 @@ const fetchUnitPengelola = async () => {
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola
       );
       namaPengelola.value = pengelola[0].pengelola;
-      const idPembina = pembangkitResponse.data.id_pembina;
+      const idPembina = pembangkitResponse.data.uuid_pembina;
       const pembinaList: any = await fetchListPembina();
-      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina;
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina;
     }
   } catch (error) {
     console.error("Fetch Unit Pengelola Error : " + error);
@@ -459,7 +459,7 @@ function handleHapusBahanBakar() {
 function handleTambahBahanBakar() {
   bahanBakars.value.push({
     id: i.value++,
-    id_mesin: idMesin.value,
+    uuid_mesin: idMesin.value,
     tahun: year,
     kode_bahan_bakar: "",
     harga_bahan_bakar: "",
@@ -560,7 +560,7 @@ const insertAsumsiParameter = async () => {
           id_asumsi: idAsumsi.value,
           tahun: year,
           tahun_realisasi: year - 1,
-          id_mesin: idMesin.value,
+          uuid_mesin: idMesin.value,
           interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
           umur_teknis: parseInt(masaManfaat.value),
           loan_tenor: parseInt(loanTenor.value),
@@ -588,7 +588,7 @@ const insertAsumsiParameter = async () => {
           id_asumsi: idAsumsi.value,
           tahun_realisasi: year - 1,
           tahun: year,
-          id_mesin: idMesin.value,
+          uuid_mesin: idMesin.value,
           nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
           ps: parseFloat(finalPemakaianSendiri.replace(/,/g, '.')),
           susut_trafo: parseFloat(finalSusutTrafo.replace(/,/g, '.')),
@@ -739,7 +739,7 @@ const handleCancelUpload = async () => {
 onMounted(async () => {
   isLoading.value = true;
   encryptStorageRef = await encryptStoragePromise;
-  idMesin.value = parseInt(nodeMode === 'production' ? encryptStorageRef.decryptValue(route.params.id.toString()) : route.params.id.toString());
+  idMesin.value = nodeMode === 'production' ? encryptStorageRef.decryptValue(route.params.id.toString()) : route.params.id.toString();
   await fetchMesinById();
   await fetchCheckIntegrasi();
   await fetchAsumsiParameter(false);

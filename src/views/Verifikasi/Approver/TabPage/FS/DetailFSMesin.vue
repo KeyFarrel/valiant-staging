@@ -407,7 +407,7 @@ const mesinDataById = ref<MesinItem>();
 const namaPengelola = ref<string>('');
 const namaPembina = ref<string>('');
 const bahanBakars = ref<{
-  id_mesin: number
+  uuid_mesin: number
   tahun: string
   kode_bahan_bakar: string
   harga_bahan_bakar: number
@@ -443,7 +443,7 @@ const jumlahMesin = ref<any>('');
 
 interface MesinItem {
   data: any
-  id_mesin: number
+  uuid_mesin: number
   kode_sentral: string
   kode_mesin: string
   mesin: string
@@ -519,11 +519,11 @@ const fetchMesinById = async () => {
 const fetchPersetujuanFS = async () => {
   try {
     const response: ListApprove = await persetujuanService.getPersetujuanFSSentral({
-      id_sentral: route.query.id_sentral,
+      uuid_sentral: route.query.uuid_sentral,
       tahun: route.query.tahun
     });
     approveSentralFS.value = response.data;
-    approveMesinFS.value = response.data.mesins.filter((val: any) => val.id_mesin == idGrafik.value)[0];
+    approveMesinFS.value = response.data.mesins.filter((val: any) => val.uuid_mesin == idGrafik.value)[0];
     // console.log(response.data)
     statusMesin.value = approveMesinFS.value?.id_status;
   } catch (error) {
@@ -535,7 +535,7 @@ const fetchAsumsiFeasibility = async () => {
   try {
     const response: any =
       await feasibilityStudyService.getAsumsiFeasibility(
-        parseInt(idGrafik.value),
+        idGrafik.value,
         parseInt(mesinDataById.value?.tahun_operasi ?? '')
       );
     asumsiMakro.value = {
@@ -586,7 +586,7 @@ const fetchAsumsiFeasibility = async () => {
 const fetchDataTeknis = async () => {
   try {
     const response: any = await feasibilityStudyService.getDataTeknis(
-      parseInt(idGrafik.value)
+      idGrafik.value
     );
     dataTeknis.value = response.data;
   } catch (error) {
@@ -597,7 +597,7 @@ const fetchDataTeknis = async () => {
 const fetchDataFinansial = async () => {
   try {
     const response: any = await feasibilityStudyService.getDataFinansial(
-      parseInt(idGrafik.value)
+      idGrafik.value
     );
     let currentLevel1: any | null = null;
     let currentLevel2: any | null = null
@@ -634,7 +634,7 @@ const fetchDataFinansial = async () => {
 const fetchHasilSimulasi = async () => {
   try {
     const response: any = await feasibilityStudyService.getHasilSimulasi(
-      parseInt(idGrafik.value),
+      idGrafik.value,
       parseInt(statusMesin.value)
     );
     hasilSimulasi.value = response.data;
@@ -674,9 +674,9 @@ const fetchUnitPengelola = async () => {
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola
       );
       namaPengelola.value = pengelola[0].pengelola
-      const idPembina = pembangkitResponse.data.id_pembina;
+      const idPembina = pembangkitResponse.data.uuid_pembina;
       const pembinaList: any = await fetchListPembina();
-      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina
     };
   } catch (error) {
     console.error("Fetch Unit Pengelola Error : " + error);
@@ -725,7 +725,7 @@ const updateFSPengelola = async () => {
     const response: any = await persetujuanService.updateStatusFS({
       status_approval: 4,
       keterangan: '',
-      id_mesin: parseInt(idGrafik.value)
+      uuid_mesin: idGrafik.value
     })
     updateMesinFS.value = response.data
     isLoading.value = false;
@@ -751,7 +751,7 @@ const rejectFSPengelola = async () => {
       const response: any = await persetujuanService.updateStatusFS({
         status_approval: 5,
         keterangan: pesan.value,
-        id_mesin: parseInt(idGrafik.value)
+        uuid_mesin: idGrafik.value
       })
       updateMesinFS.value = response.data
       isLoading.value = false;
@@ -776,7 +776,7 @@ const updateFSPembina = async () => {
     const response: any = await persetujuanService.updateStatusFS({
       status_approval: 1,
       keterangan: '',
-      id_mesin: parseInt(idGrafik.value)
+      uuid_mesin: idGrafik.value
     })
     updateMesinFS.value = response.data
     modalApprove.value = false;
@@ -802,7 +802,7 @@ const rejectFSPembina = async () => {
       const response: any = await persetujuanService.updateStatusFS({
         status_approval: 2,
         keterangan: pesan.value,
-        id_mesin: parseInt(idGrafik.value)
+        uuid_mesin: idGrafik.value
       })
       updateMesinFS.value = response.data;
       isLoading.value = false;

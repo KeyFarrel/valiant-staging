@@ -931,7 +931,7 @@ function handleClickWlcAll(param: any) {
   grafikService
     .getGrafikWLCALLDetailMesin({
       tahun_realisasi: props.tahunData,
-      id_mesin: props.idMesin,
+      uuid_mesin: props.idMesin,
       tahun: tahunWLCAllMesin.value[param.dataIndex]
     })
     .then((res: any) => {
@@ -1044,7 +1044,7 @@ function handleClickWlcKom(param: any) {
   grafikService
     .getGrafikWLCKomDetailMesin({
       tahun: tahunWLCKomMesin.value[param.dataIndex],
-      id_mesin: props.idMesin,
+      uuid_mesin: props.idMesin,
       tahun_realisasi: props.tahunData
     })
     .then((res: any) => {
@@ -1156,7 +1156,7 @@ function handleClickPlan(param: any) {
 
   grafikService
     .getGrafikPlanDetailMesin({
-      id_mesin: props.idMesin,
+      uuid_mesin: props.idMesin,
       tahun_realisasi: props.tahunData,
       tahun: tahunPlanningMesin.value[param.dataIndex],
     })
@@ -1255,7 +1255,7 @@ function handleClickPlanKom(param: any) {
 
   grafikService
     .getGrafikPlanKomDetailMesin({
-      id_mesin: props.idMesin,
+      uuid_mesin: props.idMesin,
       tahun: tahunPlanKomMesin.value[param.dataIndex],
     })
     .then((res: any) => {
@@ -1353,7 +1353,7 @@ function handleClickPRP(param: any) {
 
   grafikService
     .getGrafikPRPDetailMesin({
-      id_mesin: props.idMesin,
+      uuid_mesin: props.idMesin,
       tahun_realisasi: props.tahunData,
       tahun: tahunPRPMesin.value[param.dataIndex],
     })
@@ -1466,7 +1466,7 @@ function handleClickLastY(param: any) {
 
   grafikService
     .getGrafikPRPLastYearDetailMesin({
-      id_mesin: props.idMesin,
+      uuid_mesin: props.idMesin,
       tahun_realisasi: props.tahunData,
       tahun: tahunLastYearMesin.value[param.dataIndex],
     })
@@ -1575,7 +1575,7 @@ function handleClickLastY(param: any) {
 
 const fetchGrafikWLCAllMesin = async () => {
   try {
-    const response: any = await grafikService.getGrafikWLCALLMesin({ id_mesin: props.idMesin, start_year: '', end_year: '', tahun_realisasi: tahunData.value });
+    const response: any = await grafikService.getGrafikWLCALLMesin({ uuid_mesin: props.idMesin, start_year: '', end_year: '', tahun_realisasi: tahunData.value });
     let indexTerdekat;
     let tahunBEP;
     let indexBEP;
@@ -1993,7 +1993,7 @@ const fetchGrafikWLCAllMesin = async () => {
 
 const fetchGrafikWLCKomMesin = async () => {
   try {
-    const response: any = await grafikService.getGrafikWLCKomMesin({ id_mesin: props.idMesin, start_year: '', end_year: '', tahun_realisasi: tahunData.value });
+    const response: any = await grafikService.getGrafikWLCKomMesin({ uuid_mesin: props.idMesin, start_year: '', end_year: '', tahun_realisasi: tahunData.value });
     dataWLCKomMesin.value = response.data;
 
     tahunWLCKomMesin.value = [];
@@ -2151,7 +2151,7 @@ const fetchGrafikWLCKomMesin = async () => {
 
 const fetchGrafikPlanMesin = async () => {
   try {
-    const response: any = await grafikService.getGrafikPlanMesin({ id_mesin: props.idMesin, tahun_realisasi: tahunData.value })
+    const response: any = await grafikService.getGrafikPlanMesin({ uuid_mesin: props.idMesin, tahun_realisasi: tahunData.value })
     let indexTerdekat;
     let tahunBEP;
     let indexBEP;
@@ -2555,7 +2555,7 @@ const fetchGrafikPlanMesin = async () => {
 
 const fetchGrafikPlanKomMesin = async () => {
   try {
-    const response: any = await grafikService.getGrafikPlanKomMesin({ id_mesin: props.idMesin, })
+    const response: any = await grafikService.getGrafikPlanKomMesin({ uuid_mesin: props.idMesin, })
     dataPlanKomMesin.value = response.data;
 
     tahunPlanKomMesin.value = [];
@@ -2704,7 +2704,7 @@ const fetchGrafikPlanKomMesin = async () => {
 
 const fetchGrafikPRPMesin = async () => {
   try {
-    const response: any = await grafikService.getGrafikPRPMesin({ id_mesin: props.idMesin, tahun_realisasi: tahunData.value });
+    const response: any = await grafikService.getGrafikPRPMesin({ uuid_mesin: props.idMesin, tahun_realisasi: tahunData.value });
     let indexTerdekat;
     let tahunBEP;
     let indexBEP;
@@ -5604,7 +5604,7 @@ const fetchGrafikPRPMesin = async () => {
 
 const fetchGrafikPRPLastYearMesin = async () => {
   try {
-    const response: any = await grafikService.getGrafikPRPLastYearMesin({ id_mesin: props.idMesin, tahun_realisasi: tahunData.value })
+    const response: any = await grafikService.getGrafikPRPLastYearMesin({ uuid_mesin: props.idMesin, tahun_realisasi: tahunData.value })
 
     dataPRPLastYearMesin.value = response.data[0].realisasi_proyeksi;
 
@@ -6631,7 +6631,7 @@ const fetchGrafikPRPLastYearMesin = async () => {
 const fetchRealisasiProyeksiMesin = async () => {
   try {
     const response: any = await grafikService.getRealisasiProyeksiMesin({
-      tahun: tahunData.value, id_mesin: props.idMesin
+      tahun: tahunData.value, uuid_mesin: props.idMesin
     })
     statusApprove.value = response.data.status;
   } catch (error) {
@@ -6641,7 +6641,7 @@ const fetchRealisasiProyeksiMesin = async () => {
 
 const fetchPlanningMesin = async () => {
   try {
-    const response: any = await grafikService.getPlanningMesin({ id_mesin: props.idMesin })
+    const response: any = await grafikService.getPlanningMesin({ uuid_mesin: props.idMesin })
     statusApprovePlanning.value = response.data.status;
   } catch (error) {
     console.error('Fetch Planning Mesin Error', error)
