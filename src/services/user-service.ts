@@ -6,8 +6,8 @@ export default class UserService extends BaseService {
     async getUserData<T>(page?:any, limit?:any, search?:any): Promise<T> {
         return this.get(`${url}user`, {page: page, limit: limit, search: search});
     }
-    async getUserById<T>(id:number): Promise<T> {
-        return this.get(`${url}user/${id}`);
+    async getUserById<T>(uuid:number): Promise<T> {
+        return this.get(`${url}user/${uuid}`);
     }
     async getSentral<T>(): Promise<T> {
         return this.get(`${url}filter/combo-sentral`);
@@ -33,8 +33,8 @@ export default class UserService extends BaseService {
     async resetPassword<T>(emailConfirm: string, emailReset: string): Promise<T> {
         return this.post(`${url}user/reset-password`, {email_confirm: emailConfirm, email: emailReset});
     }
-    async updateUser<T>(id: number, data: any): Promise<T> {
-        return this.post(`${url}user/${id}`, data);
+    async updateUser<T>(uuid: number, data: any): Promise<T> {
+        return this.post(`${url}user/${uuid}`, data);
     }
     async getSentralByPengelola<T>(idPengelola: number, idPembina: number): Promise<T> {
         return this.get(`${url}filter/combo-sentral`, {id_pengelola: idPengelola, id_pembina: idPembina});

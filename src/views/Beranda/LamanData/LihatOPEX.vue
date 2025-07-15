@@ -181,9 +181,9 @@ const fetchUnitPengelola = async () => {
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola
       );
       namaPengelola.value = pengelola[0].pengelola;
-      const idPembina = pembangkitResponse.data.id_pembina;
+      const idPembina = pembangkitResponse.data.uuid_pembina;
       const pembinaList: any = await fetchListPembina();
-      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina;
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina;
     }
   } catch (error) {
     console.error("Fetch Unit Pengelola Error : " + error);

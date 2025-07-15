@@ -144,12 +144,13 @@
     <template v-if="sentralData.length">
       <div v-auto-animate="{ duration: 300 }" class="flex flex-col w-full p-3 border rounded-lg"
         v-for="(sentralItem, sentralIndex) in sentralData" :key="sentralIndex">
-        <div class="flex items-center justify-between cursor-pointer" @click="togglePembangkit(sentralItem.id_sentral)">
+        <div class="flex items-center justify-between cursor-pointer"
+          @click="togglePembangkit(sentralItem.uuid_sentral)">
           <h2 class="text-base font-bold text-primaryColor">
             {{ sentralItem.sentral }}
           </h2>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
-            v-if="!isPembangkitOpen(sentralItem.id_sentral)">
+            v-if="!isPembangkitOpen(sentralItem.uuid_sentral)">
             <path d="M6 9.5L12 15.5L18 9.5" stroke="black" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round" />
           </svg>
@@ -160,7 +161,7 @@
               stroke-linejoin="round" />
           </svg>
         </div>
-        <div class="mt-3" v-if="isPembangkitOpen(sentralItem.id_sentral)">
+        <div class="mt-3" v-if="isPembangkitOpen(sentralItem.uuid_sentral)">
           <div class="border-b"></div>
           <!--Divider-->
           <TabWrapperSentral v-if="sentralData.length" :is-lihat-grafik="false" :tabs-titles="sentralItem.mesins[0]"
@@ -229,14 +230,14 @@
                       </div>
                       <div>
                         <h3 class="text-gray-400">IRR on Equity</h3>
-                        <p class="flex items-center text-sm space-x-1.5 font-semibold" v-if="mesinSisaIRRNPV.filter((mesin) => mesin.id_mesin ===
-                          mesinItem.id_mesin).length === 0
+                        <p class="flex items-center text-sm space-x-1.5 font-semibold" v-if="mesinSisaIRRNPV.filter((mesin) => mesin.uuid_mesin ===
+                          mesinItem.uuid_mesin).length === 0
                         ">-<span class="ml-1 mr-0.5 text-gray-400"> %</span>
                           <KeteranganAnomali />
                         </p>
                         <p class="flex items-center text-sm space-x-1.5 font-semibold"
                           :class="{ 'text-warningColor': irrItem.irr_on_equity < 9 || irrItem.irr_on_equity > 14, 'text-green-500': irrItem.irr_on_equity > 9 && irrItem.irr_on_equity < 14 }"
-                          v-for="(irrItem, irrIndex) in mesinSisaIRRNPV.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)"
+                          v-for="(irrItem, irrIndex) in mesinSisaIRRNPV.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)"
                           :key="irrIndex" v-else>
                           {{ irrItem.irr_on_equity === '' ? 'NUM' : globalFormat.formatRupiah(irrItem.irr_on_equity) }}
                           <span class="ml-1 mr-0.5">%</span>
@@ -246,51 +247,52 @@
                       <div>
                         <h3 class="text-gray-400">NPV on Equity</h3>
                         <p class="text-sm font-semibold"
-                          v-if="mesinSisaIRRNPV.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin).length === 0">-
+                          v-if="mesinSisaIRRNPV.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin).length === 0">
+                          -
                           <span class="text-gray-400">Rp (Juta)</span>
                         </p>
                         <p class="text-sm font-semibold text-primaryTextColor"
-                          v-for="(npvItem, npvIndex) in mesinSisaIRRNPV.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)"
+                          v-for="(npvItem, npvIndex) in mesinSisaIRRNPV.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)"
                           :key="npvIndex" v-else>{{
                             globalFormat.formatRupiah(npvItem.npv_on_equity) }}
                           <span class="text-gray-400">Rp (Juta)</span>
                         </p>
                       </div>
-                      <div v-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0]">
+                      <div v-if="statusFSMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0]">
                         <h3 class="text-gray-400">Feasibility Study</h3>
                         <ComponentNotInput
-                          v-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum terisi'" />
+                          v-if="statusFSMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Data belum terisi'" />
                         <ComponentDisetujui
-                          v-else-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data sudah update'" />
+                          v-else-if="statusFSMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Data sudah update'" />
                         <ComponentDraft
-                          v-else-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Draft'" />
+                          v-else-if="statusFSMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Draft'" />
                         <ComponentWaitingT1
-                          v-else-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Menunggu Persetujuan T1'" />
+                          v-else-if="statusFSMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Menunggu Persetujuan T1'" />
                         <ComponentWaitingT2
-                          v-else-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Menunggu Persetujuan T2'" />
+                          v-else-if="statusFSMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Menunggu Persetujuan T2'" />
                         <ComponentDitolakT1
-                          v-else-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Ditolak T1'" />
+                          v-else-if="statusFSMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Ditolak T1'" />
                         <ComponentDitolakT2
-                          v-else-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Ditolak T2'" />
+                          v-else-if="statusFSMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Ditolak T2'" />
                       </div>
-                      <div v-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0]">
+                      <div v-if="statusRealisasiMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0]">
                         <h3 class="text-gray-400">Realisasi</h3>
                         <ComponentNotInput
-                          v-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum terisi'" />
+                          v-if="statusRealisasiMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Data belum terisi'" />
                         <ComponentNotUpdate
-                          v-else-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum update'" />
+                          v-else-if="statusRealisasiMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Data belum update'" />
                         <ComponentDisetujui
-                          v-else-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data sudah update'" />
+                          v-else-if="statusRealisasiMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Data sudah update'" />
                         <ComponentDraft
-                          v-else-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Draft'" />
+                          v-else-if="statusRealisasiMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Draft'" />
                         <ComponentWaitingT1
-                          v-else-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Menunggu Persetujuan T1'" />
+                          v-else-if="statusRealisasiMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Menunggu Persetujuan T1'" />
                         <ComponentWaitingT2
-                          v-else-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Menunggu Persetujuan T2'" />
+                          v-else-if="statusRealisasiMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Menunggu Persetujuan T2'" />
                         <ComponentDitolakT1
-                          v-else-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Ditolak T1'" />
+                          v-else-if="statusRealisasiMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Ditolak T1'" />
                         <ComponentDitolakT2
-                          v-else-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Ditolak T2'" />
+                          v-else-if="statusRealisasiMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Ditolak T2'" />
                       </div>
                       <div v-else class="space-y-2">
                         <ShimmerLoading class="w-18 h-3 mt-0.5" />
@@ -301,30 +303,30 @@
                 </div>
                 <div class="mt-4 border-b" v-if="userAuthStore.roleAlias !== 'Vx_91$pN'"></div>
                 <div class="flex mt-2 space-x-3"
-                  v-if="listStatusInputAsumsiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0]">
+                  v-if="listStatusInputAsumsiMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0]">
                   <RouterLink
-                    :to="checkUnggahRequiredProp(mesinItem.nilai_asset_awal, mesinItem.tahun_nilai_perolehan, mesinItem.masa_manfaat) ? '' : { name: 'input-asumsi-parameter', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(mesinItem.id_mesin) : mesinItem.id_mesin } }"
+                    :to="checkUnggahRequiredProp(mesinItem.nilai_asset_awal, mesinItem.tahun_nilai_perolehan, mesinItem.masa_manfaat) ? '' : { name: 'input-asumsi-parameter', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(mesinItem.uuid_mesin) : mesinItem.uuid_mesin } }"
                     v-if="userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Mb*0yT%3' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k')">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
                       id="hover-button"
-                      @click="checkUnggahRequiredProp(mesinItem.nilai_asset_awal, mesinItem.tahun_nilai_perolehan, mesinItem.masa_manfaat) ? isRequiredPropsComplete = true : null; currentNamaMesin = mesinItem.mesin; currentIdSentral = sentralItem.id_sentral; currentKodePengelola = sentralItem.kode_pengelola">
+                      @click="checkUnggahRequiredProp(mesinItem.nilai_asset_awal, mesinItem.tahun_nilai_perolehan, mesinItem.masa_manfaat) ? isRequiredPropsComplete = true : null; currentNamaMesin = mesinItem.mesin; currentIdSentral = sentralItem.uuid_sentral; currentKodePengelola = sentralItem.kode_pengelola">
                       <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                           d="M15 7.205C14.9922 7.1361 14.9771 7.06822 14.955 7.0025V6.935C14.9189 6.85788 14.8708 6.787 14.8125 6.725L10.3125 2.225C10.2505 2.16666 10.1796 2.11856 10.1025 2.0825H10.035C9.95881 2.03881 9.87467 2.01076 9.7875 2H5.25C4.65326 2 4.08097 2.23705 3.65901 2.65901C3.23705 3.08097 3 3.65326 3 4.25V14.75C3 15.3467 3.23705 15.919 3.65901 16.341C4.08097 16.7629 4.65326 17 5.25 17H12.75C13.3467 17 13.919 16.7629 14.341 16.341C14.7629 15.919 15 15.3467 15 14.75V7.25V7.205ZM10.5 4.5575L12.4425 6.5H11.25C11.0511 6.5 10.8603 6.42098 10.7197 6.28033C10.579 6.13968 10.5 5.94891 10.5 5.75V4.5575ZM13.5 14.75C13.5 14.9489 13.421 15.1397 13.2803 15.2803C13.1397 15.421 12.9489 15.5 12.75 15.5H5.25C5.05109 15.5 4.86032 15.421 4.71967 15.2803C4.57902 15.1397 4.5 14.9489 4.5 14.75V4.25C4.5 4.05109 4.57902 3.86032 4.71967 3.71967C4.86032 3.57902 5.05109 3.5 5.25 3.5H9V5.75C9 6.34674 9.23705 6.91903 9.65901 7.34099C10.081 7.76295 10.6533 8 11.25 8H13.5V14.75Z"
                           fill="#0099AD" />
                       </svg>
                       <span class="text-sm font-semibold">{{listStatusInputAsumsiMesin.filter((mesin) =>
-                        mesin.id_mesin
-                        === mesinItem.id_mesin)[0].status_kk === false ? 'Input' : 'Lihat'}} Asumsi &
+                        mesin.uuid_mesin
+                        === mesinItem.uuid_mesin)[0].status_kk === false ? 'Input' : 'Lihat'}} Asumsi &
                         Parameter</span>
                     </button>
                   </RouterLink>
                   <button
                     class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
                     id="hover-button"
-                    v-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum terisi' && (userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Mb*0yT%3' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k'))"
-                    @click="checkUnggahRequiredProp(mesinItem.nilai_asset_awal, mesinItem.tahun_nilai_perolehan, mesinItem.masa_manfaat) ? isRequiredPropsComplete = true : isFSDialogOpen = true; currentIdMesin = mesinItem.id_mesin; currentNamaMesin = mesinItem.mesin; currentIdSentral = sentralItem.id_sentral; currentKodeJenisPembangkit = mesinItem.kode_jenis_pembangkit; currentKodePengelola = sentralItem.kode_pengelola">
+                    v-if="statusFSMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Data belum terisi' && (userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Mb*0yT%3' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k'))"
+                    @click="checkUnggahRequiredProp(mesinItem.nilai_asset_awal, mesinItem.tahun_nilai_perolehan, mesinItem.masa_manfaat) ? isRequiredPropsComplete = true : isFSDialogOpen = true; currentIdMesin = mesinItem.uuid_mesin; currentNamaMesin = mesinItem.mesin; currentIdSentral = sentralItem.uuid_sentral; currentKodeJenisPembangkit = mesinItem.kode_jenis_pembangkit; currentKodePengelola = sentralItem.kode_pengelola">
                     <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
                         d="M13.8267 6.66779C13.368 5.6138 12.5763 4.73927 11.5731 4.17823C10.5698 3.61718 9.41027 3.40057 8.27213 3.56158C7.13398 3.72259 6.08002 4.25234 5.27175 5.06966C4.46348 5.88697 3.94549 6.94677 3.79716 8.08664C3.08142 8.25804 2.45355 8.68633 2.03279 9.29017C1.61203 9.89401 1.42768 10.6313 1.51475 11.3622C1.60181 12.093 1.95424 12.7663 2.50509 13.2544C3.05594 13.7425 3.76685 14.0113 4.50283 14.0097C4.70193 14.0097 4.89288 13.9307 5.03366 13.7899C5.17445 13.6491 5.25354 13.4581 5.25354 13.259C5.25354 13.0599 5.17445 12.869 5.03366 12.7282C4.89288 12.5874 4.70193 12.5083 4.50283 12.5083C4.10463 12.5083 3.72273 12.3501 3.44116 12.0686C3.15959 11.787 3.00141 11.4051 3.00141 11.0069C3.00141 10.6087 3.15959 10.2268 3.44116 9.94524C3.72273 9.66367 4.10463 9.50548 4.50283 9.50548C4.70193 9.50548 4.89288 9.42639 5.03366 9.2856C5.17445 9.14482 5.25354 8.95387 5.25354 8.75477C5.25546 7.86689 5.57206 7.00843 6.14709 6.33191C6.72212 5.65539 7.51835 5.20462 8.39433 5.05967C9.2703 4.91473 10.1693 5.085 10.9316 5.54023C11.6939 5.99546 12.2701 6.70618 12.558 7.54612C12.6009 7.67513 12.678 7.79005 12.7811 7.87864C12.8843 7.96722 13.0095 8.02614 13.1435 8.0491C13.6435 8.14359 14.0968 8.40464 14.4295 8.7897C14.7622 9.17477 14.9547 9.66115 14.9756 10.1696C14.9964 10.678 14.8445 11.1786 14.5446 11.5896C14.2446 12.0007 13.8143 12.2981 13.3237 12.4333C13.1306 12.483 12.9651 12.6075 12.8637 12.7792C12.7624 12.951 12.7334 13.156 12.7832 13.3491C12.833 13.5423 12.9574 13.7077 13.1292 13.8091C13.3009 13.9104 13.5059 13.9394 13.699 13.8896C14.4891 13.6809 15.1894 13.22 15.6937 12.577C16.198 11.934 16.4786 11.144 16.4931 10.327C16.5075 9.50993 16.2549 8.71051 15.7737 8.05009C15.2924 7.38967 14.6088 6.90434 13.8267 6.66779ZM9.5401 8.22176C9.46871 8.15342 9.38452 8.09984 9.29237 8.06411C9.1096 7.98903 8.9046 7.98903 8.72183 8.06411C8.62968 8.09984 8.54549 8.15342 8.47409 8.22176L6.22196 10.4739C6.0806 10.6153 6.00118 10.807 6.00118 11.0069C6.00118 11.2068 6.0806 11.3985 6.22196 11.5399C6.36332 11.6813 6.55505 11.7607 6.75496 11.7607C6.95488 11.7607 7.14661 11.6813 7.28797 11.5399L8.25639 10.564V14.7605C8.25639 14.9596 8.33548 15.1505 8.47626 15.2913C8.61705 15.4321 8.808 15.5112 9.0071 15.5112C9.2062 15.5112 9.39714 15.4321 9.53793 15.2913C9.67872 15.1505 9.75781 14.9596 9.75781 14.7605V10.564L10.7262 11.5399C10.796 11.6103 10.879 11.6661 10.9705 11.7042C11.062 11.7423 11.1601 11.762 11.2592 11.762C11.3583 11.762 11.4565 11.7423 11.5479 11.7042C11.6394 11.6661 11.7224 11.6103 11.7922 11.5399C11.8626 11.4701 11.9184 11.3871 11.9566 11.2956C11.9947 11.2041 12.0143 11.106 12.0143 11.0069C12.0143 10.9078 11.9947 10.8097 11.9566 10.7182C11.9184 10.6267 11.8626 10.5437 11.7922 10.4739L9.5401 8.22176Z"
@@ -333,10 +335,10 @@
                     <span class="text-sm font-semibold">Unggah Feasibility Study</span>
                   </button>
                   <RouterLink :to="{
-                    name: 'feasibility-study', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(mesinItem.id_mesin) : mesinItem.id_mesin },
+                    name: 'feasibility-study', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(mesinItem.uuid_mesin) : mesinItem.uuid_mesin },
                   }
                     "
-                    v-else-if="statusFSMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data sudah update' && userAuthStore.roleAlias !== 'Vx_91$pN'">
+                    v-else-if="statusFSMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Data sudah update' && userAuthStore.roleAlias !== 'Vx_91$pN'">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
                       id="hover-button">
@@ -351,8 +353,8 @@
                   <button
                     class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
                     id="hover-button"
-                    v-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum terisi' && (userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Mb*0yT%3' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k'))"
-                    @click="checkUnggahRequiredProp(mesinItem.nilai_asset_awal, mesinItem.tahun_nilai_perolehan, mesinItem.masa_manfaat) ? isRequiredPropsComplete = true : checkInputAsumsi(mesinItem.id_mesin) ? isRekapDialogOpen = true : isNotAlreadyInput = true; currentIdMesin = mesinItem.id_mesin; currentNamaMesin = mesinItem.mesin; currentIdSentral = sentralItem.id_sentral; currentKodePengelola = sentralItem.kode_pengelola">
+                    v-if="statusRealisasiMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Data belum terisi' && (userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Mb*0yT%3' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k'))"
+                    @click="checkUnggahRequiredProp(mesinItem.nilai_asset_awal, mesinItem.tahun_nilai_perolehan, mesinItem.masa_manfaat) ? isRequiredPropsComplete = true : checkInputAsumsi(mesinItem.uuid_mesin) ? isRekapDialogOpen = true : isNotAlreadyInput = true; currentIdMesin = mesinItem.uuid_mesin; currentNamaMesin = mesinItem.mesin; currentIdSentral = sentralItem.uuid_sentral; currentKodePengelola = sentralItem.kode_pengelola">
                     <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
                         d="M13.8267 6.66779C13.368 5.6138 12.5763 4.73927 11.5731 4.17823C10.5698 3.61718 9.41027 3.40057 8.27213 3.56158C7.13398 3.72259 6.08002 4.25234 5.27175 5.06966C4.46348 5.88697 3.94549 6.94677 3.79716 8.08664C3.08142 8.25804 2.45355 8.68633 2.03279 9.29017C1.61203 9.89401 1.42768 10.6313 1.51475 11.3622C1.60181 12.093 1.95424 12.7663 2.50509 13.2544C3.05594 13.7425 3.76685 14.0113 4.50283 14.0097C4.70193 14.0097 4.89288 13.9307 5.03366 13.7899C5.17445 13.6491 5.25354 13.4581 5.25354 13.259C5.25354 13.0599 5.17445 12.869 5.03366 12.7282C4.89288 12.5874 4.70193 12.5083 4.50283 12.5083C4.10463 12.5083 3.72273 12.3501 3.44116 12.0686C3.15959 11.787 3.00141 11.4051 3.00141 11.0069C3.00141 10.6087 3.15959 10.2268 3.44116 9.94524C3.72273 9.66367 4.10463 9.50548 4.50283 9.50548C4.70193 9.50548 4.89288 9.42639 5.03366 9.2856C5.17445 9.14482 5.25354 8.95387 5.25354 8.75477C5.25546 7.86689 5.57206 7.00843 6.14709 6.33191C6.72212 5.65539 7.51835 5.20462 8.39433 5.05967C9.2703 4.91473 10.1693 5.085 10.9316 5.54023C11.6939 5.99546 12.2701 6.70618 12.558 7.54612C12.6009 7.67513 12.678 7.79005 12.7811 7.87864C12.8843 7.96722 13.0095 8.02614 13.1435 8.0491C13.6435 8.14359 14.0968 8.40464 14.4295 8.7897C14.7622 9.17477 14.9547 9.66115 14.9756 10.1696C14.9964 10.678 14.8445 11.1786 14.5446 11.5896C14.2446 12.0007 13.8143 12.2981 13.3237 12.4333C13.1306 12.483 12.9651 12.6075 12.8637 12.7792C12.7624 12.951 12.7334 13.156 12.7832 13.3491C12.833 13.5423 12.9574 13.7077 13.1292 13.8091C13.3009 13.9104 13.5059 13.9394 13.699 13.8896C14.4891 13.6809 15.1894 13.22 15.6937 12.577C16.198 11.934 16.4786 11.144 16.4931 10.327C16.5075 9.50993 16.2549 8.71051 15.7737 8.05009C15.2924 7.38967 14.6088 6.90434 13.8267 6.66779ZM9.5401 8.22176C9.46871 8.15342 9.38452 8.09984 9.29237 8.06411C9.1096 7.98903 8.9046 7.98903 8.72183 8.06411C8.62968 8.09984 8.54549 8.15342 8.47409 8.22176L6.22196 10.4739C6.0806 10.6153 6.00118 10.807 6.00118 11.0069C6.00118 11.2068 6.0806 11.3985 6.22196 11.5399C6.36332 11.6813 6.55505 11.7607 6.75496 11.7607C6.95488 11.7607 7.14661 11.6813 7.28797 11.5399L8.25639 10.564V14.7605C8.25639 14.9596 8.33548 15.1505 8.47626 15.2913C8.61705 15.4321 8.808 15.5112 9.0071 15.5112C9.2062 15.5112 9.39714 15.4321 9.53793 15.2913C9.67872 15.1505 9.75781 14.9596 9.75781 14.7605V10.564L10.7262 11.5399C10.796 11.6103 10.879 11.6661 10.9705 11.7042C11.062 11.7423 11.1601 11.762 11.2592 11.762C11.3583 11.762 11.4565 11.7423 11.5479 11.7042C11.6394 11.6661 11.7224 11.6103 11.7922 11.5399C11.8626 11.4701 11.9184 11.3871 11.9566 11.2956C11.9947 11.2041 12.0143 11.106 12.0143 11.0069C12.0143 10.9078 11.9947 10.8097 11.9566 10.7182C11.9184 10.6267 11.8626 10.5437 11.7922 10.4739L9.5401 8.22176Z"
@@ -361,8 +363,8 @@
                     <span class="text-sm font-semibold">Unggah Kertas Kerja</span>
                   </button>
                   <RouterLink
-                    :to="{ name: 'perbarui-data', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(mesinItem.id_mesin) : mesinItem.id_mesin } }"
-                    v-else-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data belum update' && (userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Mb*0yT%3' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k'))">
+                    :to="{ name: 'perbarui-data', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(mesinItem.uuid_mesin) : mesinItem.uuid_mesin } }"
+                    v-else-if="statusRealisasiMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Data belum update' && (userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Mb*0yT%3' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k'))">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
                       id="hover-button">
@@ -382,8 +384,8 @@
                     </button>
                   </RouterLink>
                   <RouterLink
-                    :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(mesinItem.id_mesin) : mesinItem.id_mesin }, query: { tahun: tahunBerjalan } }"
-                    v-else-if="statusRealisasiMesin.filter((mesin) => mesin.id_mesin === mesinItem.id_mesin)[0].status === 'Data sudah update' && userAuthStore.roleAlias !== 'Vx_91$pN'">
+                    :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(mesinItem.uuid_mesin) : mesinItem.uuid_mesin }, query: { tahun: tahunBerjalan } }"
+                    v-else-if="statusRealisasiMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Data sudah update' && userAuthStore.roleAlias !== 'Vx_91$pN'">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
                       id="hover-button">
@@ -885,7 +887,7 @@ interface PengelolaItem {
 interface SentralItem {
   meta: any
   data: any
-  id_sentral: any
+  uuid_sentral: any
   sentral: string
   kode_sentral: string
   jenis_pembangkit: string
@@ -922,7 +924,7 @@ const fetchSentralData = async () => {
       } else {
         sentralData.value = response.data.map((sentral: any) => ({ ...sentral, mesins: [] }));
       }
-      await togglePembangkit(response.data[0].id_sentral);
+      await togglePembangkit(response.data[0].uuid_sentral);
       console.log(sentralData.value, 'uy');
     } else {
       sentralData.value = [];
@@ -949,7 +951,7 @@ const fetchMesinByIdSentral = async (idSentral: any) => {
         }
       }
     }
-    const sentral: any | undefined = sentralData.value.filter((sentral) => sentral.id_sentral === idSentral);
+    const sentral: any | undefined = sentralData.value.filter((sentral) => sentral.uuid_sentral === idSentral);
     return { mesinById, sentral };
   } catch (error) {
     console.error('Fetch Mesin By Kode Sentral Error : ' + error);
@@ -1241,7 +1243,7 @@ const uploadFile = async () => {
     await fetchStatusRealisasiMesin();
     selectedFileEvidence.value = null;
     if (userAuthStore.levelAlias === 'Mb*0yT%3' || userAuthStore.levelAlias === 'Xf!8qP@7' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k')) {
-      router.push({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { id_sentral: currentIdSentral.value, tahun: tahunBerjalan.value } });
+      router.push({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { uuid_sentral: currentIdSentral.value, tahun: tahunBerjalan.value } });
     }
     else {
       router.push({ name: 'persetujuan-by-approve' });
@@ -1284,7 +1286,7 @@ const uploadFileFS = async () => {
     await fetchStatusFSMesin();
     selectedFileEvidence.value = null
     if (userAuthStore.levelAlias === 'Mb*0yT%3') {
-      router.push({ name: 'persetujuan-fs', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { id_sentral: currentIdSentral.value } });
+      router.push({ name: 'persetujuan-fs', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { uuid_sentral: currentIdSentral.value } });
     } else {
       router.push({ name: 'persetujuan-by-approve' });
     }
@@ -1340,6 +1342,7 @@ const handleSearch = async () => {
 }
 const togglePembangkit = async (idSentral: any) => {
   isLoading.value = true;
+  console.log(idSentral, "ID SENTRAL")
   try {
     const { mesinById, sentral }: any = await fetchMesinByIdSentral(idSentral);
     if (isPembangkitOpen(idSentral)) {
@@ -1431,7 +1434,7 @@ const changeSentralData = async () => {
   isLoading.value = false;
 }
 const checkInputAsumsi = (idMesin: any) => {
-  const isMatched = listStatusInputAsumsiMesin.value.filter((mesin) => mesin.id_mesin === idMesin)[0].status_kk === true;
+  const isMatched = listStatusInputAsumsiMesin.value.filter((mesin) => mesin.uuid_mesin === idMesin)[0].status_kk === true;
   return isMatched;
 }
 const checkUnggahRequiredProp = (nilaiAssetAwal: any, tahunDataAwal: any, masaManfaat: any) => {

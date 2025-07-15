@@ -523,7 +523,7 @@ interface RelProyItem {
 
 const fetchPlanningMesin = async () => {
   try {
-    const response: any = await grafikService.getPlanningMesin({ id_mesin: props.idMesin })
+    const response: any = await grafikService.getPlanningMesin({ uuid_mesin: props.idMesin })
     dataPlanningMesin.value = response.data;
   } catch (error) {
     console.error('Fetch Planning Mesin Error', error);
@@ -531,7 +531,7 @@ const fetchPlanningMesin = async () => {
 }
 const fetchRealisasiProyeksiMesin = async () => {
   try {
-    const response: any = await grafikService.getRealisasiProyeksiMesin({ tahun: tahunData.value, id_mesin: props.idMesin })
+    const response: any = await grafikService.getRealisasiProyeksiMesin({ tahun: tahunData.value, uuid_mesin: props.idMesin })
     dataRealisasiMesin.value = response.data;
   } catch (error) {
     console.error('Fetch Realisasi Proyeksi Mesin Error', error);
@@ -539,7 +539,7 @@ const fetchRealisasiProyeksiMesin = async () => {
 }
 const fetchRealisasiYoyMesin = async () => {
   try {
-    const response: any = await grafikService.getRealisasiYoyMesin({ id_mesin: props.idMesin, tahun: tahunData.value - 1 })
+    const response: any = await grafikService.getRealisasiYoyMesin({ uuid_mesin: props.idMesin, tahun: tahunData.value - 1 })
     dataYoyMesin.value = response.data;
   } catch (error) {
     console.error('Fetch Realisasi Yoy Mesin Error', error);

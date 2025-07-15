@@ -136,17 +136,17 @@ const fetchAsumsiParameter = async () => {
     console.error("Fetch Asumsi Parameter Error : " + error);
   }
 };
-const fetchDetailCAPEX = async (periode: any, id_mesin: any) => {
+const fetchDetailCAPEX = async (periode: any, uuid_mesin: any) => {
   try {
-    const response: any = await lihatCAPEXService.getAnggaranDetailCAPEX(periode, id_mesin);
+    const response: any = await lihatCAPEXService.getAnggaranDetailCAPEX(periode, uuid_mesin);
     detailCAPEX.value = response.data;
   } catch (error) {
     console.error('Fetch Detail CAPEX Error : ')
   }
 }
-const fetchTotalReplacement = async (periode: any, id_mesin: any) => {
+const fetchTotalReplacement = async (periode: any, uuid_mesin: any) => {
   try {
-    const response: any = await lihatCAPEXService.getTotalReplacement(periode, id_mesin);
+    const response: any = await lihatCAPEXService.getTotalReplacement(periode, uuid_mesin);
     totalReplacement.value = response.data;
   } catch (error) {
     console.error('Fetch Total Replacement Error : ')

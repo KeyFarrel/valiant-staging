@@ -102,12 +102,12 @@
               v-else-if="itemData.action === 'Draft Data' || itemData.action === 'Revisi Data'">
               <button
                 class="flex items-center space-x-1.5 bg-[#F7FBFC] rounded-md w-fit px-2 py-1 active:ring-1 active:ring-[#E7F1FD]"
-                @click="itemData.status_fs == 0 ? downloadExcelKK(itemData.tahun, itemData.tahun_realisasi, itemData.id_mesin) : downloadExcelFS(itemData.tahun, itemData.tahun_realisasi, itemData.id_mesin)">
+                @click="itemData.status_fs == 0 ? downloadExcelKK(itemData.tahun, itemData.tahun_realisasi, itemData.uuid_mesin) : downloadExcelFS(itemData.tahun, itemData.tahun_realisasi, itemData.uuid_mesin)">
                 <div class="rounded-full flex items-center p-1 bg-[#E7F1FD]">
                   <IconDocument />
                 </div>
                 <p class="text-xs text-[#0A448F]">Excel {{ itemData.status_fs == 0 ? 'KK' : 'FS' }} {{ itemData.sentral
-                }}.xlsx</p>
+                  }}.xlsx</p>
               </button>
               <button
                 class="flex items-center space-x-1.5 bg-[#F7FBFC] rounded-md w-fit px-2 py-1 active:ring-1 active:ring-[#E7F1FD]"
@@ -271,7 +271,7 @@ const logData = ref<{
   nama_evidence: string
   nama_document: string
   level: string
-  id_mesin: number
+  uuid_mesin: number
   status_fs: number
   ip_address: string
   status_code: number

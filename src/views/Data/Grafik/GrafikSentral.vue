@@ -751,7 +751,7 @@ function handleClickWlcAll(param: any) {
 
   grafikService
     .getGrafikWLCALLDetail({
-      id_sentral: props.idSentral,
+      uuid_sentral: props.idSentral,
       tahun: tahunWLCAll.value[param.dataIndex],
       tahun_realisasi: tahunData.value
     })
@@ -862,7 +862,7 @@ function handleClickWlcKom(param: any) {
 
   grafikService
     .getGrafikWLCKomDetail({
-      id_sentral: props.idSentral,
+      uuid_sentral: props.idSentral,
       tahun: tahunWLCKom.value[param.dataIndex],
       tahun_realisasi: tahunData.value
     })
@@ -973,7 +973,7 @@ function handleClickPlan(param: any) {
 
   grafikService
     .getGrafikPlanDetail({
-      id_sentral: props.idSentral,
+      uuid_sentral: props.idSentral,
       tahun: tahunPlanning.value[param.dataIndex],
       tahun_realisasi: tahunData.value
     })
@@ -1087,7 +1087,7 @@ function handleClickPRP(param: any) {
   } else {
     grafikService
       .getGrafikPRPDetail({
-        id_sentral: props.idSentral,
+        uuid_sentral: props.idSentral,
         tahun: tahunPRP.value[param.dataIndex],
         tahun_realisasi: tahunData.value
       })
@@ -1199,7 +1199,7 @@ function handleClickLastY(param: any) {
 
   grafikService
     .getGrafikLastYearDetail({
-      id_sentral: props.idSentral,
+      uuid_sentral: props.idSentral,
       tahun: tahunLastYear.value[param.dataIndex],
       tahun_realisasi: tahunData.value
     })
@@ -1308,7 +1308,7 @@ watch(tahunData, async (tahun) => {
   isLoading.value = true;
   await grafikService
     .getGrafikWLCALL({
-      id_sentral: props.idSentral,
+      uuid_sentral: props.idSentral,
       start_year: '',
       end_year: '',
       tahun_realisasi: tahun,
@@ -1563,7 +1563,7 @@ watch(tahunData, async (tahun) => {
 
   await grafikService
     .getGrafikWLCKom({
-      id_sentral: props.idSentral,
+      uuid_sentral: props.idSentral,
       start_year: '',
       end_year: '',
       tahun_realisasi: tahun,
@@ -1726,7 +1726,7 @@ watch(tahunData, async (tahun) => {
 
   await grafikService
     .getGrafikPlan({
-      id_sentral: props.idSentral,
+      uuid_sentral: props.idSentral,
       tahun_realisasi: tahun,
     })
     .then((res: any) => {
@@ -1971,7 +1971,7 @@ watch(tahunData, async (tahun) => {
 
   await grafikService
     .getGrafikPRP({
-      id_sentral: props.idSentral,
+      uuid_sentral: props.idSentral,
       tahun_realisasi: tahun
     })
     .then((res: any) => {
@@ -2592,7 +2592,7 @@ watch(tahunData, async (tahun) => {
 
   await grafikService
     .getGrafikPRPLastYear({
-      id_sentral: props.idSentral,
+      uuid_sentral: props.idSentral,
       tahun_realisasi: tahun
     })
     .then((res: any) => {

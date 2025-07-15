@@ -16,8 +16,8 @@
             " :interest-rate="asumsiParameter ? asumsiParameter.asumsi_makro.discount_rate : '-'
               " :loan-tenor="asumsiParameter ? asumsiParameter.asumsi_makro.loan_tenor : '-'
                 " :loan-portion="asumsiParameter ? asumsiParameter.asumsi_makro.loan_portion : '-'
-          " :equity-portion="asumsiParameter ? asumsiParameter.asumsi_makro.equity : '-'
-          " />
+                  " :equity-portion="asumsiParameter ? asumsiParameter.asumsi_makro.equity : '-'
+            " />
       </TabItem>
       <TabItem title="Parameter Teknis & Finansial">
         <ParameterTeknis v-model="tahunRealisasi" :daya-terpasang="asumsiParameter
@@ -33,37 +33,37 @@
                 ? asumsiParameter.parameter_teknis_financial.susut_trafo
                 : '-'
                 " :pemakaian-sendiri="asumsiParameter
-          ? asumsiParameter.parameter_teknis_financial.ps
-          : '-'
-          " :net-plant-heat-rate="asumsiParameter
-          ? asumsiParameter.parameter_teknis_financial.nphr
-          : '-'
-          " :total-project-cost="asumsiParameter
-          ? asumsiParameter.parameter_teknis_financial.total_project_cost
-          : '-'
-          " :loan="asumsiParameter
-          ? asumsiParameter.parameter_teknis_financial.loan
-          : '-'
-          " :equity="asumsiParameter
-          ? asumsiParameter.parameter_teknis_financial.equity
-          : '-'
-          " :electricity-price-a="asumsiParameter
-          ? asumsiParameter.parameter_teknis_financial
-            .electricity_price_a_rp_per_kwbln
-          : '-'
-          " :electricity-price-b="asumsiParameter
-          ? asumsiParameter.parameter_teknis_financial
-            .electricity_price_b_rp_per_kwbln
-          : '-'
-          " :electricity-price-c="asumsiParameter
-          ? asumsiParameter.parameter_teknis_financial
-            .electricity_price_c_rp_per_kwh
-          : '-'
-          " :electricity-price-d="asumsiParameter
-          ? asumsiParameter.parameter_teknis_financial
-            .electricity_price_d_rp_per_kwh
-          : '-'
-          " :bahan-bakars="asumsiParameter ? asumsiParameter.bahan_bakars : '-'" />
+                  ? asumsiParameter.parameter_teknis_financial.ps
+                  : '-'
+                  " :net-plant-heat-rate="asumsiParameter
+            ? asumsiParameter.parameter_teknis_financial.nphr
+            : '-'
+            " :total-project-cost="asumsiParameter
+            ? asumsiParameter.parameter_teknis_financial.total_project_cost
+            : '-'
+            " :loan="asumsiParameter
+            ? asumsiParameter.parameter_teknis_financial.loan
+            : '-'
+            " :equity="asumsiParameter
+            ? asumsiParameter.parameter_teknis_financial.equity
+            : '-'
+            " :electricity-price-a="asumsiParameter
+            ? asumsiParameter.parameter_teknis_financial
+              .electricity_price_a_rp_per_kwbln
+            : '-'
+            " :electricity-price-b="asumsiParameter
+            ? asumsiParameter.parameter_teknis_financial
+              .electricity_price_b_rp_per_kwbln
+            : '-'
+            " :electricity-price-c="asumsiParameter
+            ? asumsiParameter.parameter_teknis_financial
+              .electricity_price_c_rp_per_kwh
+            : '-'
+            " :electricity-price-d="asumsiParameter
+            ? asumsiParameter.parameter_teknis_financial
+              .electricity_price_d_rp_per_kwh
+            : '-'
+            " :bahan-bakars="asumsiParameter ? asumsiParameter.bahan_bakars : '-'" />
       </TabItem>
       <TabItem title="Data Teknis">
         <div class="w-full overflow-auto border rounded-lg whitespace-nowrap">
@@ -260,7 +260,7 @@ const isRowTabOpen = ref<number[]>([]);
 
 interface SentralItem {
   data: any;
-  id_mesin: number;
+  uuid_mesin: number;
   kode_sentral: string;
   nama_sentral: string;
   kode_jenis_pembangkit: string;
@@ -272,7 +272,7 @@ interface SentralItem {
 interface AsumsiParamaterItem {
   data: any;
   id_asumsi: number;
-  id_mesin: number;
+  uuid_mesin: number;
   kode_mesin: string;
   status: string;
   asumsi_makro: AsumsiMakroItem;

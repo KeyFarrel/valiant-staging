@@ -494,7 +494,7 @@ interface TableInterface {
 onMounted(async () => {
   await grafikService
     .getGrafikWLCALLMesin({
-      id_mesin: props.idMesin,
+      uuid_mesin: props.idMesin,
       start_year: '',
       end_year: '',
       tahun_realisasi: props.tahunGrafik
@@ -913,7 +913,7 @@ onMounted(async () => {
 
   await grafikService
     .getGrafikWLCKomMesin({
-      id_mesin: props.idMesin,
+      uuid_mesin: props.idMesin,
       start_year: '',
       end_year: '',
       tahun_realisasi: props.tahunGrafik
@@ -1077,7 +1077,7 @@ function handleClickWlcAll(param: any) {
 
   grafikService
     .getGrafikWLCALLDetailMesin({
-      id_mesin: props.idMesin,
+      uuid_mesin: props.idMesin,
       tahun_realisasi: props.tahunGrafik,
       tahun: tahunWLCAllMesin.value[param.dataIndex],
     })
@@ -1177,7 +1177,7 @@ function handleClickWlcKom(param: any) {
 
   grafikService
     .getGrafikWLCKomDetailMesin({
-      id_mesin: props.idMesin,
+      uuid_mesin: props.idMesin,
       tahun_realisasi: props.tahunGrafik,
       tahun: tahunWLCKomMesin.value[param.dataIndex],
     })

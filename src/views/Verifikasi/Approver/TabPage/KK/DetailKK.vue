@@ -56,7 +56,7 @@ interface ListApprove {
 const fetchPersetujuanKK = async () => {
   try {
     const response: ListApprove = await persetujuanService.getPersetujuanKKSentral({
-      id_sentral: route.query.id_sentral,
+      uuid_sentral: route.query.uuid_sentral,
       tahun: route.query.tahun
     });
     approveSentralKK.value = response.data;

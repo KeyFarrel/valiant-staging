@@ -3,11 +3,11 @@ import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import { encryptAES } from "./helper/encryption";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 
-const fpPromise = FingerprintJS.load()
+const fpPromise = FingerprintJS.load();
 const getFingerprint = async () => {
-  const fp = await fpPromise
-  const result = await fp.get()
-  
+  const fp = await fpPromise;
+  const result = await fp.get();
+
   // List komponen yang dianggap stabil dan tidak berubah
   const stableComponents = {
     // Hardware identifiers
@@ -16,18 +16,18 @@ const getFingerprint = async () => {
     platform: result.components.platform,
     architecture: result.components.architecture,
     screenResolution: result.components.screenResolution,
-    
+
     // Browser identifiers
     vendor: result.components.vendor,
     vendorFlavors: result.components.vendorFlavors,
     colorDepth: result.components.colorDepth,
-    
+
     // Feature support
     canvas: result.components.canvas,
     webGlBasics: result.components.webGlBasics,
     timezone: result.components.timezone,
     touchSupport: result.components.touchSupport,
-    
+
     // Browser settings
     cookiesEnabled: result.components.cookiesEnabled,
     localStorage: result.components.localStorage,
@@ -35,8 +35,8 @@ const getFingerprint = async () => {
     colorGamut: result.components.colorGamut,
     hdr: result.components.hdr,
   };
-  
-  const visitorId = FingerprintJS.hashComponents(stableComponents)
+
+  const visitorId = FingerprintJS.hashComponents(stableComponents);
   return visitorId;
 };
 
@@ -48,7 +48,7 @@ export default class BaseService {
     method: string,
     path: string,
     payload?: any,
-    contentType?: string
+    contentType?: string,
   ): Promise<T> {
     const headers: any = {
       "Content-Type": contentType || "application/json",
@@ -66,7 +66,6 @@ export default class BaseService {
   }
 
   async get<T>(path: string, params?: any, responseType?: any): Promise<T> {
-    const encryptStorage = await encryptStoragePromise;
     const fingerprintID = await getFingerprint();
     const headers: any = {
       // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
@@ -82,10 +81,10 @@ export default class BaseService {
         timeout: TIME_OUT,
         withCredentials: true,
         params: params,
-        responseType: responseType
+        responseType: responseType,
       });
       console.log("Response Method Get:", response);
-      return response.data;
+      return nodeMode !== 'development' ? response.data.response : response.data;
     } catch (error) {
       console.error("Error:", error);
       throw error;
@@ -105,7 +104,7 @@ export default class BaseService {
         timeout: TIME_OUT,
         withCredentials: true,
         params: params,
-        responseType: responseType
+        responseType: responseType,
       });
       return response;
     } catch (error) {
@@ -114,25 +113,29 @@ export default class BaseService {
     }
   }
 
-  async post<T>(path: string, payload?: any, withCredentials?: boolean): Promise<T> {
+  async post<T>(
+    path: string,
+    payload?: any,
+    withCredentials?: boolean,
+  ): Promise<T> {
     const encryptStorage = await encryptStoragePromise;
     const fingerprintID = await getFingerprint();
     const headers: any = {
       // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-        "Content-Type": "application/json",
-        "X-Fingerprint-ID": fingerprintID,
-      };
-      try {
-        const response: AxiosResponse = await axios({
-          method: "POST",
-          url: path,
+      "Content-Type": "application/json",
+      "X-Fingerprint-ID": fingerprintID,
+    };
+    try {
+      const response: AxiosResponse = await axios({
+        method: "POST",
+        url: path,
         withCredentials: true,
-        data: payload,
+        data: nodeMode !== 'development' ? encryptAES(JSON.stringify(payload)) : payload,
         headers,
         timeout: TIME_OUT,
       });
       console.log("Response Method Post:", response);
-      return response.data;
+      return nodeMode !== 'development' ? response.data.response : response.data;
     } catch (error) {
       console.error("Error:", error);
       throw error;

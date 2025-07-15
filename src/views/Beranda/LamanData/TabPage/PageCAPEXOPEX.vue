@@ -108,18 +108,18 @@
           <template v-if="isRowOpen(pengelola.id_pengelola)"
             v-for="(pembangkit, pembangkitIndex) in pengelola.pembangkits" :key="pembangkitIndex">
             <tr class="text-xs cursor-pointer bg-strokeColor bg-opacity-20 hover:bg-opacity-60"
-              @click="toggleRow(pembangkit.id_sentral)">
+              @click="toggleRow(pembangkit.uuid_sentral)">
               <td id="pembangkit">
                 <div class="flex flex-row items-center space-x-2">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                    v-if="!isRowOpen(pembangkit.id_sentral) && pembangkit.mesins.length !== 0">
+                    v-if="!isRowOpen(pembangkit.uuid_sentral) && pembangkit.mesins.length !== 0">
                     <rect width="24" height="24" rx="6" fill="#E5E7E9" />
                     <path fill-rule="evenodd" clip-rule="evenodd"
                       d="M12.4419 14.0044C12.1979 14.2485 11.8021 14.2485 11.5581 14.0044L8.43306 10.8794C8.18898 10.6354 8.18898 10.2396 8.43306 9.99556C8.67714 9.75148 9.07286 9.75148 9.31694 9.99556L12 12.6786L14.6831 9.99556C14.9271 9.75148 15.3229 9.75148 15.5669 9.99556C15.811 10.2396 15.811 10.6354 15.5669 10.8794L12.4419 14.0044Z"
                       fill="#333333" />
                   </svg>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                    v-else-if="isRowOpen(pembangkit.id_sentral) && pembangkit.mesins.length !== 0">
+                    v-else-if="isRowOpen(pembangkit.uuid_sentral) && pembangkit.mesins.length !== 0">
                     <rect width="24" height="24" rx="6" fill="#E5E7E9" />
                     <path fill-rule="evenodd" clip-rule="evenodd"
                       d="M11.5581 9.99556C11.8021 9.75148 12.1979 9.75148 12.4419 9.99556L15.5669 13.1206C15.811 13.3646 15.811 13.7604 15.5669 14.0044C15.3229 14.2485 14.9271 14.2485 14.6831 14.0044L12 11.3214L9.31694 14.0044C9.07286 14.2485 8.67714 14.2485 8.43306 14.0044C8.18898 13.7604 8.18898 13.3646 8.43306 13.1206L11.5581 9.99556Z"
@@ -135,7 +135,7 @@
               <td class="text-end">{{ globalFormat.formatRupiah(pembangkit.cost_component_c) }}</td>
               <td class="text-end">{{ globalFormat.formatRupiah(pembangkit.cost_component_d) }}</td>
             </tr>
-            <template v-if="isRowOpen(pembangkit.id_sentral)" v-for="(mesin, mesinIndex) in pembangkit.mesins"
+            <template v-if="isRowOpen(pembangkit.uuid_sentral)" v-for="(mesin, mesinIndex) in pembangkit.mesins"
               :key="mesinIndex">
               <tr class="text-xs bg-strokeColor bg-opacity-10">
                 <td id="mesin">{{ mesin.mesin }}</td>

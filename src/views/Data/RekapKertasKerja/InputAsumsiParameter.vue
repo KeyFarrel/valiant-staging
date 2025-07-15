@@ -88,7 +88,7 @@ const statusCode = ref();
 const namaPengelola = ref<string>('');
 const namaPembina = ref<string>('');
 const kodeMesin = ref();
-const idMesin = ref<number>(0);
+const idMesin = ref<any>('');
 const tahunBerjalan = new Date().getFullYear();
 const interestRate = ref<string>('');
 const umurTeknis = ref<string>('');
@@ -179,17 +179,7 @@ const error = ref<{
 });
 const comboBahanBakar = ref<any>([]);
 const checkedBahanBakar = ref<number[]>([]);
-const bahanBakars = ref<any[]>([
-  {
-    id: 1,
-    id_mesin: idMesin.value,
-    tahun: tahunBerjalan.toString(),
-    kode_bahan_bakar: "",
-    harga_bahan_bakar: "",
-    sfc: "",
-    flag_bahan_bakar: 1,
-  }
-]);
+const bahanBakars = ref<any[]>([]);
 
 const fetchCheckIntegrasi = async () => {
   try {
@@ -312,9 +302,9 @@ const fetchUnitPengelola = async () => {
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola
       )
       namaPengelola.value = pengelola[0].pengelola
-      const idPembina = pembangkitResponse.data.id_pembina
+      const idPembina = pembangkitResponse.data.uuid_pembina
       const pembinaList: any = await fetchListPembina()
-      namaPembina.value = pembinaList.find((pembina: any) => pembina.id_pembina === idPembina).pembina
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina
     }
   } catch (error) {
     console.error("Fetch Unit Pengelola Error : " + error)
@@ -323,7 +313,7 @@ const fetchUnitPengelola = async () => {
 function handleTambahBahanBakar() {
   bahanBakars.value.push({
     id: i.value++,
-    id_mesin: idMesin.value,
+    uuid_mesin: idMesin.value,
     tahun: tahunBerjalan,
     kode_bahan_bakar: "",
     harga_bahan_bakar: "",
@@ -411,6 +401,8 @@ const insertAsumsiParameter = async () => {
     } else {
       errorParameterTeknis.electricityPriceD = false
     }
+    console.log(errorParameterTeknis, "OIII")
+    console.log(idMesin.value, "ID MESIN VAL")
     if (bahanBakars.value.some(obj => Object.values(obj).some(value => value === ""))) {
       errorParameterTeknis.bahanBakar = true
     } else {
@@ -432,7 +424,7 @@ const insertAsumsiParameter = async () => {
           id_asumsi: idAsumsi.value,
           tahun: tahunBerjalan,
           tahun_realisasi: tahunBerjalan - 1,
-          id_mesin: parseInt(idMesin.value.toString()),
+          uuid_mesin: idMesin.value,
           umur_teknis: parseInt(masaManfaat.value),
           interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
           loan_portion: parseFloat(finalLoanPortion.replace(/,/g, '.')),
@@ -459,7 +451,7 @@ const insertAsumsiParameter = async () => {
         console.log(bahanBakars.value, 'BahanBakars');
         console.log(finalBahanBakars, 'Final')
         const formParameterUpdate = {
-          id_mesin: parseInt(idMesin.value.toString()),
+          uuid_mesin: idMesin.value,
           tahun_realisasi: tahunBerjalan - 1,
           id_asumsi: idAsumsi.value,
           auxiliary: parseFloat(finalAuxiliary.replace(/,/g, '.')),
@@ -483,7 +475,7 @@ const insertAsumsiParameter = async () => {
         const formAsumsiCreate = {
           tahun: tahunBerjalan,
           tahun_realisasi: tahunBerjalan - 1,
-          id_mesin: parseInt(idMesin.value.toString()),
+          uuid_mesin: idMesin.value,
           interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
           umur_teknis: parseInt(masaManfaat.value),
           loan_tenor: parseInt(loanTenor.value),
@@ -507,11 +499,11 @@ const insertAsumsiParameter = async () => {
           let finalSFC = newValue.sfc.includes('.') ? newValue.sfc.replace(/[.]/g, '') : newValue.sfc;
           newValue.sfc = parseFloat(finalSFC.replace(/,/g, '.'));
           newValue.tahun = (tahunBerjalan - 1).toString();
-          newValue.id_mesin = idMesin.value;
+          newValue.uuid_mesin = idMesin.value;
           return newValue;
         });
         const formParameterCreate = {
-          id_mesin: parseInt(idMesin.value.toString()),
+          uuid_mesin: idMesin.value,
           id_asumsi: idAsumsi.value,
           tahun_realisasi: tahunBerjalan - 1,
           tahun: tahunBerjalan,
@@ -545,7 +537,16 @@ const insertAsumsiParameter = async () => {
 onMounted(async () => {
   isLoading.value = true;
   const encryptStorage = await encryptStoragePromise;
-  idMesin.value = parseInt(nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString())
+  idMesin.value = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id
+  bahanBakars.value.push({
+    id: 1,
+    uuid_mesin: idMesin.value,
+    tahun: tahunBerjalan.toString(),
+    kode_bahan_bakar: "",
+    harga_bahan_bakar: "",
+    sfc: "",
+    flag_bahan_bakar: 1,
+  })
   await fetchStatusRealisasiById();
   await fetchMesinById();
   await fetchCheckIntegrasi();

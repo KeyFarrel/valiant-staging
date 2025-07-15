@@ -36,7 +36,7 @@
         </div>
       </div>
       <div v-auto-animate="{ duration: 300 }" class="flex flex-col w-full p-3 border rounded-lg"
-        v-for="(sentralItem, sentralIndex) in sentralData" :key="sentralItem.id_sentral">
+        v-for="(sentralItem, sentralIndex) in sentralData" :key="sentralItem.uuid">
         <div class="flex items-center justify-between cursor-pointer"
           @click="togglePembangkit(sentralItem.kode_sentral)">
           <h2 class="text-base font-bold text-primaryColor">
@@ -116,7 +116,7 @@
                 <div class="mt-4 border-b"></div>
                 <RouterLink :to="{
                   name: 'detail-unit',
-                  params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(sentralItem.id_sentral) : sentralItem.id_sentral },
+                  params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(sentralItem.uuid) : sentralItem.uuid },
                   query: { kode_pengelola: sentralItem.kode_pengelola, tab: 'Sentral' },
                 }">
                   <button
@@ -197,7 +197,7 @@
                 <div class="mt-4 border-b"></div>
                 <RouterLink :to="{
                   name: 'detail-unit',
-                  params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(sentralItem.id_sentral) : sentralItem.id_sentral },
+                  params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(sentralItem.uuid) : sentralItem.uuid },
                   query: { kode_pengelola: sentralItem.kode_pengelola, tab: mesinItem.mesin },
                 }">
                   <button
@@ -313,7 +313,7 @@ interface PengelolaItem {
 interface SentralItem {
   meta: any
   data: any
-  id_sentral: number
+  uuid: number
   kode_sentral: string
   nama_sentral: string
   daya_terpasang: number

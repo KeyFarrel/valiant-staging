@@ -422,21 +422,21 @@ interface RelYoyItem {
 watch(tahunData, async (tahun) => {
   isLoading.value = true;
   await grafikService.getPlanning({
-    id_sentral: props.idSentral
+    uuid_sentral: props.idSentral
   }).then((res: any) => {
     dataPlanning.value = res.data;
   });
 
   await grafikService.getRealisasiProyeksi({
     tahun: tahun,
-    id_sentral: props.idSentral
+    uuid_sentral: props.idSentral
   })
     .then((res: any) => {
       dataRealisasi.value = res.data;
     });
 
   await grafikService.getRealisasiYoy({
-    id_sentral: props.idSentral,
+    uuid_sentral: props.idSentral,
     tahun: tahun - 1
   }).then((res: any) => {
     dataYoy.value = res.data;

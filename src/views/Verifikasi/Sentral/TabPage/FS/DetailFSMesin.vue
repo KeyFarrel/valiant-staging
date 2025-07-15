@@ -475,7 +475,7 @@ const approveMesinFS = ref<ListApprove>();
 const asumsiMakro = ref<AsumsiMakroItem>()
 const parameterTeknisFinansial = ref<ParameterTeknisFinancialItem>();
 const bahanBakars = ref<{
-  id_mesin: number
+  uuid_mesin: number
   tahun: string
   kode_bahan_bakar: string
   harga_bahan_bakar: number
@@ -509,7 +509,7 @@ const jumlahMesin = ref<any>('');
 
 interface MesinItem {
   data: any
-  id_mesin: number
+  uuid_mesin: number
   kode_sentral: string
   kode_mesin: string
   mesin: string
@@ -532,7 +532,7 @@ interface ListApprove {
   umur_teknis: string
   tahun: string
   status: string
-  id_mesin: string
+  uuid_mesin: string
   keterangan: string
 }
 
@@ -589,13 +589,13 @@ const fetchMesinById = async () => {
 const fetchPersetujuanFS = async () => {
   try {
     const response: ListApprove = await persetujuanService.getPersetujuanFSSentral({
-      id_sentral: route.query.id_sentral,
+      uuid_sentral: route.query.uuid_sentral,
     });
     approveSentralFS.value = response.data;
-    approveMesinFS.value = response.data.mesins.filter((val: any) => val.id_mesin == idGrafik)[0];
+    approveMesinFS.value = response.data.mesins.filter((val: any) => val.uuid_mesin == idGrafik.value)[0];
     console.log(approveMesinFS.value)
-    arrMesin.value = response.data.mesins.filter((val: any) => val.id_mesin == idGrafik)[0];
-    statusMesin.value = response.data.mesins.filter((val: any) => val.id_mesin == idGrafik)[0].id_status;
+    arrMesin.value = response.data.mesins.filter((val: any) => val.uuid_mesin == idGrafik.value)[0];
+    statusMesin.value = arrMesin.value.id_status;
   } catch (error) {
     console.error('Fetch Persetujuan FS Sentral Error : ' + error);
   }
@@ -611,7 +611,7 @@ const fetchAsumsiFeasibility = async () => {
   try {
     const response: any =
       await feasibilityStudyService.getAsumsiFeasibility(
-        parseInt(idGrafik.value),
+        idGrafik.value,
         parseInt(tahunTerakhirRealisasi.value)
       );
     asumsiMakro.value = {
@@ -654,7 +654,7 @@ const formatBytes = (bytes: any) => {
 const fetchDataTeknis = async () => {
   try {
     const response: any = await feasibilityStudyService.getDataTeknis(
-      parseInt(idGrafik.value)
+      idGrafik.value
     );
     dataTeknis.value = response.data;
   } catch (error) {
@@ -667,7 +667,7 @@ const uploadFileEvidence = async () => {
     const formData = new FormData();
     formData.append('file', selectedFileEvidence.value);
     const response: any = await rekapService.uploadEvidence(formData);
-    await rekapService.updateEvidencePath(parseInt(idGrafik.value), tahunBerjalan.toString(), response.data, 1, selectedFileEvidence.value.name);
+    await rekapService.updateEvidencePath(idGrafik.value, tahunBerjalan.toString(), response.data, 1, selectedFileEvidence.value.name);
     isLoading.value = false
     isEvidenceSuccess.value = true;
     await wait(1500)
@@ -708,7 +708,7 @@ const fetchDataFinansial = async () => {
     dataFinansial.value = undefined
     finansialMappingResult.value = [];
     const response: any = await feasibilityStudyService.getDataFinansial(
-      parseInt(idGrafik.value)
+      idGrafik.value
     )
     let currentLevel1: any | null = null;
     let currentLevel2: any | null = null
@@ -745,7 +745,7 @@ const fetchDataFinansial = async () => {
 const fetchHasilSimulasi = async () => {
   try {
     const response: any = await feasibilityStudyService.getHasilSimulasi(
-      parseInt(idGrafik.value),
+      idGrafik.value,
       parseInt(statusMesin.value)
     );
     hasilSimulasi.value = response.data;
@@ -841,7 +841,7 @@ const handleDownloadTemplateFS = async () => {
     const response: any = await rekapService.downloadTemplateFS(tahunBerjalan, idGrafik.value, mesinDataById.value?.kode_jenis_pembangkit);
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
-    const fileName = fileNameMatch ? fileNameMatch[1] : `Kertas Kerja FS - ${mesinDataById.value?.mesin}_${globalFormat.formatNumberFiveDigits(parseInt(idGrafik.value))}.xlsx`;
+    const fileName = fileNameMatch ? fileNameMatch[1] : `Kertas Kerja FS - ${mesinDataById.value?.mesin}_${globalFormat.formatNumberFiveDigits(idGrafik.value)}.xlsx`;
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a')
@@ -886,7 +886,7 @@ const updateFS = async () => {
     const response: any = await persetujuanService.updateStatusFS({
       status_approval: 0,
       keterangan: '',
-      id_mesin: parseInt(idGrafik.value)
+      uuid_mesin: idGrafik.value
     })
     isLoading.value = false;
     updateMesin.value = response.data

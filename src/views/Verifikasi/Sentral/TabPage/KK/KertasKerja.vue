@@ -75,7 +75,7 @@
         <td class="text-center">
           <div>
             <RouterLink
-              :to="{ name: 'persetujuan-kk', query: { id_sentral: props.source.id_sentral, tahun: props.source.tahun } }">
+              :to="{ name: 'persetujuan-kk', query: { uuid_sentral: props.source.uuid_sentral, tahun: props.source.tahun } }">
               <button>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" clip-rule="evenodd"

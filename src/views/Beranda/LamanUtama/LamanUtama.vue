@@ -243,7 +243,7 @@
           Lihat Semua
         </button>
       </div>
-      <div class="flex items-center justify-between" v-for="item in mesinBaru" :key="item.id_mesin">
+      <div class="flex items-center justify-between" v-for="item in mesinBaru" :key="item.uuid_mesin">
         <div class="flex flex-row items-center space-x-1 w-[85%]">
           <div class="w-fit">
             <div class="w-8 h-8 rounded-full bg-slate-400"></div>
@@ -304,7 +304,7 @@
             </tr>
           </thead>
           <tbody class="text-xs text-gray-900">
-            <tr class="border-b last:border-none" v-for="item in mesinBelumInput.slice(0, 5)" :key="item.id_mesin">
+            <tr class="border-b last:border-none" v-for="item in mesinBelumInput.slice(0, 5)" :key="item.uuid_mesin">
               <td class="px-3 py-3 text-left">
                 {{ item.sentral }}
               </td>
@@ -342,7 +342,7 @@
         </template>
         <template v-slot:table-body class="overflow-auto">
           <template v-if="filteredMesin.length">
-            <tr class="text-gray-900 border" v-for="(item, index) in filteredMesin" :key="item.id_mesin">
+            <tr class="text-gray-900 border" v-for="(item, index) in filteredMesin" :key="item.uuid_mesin">
               <td class="text-left">
                 {{ item.sentral }}
               </td>
@@ -488,7 +488,7 @@ const navigation = ref<{
 });
 
 interface MesinTerinputItem {
-  id_mesin: string;
+  uuid_mesin: string;
   sentral: string;
   mesin: string;
   tahun_operasi: string;

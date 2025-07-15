@@ -52,7 +52,7 @@ const resultMap = ref<any[]>([]);
 
 interface SentralItem {
   data: any;
-  id_mesin: number;
+  uuid_mesin: number;
   kode_sentral: string;
   kode_mesin: string;
   nama_sentral: string;
@@ -64,7 +64,7 @@ interface SentralItem {
 }
 interface AsumsiFeasibilityItem {
   data: any;
-  id_mesin: number;
+  uuid_mesin: number;
   kode_mesin: string;
   mesin: string;
   tahun_operasi: string;
