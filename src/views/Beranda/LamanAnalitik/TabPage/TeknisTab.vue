@@ -75,7 +75,6 @@ async function getCategory() {
 onMounted(async () => {
   fetchYearRange()
   getCategory()
-  // getDaya()
 });
 
 </script>
