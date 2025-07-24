@@ -278,6 +278,8 @@ import { ref, onMounted, onUnmounted, nextTick } from "vue";
 import { notifyError } from "@/services/helper/toast-notification";
 import { notifySuccess } from '../../../services/helper/toast-notification';
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
+import { useSessionStore } from "@/store/storeSession";
+const sessionStore = useSessionStore();
 import { useUserAuthStore } from "@/store/storeUserAuth";
 const userAuthStore = useUserAuthStore();
 import router from "@/router";
@@ -532,6 +534,7 @@ const verifyEmailOtp = async () => {
       await wait(5000);
       isSuccess.value = false;
       nodeMode === "production" ? encryptStorage.clear() : localStorage.clear();
+      sessionStore.invalidateSession();
       router.push("/login");
     } catch (error) {
       console.error("Error changing password:", error);

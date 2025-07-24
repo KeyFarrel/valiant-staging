@@ -40,25 +40,14 @@ export const useMenuStore = defineStore("menu", () => {
   async function fetchMenuFromAPI() {
     try {
       const authService = new AuthService();
-      const encryptStorage = await encryptStoragePromise;
-      const token =
-        nodeMode === "production"
-          ? encryptStorage.getItem("token")
-          : localStorage.getItem("token");
 
-      if (token) {
-        const response: any = await authService.getMenu();
-        if (response && response.data) {
-          menuList.value = response.data;
-          isMenuLoaded.value = true;
-        }
+      const response: any = await authService.getMenu();
+      if (response && response.data) {
+        menuList.value = response.data;
+        isMenuLoaded.value = true;
       }
     } catch (error) {
-      const encryptStorage = await encryptStoragePromise;
-
       console.error("Failed to fetch menu from API:", error);
-      nodeMode === "production" ? encryptStorage.clear() : localStorage.clear();
-      router.push("/login");
     }
   }
 
