@@ -86,7 +86,7 @@ unit-test:
     - npm install ts-jest typescript --save-dev
   script:
     - ./node_modules/.bin/jest --coverage
-  allow_failure: true
+  allow_failure: false
   artifacts:
     when: always
     paths:
@@ -119,7 +119,7 @@ sonarqube-check:
         SONAR_BRANCH="$CI_COMMIT_BRANCH"
       fi
       sonar-scanner
-  allow_failure: true
+  allow_failure: false
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev" && $CI_COMMIT_TAG == null'
       when: always
@@ -158,6 +158,8 @@ deploy-stag:
     name : harbor.pln.co.id/library/alpine:git
     entrypoint : [""]
   stage: update-tag-stag
+  needs:
+    - build-image
   before_script:
     - git config --global user.name "Gitlab PLN CI/CD"
     - git config --global user.email "gitlab@pln.co.id"
@@ -177,7 +179,7 @@ deploy-stag:
     - git commit -am "Update Deployment Image Version to version $STAGING_VERSION" && git push origin master
   rules:
     - if: '$CI_COMMIT_BRANCH == "staging" && $CI_PIPELINE_SOURCE == "push"'
-      when: always
+      when: on_success
 
 send-approval-notif:
   stage: approval
@@ -271,5 +273,5 @@ deploy-prod:
     - git commit -am "Update Production Image Version to version $CI_COMMIT_TAG" && git push origin production
   rules:
     - if: '$CI_COMMIT_TAG =~ /.*-release$/'
-      when: always
+      when: on_success
       
