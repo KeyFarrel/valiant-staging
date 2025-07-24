@@ -29,29 +29,21 @@ export default class AuthService extends BaseService {
       ).toString();
 
       const setStorage = (storage: any) => {
-        storage.setItem("token", token);
         storage.setItem("nama_pegawai", namaPegawai);
         storage.setItem("level_sentral", levelSentral);
         storage.setItem("user_hash", hash);
       };
 
-      // if (response.data.is_reset) {
-        // sessionStorage.setItem("token", token);
-      // } else {
       if (!response.data.is_reset){
         const storage =
           nodeMode === "production" ? encryptStorage : localStorage;
         setStorage(storage);
       }
-      // }
 
       console.log(response);
       return response;
     } catch (error) {
       console.error("Login Error", error);
-      // if(error.response.data.message === "Anda belum mengisi privacy policy"){
-      //   sessionStorage.setItem("token", error.response.data.data.token);
-      // }
       throw error;
     }
   }
@@ -67,10 +59,19 @@ export default class AuthService extends BaseService {
   }
 
   async logout<T>(): Promise<T> {
-    return this.post(`${url}auths/logout`, { message: "logout" });
+    const result = await this.post(`${url}auths/logout`, { message: "logout" });
+    
+    const { useSessionStore } = await import('@/store/storeSession');
+    const sessionStore = useSessionStore();
+    sessionStore.invalidateSession();
+    
+    return result as T;
   }
   async getPermission<T>(param: any): Promise<T> {
     return this.get(`${url}permission`, param);
+  }
+  async checkStatusToken<T>(): Promise<T> {
+    return this.get(`${url}auths/check-status`);
   }
   async getMenu<T>(): Promise<T> {
     return this.get(`${url}menu`);

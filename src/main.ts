@@ -9,8 +9,8 @@ import Vue3Toastify from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 import Vue3Lottie from "vue3-lottie";
 import lottie from "lottie-web/build/player/lottie_light";
-import "go-captcha-vue/dist/style.css"
-import GoCaptcha from "go-captcha-vue"
+import "go-captcha-vue/dist/style.css";
+import GoCaptcha from "go-captcha-vue";
 
 import "./assets/style.css";
 import "./assets/main.css";
@@ -56,11 +56,15 @@ app.config.globalProperties.$secureConfig = appConfig;
 app.provide("secureConfig", appConfig);
 
 import { decryptAES } from "./services/helper/encryption";
+import { getActivePinia } from "pinia";
+import { useSessionStore } from "@/store/storeSession";
+import { notifyError } from "./services/helper/toast-notification";
+const sessionStore = useSessionStore(getActivePinia());
 axios.interceptors.response.use(
   async (response: any) => {
     try {
       if (
-        nodeMode !== 'development' &&
+        nodeMode !== "development" &&
         response.data.response &&
         typeof response.data.response === "string"
       ) {
@@ -83,13 +87,22 @@ axios.interceptors.response.use(
     return response;
   },
   async (error) => {
-    console.log(error, "ERROR");
+    const requestUrl = error?.config?.url;
+
+    // ✅ Cek jika URL mengandung "/download", langsung keluar dari interceptor
+    if (requestUrl && requestUrl.includes("/download")) {
+      return Promise.reject(error);
+    }
+    console.log(error, "ERROR nih bous");
     if (
       error.response &&
       error.response.status === 401 &&
       error.response.data.message !==
         "User belum terdaftar pada aplikasi Valiant"
     ) {
+      console.log(
+        "Unauthorized access detected, clearing storage and redirecting to login",
+      );
       const encryptStorage = await encryptStoragePromise;
       if (nodeMode === "production" || nodeMode === "staging") {
         encryptStorage.clear();
@@ -99,8 +112,20 @@ axios.interceptors.response.use(
           "Unauthorized access detected, clearing storage and redirecting to login",
         );
       }
+      sessionStore.invalidateSession();
       router.push({ name: "login" });
+    } else if (error.code === "ERR_NETWORK") {
+      sessionStore.setErrNetwork();
+      console.log("Network error detected, setting network error state");
+      router.push({ name: "503" });
+    } else if (
+      error.response &&
+      error.response.status !== 401 &&
+      error.code !== "ERR_NETWORK"
+    ) {
+      notifyError(`${error.response.data.message} ${error.response.data.uuid ?? 0}`, 5000);
     } else if (isDevelopment()) {
+      console.log("API Error:", error);
       logger.error("API Error:", {
         url: error.config?.url,
         status: error.response?.status,
@@ -113,17 +138,13 @@ axios.interceptors.response.use(
 );
 
 const loadNonEssentialResources = async () => {
-  const [
-    ElementPlus,
-    VueDatePicker,
-    autoAnimatePlugin,
-    OpenLayersMap,
-  ] = await Promise.all([
-    import("element-plus"),
-    import("@vuepic/vue-datepicker"),
-    import("@formkit/auto-animate/vue").then((m) => m.autoAnimatePlugin),
-    import("vue3-openlayers"),
-  ]);
+  const [ElementPlus, VueDatePicker, autoAnimatePlugin, OpenLayersMap] =
+    await Promise.all([
+      import("element-plus"),
+      import("@vuepic/vue-datepicker"),
+      import("@formkit/auto-animate/vue").then((m) => m.autoAnimatePlugin),
+      import("vue3-openlayers"),
+    ]);
 
   await Promise.all([
     import("@vuepic/vue-datepicker/dist/main.css"),
@@ -135,11 +156,10 @@ const loadNonEssentialResources = async () => {
     .use(ElementPlus.default)
     .use(autoAnimatePlugin)
     .use(OpenLayersMap.default)
-    .component("VueDatePicker", VueDatePicker.default)
+    .component("VueDatePicker", VueDatePicker.default);
 
   console.log("Non-essential resources loaded");
 };
-
 
 (async () => {
   window.requestIdleCallback

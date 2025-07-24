@@ -158,6 +158,8 @@ deploy-stag:
     name : harbor.pln.co.id/library/alpine:git
     entrypoint : [""]
   stage: update-tag-stag
+  needs:
+    - build-image
   before_script:
     - git config --global user.name "Gitlab PLN CI/CD"
     - git config --global user.email "gitlab@pln.co.id"

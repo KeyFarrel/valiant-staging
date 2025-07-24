@@ -97,7 +97,6 @@
         <div class="flex flex-col space-y-1">
           <p class="text-base font-medium text-primaryTextColor">{{ userData.nama_pegawai }}</p>
           <p class="text-sm text-textDisabledColor">{{ userData.email }}</p>
-          <Chips :title="'Role'" :content="userAuthStore.roleName" class="w-fit" />
         </div>
       </div>
       <div class="flex w-full space-x-5">
@@ -651,18 +650,13 @@ const generateCaptcha = async () => {
     captchaData.value.image = response.image_base64;
     captchaData.value.thumb = response.tile_base64;
   } catch (error: any) {
-    // Hanya log error di development mode
     if (import.meta.env.MODE === 'development') {
       console.error('Error Generate Captcha : ', error);
     }
-
-    // Tampilkan pesan error yang user-friendly
     if (error?.message === 'Network Error') {
       notifyError('Tidak dapat memuat captcha. Silakan coba lagi nanti.', 3000);
-      // Coba lagi setelah beberapa detik
       setTimeout(generateCaptcha, 5000);
     } else {
-      // Untuk error lainnya, tampilkan pesan umum
       notifyError('Terjadi kesalahan saat memuat captcha.', 3000);
     }
   }
@@ -757,7 +751,7 @@ const fetchDataProfile = async () => {
   try {
     isLoadingSpinner.value = true;
     const response: DataItem = await authService.preProfile()
-    userData.value = response.data.response.data;
+    userData.value = response.data;
     isLoadingSpinner.value = false;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -956,15 +950,6 @@ const onAcceptPrivacy = async () => {
   try {
     isLoadingSpinner.value = true;
     await authService.privacyPolicy(true);
-    // axios.post(`${url}auths/privacy-policy`,
-    //   encryptAES(JSON.stringify({
-    //     is_accept: true
-    //   })), {
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-    //   }
-    // });
     const param = {
       email: valEmail.value,
       password: valPassword.value,
@@ -985,15 +970,6 @@ const onDeclinePrivacy = async () => {
   try {
     isLoadingSpinner.value = true;
     await authService.privacyPolicy(false);
-    // axios.post(`${url}auths/privacy-policy`,
-    //   encryptAES(JSON.stringify({
-    //     is_accept: false
-    //   })), {
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: `Bearer ${sessionStorage.getItem('token')}`,
-    //   }
-    // });
     sessionStorage.clear();
     notifyError("Anda tidak dapat menggunakan aplikasi ini sebelum menyetujui kebijakan privasi", 7000);
   } catch (error) {

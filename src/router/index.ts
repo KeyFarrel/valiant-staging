@@ -5,10 +5,12 @@ import { useRekapNavigationStore } from "@/store/storeRekapKertasKerja";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import { useMenuStore } from "@/store/storeMenu";
 import { useUserAuthStore } from "@/store/storeUserAuth";
+import { useSessionStore } from "@/store/storeSession";
 import Sidebar from "@/components/layout/Sidebar.vue";
 
 import Login from "../views/Login.vue";
-import Error404Page from "@/views/404Page.vue";
+import Error404Page from "@/views/Error/404Page.vue";
+import Error503Page from "@/views/Error/503Page.vue";
 
 const PetaSebaran = () => import("@/views/Beranda/PetaSebaran.vue");
 const LamanUtama = () => import("@/views/Beranda/LamanUtama/LamanUtama.vue");
@@ -94,6 +96,14 @@ const routes: RouteRecordRaw[] = [
     meta: {
       requiresAuth: true,
       label: "Verifikasi SSO",
+    },
+  },
+  {
+    path: "/503",
+    name: "503",
+    component: Error503Page,
+    meta: {
+      label: "503 Error",
     },
   },
   {
@@ -424,7 +434,6 @@ const routes: RouteRecordRaw[] = [
           label: "Log Aktivitas",
         },
       },
-
       {
         path: "/mesin-belum-terinput",
         name: "mesin-belum-terinput",
@@ -470,31 +479,37 @@ router.beforeEach(async (to, _, next) => {
   const storeNavbar = useNavbarLabelStore();
   const menuStore = useMenuStore();
   const userAuthStore = useUserAuthStore();
+  const sessionStore = useSessionStore();
   const authService = new AuthService();
   const encryptStorage = await encryptStoragePromise;
-  const token =
-    nodeMode === "production"
-      ? encryptStorage.getItem("token")
-      : localStorage.getItem("token");
+  const storage = nodeMode === "production" ? encryptStorage : localStorage;
+  let storedHash = storage.getItem("user_hash");
+
   storeNavbar.label = to.meta.label;
 
-  if (token && !menuStore.isMenuLoaded) {
+  if (to.name === "redirect-sso" && storedHash) {
+    return next({ name: "peta" });
+  } else if (to.name === "redirect-sso" && !storedHash) {
+    next();
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+  }
+
+  const isAuthenticated = await sessionStore.validateSession();
+
+  console.log("isAuthenticated:", isAuthenticated);
+  console.log(menuStore.isMenuLoaded);
+
+  if (isAuthenticated && !menuStore.isMenuLoaded) {
     await menuStore.initializeMenu();
   }
 
-  const storage = nodeMode === "production" ? encryptStorage : localStorage;
-
-  if (token) {
-    let role: any;
-    let level: any;
+  if (isAuthenticated) {
     let levelSentral: any;
     let namaPegawai: any;
-    let storedHash: any;
     await userAuthStore.fetchUserAuth();
     const getStorage = (storage: any) => {
       levelSentral = storage.getItem("level_sentral");
       namaPegawai = storage.getItem("nama_pegawai");
-      storedHash = storage.getItem("user_hash");
     };
     getStorage(storage);
 
@@ -505,8 +520,10 @@ router.beforeEach(async (to, _, next) => {
       !storedHash
     ) {
       console.warn("⚠️ Data tidak lengkap, logout user...");
-      authService.logout();
-      return;
+      await authService.logout();
+      storage.clear();
+      sessionStore.invalidateSession();
+      return next({ name: "login" });
     }
 
     const dataString = `${levelSentral}:${namaPegawai}`;
@@ -521,22 +538,29 @@ router.beforeEach(async (to, _, next) => {
     if (storedHash != currentHash) {
       console.warn("⚠️ Data telah dimanipulasi! Logout user...");
       console.log(storedHash, currentHash);
-      authService.logout();
+      await authService.logout();
+      storage.clear();
+      sessionStore.invalidateSession();
+      return next({ name: "login" });
     }
   }
 
-  if (to.name === "redirect-sso" && !token) {
-    next();
-  } else if (!token) {
-    if (to.name !== "login") {
-      return next({ name: "login" });
-    }
-    return next();
-  } else if (token && !menuStore.isMenuAccessible(to.name.toString())) {
-    next({ name: "peta" });
-  } else {
-    next();
+  if (to.name === "503" && isAuthenticated && !sessionStore.isErrNetwork()) {
+    console.log("Redirect dari 503 ke peta");
+    return next({ name: "peta" });
   }
+
+  if (
+    isAuthenticated &&
+    !menuStore.isMenuAccessible(to.name.toString()) &&
+    !sessionStore.isErrNetwork() &&
+    to.name !== "503"
+  ) {
+    console.log("Redirect dari halaman tak terakses ke peta");
+    return next({ name: "peta" });
+  }
+
+  return next();
 });
 
 export default router;

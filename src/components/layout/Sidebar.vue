@@ -238,6 +238,8 @@ import { ref, onMounted, inject, computed, watch } from "vue";
 import { initFlowbite } from "flowbite";
 import { RouterView } from "vue-router";
 import { useNavbarLabelStore } from "@/store/storeNavbar";
+import { useSessionStore } from "@/store/storeSession";
+const sessionStore = useSessionStore();
 import { useUserAuthStore } from "@/store/storeUserAuth";
 const userAuthStore = useUserAuthStore();
 import { useRekapSearchStore } from "@/store/storeRekapKertasKerja";
@@ -305,6 +307,7 @@ watch(timeLeft, async (remainingTime) => {
         isLoading.value = true;
         await authService.logout();
         nodeMode === "production" ? encryptStorage.clear() : localStorage.clear();
+        sessionStore.invalidateSession();
         router.push("/login");
       } catch (error) {
         console.error("Logout Gagal", error);
@@ -363,7 +366,8 @@ const handleLogout = async () => {
     const encryptStorage = await encryptStoragePromise;
     isLoading.value = true
     await authService.logout();
-    nodeMode === "production" ? encryptStorage.clear() : localStorage.clear();
+    nodeMode === "production" || nodeMode === "staging" ? encryptStorage.clear() : localStorage.clear();
+    sessionStore.invalidateSession();
     router.push("/login");
   } catch (error) {
     console.error("Error logout", error)

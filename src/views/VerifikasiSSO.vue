@@ -7,6 +7,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
+import { useSessionStore } from "@/store/storeSession";
+const sessionStore = useSessionStore();
 import LoginService from "@/services/auth-service";
 const loginService = new LoginService();
 import { useRoute } from "vue-router";
@@ -16,10 +18,8 @@ const ssoCode = route.query.code as string;
 import errorJsonData from '@/assets/lottie/error.json';
 import ModalNotification from '@/components/ui/ModalNotification.vue';
 import CryptoJS from "crypto-js";
-import axios from "axios";
 
 const isError = ref(false);
-const url: any = import.meta.env.VITE_API_URL;
 const nodeMode = import.meta.env.MODE;
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -28,7 +28,6 @@ const verifikasiSSO = async () => {
     const encryptStorage = await encryptStoragePromise;
     const response: any = await loginService.verifikasiSSO(ssoCode);
     if (response.success) {
-      const token = response.data.token;
       const namaPegawai = response.data.nama_pegawai;
       const levelSentral =
         response.data.uuid_sentral === "" || response.data.uuid_sentral === "0"
@@ -39,7 +38,6 @@ const verifikasiSSO = async () => {
       const hash = CryptoJS.HmacSHA512(dataString, (window as any).userHashSecretKey()).toString();
 
       const setStorage = (storage: any) => {
-        storage.setItem("token", token);
         storage.setItem("nama_pegawai", namaPegawai);
         storage.setItem("level_sentral", levelSentral);
         storage.setItem("user_hash", hash);
@@ -56,6 +54,7 @@ const verifikasiSSO = async () => {
       } else {
         localStorage.clear();
       }
+      sessionStore.invalidateSession();
       router.push('/login');
     }
   } catch (error) {
@@ -67,6 +66,7 @@ const verifikasiSSO = async () => {
     } else {
       localStorage.clear();
     }
+    sessionStore.invalidateSession();
     router.push('/login');
     console.error("Error fetching data:", error);
     throw error;

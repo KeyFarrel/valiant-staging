@@ -408,7 +408,7 @@
           </TabWrapperSentral>
         </div>
       </div>
-      <ModalWrapper :show-modal="isModalUnggahKertasKerjaOpen" :width="'w-[750px]'" :height="'h-auto'"
+      <ModalWrapper :show-modal="true" :width="'w-[750px]'" :height="'h-auto'"
         @on-escape="isModalUnggahKertasKerjaOpen = false; selectedFileEvidence = null">
         <div class="flex flex-col space-y-5">
           <div class="flex flex-row items-center justify-between">
