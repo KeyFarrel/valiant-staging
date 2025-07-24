@@ -1,5 +1,5 @@
 # Stage 1: Build the Vue.js app
-FROM node:18.14.2-alpine AS build
+FROM harbor.pln.co.id/library/node:18.17.0-alpine AS build
 
 WORKDIR /app
 
