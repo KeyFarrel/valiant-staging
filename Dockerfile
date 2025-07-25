@@ -18,7 +18,7 @@ ARG BUILD_MODE=staging
 RUN npx vite build --mode $BUILD_MODE
 
 # Stage 2: Serve the staging build with Nginx
-FROM nginx:stable-alpine
+FROM harbor.pln.co.id/library/nginx:stable-alpine
 
 # Copy the built files from the previous stage
 COPY --from=build /app/dist /usr/share/nginx/html
