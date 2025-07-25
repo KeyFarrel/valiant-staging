@@ -282,7 +282,7 @@
         </div>
         <h1 class="mb-2 text-3xl font-bold text-gray-800">Login</h1>
         <p class="mb-4 text-xs font-normal text-gray-600">
-          Silahkan login terlebih dahulu untuk masuk aplikasi.
+          Silahkan login testsing terlebih dahulu untuk masuk aplikasi.
         </p>
         <div v-if="isShowCounter"
           class="flex flex-col w-full space-y-1.5 px-3 pb-3 pt-1 rounded-lg border border-warningColor bg-warningColor bg-opacity-15 mb-2 overflow-clip relative">
