@@ -180,7 +180,7 @@
                         <p class="text-sm text-gray-400">
                           <span class="font-semibold text-primaryTextColor">{{ mesinItem.nilai_asset_awal === '-' ?
                             mesinItem.nilai_asset_awal : globalFormat.formatRupiah(mesinItem.nilai_asset_awal / 1000000)
-                          }}</span> Rp (Juta)
+                            }}</span> Rp (Juta)
                         </p>
                       </div>
                       <div>
@@ -408,7 +408,7 @@
           </TabWrapperSentral>
         </div>
       </div>
-      <ModalWrapper :show-modal="true" :width="'w-[750px]'" :height="'h-auto'"
+      <ModalWrapper :show-modal="isModalUnggahKertasKerjaOpen" :width="'w-[750px]'" :height="'h-auto'"
         @on-escape="isModalUnggahKertasKerjaOpen = false; selectedFileEvidence = null">
         <div class="flex flex-col space-y-5">
           <div class="flex flex-row items-center justify-between">
