@@ -23,26 +23,26 @@ variables:
   before_script:
     - npm install --cache .npm --prefer-offline
 
-# prepare_env_file_stg:
-#   stage: create-env
-#   image: harbor.pln.co.id/library/hashicorp/vault:1.13.1
-#   script:
-#     # Masuk ke Vault untuk autentikasi
-#     - echo "Authenticating to Vault..."
-#     - export VAULT_ADDR=$VAULT_ADDR
-#     - vault login -method=userpass username="$VAULT_USERNAME" password="$VAULT_PASSWORD"
+prepare_env_file_stg:
+  stage: create-env
+  image: harbor.pln.co.id/library/hashicorp/vault:1.13.1
+  script:
+    # Masuk ke Vault untuk autentikasi
+    - echo "Authenticating to Vault..."
+    - export VAULT_ADDR=$VAULT_ADDR
+    - vault login -method=userpass username="$VAULT_USERNAME" password="$VAULT_PASSWORD"
     
-#     # Mengambil data dari Vault dan menyimpannya ke file .env
-#     - echo "Fetching secrets from Vault..."
-#     - vault kv get -mount="valiant-staging" "frontend-env-secret" > kv.secret
-#     - awk '/====== Data ======/{flag=1; next} /======/{flag=0} flag && $1 !~ /---/ && $1 != "" {print $1 "=" $2}' kv.secret > .env
-#   artifacts:
-#     paths:
-#       - .env
-#     expire_in: 1 hour
-#   rules:
-#     - if: '$CI_COMMIT_BRANCH == "staging" && $CI_PIPELINE_SOURCE == "push"'
-#       when: always
+    # Mengambil data dari Vault dan menyimpannya ke file .env
+    - echo "Fetching secrets from Vault..."
+    - vault kv get -mount="valiant-staging" "frontend-env-secret" > kv.secret
+    - awk '/====== Data ======/{flag=1; next} /======/{flag=0} flag && $1 !~ /---/ && $1 != "" {print $1 "=" $2}' kv.secret > .env
+  artifacts:
+    paths:
+      - .env
+    expire_in: 1 hour
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "staging" && $CI_PIPELINE_SOURCE == "push"'
+      when: always
 
 # prepare_env_file_prod:
 #   stage: create-env
