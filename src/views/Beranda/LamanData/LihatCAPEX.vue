@@ -102,7 +102,7 @@ const fetchMesinById = async () => {
     );
     mesinDataById.value = response.data;
   } catch (error) {
-    console.error("Fetch Mesin By Id Error : " + error);
+    console.error("Fetch Mesin By Id Error : ", error);
   }
 };
 const fetchUnitPengelola = async () => {
@@ -121,7 +121,7 @@ const fetchUnitPengelola = async () => {
       namaPembina.value = pembangkitResponse.data.pembina;
     }
   } catch (error) {
-    console.error("Fetch Unit Pengelola Error : " + error);
+    console.error("Fetch Unit Pengelola Error : ", error);
   }
 };
 const fetchAsumsiParameter = async () => {
@@ -133,7 +133,7 @@ const fetchAsumsiParameter = async () => {
       );
     umurTeknis.value = response.data.asumsi_makro.umur_teknis;
   } catch (error) {
-    console.error("Fetch Asumsi Parameter Error : " + error);
+    console.error("Fetch Asumsi Parameter Error : ", error);
   }
 };
 const fetchDetailCAPEX = async (periode: any, uuid_mesin: any) => {
@@ -141,7 +141,7 @@ const fetchDetailCAPEX = async (periode: any, uuid_mesin: any) => {
     const response: any = await lihatCAPEXService.getAnggaranDetailCAPEX(periode, uuid_mesin);
     detailCAPEX.value = response.data;
   } catch (error) {
-    console.error('Fetch Detail CAPEX Error : ')
+    console.error('Fetch Detail CAPEX Error : ', error)
   }
 }
 const fetchTotalReplacement = async (periode: any, uuid_mesin: any) => {
@@ -149,7 +149,7 @@ const fetchTotalReplacement = async (periode: any, uuid_mesin: any) => {
     const response: any = await lihatCAPEXService.getTotalReplacement(periode, uuid_mesin);
     totalReplacement.value = response.data;
   } catch (error) {
-    console.error('Fetch Total Replacement Error : ')
+    console.error('Fetch Total Replacement Error : ', error);
   }
 }
 const handleYearPicked = async (modelData: any) => {

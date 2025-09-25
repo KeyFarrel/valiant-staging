@@ -6,7 +6,7 @@
  * Uses secure environment variables to prevent exposure of sensitive information
  */
 
-import { getEnvironment, isProduction, isStaging } from './secureEnv';
+import { isProduction, isStaging } from './secureEnv';
 
 /**
  * Disables browser developer tools using various techniques
@@ -17,36 +17,36 @@ const disableDevTools = (): void => {
     // Prevent F12 key
     if (event.key === 'F12') {
       event.preventDefault();
-      return false;
+      return false
     }
 
     // Prevent Ctrl+Shift+I / Cmd+Option+I (Inspect Element)
     if ((event.ctrlKey && event.shiftKey && event.key === 'I') || 
         (event.metaKey && event.altKey && event.key === 'i')) {
-      event.preventDefault();
+      event.preventDefault()
       return false;
     }
 
     // Prevent Ctrl+Shift+J / Cmd+Option+J (Console)
     if ((event.ctrlKey && event.shiftKey && event.key === 'J') || 
         (event.metaKey && event.altKey && event.key === 'j')) {
-      event.preventDefault();
-      return false;
+      event.preventDefault()
+      return false
     }
 
     // Prevent Ctrl+Shift+C / Cmd+Option+C (Inspector)
     if ((event.ctrlKey && event.shiftKey && event.key === 'C') || 
         (event.metaKey && event.altKey && event.key === 'c')) {
-      event.preventDefault();
-      return false;
-    }
+      event.preventDefault()
+      return false
+    };
 
     // Prevent Ctrl+U / Cmd+Option+U (View Source)
     if ((event.ctrlKey && event.key === 'u') || 
         (event.metaKey && event.altKey && event.key === 'u')) {
-      event.preventDefault();
+      event.preventDefault()
       return false;
-    }
+    };
   });
 
   // Method 2: Detect when DevTools is opened
@@ -109,7 +109,6 @@ export const initDevToolsRestriction = (): void => {
   if (isProduction() || isStaging()) {
     // Use a generic message that doesn't expose specific environment details
     console.log('Developer tools restricted in this environment');
-    // disableDevTools();
   } else {
     // Generic message for development
     console.log('Developer tools enabled');

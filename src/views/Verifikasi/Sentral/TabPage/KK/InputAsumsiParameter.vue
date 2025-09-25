@@ -334,7 +334,7 @@ const fetchPersetujuanKK = async () => {
     const response: any = await persetujuanService.getPersetujuanKKSentral({ uuid_sentral: route.query.uuid_sentral, tahun: year });
     approveMesinKK.value = response.data.mesins.filter((val: any) => val.uuid_mesin == idMesin.value)[0];
   } catch (error) {
-    console.error('Fetch Persetujuan KK Sentral Error : ' + error);
+    console.error('Fetch Persetujuan KK Sentral Error : ', error);
   }
 }
 
@@ -360,7 +360,7 @@ const fetchCheckIntegrasi = async () => {
     isIntegrasi.value = response.data[0].status_data_integrasi !== "0"
     console.log(isIntegrasi.value, 'dds');
   } catch (error) {
-    console.error('Fetch Check Integrasi Error : ' + error)
+    console.error('Fetch Check Integrasi Error : ', error)
   }
 }
 
@@ -410,7 +410,7 @@ const fetchComboBahanBakar = async () => {
     const response: any = await inputAsumsiParameterService.getComboBahanBakar(kodeJenisPembangkit.value);
     comboBahanBakar.value = response.data;
   } catch (error) {
-    console.error('Fetch Combo Bahan Bakar Error : ' + error);
+    console.error('Fetch Combo Bahan Bakar Error : ', error);
   }
 }
 const fetchListPembina = async () => {
@@ -418,7 +418,7 @@ const fetchListPembina = async () => {
     const response: any = await userService.getPembina('');
     return response.data;
   } catch (error) {
-    console.error('Fetch Pembina Error : ' + error)
+    console.error('Fetch Pembina Error : ', error)
   }
 }
 
@@ -440,7 +440,7 @@ const fetchUnitPengelola = async () => {
       namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina;
     }
   } catch (error) {
-    console.error("Fetch Unit Pengelola Error : " + error);
+    console.error("Fetch Unit Pengelola Error : ", error);
   }
 };
 
@@ -609,7 +609,7 @@ const insertAsumsiParameter = async () => {
       }
     }
   } catch (error: any) {
-    console.error('Insert Asumsi Parameter Error : ' + error);
+    console.error('Insert Asumsi Parameter Error : ', error);
   } finally {
     isLoading.value = false;
   }
@@ -673,7 +673,7 @@ const handleDownloadTemplateRekap = async () => {
     document.body.removeChild(link);
   } catch (error) {
     notifyError('Download Template Rekap Gagal', 3000);
-    console.error('Handle Download Template Rekap Error : ' + error);
+    console.error('Handle Download Template Rekap Error : ', error);
   } finally {
     isLoading.value = false;
   }

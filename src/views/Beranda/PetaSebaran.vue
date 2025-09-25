@@ -254,8 +254,6 @@ import ModalWrapper from "@/components/ui/ModalWrapper.vue";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import ModalSearch from "@/components/ModalSearch.vue";
 import type View from "ol/View";
-import AuthService from "@/services/auth-service";
-const authService = new AuthService();
 
 const nodeMode = import.meta.env.MODE;
 const router = useRouter();
@@ -320,7 +318,6 @@ interface PetaItem {
 const fetchPetaSentral = async () => {
   try {
     isLoading.value = true;
-    const encryptStorage = await encryptStoragePromise;
     const response: any = await petaService.getPetaSentral({ sentral: searchQuery.value, pengelola: [], pembina: [], jenis_kit: [], id_daya: [], umur: [] });
     if (listDataPeta.value.length === 0) {
       listDataPeta.value = response.data;
@@ -355,7 +352,7 @@ function getDetailSentral(kode: string) {
       params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(kode) : kode },
     });
   } catch (error) {
-    console.error('Fetch Detail Sentral By Kode Error : ' + error);
+    console.error('Fetch Detail Sentral By Kode Error : ', error);
   }
 }
 
@@ -575,13 +572,6 @@ onMounted(async () => {
   getDataUmurMesin()
   isLoading.value = false;
 });
-
-// encryptStoragePromise.then((instance) => {
-//   encryptStorageRef = instance;
-//   
-// }).catch((err) => {
-//   console.error("Gagal inisialisasi encryptStorage:", err);
-// });
 </script>
 
 <style lang="scss">

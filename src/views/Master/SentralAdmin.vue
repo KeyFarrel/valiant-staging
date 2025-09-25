@@ -424,7 +424,7 @@ const fetchNilaiMesin = async () => {
     const response: any = await sentralService.getNilaiMesin();
     mesinSisaIRRNPV.value = response.data;
   } catch (error) {
-    console.error('Fetch Nilai Sentral Error : ' + error)
+    console.error('Fetch Nilai Sentral Error : ', error)
   }
 }
 const changeSelectedPengelola = async (pengelola: any) => {

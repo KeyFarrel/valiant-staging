@@ -838,9 +838,6 @@ const indeterminateDmn = ref(false);
 const listSentralData = ref<any[]>([]);
 const selectedKategoriPembangkit = ref<string[]>([]);
 const dmn = ref<CheckboxValueType[]>([])
-const itemsDmn = ref<{
-  [x: string]: any; id: string; name: string;
-}[]>([])
 const childDmn = ref<any[]>([])
 const selectedUmurMesin = ref<string[]>([]);
 const selectedKondisiMesin = ref<any[]>([]);
@@ -934,7 +931,7 @@ const fetchSentralData = async () => {
     navigationStore.pageLimit = response.meta.limit;
   } catch (error) {
     isLoading.value = false;
-    console.error('Fetch Sentral Data Error : ' + error);
+    console.error('Fetch Sentral Data Error : ', error);
   }
 };
 const fetchMesinByIdSentral = async (idSentral: any) => {
@@ -954,7 +951,7 @@ const fetchMesinByIdSentral = async (idSentral: any) => {
     const sentral: any | undefined = sentralData.value.filter((sentral) => sentral.uuid_sentral === idSentral);
     return { mesinById, sentral };
   } catch (error) {
-    console.error('Fetch Mesin By Kode Sentral Error : ' + error);
+    console.error('Fetch Mesin By Kode Sentral Error : ', error);
   }
 }
 const fetchPengelolaData = async () => {
@@ -1004,7 +1001,7 @@ const fetchComboKategoriPembangkit = async () => {
       })
     }
   } catch (error) {
-    console.error("Fetch Filter Kategori Error : " + error);
+    console.error("Fetch Filter Kategori Error : ", error);
   }
 };
 const fetchComboUmurMesin = async () => {
@@ -1019,7 +1016,7 @@ const fetchComboUmurMesin = async () => {
       })
     }
   } catch (error) {
-    console.error("Fetch Umur Mesin Error : " + error);
+    console.error("Fetch Umur Mesin Error : ", error);
   }
 };
 const fetchComboKondisiMesin = async () => {
@@ -1034,7 +1031,7 @@ const fetchComboKondisiMesin = async () => {
       })
     }
   } catch (error) {
-    console.error('Fetch Kondisi Mesin Error : ' + error);
+    console.error('Fetch Kondisi Mesin Error : ', error);
   }
 }
 const fetchComboIRR = async () => {
@@ -1048,7 +1045,7 @@ const fetchComboIRR = async () => {
       })
     }
   } catch (error) {
-    console.error('Fetch Combo IRR Error : ' + error);
+    console.error('Fetch Combo IRR Error : ', error);
   }
 }
 const fetchNilaiSentral = async () => {
@@ -1060,7 +1057,7 @@ const fetchNilaiSentral = async () => {
       sentralAssetIRRNPV.value = [];
     }
   } catch (error) {
-    console.error('Fetch Nilai Sentral Error : ' + error)
+    console.error('Fetch Nilai Sentral Error : ', error)
   }
 }
 const fetchNilaiMesin = async () => {
@@ -1068,7 +1065,7 @@ const fetchNilaiMesin = async () => {
     const response: any = await rekapService.getNilaiMesin(tahunBerjalan.value);
     mesinSisaIRRNPV.value = response.data === null ? [] : response.data;
   } catch (error) {
-    console.error('Fetch Nilai Mesin Error : ' + error)
+    console.error('Fetch Nilai Mesin Error : ', error)
   }
 }
 const fetchStatusFSSentral = async () => {
@@ -1080,7 +1077,7 @@ const fetchStatusFSSentral = async () => {
       statusFSSentral.value = [];
     }
   } catch (error) {
-    console.error('Fetch Status FS Sentral Error : ' + error);
+    console.error('Fetch Status FS Sentral Error : ', error);
   }
 }
 const fetchStatusFSMesin = async () => {
@@ -1088,7 +1085,7 @@ const fetchStatusFSMesin = async () => {
     const response: any = await rekapService.getStatusFSMesin();
     statusFSMesin.value = response.data;
   } catch (error) {
-    console.error('Fetch Status FS Mesin Error : ' + error);
+    console.error('Fetch Status FS Mesin Error : ', error);
   }
 }
 const fetchStatusRealisasiSentral = async () => {
@@ -1096,7 +1093,7 @@ const fetchStatusRealisasiSentral = async () => {
     const response: any = await rekapService.getStatusRealisasiSentral();
     statusRealisasiSentral.value = response.data;
   } catch (error) {
-    console.error('Fetch Status Realisasi Sentral Error : ' + error);
+    console.error('Fetch Status Realisasi Sentral Error : ', error);
   }
 }
 const fetchStatusRealisasiMesin = async () => {
@@ -1104,7 +1101,7 @@ const fetchStatusRealisasiMesin = async () => {
     const response: any = await rekapService.getStatusRealisasiMesin();
     statusRealisasiMesin.value = response.data;
   } catch (error) {
-    console.error('Fetch Status Realisasi Sentral Error : ' + error);
+    console.error('Fetch Status Realisasi Sentral Error : ', error);
   }
 }
 const fetchCheckInputAsumsiSentral = async () => {
@@ -1112,7 +1109,7 @@ const fetchCheckInputAsumsiSentral = async () => {
     const response: any = await rekapService.getCheckInputAsumsiSentral();
     listStatusInputAsumsiSentral.value = response.data;
   } catch (error) {
-    console.error('Fetch Check Input Asumsi Mesin Error : ' + error);
+    console.error('Fetch Check Input Asumsi Mesin Error : ', error);
   }
 }
 const fetchCheckInputAsumsiMesin = async () => {
@@ -1120,7 +1117,7 @@ const fetchCheckInputAsumsiMesin = async () => {
     const response: any = await rekapService.getCheckInputAsumsiMesin();
     listStatusInputAsumsiMesin.value = response.data;
   } catch (error) {
-    console.error('Fetch Check Input Asumsi Mesin Error : ' + error);
+    console.error('Fetch Check Input Asumsi Mesin Error : ', error);
   }
 }
 const handleDownloadTemplateRekap = async () => {
@@ -1140,7 +1137,7 @@ const handleDownloadTemplateRekap = async () => {
     document.body.removeChild(link);
   } catch (error) {
     notifyError("Download Template Rekap Gagal", 3000);
-    console.error("Handle Download Template Rekap Error : " + error);
+    console.error("Handle Download Template Rekap Error : ", error);
   } finally {
     isLoading.value = false;
   };
@@ -1162,7 +1159,7 @@ const handleDownloadTemplateFS = async () => {
     document.body.removeChild(link);
   } catch (error) {
     notifyError('Download Template FS Gagal', 3000)
-    console.error('Handle Download Template Rekap Error : ' + error)
+    console.error('Handle Download Template Rekap Error : ', error)
   } finally {
     isLoading.value = false;
   };
@@ -1335,7 +1332,7 @@ const handleSearch = async () => {
     navigationStore.currentPage = 1;
     await fetchSentralData();
   } catch (error) {
-    console.error('Search Error : ' + error);
+    console.error('Search Error : ', error);
   } finally {
     isLoading.value = false;
   }
@@ -1378,7 +1375,7 @@ const goToPage = async (page: any) => {
     await fetchSentralData();
 
   } catch (error) {
-    console.error('Go To Page Error : ' + error);
+    console.error('Go To Page Error : ', error);
   } finally {
     isLoading.value = false;
   }

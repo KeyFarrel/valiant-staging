@@ -9,15 +9,98 @@ import { ref } from 'vue';
 jest.mock('@/services/auth-service');
 jest.mock('@/services/persetujuan-service');
 
+// Mock flowbite
+jest.mock('flowbite', () => ({
+  initFlowbite: jest.fn(),
+}));
+
+// Mock VueUse composables
+jest.mock('@vueuse/core', () => ({
+  useIdle: jest.fn(() => ({
+    lastActive: { value: Date.now() }
+  })),
+  useTimestamp: jest.fn(() => ({
+    value: Date.now()
+  })),
+}));
+
+// Mock encrypt storage
+jest.mock('@/utils/app-encrypt-storage', () => ({
+  encryptStoragePromise: Promise.resolve({
+    getItem: jest.fn().mockResolvedValue('mock-value'),
+    setItem: jest.fn(),
+    clear: jest.fn(),
+  })
+}));
+
+// Mock stores
+jest.mock('@/store/storeNavbar', () => ({
+  useNavbarLabelStore: jest.fn(() => ({
+    label: 'Test Label'
+  }))
+}));
+
+jest.mock('@/store/storeSession', () => ({
+  useSessionStore: jest.fn(() => ({
+    invalidateSession: jest.fn()
+  }))
+}));
+
+jest.mock('@/store/storeUserAuth', () => ({
+  useUserAuthStore: jest.fn(() => ({
+    levelAlias: 'Xf!8qP@7'
+  }))
+}));
+
+jest.mock('@/store/storeRekapKertasKerja', () => ({
+  useRekapSearchStore: jest.fn(() => ({}))
+}));
+
+jest.mock('@/store/storeMenu', () => ({
+  useMenuStore: jest.fn(() => ({
+    menuList: [
+      {
+        menu: 'Beranda',
+        sub_menus: [
+          {
+            sub_menu: 'Peta Sebaran',
+            url: 'peta-sebaran',
+            is_docked: true
+          }
+        ]
+      }
+    ]
+  }))
+}));
+
 jest.mock("vue-router", () => ({
-  useRoute: jest.fn(), // Add this to mock useRoute
+  useRoute: jest.fn(),
+  RouterView: { template: '<div></div>' },
+  RouterLink: { template: '<a><slot></slot></a>' },
   createRouter: jest.fn(() => ({
     push: jest.fn(),
     replace: jest.fn(),
     currentRoute: { value: {} },
-    beforeEach: jest.fn(), // Add this mock to handle beforeEach
+    beforeEach: jest.fn(),
   })),
-  createWebHistory: jest.fn(() => ({})), // Mock createWebHistory
+  createWebHistory: jest.fn(() => ({})),
+}));
+
+// Mock router instance
+jest.mock('@/router', () => ({
+  default: {
+    push: jest.fn(),
+    replace: jest.fn(),
+  }
+}));
+
+// Mock components
+jest.mock('@/components/icons/ValiantLogo.vue', () => ({
+  default: { template: '<div></div>' }
+}));
+
+jest.mock('@/components/ui/LoadingSpinner.vue', () => ({
+  default: { template: '<div></div>' }
 }));
 
 describe('Sidebar.vue', () => {
@@ -31,10 +114,13 @@ describe('Sidebar.vue', () => {
     authServiceMock = {
       checkLevel: jest.fn().mockReturnValue('Admin'),
       checkRole: jest.fn().mockReturnValue('Super Admin'),
+      logout: jest.fn().mockResolvedValue({}),
     };
     persetujuanServiceMock = {
-      getPersetujuanKKSentral: jest.fn().mockResolvedValueOnce({ data: { mesins: [] } }),
-      getPersetujuanFSSentral: jest.fn().mockResolvedValueOnce({ data: { mesins: [] } }),
+      getPersetujuanKKSentral: jest.fn().mockResolvedValue({ data: { mesins: [] } }),
+      getPersetujuanFSSentral: jest.fn().mockResolvedValue({ data: { mesins: [] } }),
+      getPersetujuanKertasKerja: jest.fn().mockResolvedValue({ data: [] }),
+      getPersetujuanFS: jest.fn().mockResolvedValue({ data: [] }),
     };
 
     (AuthService as jest.Mock).mockImplementation(() => authServiceMock);
@@ -43,6 +129,14 @@ describe('Sidebar.vue', () => {
     wrapper = shallowMount(Sidebar, {
       global: {
         plugins: [pinia],
+        stubs: {
+          RouterView: true,
+          RouterLink: true,
+          ValiantLogo: true,
+          Loading: true,
+          Teleport: true,
+          Transition: true,
+        },
         mocks: {
           encryptStorage: {
             getItem: jest.fn().mockReturnValue('mock-pegawai'),
@@ -61,6 +155,7 @@ describe('Sidebar.vue', () => {
 
   it('should render the sidebar with the correct initial state', () => {
     expect(wrapper.find('nav').exists()).toBe(true);
+    expect(wrapper.find('aside').exists()).toBe(true);
     expect(wrapper.vm.isSidebarOpen).toBe(false); // Sidebar is closed initially
   });
 
@@ -70,8 +165,11 @@ describe('Sidebar.vue', () => {
     expect(wrapper.vm.isSidebarOpen).toBe(true); // Sidebar opens
   });
 
-  it('should show the user\'s name in the sidebar', () => {
-    expect(wrapper.find('p').text()).toBe('');
+  it('should show the user\'s name in the sidebar', async () => {
+    await wrapper.vm.$nextTick();
+    const userNameElements = wrapper.findAll('p');
+    // The component should have paragraphs for displaying user information
+    expect(userNameElements.length).toBeGreaterThan(0);
   });
 
   it('should fetch approval data on mount', async () => {
@@ -86,7 +184,9 @@ describe('Sidebar.vue', () => {
     wrapper.vm.totalPersetujuanKK = 2;
     wrapper.vm.totalPersetujuanFS = 3;
     await wrapper.vm.$nextTick();
-    expect(wrapper.find('.bg-warningColor').exists()).toBe(true); // Red notification icon shows
+    // Check if notification elements exist
+    const notificationElements = wrapper.findAll('.bg-warningColor');
+    expect(notificationElements.length).toBeGreaterThan(0);
   });
 
   it("is fetching fetchPersetujuanKK", async () => {

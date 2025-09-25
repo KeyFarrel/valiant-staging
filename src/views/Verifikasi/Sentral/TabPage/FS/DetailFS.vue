@@ -7,7 +7,8 @@
     :daya-terpasang="approveSentralFS.daya_terpasang ? approveSentralFS.daya_terpasang.toString() : '-'"
     :daya-mampu="approveSentralFS.daya_mampu ? approveSentralFS.daya_mampu.toString() : '-'"
     :tahun-operasi="approveSentralFS.tahun_operasi ? approveSentralFS.tahun_operasi : '-'"
-    :umur-teknis="approveSentralFS.umur_teknis ? approveSentralFS.umur_teknis : '-'">
+    :umur-teknis="approveSentralFS.umur_teknis ? approveSentralFS.umur_teknis : '-'"
+    :kondisi-unit="approveSentralFS.kondisi_unit ? approveSentralFS.kondisi_unit : '-'">
   </InfoHeader>
 
   <!-- Download Evidence -->
@@ -52,6 +53,7 @@ interface ListApprove {
   daya_mampu: string
   tahun_operasi: string
   umur_teknis: string
+  kondisi_unit: string
 }
 
 const fetchPersetujuanFS = async () => {
@@ -61,7 +63,7 @@ const fetchPersetujuanFS = async () => {
     });
     approveSentralFS.value = response.data;
   } catch (error) {
-    console.error('Fetch Persetujuan FS Sentral Error : ' + error);
+    console.error('Fetch Persetujuan FS Sentral Error : ', error);
   }
 }
 

@@ -77,7 +77,7 @@ export default class GlobalFormat {
         inputValues = inputValue.replace(/[^\d,-]/g, '');
     }
 
-    const commaCount = (inputValues.match(/,/g) || []).length;
+    const commaCount = (inputValues.match(/,/g) ?? []).length;
     if (commaCount > 1) {
         const commaSplit = inputValues.split(',');
         commaSplit.pop();

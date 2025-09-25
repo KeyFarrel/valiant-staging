@@ -861,7 +861,7 @@ const fetchPersetujuanKK = async (page?: number) => {
     navigationKK.value.limit = response.meta.limit;
     showModalKK.value = false;
   } catch (error) {
-    console.error("Fetch Persetujuan KK Error : " + error);
+    console.error("Fetch Persetujuan KK Error : ", error);
   } finally {
     isLoading.value = false;
   }
@@ -886,7 +886,7 @@ const fetchPersetujuanFS = async (page?: number) => {
     navigationFS.value.limit = response.meta.limit;
     showModalFS.value = false;
   } catch (error) {
-    console.error("Fetch Persetujuan FS Error : " + error);
+    console.error("Fetch Persetujuan FS Error : ", error);
   } finally {
     isLoading.value = false;
   }

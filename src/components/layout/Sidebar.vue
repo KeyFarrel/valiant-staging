@@ -205,7 +205,7 @@
           </div>
         </li>
         <li class="flex items-center justify-center h-12 rounded-lg"
-          :class="{ selected: store.label === 'Sentral' || store.label === 'Parameter' }">
+          :class="{ selected: store.label === 'Unit Sentral' || store.label === 'Parameter' }">
           <svg width="24" height="24" class="cursor-pointer" viewBox="0 0 24 24" fill="none"
             xmlns="http://www.w3.org/2000/svg">
             <path
@@ -234,7 +234,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, inject, computed, watch } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { initFlowbite } from "flowbite";
 import { RouterView } from "vue-router";
 import { useNavbarLabelStore } from "@/store/storeNavbar";
@@ -336,7 +336,7 @@ const fetchPersetujuanKK = async () => {
       totalPersetujuanKK.value = response.data !== null ? response.data.filter((val: any) => val.status_approval !== 'Disetujui').length : 0;
     }
   } catch (error) {
-    console.error('Fetch Persetujuan KK Sentral Error : ' + error);
+    console.error('Fetch Persetujuan KK Sentral Error : ', error);
   }
 }
 
@@ -357,7 +357,7 @@ const fetchPersetujuanFS = async () => {
       totalPersetujuanFS.value = response.data !== null ? response.data.filter((val: any) => val.status_approval !== 'Disetujui').length : 0;
     }
   } catch (error) {
-    console.error('Fetch Persetujuan FS Sentral Error : ' + error);
+    console.error('Fetch Persetujuan FS Sentral Error : ', error);
   }
 }
 

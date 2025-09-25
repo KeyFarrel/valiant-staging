@@ -108,8 +108,9 @@
         <template v-for="(bahanBakarItem, bahanBakarIndex) in bahanBakarsFinal()" :key="bahanBakarIndex">
           <div class="flex flex-row items-center space-x-3">
             <input type="checkbox" name="" class="rounded-[3.5px] border-primaryColor border cursor-pointer"
-              :id="bahanBakarItem.id" :value="bahanBakarItem.id" v-model="checkedBahanBakar" @change="emit('onChecked')"
-              v-if="props.isRealisasiUploaded === false && bahanBakarItem.flag_bahan_bakar === 0">
+              :id="bahanBakarItem.id" :value="bahanBakarItem.kode_bahan_bakar" v-model="checkedBahanBakar"
+              @change="emit('onChecked')"
+              v-if="props.isRealisasiUploaded === false && bahanBakarItem.flag_bahan_bakar !== 1">
             <div class="flex flex-col w-full space-y-1">
               <span class="block font-bold text-gray-500">Bahan Bakar {{ bahanBakars.length > 0 ?
                 bahanBakarItem.flag_bahan_bakar === 1 ? 'Utama' : bahanBakarIndex + 1 : '-' }}<span

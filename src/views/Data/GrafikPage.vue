@@ -580,6 +580,7 @@ const fetchPetaSentral = async () => {
     }
   } catch (error) {
     notifyError("List Data Pembangkit Gagal Dimuat, Mohon Coba Lagi", false);
+    console.error('Fetch Peta Sentral Error : ', error);
   } finally {
     isLoading.value = false;
   }
@@ -592,7 +593,7 @@ const handleChangeSentral = async () => {
     await fetchPeriodeTahunSentral();
     replaceSentral();
   } catch (error) {
-    console.error('Handle Change Sentral Error : ' + error);
+    console.error('Handle Change Sentral Error : ', error);
   }
 }
 
@@ -617,7 +618,7 @@ const fetchPeriodeTahunSentral = async () => {
     }
     console.log(yearPickerService.filterYears(responseLimitTahun.value.data, parseInt(selectedYear.value[0].range[0]), parseInt(selectedYear.value[0].range[1])))
   } catch (error) {
-    console.error('Fetch Tahun Grafik Sentral Error : ' + error);
+    console.error('Fetch Tahun Grafik Sentral Error : ', error);
   }
 }
 

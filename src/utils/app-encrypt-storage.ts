@@ -1,10 +1,10 @@
 import { EncryptStorage } from 'encrypt-storage';
-import { wasmReady, initWasm } from '@/services/helper/encryption';
+import { isWasmReady, initWasm } from '@/services/helper/encryption';
 
 let instance: EncryptStorage | null = null;
 
 export const encryptStoragePromise = (async () => {
-  if (!wasmReady) {
+  if (!isWasmReady()) {
     await initWasm();
   }
   if (instance) return instance;

@@ -1,7 +1,6 @@
 import BaseService from "./base-service";
 import { encryptStoragePromise } from '@/utils/app-encrypt-storage';
 import CryptoJS from "crypto-js";
-import axios from "axios";
 
 const nodeMode: any = import.meta.env.MODE;
 const url: any = import.meta.env.VITE_API_URL;
@@ -15,7 +14,6 @@ export default class AuthService extends BaseService {
         return response;
       }
       console.log("Login Response:", response);
-      const token = response.data.token;
       const namaPegawai = response.data.nama_pegawai;
       const levelSentral =
         response.data.id_sentral === "" || response.data.id_sentral === "0"

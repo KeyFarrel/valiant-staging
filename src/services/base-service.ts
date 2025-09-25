@@ -91,7 +91,6 @@ export default class BaseService {
     }
   }
   async getFile<T>(path: string, params?: any, responseType?: any): Promise<T> {
-    const encryptStorage = await encryptStoragePromise;
     const headers: any = {
       // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
     };
@@ -118,7 +117,6 @@ export default class BaseService {
     payload?: any,
     withCredentials?: boolean,
   ): Promise<T> {
-    const encryptStorage = await encryptStoragePromise;
     const fingerprintID = await getFingerprint();
     const headers: any = {
       // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
@@ -143,7 +141,6 @@ export default class BaseService {
   }
 
   async put<T>(path: string, payload?: any): Promise<T> {
-    const encryptStorage = await encryptStoragePromise;
     const headers: any = {
       "Content-Type": "application/json",
       // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
@@ -166,7 +163,6 @@ export default class BaseService {
   }
 
   async patch<T>(path: string, payload?: any): Promise<T> {
-    const encryptStorage = await encryptStoragePromise;
     const headers: any = {
       "Content-Type": "application/json",
       // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
@@ -189,7 +185,6 @@ export default class BaseService {
   }
 
   async delete<T>(path: string): Promise<T> {
-    const encryptStorage = await encryptStoragePromise;
     const headers: any = {
       "Content-Type": "application/json",
       // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
@@ -211,7 +206,6 @@ export default class BaseService {
   }
 
   async postFormData<T>(path: string, payload: any): Promise<T> {
-    const encryptStorage = await encryptStoragePromise;
     const headers: any = {
       "Content-Type": "multipart/form-data",
       // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
@@ -234,7 +228,6 @@ export default class BaseService {
   }
 
   async putFormData<T>(path: string, payload: any): Promise<T> {
-    const encryptStorage = await encryptStoragePromise;
     const headers: any = {
       "Content-Type": "multipart/form-data",
       // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
@@ -257,7 +250,6 @@ export default class BaseService {
   }
 
   async postFile<T>(path: string, payload: any): Promise<T> {
-    const encryptStorage = await encryptStoragePromise;
     const headers: any = {
       "Content-Type": "application/octet-stream",
       // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
@@ -280,7 +272,6 @@ export default class BaseService {
   }
 
   async putFile<T>(path: string, payload: any): Promise<T> {
-    const encryptStorage = await encryptStoragePromise;
     const headers: any = {
       "Content-Type": "application/octet-stream",
       // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,

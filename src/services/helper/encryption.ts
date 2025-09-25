@@ -1,4 +1,6 @@
-export let wasmReady = false;
+let wasmReady = false;
+
+export const isWasmReady = (): boolean => wasmReady;
 
 export async function initWasm(): Promise<void> {
   if (wasmReady) return;

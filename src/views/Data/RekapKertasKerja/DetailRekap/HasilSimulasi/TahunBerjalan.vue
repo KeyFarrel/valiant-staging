@@ -98,7 +98,7 @@
   </div>
   <ReloadComponent
     v-else-if="props.isFetchingError && (!props.irrOnEquity || !props.npvOnEquity || !props.averageNcf || !props.averageEaf)"
-    @onClick="emit('onClick')" @on-key-down="emit('onKeyDown')" />
+    @on-clicks="emit('onClick')" @on-key-down="emit('onKeyDown')" />
   <div class="grid grid-cols-2 mt-5 gap-x-10 gap-y-5" v-else>
     <ShimmerLoading class="w-full h-36" />
     <ShimmerLoading class="w-full h-36" />

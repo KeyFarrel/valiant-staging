@@ -512,7 +512,7 @@ const fetchMesinById = async () => {
     mesinDataById.value = response.data;
     tahunData.value = parseInt(response.data.tahun_nilai_perolehan);
   } catch (error) {
-    console.error("Fetch Mesin By Id Error : " + error);
+    console.error("Fetch Mesin By Id Error : ", error);
   }
 };
 
@@ -527,7 +527,7 @@ const fetchPersetujuanFS = async () => {
     // console.log(response.data)
     statusMesin.value = approveMesinFS.value?.id_status;
   } catch (error) {
-    console.error('Fetch Persetujuan FS Sentral Error : ' + error);
+    console.error('Fetch Persetujuan FS Sentral Error : ', error);
   }
 }
 
@@ -579,7 +579,7 @@ const fetchAsumsiFeasibility = async () => {
     bahanBakars.value = response.data.harga_bahan_bakars;
     umurTeknis.value = response.data.umur_teknis;
   } catch (error) {
-    console.error("Error Fetch Asumsi Feasibility : " + error);
+    console.error("Error Fetch Asumsi Feasibility : ", error);
   }
 };
 
@@ -590,7 +590,7 @@ const fetchDataTeknis = async () => {
     );
     dataTeknis.value = response.data;
   } catch (error) {
-    console.error("Error Fetch Data Teknis : " + error);
+    console.error("Error Fetch Data Teknis : ", error);
   }
 };
 
@@ -627,7 +627,7 @@ const fetchDataFinansial = async () => {
     };
     dataFinansial.value = response.data;
   } catch (error) {
-    console.error("Fetch Data Finansial Error : " + error)
+    console.error("Fetch Data Finansial Error : ", error)
   }
 };
 
@@ -639,7 +639,7 @@ const fetchHasilSimulasi = async () => {
     );
     hasilSimulasi.value = response.data;
   } catch (error) {
-    console.error("Fetch Hasil Simulasi Error : " + error);
+    console.error("Fetch Hasil Simulasi Error : ", error);
   }
 }
 
@@ -650,7 +650,7 @@ const fetchTypePeriodic = async () => {
     );
     typePeriodic.value = response.data;
   } catch (error) {
-    console.error("Fetch Type Periodic Error : " + error);
+    console.error("Fetch Type Periodic Error : ", error);
   }
 };
 const fetchListPembina = async () => {
@@ -658,7 +658,7 @@ const fetchListPembina = async () => {
     const response: any = await userService.getPembina("");
     return response.data
   } catch (error) {
-    console.error("Fetch Pembina Error : " + error);
+    console.error("Fetch Pembina Error : ", error);
   };
 };
 const fetchUnitPengelola = async () => {
@@ -679,7 +679,7 @@ const fetchUnitPengelola = async () => {
       namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina
     };
   } catch (error) {
-    console.error("Fetch Unit Pengelola Error : " + error);
+    console.error("Fetch Unit Pengelola Error : ", error);
   }
 }
 
@@ -702,7 +702,7 @@ const downloadEvidence = async () => {
     document.body.removeChild(link);
     isLoading.value = false
   } catch (error) {
-    console.error('Evidence Error : ' + error);
+    console.error('Evidence Error : ', error);
     isLoading.value = false
     notifyError('Evidence Tidak Ada', 5000);
   }
@@ -715,7 +715,7 @@ const fetchComboBahanBakar = async () => {
     );
     comboBahanBakar.value = response.data;
   } catch (error) {
-    console.error('Fetch Combo Bahan Bakar Error : ' + error);
+    console.error('Fetch Combo Bahan Bakar Error : ', error);
   }
 }
 
@@ -737,7 +737,7 @@ const updateFSPengelola = async () => {
     await fetchPersetujuanFS();
     isLoading.value = false;
   } catch (error) {
-    console.error("Error Fetch Update Feasibility : " + error);
+    console.error("Error Fetch Update Feasibility : ", error);
   }
 }
 
@@ -764,7 +764,7 @@ const rejectFSPengelola = async () => {
       isLoading.value = false;
     }
   } catch (error) {
-    console.error("Error Fetch Update Feasibility : " + error);
+    console.error("Error Fetch Update Feasibility : ", error);
   } finally {
     isLoading.value = false;
   }
@@ -788,7 +788,7 @@ const updateFSPembina = async () => {
     await fetchPersetujuanFS();
     isLoading.value = false;
   } catch (error) {
-    console.error("Error Fetch Update Feasibility : " + error);
+    console.error("Error Fetch Update Feasibility : ", error);
   }
 }
 
@@ -815,7 +815,7 @@ const rejectFSPembina = async () => {
       isLoading.value = false;
     }
   } catch (error) {
-    console.error("Error Fetch Update Feasibility : " + error);
+    console.error("Error Fetch Update Feasibility : ", error);
   }
 }
 

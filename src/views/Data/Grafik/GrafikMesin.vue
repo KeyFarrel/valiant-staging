@@ -5,10 +5,10 @@
       <DraftGrafik />
     </div>
     <div v-else-if="statusApprove === 'Menunggu Persetujuan T1'" class="my-20 text-center">
-      <WaitingGraikT1 />
+      <WaitingGrafikT1 />
     </div>
     <div v-else-if="statusApprove === 'Menunggu Persetujuan T2'" class="my-20 text-center">
-      <WaitingGraikT2 />
+      <WaitingGrafikT2 />
     </div>
     <div v-else-if="statusApprove === 'Ditolak T1'" class="my-20 text-center">
       <DitolakGrafikT1 />
@@ -92,10 +92,10 @@
       <DraftGrafik />
     </div>
     <div v-else-if="statusApprovePlanning === 'Menunggu Persetujuan T1'" class="my-20 text-center">
-      <WaitingGraikT1 />
+      <WaitingGrafikT1 />
     </div>
     <div v-else-if="statusApprovePlanning === 'Menunggu Persetujuan T2'" class="my-20 text-center">
-      <WaitingGraikT2 />
+      <WaitingGrafikT2 />
     </div>
     <div v-else-if="statusApprovePlanning === 'Ditolak T1'" class="my-20 text-center">
       <DitolakGrafikT1 />
@@ -603,8 +603,8 @@ import ModalWrapper from "@/components/ui/ModalWrapper.vue";
 import Loading from '@/components/ui/LoadingSpinner.vue';
 import StatusGrafik from "@/components/Status/StatusGrafik.vue";
 import DraftGrafik from '@/components/Status/Grafik/DraftGrafik.vue';
-import WaitingGraikT1 from '@/components/Status/Grafik/WaitingGrafikT1.vue';
-import WaitingGraikT2 from '@/components/Status/Grafik/WaitingGrafikT2.vue';
+import WaitingGrafikT1 from '@/components/Status/Grafik/WaitingGrafikT1.vue';
+import WaitingGrafikT2 from '@/components/Status/Grafik/WaitingGrafikT2.vue';
 import DitolakGrafikT1 from '@/components/Status/Grafik/DitolakGrafikT1.vue';
 import DitolakGrafikT2 from '@/components/Status/Grafik/DitolakGrafikT2.vue';
 import TableComponent from "@/components/ui/Table.vue";

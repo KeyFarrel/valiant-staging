@@ -132,7 +132,7 @@
     </table>
   </div>
   <ReloadComponent v-else-if="props.isFetchingError && (!props.source.length && !props.dataFinansial.tahun.length)"
-    @on-click="emit('onClickReload')" @on-key-down="emit('onKeyDown')" />
+    @on-clicks="emit('onClickReload')" @on-key-down="emit('onKeyDown')" @keydown="emit('onKeyDown')" />
   <ShimmerLoading v-else class="w-full h-40" />
 </template>
 

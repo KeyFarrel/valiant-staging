@@ -233,31 +233,31 @@
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
             <img src="../assets/img/Carousel2.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-              alt="Carousel image 1" fetchpriority="high" />
+              alt="Carousel slide 1" fetchpriority="high" />
           </div>
           <!-- Item 2 - Lazy loaded -->
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
             <img src="../assets/img/carousel4.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-              loading="lazy" decoding="async" alt="Carousel image 2" />
+              loading="lazy" decoding="async" alt="Carousel slide 2" />
           </div>
           <!-- Item 3 - Lazy loaded -->
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
             <img src="../assets/img/carousel5.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-              loading="lazy" decoding="async" alt="Carousel image 3" />
+              loading="lazy" decoding="async" alt="Carousel slide 3" />
           </div>
           <!-- Item 4 - Lazy loaded -->
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
             <img src="../assets/img/carousel6.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-              loading="lazy" decoding="async" alt="Carousel image 4" />
+              loading="lazy" decoding="async" alt="Carousel slide 4" />
           </div>
           <!-- Item 5 - Lazy loaded -->
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
             <img src="../assets/img/Carousel3.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
-              loading="lazy" decoding="async" alt="Carousel image 5" />
+              loading="lazy" decoding="async" alt="Carousel slide 5" />
           </div>
         </div>
         <!-- Slider indicators -->
@@ -342,10 +342,8 @@
               </svg>
             </button>
           </div>
-          <p class="mt-1 text-xs text-red-500">{{ valPasswordErr }}</p>
+          <p class="mt-1 text-xs text-red-500">{{ valKataSandiErr }}</p>
         </div>
-        <!-- <button @click="clickDebugFingerprint" type="button">DEBUGGING</button>
-        <p>{{ debuggingFingerprint }}</p> -->
         <button @click="onClickLogin" type="button"
           class="text-white uppercase  bg-[#0099AD] w-[350px] hover:bg-[#0099AD] hover:text-white active:ring active:ring-[#005A66] rounded-lg text-xs p-3 my-3 focus:outline-none"
           v-if="valEmail && valPassword">
@@ -386,11 +384,7 @@
 import { useRouter } from "vue-router";
 import { ref, onMounted, onUnmounted, nextTick } from "vue";
 import { initFlowbite } from "flowbite";
-import axios from "axios";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
-import { encryptAES } from "@/services/helper/encryption";
-import { useUserAuthStore } from "@/store/storeUserAuth";
-const userAuthStore = useUserAuthStore();
 import { notifyError, notifySuccess } from "@/services/helper/toast-notification";
 import TimeFormatOtp from '../services/format/time-format-otp';
 const timeFormatOtp = new TimeFormatOtp();
@@ -403,7 +397,6 @@ import IconRoundedClose from "@/components/icons/IconRoundedClose.vue";
 import IconClose from "@/components/icons/IconClose.vue";
 import IconSendOTP from "@/components/icons/IconSendOTP.vue";
 import ModalNotification from "@/components/ui/ModalNotification.vue";
-import Chips from "@/components/ui/Chips.vue";
 import errorJsonData from '@/assets/lottie/error.json';
 import LottieInfo from "@/assets/lottie/info.json";
 import Loading from "@/components/ui/LoadingSpinner.vue";
@@ -427,7 +420,7 @@ const isModalOtpShow = ref<boolean>(false);
 const valEmail = ref<string>("");
 const valPassword = ref<string>("");
 const valEmailErr = ref<string>("");
-const valPasswordErr = ref<string>("");
+const valKataSandiErr = ref<string>("");
 const showPassword = ref<boolean>(false);
 const expiredOtpTimer = ref<number>(300); // 5 menit dalam detik
 const resetOtpTimer = ref<number>(60); // 1 menit dalam detik
@@ -680,25 +673,6 @@ const startTimers = () => {
   }, 1000);
 };
 
-// const verifyCaptcha = async (tile_x: number) => {
-//   try {
-//     isLoadingSpinner.value = true;
-//     await authService.verifCaptcha({
-//       captcha_key: captchaKey.value,
-//       tile_x: tile_x
-//     });
-//     isCaptchaVerified.value = true;
-//     await onCaptchaVerified();
-//     isShowCaptchaModal.value = false;
-//   } catch (error) {
-//     generateCaptcha();
-//     console.error('Error Verify Captcha : ', error);
-//   } finally {
-//     domRef.value?.clear();
-//     isLoadingSpinner.value = false;
-//   }
-// }
-
 const handleInput = (index, event) => {
   let value = event.target.value.replace(/\D/g, '');
   if (value) {
@@ -815,6 +789,7 @@ const verifyEmailOtp = async () => {
       resetOtpTimer.value = 60;
     } catch (error) {
       isModalOtpShow.value = false;
+      console.error("Error during login:", error);
       return;
     }
   } catch (error) {
@@ -831,7 +806,7 @@ const changePassword = async () => {
     notifyError("Password tidak memenuhi persyaratan, mohon lengkapi persyaratan tersebut!", 7000)
   } else if (isNewPasswordSameAsOld.value) {
     notifyError("Password baru tidak boleh sama dengan password lama yang anda masukkan!", 7000)
-  } else if (/^\s|\s$/.test(newPassword.value)) {
+  } else if (/(^\s|\s$)/.test(newPassword.value)) {
     hasIllegalSpace.value = true;
   } else {
     try {
@@ -872,12 +847,12 @@ const onCaptchaVerified = async (tileX: number) => {
   if (valEmail.value === "") {
     valEmailErr.value = "Email kosong mohon diisi";
   } else if (valPassword.value === "") {
-    valPasswordErr.value = "Password kosong mohon diisi";
+    valKataSandiErr.value = "Kata sandi kosong mohon diisi";
     valEmailErr.value = "";
   } else if (isCaptchaVerified.value) {
     isLoadingButton.value = true;
     valEmailErr.value = "";
-    valPasswordErr.value = "";
+    valKataSandiErr.value = "";
     let param;
     valEmail.value = valEmail.value.replace(/\s+/g, '');
 
@@ -922,15 +897,15 @@ const onCaptchaVerified = async (tileX: number) => {
         generateCaptcha();
       }
       isLoadingButton.value = false;
-      if (error.response.data.data.temp_loc && error.response.data.data.temp_loc !== 0) {
+      if (error.response.data && error.response.data.data && error.response.data.data.temp_loc && error.response.data.data.temp_loc !== 0) {
         isShowCounter.value = true;
         remainingAttempt.value = maxAttempt - error.response.data.data.temp_loc;
       } else if (error.response.data.message && error.response.data.message === 'Anda belum mengisi privacy policy') {
         isShowPrivacyPolicy.value = true;
       }
       if (error.response.data.message !== "Anda belum mengisi privacy policy") {
-        valEmailErr.value = "Email atau Password salah";
-        valPasswordErr.value = "Email atau Password salah";
+        valEmailErr.value = "Email atau Kata Sandi salah";
+        valKataSandiErr.value = "Email atau Kata Sandi salah";
       }
       if (error.response.data.data.is_locked) {
         isLoadingSpinner.value = false;

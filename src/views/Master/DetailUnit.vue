@@ -568,7 +568,7 @@ const updateMesinById = async (uuid_mesin: any, index: number, mesinName: string
   } catch (error) {
     isLoading.value = false;
     notifyError('Update data mesin gagal, mohon coba lagi!', 3000);
-    console.error('Update Data Mesin error' + error);
+    console.error('Update Data Mesin error', error);
   }
 }
 const fetchPhotoSentral = async () => {
@@ -622,7 +622,7 @@ const updateSentral = async () => {
   } catch (error) {
     isLoading.value = false;
     notifyError('Update data sentral gagal, mohon coba lagi!', 3000);
-    console.error('Update Data Sentral error' + error);
+    console.error('Update Data Sentral error', error);
   }
 }
 const toggleEdit = (itemId: string) => {
@@ -661,7 +661,7 @@ const fetchListPembina = async () => {
     const response: any = await userService.getPembina('');
     return response.data;
   } catch (error) {
-    console.error('Fetch Pembina Error : ' + error)
+    console.error('Fetch Pembina Error : ', error)
   }
 }
 const fetchUnitPengelola = async () => {
@@ -682,7 +682,7 @@ const fetchUnitPengelola = async () => {
       namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina;
     }
   } catch (error) {
-    console.error("Fetch Unit Pengelola Error : " + error)
+    console.error("Fetch Unit Pengelola Error : ", error)
   }
 };
 

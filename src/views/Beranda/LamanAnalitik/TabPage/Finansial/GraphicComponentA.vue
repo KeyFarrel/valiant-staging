@@ -175,7 +175,7 @@ async function getDataGraphNoDMN() {
     };
   } catch (e) {
     isLoading.value = false
-    // console.log(e)
+    console.error('Error fetching graph data:', e)
   }
 }
 

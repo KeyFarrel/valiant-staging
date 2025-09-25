@@ -610,7 +610,7 @@ const changePassword = async () => {
     notifyError("Password tidak memenuhi persyaratan, mohon lengkapi persyaratan tersebut!", 7000);
   } else if (isNewPasswordSameAsOld.value) {
     notifyError("Password baru tidak boleh sama dengan password lama yang anda masukkan!", 7000);
-  } else if (/^\s|\s$/.test(newPassword.value)) {
+  } else if (/(^\s|\s$)/.test(newPassword.value)) {
     hasIllegalSpace.value = true;
   } else {
     try {

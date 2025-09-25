@@ -24,7 +24,7 @@
         <p class="text-gray-500">Daya Terpasang</p>
         <p class="font-bold">{{ props.dayaTerpasang !== '-' ? globalFormat.formatRupiah(props.dayaTerpasang / 1000) :
           '-'
-          }} <span class="text-gray-400">MW</span></p>
+        }} <span class="text-gray-400">MW</span></p>
       </div>
       <div class="col-span-3">
         <p class="text-gray-500">Daya Mampu Netto</p>
@@ -47,21 +47,21 @@
       <div>
         <p class="text-gray-500">Pemakaian Sendiri (PS)</p>
         <p class="font-bold">{{ props.pemakaianSendiri !== '-' ? globalFormat.formatRupiah(props.pemakaianSendiri) : '-'
-          }}
+        }}
           <span class="text-gray-400">%</span>
         </p>
       </div>
       <div>
         <p class="text-gray-500">Net Plant Heat Rate (NPHR)</p>
         <p class="font-bold">{{ props.netPlantHeatRate !== '-' ? globalFormat.formatRupiah(props.netPlantHeatRate) : '-'
-          }}
+        }}
           <span class="text-gray-400">Kcal/kWh</span>
         </p>
       </div>
       <div>
         <p class="text-gray-500">Total Project Cost</p>
         <p class="font-bold">{{ props.totalProjectCost !== '-' ? globalFormat.formatRupiah(props.totalProjectCost) : '-'
-          }}
+        }}
           <span class="text-gray-400">Rp
             (Juta)</span>
         </p>
@@ -131,7 +131,7 @@
           <p class="font-bold">{{ bahanBakarItem.harga_bahan_bakar !== '' ?
             globalFormat.formatRupiah(bahanBakarItem.harga_bahan_bakar) :
             '-'
-            }}
+          }}
             <span class="text-gray-400">{{ labelBahanBakar(bahanBakarItem.kode_bahan_bakar) }}</span>
           </p>
         </div>
@@ -164,7 +164,7 @@
     </template>
   </div>
   <ReloadComponent v-else-if="props.isFetchingError && (!props.dayaTerpasang || !props.dayaMampuNetto)"
-    @on-click="emit('onClickReload')" @on-key-down="emit('onKeyDown')" />
+    @on-clicks="emit('onClickReload')" @on-key-down="emit('onKeyDown')" />
   <ShimmerLoading v-else class="w-full h-[500px]" />
 </template>
 

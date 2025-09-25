@@ -86,7 +86,7 @@ export function validateUrl(url: string, allowedDomains?: string[]): string {
     return sanitizedUrl;
   } catch (error) {
     // If URL parsing fails, it's not a valid URL
-    console.error('Invalid URL:', url);
+    console.error('Invalid URL:', url, error instanceof Error ? error.message : 'Unknown error');
     return '';
   }
 }
@@ -147,7 +147,7 @@ export function createSafeRelativePath(unsafePath: string): string {
   if (!unsafePath) return '';
   
   // Remove any absolute path indicators
-  let safePath = unsafePath.replace(/^[\/\\]/, '');
+  let safePath = unsafePath.replace(/^[/\\]/, '');
   
   // Remove any parent directory traversal
   safePath = safePath.replace(/\.\.\//g, '').replace(/\.\.\\/g, '');

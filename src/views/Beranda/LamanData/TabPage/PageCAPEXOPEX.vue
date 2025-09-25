@@ -225,7 +225,7 @@ const fetchPeriodeTahun = async () => {
     yearRange.value = [periodeTahun.value[0].tahun, periodeTahun.value[periodeTahun.value.length - 1].tahun];
     store.periodeTahun = [periodeTahun.value[0].tahun, periodeTahun.value[periodeTahun.value.length - 1].tahun];
   } catch (error) {
-    console.error('Fetch Tahun Anggaran Error : ' + error);
+    console.error('Fetch Tahun Anggaran Error : ', error);
   }
 }
 const fetchDataAnggaran = async () => {
@@ -236,7 +236,7 @@ const fetchDataAnggaran = async () => {
     dataAnggaran.value = filteredResponse;
     isLoading.value = false;
   } catch (error) {
-    console.error('Fetch Data Anggaran Error : ' + error);
+    console.error('Fetch Data Anggaran Error : ', error);
   }
 }
 const handleExport = async () => {
@@ -256,7 +256,7 @@ const handleExport = async () => {
     document.body.removeChild(link);
     isLoading.value = false;
   } catch (error) {
-    console.error('Handle Download Template Rekap Error : ' + error);
+    console.error('Handle Download Template Rekap Error : ', error);
   }
 }
 

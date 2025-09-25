@@ -118,7 +118,7 @@ const fetchDetailMesin = async () => {
       changeTabMesin(selectedTitle.value);
     }
   } catch (error) {
-    console.error('Fetch Detail Mesin Persetujuan Error : ' + error);
+    console.error('Fetch Detail Mesin Persetujuan Error : ', error);
   }
 }
 const fetchPersetujuanKK = async () => {
@@ -129,7 +129,7 @@ const fetchPersetujuanKK = async () => {
       approveMesinKK.value = response.data.mesins;
     }
   } catch (error) {
-    console.error('Fetch Persetujuan KK Sentral Error : ' + error);
+    console.error('Fetch Persetujuan KK Sentral Error : ', error);
   }
 }
 const fetchPersetujuanFS = async () => {
@@ -138,7 +138,7 @@ const fetchPersetujuanFS = async () => {
     approveSentralFS.value = response.data;
     approveMesinFS.value = response.data.mesins;
   } catch (error) {
-    console.error('Fetch Persetujuan FS Sentral Error : ' + error);
+    console.error('Fetch Persetujuan FS Sentral Error : ', error);
   }
 }
 

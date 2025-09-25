@@ -180,7 +180,7 @@
     </template>
   </div>
   <ReloadComponent v-else-if="props.isFetchingError && (!props.dayaTerpasang || !props.dayaMampuNetto)"
-    @onClick="emit('onClick')" @on-key-down="emit('onKeyDown')" />
+    @on-clicks="emit('onClick')" @on-key-down="emit('onKeyDown')" />
   <ShimmerLoading v-else class="w-full h-[500px]" />
 </template>
 

@@ -1,6 +1,6 @@
 <template>
   <div class="grid grid-cols-2 mt-5 gap-x-10 gap-y-5" v-bind="$attrs"
-    v-if="props.irrOnEquity || props.npvOnEquity || props.averageNcf || props.averageEaf">
+    v-if="props.irrOnEquity || props.npvOnEquity || props.averageNcf || props.averageEaf || props.idMesin === 0">
     <div class="overflow-hidden relative flex flex-col px-5 py-4 border-l-8 border-l-[#0099AD] rounded-lg border">
       <div class="absolute bottom-0 right-0">
         <svg width="126" height="61" viewBox="0 0 126 61" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -98,7 +98,7 @@
   </div>
   <ReloadComponent
     v-else-if="props.isFetchingError && (!props.irrOnEquity || !props.npvOnEquity || !props.averageNcf || !props.averageEaf)"
-    @onClick="emit('onClick')" @on-key-down="emit('onKeyDown')" />
+    @on-clicks="emit('onClick')" @on-key-down="emit('onKeyDown')" />
   <div class="grid grid-cols-2 mt-5 gap-x-10 gap-y-5" v-else>
     <ShimmerLoading class="w-full h-36" />
     <ShimmerLoading class="w-full h-36" />
@@ -126,5 +126,6 @@ interface Props {
   averageNcf: number
   averageEaf: number
   isFetchingError: boolean
+  idMesin?: number
 }
 </script>

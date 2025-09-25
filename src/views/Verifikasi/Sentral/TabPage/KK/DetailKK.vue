@@ -62,7 +62,7 @@ const fetchPersetujuanKK = async () => {
     });
     approveSentralKK.value = response.data;
   } catch (error) {
-    console.error('Fetch Persetujuan KK Sentral Error : ' + error);
+    console.error('Fetch Persetujuan KK Sentral Error : ', error);
   }
 }
 

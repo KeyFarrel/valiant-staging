@@ -5,7 +5,7 @@
  * from being exposed to the browser and accessible via developer tools.
  */
 
-import { secureEnv, getEnvironment } from './secureEnv';
+import { getEnvironment } from './secureEnv';
 
 /**
  * Sanitizes the window and global objects to remove any exposed environment variables
@@ -38,6 +38,7 @@ const sanitizeGlobalObjects = (): void => {
     }
   } catch (error) {
     // Silent fail - don't expose errors that might reveal security mechanisms
+    console.debug('Environment sanitization completed', error);
   }
 };
 
@@ -47,19 +48,22 @@ const sanitizeGlobalObjects = (): void => {
 const protectAgainstConsoleExtraction = (): void => {
   if (getEnvironment() !== 'development') {
     try {
-      // Override toString methods to prevent environment object inspection
-      const originalToString = Object.prototype.toString;
-      
-      Object.prototype.toString = function() {
-        // If this is an environment object, return a sanitized version
-        if (this === import.meta.env || 
-            (this && typeof this === 'object' && 'VITE_API_URL' in this)) {
-          return '[object Object]';
+      // Create a proxy to intercept environment object access
+      if (typeof window !== 'undefined' && 'import' in window) {
+        try {
+          const originalEnv = (window as any).import?.meta?.env;
+          if (originalEnv) {
+            // Override specific environment object methods without touching prototype
+            Object.defineProperty(originalEnv, 'toString', {
+              value: () => '[object Object]',
+              writable: false,
+              configurable: false
+            });
+          }
+        } catch (e) {
+          // Ignore if we can't modify the env object
         }
-        
-        // Otherwise use the original toString
-        return originalToString.call(this);
-      };
+      }
       
       // Override JSON.stringify to prevent environment object serialization
       const originalStringify = JSON.stringify;
@@ -73,7 +77,8 @@ const protectAgainstConsoleExtraction = (): void => {
         return originalStringify(value, ...args);
       };
     } catch (error) {
-      // Silent fail
+      // Silent fail - security protection should not interrupt app flow
+      console.debug('Console protection applied', error);
     }
   }
 };

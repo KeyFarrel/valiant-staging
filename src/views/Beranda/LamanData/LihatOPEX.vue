@@ -157,7 +157,7 @@ const fetchMesinById = async () => {
     );
     mesinDataById.value = response.data;
   } catch (error) {
-    console.error("Fetch Mesin By Id Error : " + error);
+    console.error("Fetch Mesin By Id Error : ", error);
   }
 };
 const fetchListPembina = async () => {
@@ -165,7 +165,7 @@ const fetchListPembina = async () => {
     const response: any = await userService.getPembina('');
     return response.data;
   } catch (error) {
-    console.error('Fetch Pembina Error : ' + error)
+    console.error('Fetch Pembina Error : ', error)
   }
 }
 const fetchUnitPengelola = async () => {
@@ -186,7 +186,7 @@ const fetchUnitPengelola = async () => {
       namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina;
     }
   } catch (error) {
-    console.error("Fetch Unit Pengelola Error : " + error);
+    console.error("Fetch Unit Pengelola Error : ", error);
   }
 };
 const fetchAsumsiParameter = async () => {
@@ -199,7 +199,7 @@ const fetchAsumsiParameter = async () => {
       );
     umurTeknis.value = response.data.asumsi_makro.umur_teknis;
   } catch (error) {
-    console.error("Fetch Asumsi Parameter Error : " + error);
+    console.error("Fetch Asumsi Parameter Error : ", error);
   }
 };
 
@@ -211,7 +211,7 @@ const fetchOPEXKomponenB = async () => {
     );
     opexKomponenB.value = response.data;
   } catch (error) {
-    console.error("Fetch OPEX Komponen B Error : " + error);
+    console.error("Fetch OPEX Komponen B Error : ", error);
   }
 }
 const fetchOPEXKomponenC = async () => {
@@ -222,7 +222,7 @@ const fetchOPEXKomponenC = async () => {
     );
     opexKomponenC.value = response.data;
   } catch (error) {
-    console.error("Fetch OPEX Komponen C Error : " + error);
+    console.error("Fetch OPEX Komponen C Error : ", error);
   }
 }
 const fetchOPEXKomponenD = async () => {
@@ -233,7 +233,7 @@ const fetchOPEXKomponenD = async () => {
     );
     opexKomponenD.value = response.data;
   } catch (error) {
-    console.error("Fetch OPEX Komponen D Error : " + error);
+    console.error("Fetch OPEX Komponen D Error : ", error);
   }
 }
 

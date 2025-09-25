@@ -81,7 +81,7 @@ async function getDataGraph() {
       graphData.value.source = []
       graphData.value.pln.x = data.average_daya_terpasang
       graphData.value.pln.y = data.average_opex
-      graphData.value.ipp.x = Math.min(...data.grafik?.map(graph => graph.data.daya_terpasang)) // min daya
+      graphData.value.ipp.x = Math.min(...(data.grafik?.map(graph => graph.data.daya_terpasang) || [])) // min daya
       graphData.value.ipp.y = data.average_ipp_opex
       data.legend?.map((item, index) => {
         graphData.value.legends?.push(item)
@@ -128,7 +128,7 @@ async function getDataGraphNoDMN() {
       graphData.value.source = [];
       graphData.value.pln.x = data.average_daya_terpasang;
       graphData.value.pln.y = data.average_opex;
-      graphData.value.ipp.x = Math.min(...data.grafik?.map(graph => graph.data.daya_terpasang)); // min daya
+      graphData.value.ipp.x = Math.min(...(data.grafik?.map(graph => graph.data.daya_terpasang) || [])); // min daya
       graphData.value.ipp.y = data.average_ipp_opex;
       data.legend?.map((item, index) => {
         graphData.value.legends?.push(item);

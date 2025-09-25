@@ -242,7 +242,7 @@ const fetchBestPerformance = async () => {
       bpaData.value = response.data;
     }
   } catch (error) {
-    console.error('Fetch Best Performance Error : ' + error);
+    console.error('Fetch Best Performance Error : ', error);
   } finally {
     isLoading.value = false
   }
@@ -256,7 +256,7 @@ const fetchYearListBPA = async () => {
     }
     tahun.value.reverse()
   } catch (error) {
-    console.error('Fetch Year List BPA : ' + error);
+    console.error('Fetch Year List BPA : ', error);
   }
 }
 
@@ -265,7 +265,7 @@ onMounted(async () => {
     await fetchYearListBPA();
     await fetchBestPerformance();
   } catch (error) {
-    console.error('Fetch All API Error : ' + error);
+    console.error('Fetch All API Error : ', error);
   }
 });
 </script>

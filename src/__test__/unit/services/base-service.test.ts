@@ -8,9 +8,38 @@ jest.mock("@/store", () => ({
   },
 }));
 jest.mock("@/utils/app-encrypt-storage", () => ({
-  encryptStorage: {
-    getItem: jest.fn((key) => (key === "role_id" ? "mockRoleId" : null)),
+  encryptStoragePromise: {
+    getItem: jest.fn().mockResolvedValue("mockToken"),
   },
+}));
+jest.mock("@/services/helper/encryption", () => ({
+  encryptAES: jest.fn().mockResolvedValue("encrypted"),
+}));
+jest.mock("@fingerprintjs/fingerprintjs", () => ({
+  load: jest.fn().mockResolvedValue({
+    get: jest.fn().mockResolvedValue({
+      components: {
+        hardwareConcurrency: { value: 4 },
+        deviceMemory: { value: 8 },
+        platform: { value: "MacIntel" },
+        architecture: { value: 64 },
+        screenResolution: { value: [1920, 1080] },
+        vendor: { value: "Google Inc." },
+        vendorFlavors: { value: ["chrome"] },
+        colorDepth: { value: 24 },
+        canvas: { value: "canvas" },
+        webGlBasics: { value: "webgl" },
+        timezone: { value: "Asia/Jakarta" },
+        touchSupport: { value: { maxTouchPoints: 0 } },
+        cookiesEnabled: { value: true },
+        localStorage: { value: true },
+        sessionStorage: { value: true },
+        colorGamut: { value: "srgb" },
+        hdr: { value: false },
+      },
+    }),
+  }),
+  hashComponents: jest.fn().mockReturnValue("mockFingerprint"),
 }));
 
 const mockedAxios = axios as jest.MockedFunction<typeof axios>;

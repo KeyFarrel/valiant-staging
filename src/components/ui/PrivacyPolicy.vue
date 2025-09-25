@@ -146,5 +146,3 @@
 
 const emit = defineEmits(['onAccept', 'onDecline'])
 </script>
-
-<style scoped></style>

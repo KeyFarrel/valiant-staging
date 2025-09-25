@@ -16,7 +16,7 @@
 } : null
   ">
             {{ props.dataTeknis.tahun.length === 0 ? "-" : item }} <br> <span class="text-xs font-normal">{{ index + 1
-            }}</span>
+              }}</span>
           </th>
         </tr>
       </thead>
@@ -44,7 +44,7 @@
       </tbody>
     </table>
   </div>
-  <ReloadComponent v-else-if="isFetchingError && !props.dataTeknis.detail.length" @on-click="emit('onClickReload')"
+  <ReloadComponent v-else-if="isFetchingError && !props.dataTeknis.detail.length" @on-clicks="emit('onClickReload')"
     @on-key-down="emit('onKeyDown')" />
   <ShimmerLoading v-else class="w-full h-96" />
 </template>

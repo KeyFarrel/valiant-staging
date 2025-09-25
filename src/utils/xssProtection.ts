@@ -166,24 +166,28 @@ export function initXssProtection(): void {
   
   // Override innerHTML and outerHTML setters globally to enforce sanitization
   if (typeof window !== 'undefined') {
-    const originalInnerHTML = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML')!;
-    const originalOuterHTML = Object.getOwnPropertyDescriptor(Element.prototype, 'outerHTML')!;
+    const originalInnerHTML = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+    const originalOuterHTML = Object.getOwnPropertyDescriptor(Element.prototype, 'outerHTML');
     
-    Object.defineProperty(Element.prototype, 'innerHTML', {
-      set(value) {
-        const sanitizedValue = sanitizeHtml(value);
-        originalInnerHTML.set!.call(this, sanitizedValue);
-      },
-      get: originalInnerHTML.get
-    });
+    if (originalInnerHTML?.set) {
+      Object.defineProperty(Element.prototype, 'innerHTML', {
+        set(value) {
+          const sanitizedValue = sanitizeHtml(value);
+          originalInnerHTML.set?.call(this, sanitizedValue);
+        },
+        get: originalInnerHTML.get
+      });
+    }
     
-    Object.defineProperty(Element.prototype, 'outerHTML', {
-      set(value) {
-        const sanitizedValue = sanitizeHtml(value);
-        originalOuterHTML.set!.call(this, sanitizedValue);
-      },
-      get: originalOuterHTML.get
-    });
+    if (originalOuterHTML?.set) {
+      Object.defineProperty(Element.prototype, 'outerHTML', {
+        set(value) {
+          const sanitizedValue = sanitizeHtml(value);
+          originalOuterHTML.set?.call(this, sanitizedValue);
+        },
+        get: originalOuterHTML.get
+      });
+    }
     
     // Patch insertAdjacentHTML to sanitize content
     const originalInsertAdjacentHTML = Element.prototype.insertAdjacentHTML;

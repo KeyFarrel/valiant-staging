@@ -127,7 +127,7 @@ const namaPengelola = ref<string>('');
 const namaPembina = ref<string>('');
 const finansialMappingResult = ref<any[]>([]);
 const typePeriodic = ref<Object[]>([]);
-const idMesin = ref<number>(0);
+const idMesin = ref<any>(0);
 const selectedTab = ref("Akhir Masa");
 const tahunBerjalan = new Date().getFullYear();
 
@@ -174,7 +174,7 @@ const fetchMesinById = async () => {
     );
     mesinDataById.value = response.data;
   } catch (error) {
-    console.error("Fetch Mesin By Id Error : " + error);
+    console.error("Fetch Mesin By Id Error : ", error);
   }
 };
 const fetchAsumsiFeasibility = async () => {
@@ -211,7 +211,7 @@ const fetchAsumsiFeasibility = async () => {
     console.log(bahanBakars.value)
     umurTeknis.value = response.data.asumsi_makro.umur_teknis.toString();
   } catch (error) {
-    console.error("Error Fetch Asumsi Feasibility : " + error);
+    console.error("Error Fetch Asumsi Feasibility : ", error);
   }
 };
 const fetchDataTeknis = async () => {
@@ -219,7 +219,7 @@ const fetchDataTeknis = async () => {
     const response: any = await feasibilityStudyService.getDataTeknis(idMesin.value);
     dataTeknis.value = response.data;
   } catch (error) {
-    console.error("Error Fetch Data Teknis : " + error);
+    console.error("Error Fetch Data Teknis : ", error);
   }
 };
 const fetchDataFinansial = async () => {
@@ -255,7 +255,7 @@ const fetchDataFinansial = async () => {
     }
     dataFinansial.value = response.data;
   } catch (error) {
-    console.error("Fetch Data Finansial Error : " + error);
+    console.error("Fetch Data Finansial Error : ", error);
   }
 };
 const fetchHasilSimulasi = async () => {
@@ -266,7 +266,7 @@ const fetchHasilSimulasi = async () => {
     );
     hasilSimulasi.value = response.data;
   } catch (error) {
-    console.error("Fetch Hasil Simulasi Error : " + error);
+    console.error("Fetch Hasil Simulasi Error : ", error);
   }
 }
 const fetchTypePeriodic = async () => {
@@ -274,7 +274,7 @@ const fetchTypePeriodic = async () => {
     const response: any = await feasibilityStudyService.getTypePeriodic(mesinDataById.value?.kode_jenis_pembangkit);
     typePeriodic.value = response.data;
   } catch (error) {
-    console.error("Fetch Type Periodic Error : " + error);
+    console.error("Fetch Type Periodic Error : ", error);
   }
 };
 const fetchComboBahanBakar = async () => {
@@ -283,7 +283,7 @@ const fetchComboBahanBakar = async () => {
     comboBahanBakar.value = response.data;
     console.log(response.data)
   } catch (error) {
-    console.error('Fetch Combo Bahan Bakar Error : ' + error);
+    console.error('Fetch Combo Bahan Bakar Error : ', error);
   }
 }
 const fetchListPembina = async () => {
@@ -291,7 +291,7 @@ const fetchListPembina = async () => {
     const response: any = await userService.getPembina('');
     return response.data;
   } catch (error) {
-    console.error('Fetch Pembina Error : ' + error)
+    console.error('Fetch Pembina Error : ', error)
   }
 }
 const fetchUnitPengelola = async () => {
@@ -312,7 +312,7 @@ const fetchUnitPengelola = async () => {
       namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina;
     }
   } catch (error) {
-    console.error("Fetch Unit Pengelola Error : " + error);
+    console.error("Fetch Unit Pengelola Error : ", error);
   }
 };
 
@@ -334,13 +334,14 @@ const handleDownloadExcelMesin = async () => {
     isLoading.value = false;
   } catch (error) {
     isLoading.value = false;
+    console.error("Download Excel Mesin Error : ", error);
   }
 }
 
 onMounted(async () => {
   isLoading.value = true;
   const encryptStorage = await encryptStoragePromise;
-  idMesin.value = parseInt(nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString());
+  idMesin.value = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString();
   await fetchMesinById();
   await fetchAsumsiFeasibility();
   await fetchDataTeknis();

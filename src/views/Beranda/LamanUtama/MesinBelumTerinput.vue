@@ -247,7 +247,7 @@ const goToPage = async (page: any) => {
     navigation.value.currentPage = page;
     await fetchMesinBelumInput();
   } catch (error) {
-    console.error('Go To Page Error : ' + error);
+    console.error('Go To Page Error : ', error);
   }
 };
 

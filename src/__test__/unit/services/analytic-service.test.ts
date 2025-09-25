@@ -1,9 +1,41 @@
 import axios from 'axios';
-import AnalyticService from '@/services/analytic-service';  // Sesuaikan dengan path Anda
-import { encryptStoragePromise } from '@/utils/app-encrypt-storage';  // Sesuaikan path
+import AnalyticService from '@/services/analytic-service';
 
 jest.mock('axios');
-jest.mock('@/utils/app-encrypt-storage');
+jest.mock('@/utils/app-encrypt-storage', () => ({
+  encryptStoragePromise: {
+    getItem: jest.fn().mockResolvedValue('mockToken'),
+  },
+}));
+jest.mock('@/services/helper/encryption', () => ({
+  encryptAES: jest.fn().mockResolvedValue('encrypted'),
+}));
+jest.mock('@fingerprintjs/fingerprintjs', () => ({
+  load: jest.fn().mockResolvedValue({
+    get: jest.fn().mockResolvedValue({
+      components: {
+        hardwareConcurrency: { value: 4 },
+        deviceMemory: { value: 8 },
+        platform: { value: "MacIntel" },
+        architecture: { value: 64 },
+        screenResolution: { value: [1920, 1080] },
+        vendor: { value: "Google Inc." },
+        vendorFlavors: { value: ["chrome"] },
+        colorDepth: { value: 24 },
+        canvas: { value: "canvas" },
+        webGlBasics: { value: "webgl" },
+        timezone: { value: "Asia/Jakarta" },
+        touchSupport: { value: { maxTouchPoints: 0 } },
+        cookiesEnabled: { value: true },
+        localStorage: { value: true },
+        sessionStorage: { value: true },
+        colorGamut: { value: "srgb" },
+        hdr: { value: false },
+      },
+    }),
+  }),
+  hashComponents: jest.fn().mockReturnValue("mockFingerprint"),
+}));
 
 const mockedAxios = axios as jest.MockedFunction<typeof axios>;
 
@@ -12,14 +44,13 @@ describe('AnalyticService', () => {
   const mockUrl = import.meta.env.VITE_API_URL;
 
   beforeEach(() => {
-    // Mock localStorage and encryptStorage
+    // Mock localStorage
     jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
       if (key === 'token') {
         return 'mockToken';
       }
       return null;
     });
-    (encryptStorage.getItem as jest.Mock).mockReturnValue('mockToken');
 
     // Initialize the service
     service = new AnalyticService();
@@ -39,10 +70,11 @@ describe('AnalyticService', () => {
       url: `${mockUrl}dashboard/grafik/finansial-ebitda`,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mockFingerprint',
       },
       timeout: 120000,
       params,
+      withCredentials: true,
     });
 
     expect(result).toEqual(mockData);
@@ -62,10 +94,11 @@ describe('AnalyticService', () => {
       url: `${mockUrl}dashboard/grafik/finansial-roic`,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mockFingerprint',
       },
       timeout: 120000,
       params,
+      withCredentials: true,
     });
 
     expect(result).toEqual(mockData);
@@ -91,10 +124,11 @@ describe('AnalyticService', () => {
       url: `${mockUrl}grafik/laman/komponen`,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mockFingerprint',
       },
       timeout: 120000,
       params,
+      withCredentials: true,
     });
 
     expect(result).toEqual(mockData);
@@ -120,10 +154,11 @@ describe('AnalyticService', () => {
       url: `${mockUrl}grafik/laman/teknis/ncf`,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mockFingerprint',
       },
       timeout: 120000,
       params,
+      withCredentials: true,
     });
 
     expect(result).toEqual(mockData);
@@ -142,9 +177,10 @@ describe('AnalyticService', () => {
       url: `${mockUrl}grafik/filter/pembangkit`,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mockFingerprint',
       },
       timeout: 120000,
+      withCredentials: true,
     });
 
     expect(result).toEqual(mockData);
@@ -163,9 +199,10 @@ describe('AnalyticService', () => {
       url: `${mockUrl}grafik/filter/daya`,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mockFingerprint',
       },
       timeout: 120000,
+      withCredentials: true,
     });
 
     expect(result).toEqual(mockData);
@@ -184,9 +221,10 @@ describe('AnalyticService', () => {
       url: `${mockUrl}grafik/filter/tahun`,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mockFingerprint',
       },
       timeout: 120000,
+      withCredentials: true,
     });
 
     expect(result).toEqual(mockData);

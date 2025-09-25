@@ -187,7 +187,7 @@ const fetchCheckIntegrasi = async () => {
     isIntegrasi.value = response.data[0].status_data_integrasi !== "0";
     console.log(isIntegrasi.value, 'dds');
   } catch (error) {
-    console.error('Fetch Check Integrasi Error : ' + error)
+    console.error('Fetch Check Integrasi Error : ', error)
   }
 }
 const fetchMesinById = async () => {
@@ -209,7 +209,7 @@ const fetchStatusRealisasiById = async () => {
     const response: any = await inputAsumsiParameterService.getStatusRealisasiById(idMesin.value);
     statusRealisasi.value = response.data[0].status_kk;
   } catch (error) {
-    console.error('Fetch Combo Bahan Bakar Error : ' + error);
+    console.error('Fetch Combo Bahan Bakar Error : ', error);
   }
 }
 const fetchAsumsiParameter = async (isCreate: boolean) => {
@@ -267,7 +267,7 @@ const fetchListPembina = async () => {
     const response: any = await userService.getPembina('');
     return response.data;
   } catch (error) {
-    console.error('Fetch Pembina Error : ' + error)
+    console.error('Fetch Pembina Error : ', error)
   }
 }
 const fetchComboBahanBakar = async () => {
@@ -275,7 +275,7 @@ const fetchComboBahanBakar = async () => {
     const response: any = await inputAsumsiParameterService.getComboBahanBakar(kodeJenisPembangkit.value);
     comboBahanBakar.value = response.data;
   } catch (error) {
-    console.error('Fetch Combo Bahan Bakar Error : ' + error);
+    console.error('Fetch Combo Bahan Bakar Error : ', error);
   }
 }
 function handleHapusBahanBakar() {
@@ -307,7 +307,7 @@ const fetchUnitPengelola = async () => {
       namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina
     }
   } catch (error) {
-    console.error("Fetch Unit Pengelola Error : " + error)
+    console.error("Fetch Unit Pengelola Error : ", error)
   }
 };
 function handleTambahBahanBakar() {

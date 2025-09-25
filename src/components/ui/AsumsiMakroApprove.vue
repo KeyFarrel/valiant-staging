@@ -77,7 +77,7 @@
     </div>
   </div>
   <ReloadComponent v-else-if="props.isFetchingError && (!props.corporateTaxRate || !props.equityPortion)"
-    @on-click="emit('onClick')" @on-key-down="emit('onKeyDown')" />
+    @on-clicks="emit('onClick')" @on-key-down="emit('onKeyDown')" />
   <ShimmerLoading v-else class="w-full h-40" />
 </template>
 

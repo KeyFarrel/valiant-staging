@@ -77,6 +77,7 @@ const MesinBelumTerinput = () =>
   import("@/views/Beranda/LamanUtama/MesinBelumTerinput.vue");
 const VerifikasiSSO = () => import("@/views/VerifikasiSSO.vue");
 import AuthService from "@/services/auth-service";
+import { notifyError } from "@/services/helper/toast-notification";
 
 const nodeMode: any = import.meta.env.MODE;
 
@@ -510,6 +511,7 @@ router.beforeEach(async (to, _, next) => {
     const getStorage = (storage: any) => {
       levelSentral = storage.getItem("level_sentral");
       namaPegawai = storage.getItem("nama_pegawai");
+      storedHash = storage.getItem("user_hash");
     };
     getStorage(storage);
 

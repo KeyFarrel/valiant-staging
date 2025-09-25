@@ -232,7 +232,6 @@ import TableComponent from "@/components/ui/Table.vue";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import LamanService from "@/services/laman-service";
 import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
-import { isNull } from "node:util";
 
 const lamanService = new LamanService();
 const teknisData = ref<PengelolaItem[]>([]);
@@ -298,7 +297,7 @@ const fetchPeriodeTahun = async () => {
     yearRangePicked.value = [tahunDari.value, tahunSampai.value];
     yearRange.value = [periodeTahun.value[0].tahun, periodeTahun.value[periodeTahun.value.length - 1].tahun];
   } catch (error) {
-    console.error('Fetch Tahun Anggaran Error : ' + error);
+    console.error('Fetch Tahun Anggaran Error : ', error);
   }
 }
 
@@ -322,7 +321,7 @@ const fetchListTahun = async () => {
     const response: any = await lamanService.getListTahun();
     periodeTahun.value = [response.data[0].tahun, response.data[response.data.length - 1].tahun];
   } catch (error) {
-    console.error('Fetch Tahun Terakhir Realisasi Error : ' + error);
+    console.error('Fetch Tahun Terakhir Realisasi Error : ', error);
   }
 }
 const toggleUp = (itemKode: string) => {
@@ -365,7 +364,7 @@ const handleExport = async () => {
     document.body.removeChild(link)
     isLoading.value = false;
   } catch (error) {
-    console.error('Handle Download Template Rekap Error : ' + error)
+    console.error('Handle Download Template Rekap Error : ', error)
   };
 }
 

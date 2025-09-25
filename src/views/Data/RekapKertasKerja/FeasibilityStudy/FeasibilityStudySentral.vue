@@ -105,7 +105,7 @@ const fetchSentralById = async () => {
     namaPengelola.value = pengelola[0].pengelola;
     mesinDataById.value = response.data;
   } catch (error) {
-    console.error("Fetch Mesin By Id Error : " + error);
+    console.error("Fetch Mesin By Id Error : ", error);
   }
 };
 const fetchAsumsiFeasibility = async () => {
@@ -117,7 +117,7 @@ const fetchAsumsiFeasibility = async () => {
     asumsiFeasibility.value = response.data;
     umurTeknis.value = response.data.umur_teknis.toString();
   } catch (error) {
-    console.error("Error Fetch Asumsi Feasibility : " + error);
+    console.error("Error Fetch Asumsi Feasibility : ", error);
   }
 };
 const fetchKalkulasiFeasibility = async () => {
@@ -140,7 +140,7 @@ const fetchKalkulasiFeasibility = async () => {
     kalkulasiFeasibility.value = response.data;
     console.log(resultMap.value);
   } catch (error) {
-    console.error("Error Fetch Kalkulasi Feasibility : " + error);
+    console.error("Error Fetch Kalkulasi Feasibility : ", error);
   }
 };
 const fetchTahunBerjalan = () => {

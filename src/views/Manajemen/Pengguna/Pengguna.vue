@@ -266,77 +266,6 @@
           v-model="formData.email" />
       </div>
       <div class="grid grid-cols-2 gap-4">
-        <!-- <div class="relative">
-          <label for="password" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Password <span
-              class="text-warningColor">*</span></label>
-          <input @paste.prevent @copy.prevent @cut.prevent
-            @input="sanitizePassword(); checkPasswordStrength('password')" id="password"
-            :type="showPassword ? 'text' : 'password'" v-model="formData.password"
-            class="w-full text-xs h-[38px] border pl-3 text-gray-500 border-gray-300 rounded-lg"
-            placeholder="Masukkan Password" />
-          <button type="button" @click="togglePasswordVisibility"
-            class="absolute inset-y-0 right-0 flex items-center pr-3 -top-1">
-            <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" width="16" height="12" viewBox="0 0 16 12"
-              fill="none">
-              <path
-                d="M8 1.16577C10.209 1.16577 12.0275 2.40216 13.3398 3.73427C13.989 4.39332 14.493 5.0549 14.8346 5.55215C14.9529 5.72443 15.0511 5.87613 15.1286 6.00008C15.0511 6.12403 14.9529 6.27574 14.8345 6.44803C14.493 6.94528 13.9889 7.60687 13.3397 8.26592C12.0273 9.59805 10.2088 10.8344 8 10.8344C5.79123 10.8344 3.97267 9.59805 2.66032 8.26592C2.01107 7.60687 1.50703 6.94528 1.16548 6.44803C1.04715 6.27574 0.9489 6.12404 0.871435 6.00008C0.94889 5.87613 1.04712 5.72443 1.16544 5.55215C1.50696 5.0549 2.01096 4.39332 2.66019 3.73427C3.97247 2.40216 5.79103 1.16577 8 1.16577Z"
-                stroke="#989899" stroke-width="1.5" />
-              <ellipse cx="8" cy="6" rx="2.5" ry="2.53833" fill="#989899" />
-            </svg>
-            <svg v-if="showPassword" xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15"
-              fill="none">
-              <path
-                d="M8 2.27148C10.209 2.27148 12.0275 3.50788 13.3398 4.83999C13.989 5.49903 14.493 6.16061 14.8346 6.65787C14.9529 6.83014 15.0511 6.98184 15.1286 7.10579C15.0511 7.22975 14.9529 7.38145 14.8345 7.55374C14.493 8.051 13.9889 8.71259 13.3397 9.37163C12.0273 10.7038 10.2088 11.9401 8 11.9401C5.79123 11.9401 3.97267 10.7038 2.66032 9.37163C2.01107 8.71259 1.50703 8.051 1.16548 7.55374C1.04715 7.38145 0.9489 7.22975 0.871435 7.10579C0.94889 6.98184 1.04712 6.83014 1.16544 6.65787C1.50696 6.16061 2.01096 5.49903 2.66019 4.83999C3.97247 3.50788 5.79103 2.27148 8 2.27148Z"
-                stroke="#989899" stroke-width="1.5" />
-              <ellipse cx="8" cy="7.10571" rx="2.5" ry="2.53833" fill="#989899" />
-              <rect width="1.51154" height="18.1385" rx="0.75"
-                transform="matrix(0.701707 0.712466 -0.701707 0.712466 13.5835 0.105713)" fill="#989899" />
-            </svg>
-          </button>
-          <div class="w-full h-2 mt-1 bg-gray-300 rounded-lg">
-            <div :style="{ width: pwStrength.strengthWidth + '%' }" :class="pwStrength.strengthColor"
-              class="h-full transition-all duration-300 rounded-lg"></div>
-          </div>
-          <p class="text-xs mt-0.5" :class="pwStrength.strengthTextColor">
-            {{ pwStrength.strengthMessage }}
-          </p>
-        </div> -->
-        <!-- <div class="relative">
-          <label for="konfirmasiPassword" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Konfirmasi Password
-            <span class="text-warningColor">*</span></label>
-          <input @paste.prevent @copy.prevent @cut.prevent
-            @input="sanitizeConfirmPassword(); checkPasswordStrength('confirmPassword')" id="konfirmasiPassword"
-            :type="showConfirmPassword ? 'text' : 'password'" v-model="formData.konfirmasi_password"
-            class="w-full h-[38px] text-xs text-gray-500 border pl-3 border-gray-300 rounded-lg"
-            placeholder="Masukkan Password" />
-          <div class="w-full h-2 mt-1 bg-gray-300 rounded-lg">
-            <div :style="{ width: confirmPasswordStrength.strengthWidth + '%' }"
-              :class="confirmPasswordStrength.strengthColor" class="h-full transition-all duration-300 rounded-lg">
-            </div>
-          </div>
-          <p class="text-xs mt-0.5" :class="confirmPasswordStrength.strengthTextColor">
-            {{ confirmPasswordStrength.strengthMessage }}
-          </p>
-          <button type="button" @click="toggleConfirmPasswordVisibility"
-            class="absolute inset-y-0 right-0 flex items-center pr-3 -top-1">
-            <svg v-if="!showConfirmPassword" xmlns="http://www.w3.org/2000/svg" width="16" height="12"
-              viewBox="0 0 16 12" fill="none">
-              <path
-                d="M8 1.16577C10.209 1.16577 12.0275 2.40216 13.3398 3.73427C13.989 4.39332 14.493 5.0549 14.8346 5.55215C14.9529 5.72443 15.0511 5.87613 15.1286 6.00008C15.0511 6.12403 14.9529 6.27574 14.8345 6.44803C14.493 6.94528 13.9889 7.60687 13.3397 8.26592C12.0273 9.59805 10.2088 10.8344 8 10.8344C5.79123 10.8344 3.97267 9.59805 2.66032 8.26592C2.01107 7.60687 1.50703 6.94528 1.16548 6.44803C1.04715 6.27574 0.9489 6.12404 0.871435 6.00008C0.94889 5.87613 1.04712 5.72443 1.16544 5.55215C1.50696 5.0549 2.01096 4.39332 2.66019 3.73427C3.97247 2.40216 5.79103 1.16577 8 1.16577Z"
-                stroke="#989899" stroke-width="1.5" />
-              <ellipse cx="8" cy="6" rx="2.5" ry="2.53833" fill="#989899" />
-            </svg>
-            <svg v-if="showConfirmPassword" xmlns="http://www.w3.org/2000/svg" width="16" height="15"
-              viewBox="0 0 16 15" fill="none">
-              <path
-                d="M8 2.27148C10.209 2.27148 12.0275 3.50788 13.3398 4.83999C13.989 5.49903 14.493 6.16061 14.8346 6.65787C14.9529 6.83014 15.0511 6.98184 15.1286 7.10579C15.0511 7.22975 14.9529 7.38145 14.8345 7.55374C14.493 8.051 13.9889 8.71259 13.3397 9.37163C12.0273 10.7038 10.2088 11.9401 8 11.9401C5.79123 11.9401 3.97267 10.7038 2.66032 9.37163C2.01107 8.71259 1.50703 8.051 1.16548 7.55374C1.04715 7.38145 0.9489 7.22975 0.871435 7.10579C0.94889 6.98184 1.04712 6.83014 1.16544 6.65787C1.50696 6.16061 2.01096 5.49903 2.66019 4.83999C3.97247 3.50788 5.79103 2.27148 8 2.27148Z"
-                stroke="#989899" stroke-width="1.5" />
-              <ellipse cx="8" cy="7.10571" rx="2.5" ry="2.53833" fill="#989899" />
-              <rect width="1.51154" height="18.1385" rx="0.75"
-                transform="matrix(0.701707 0.712466 -0.701707 0.712466 13.5835 0.105713)" fill="#989899" />
-            </svg>
-          </button>
-        </div> -->
         <div>
           <label for="level" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Level <span
               class="text-warningColor">*</span></label>
@@ -865,18 +794,6 @@ const sanitizeEmail = () => {
   formData.value.email = formData.value.email.replace(/[^a-zA-Z0-9@._-]/g, '')
 }
 
-// const sanitizePassword = () => {
-//   formData.value.password = formData.value.password
-//     .replace(/['"\\`\0\n\r\t]/g, '')
-//     .replace(/\s{2,}/g, ' ')
-// }
-
-// const sanitizeConfirmPassword = () => {
-//   formData.value.konfirmasi_password = formData.value.konfirmasi_password
-//     .replace(/['"\\`\0\n\r\t]/g, '')
-//     .replace(/\s{2,}/g, ' ')
-// }
-
 const fetchData = async () => {
   try {
     isLoading.value = true;
@@ -1105,26 +1022,6 @@ const saveUserDataAndCloseModal = async () => {
     errors.value.push("Email tidak valid.");
   }
 
-  const passwordPattern =
-    /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+[\]{}|;':"<>?,./]).{8,}$/;
-  const badChars = /['"\\`\0\n\r\t]/;
-  // if (!formData.value.password) {
-  //   errors.value.push("Password wajib diisi.");
-  // } else if (/^\s|\s$/.test(formData.value.password)) {
-  //   errors.value.push("Password tidak boleh diawali atau diakhiri dengan spasi.");
-  // } else if (badChars.test(formData.value.password)) {
-  //   errors.value.push("Password mengandung karakter yang tidak diizinkan.");
-  // } else if (!passwordPattern.test(formData.value.password)) {
-  //   errors.value.push(
-  //     "Password harus mengandung angka, karakter, huruf besar, huruf kecil dan minimal 8 karakter."
-  //   );
-  // }
-  // if (!formData.value.konfirmasi_password) {
-  //   errors.value.push("Konfirmasi Password wajib diisi.");
-  // }
-  // if (formData.value.password !== formData.value.konfirmasi_password) {
-  //   errors.value.push("Password dan Konfirmasi Password tidak cocok.");
-  // }
   if (!formData.value.role_id) {
     errors.value.push("Role wajib diisi.");
   }
@@ -1136,7 +1033,6 @@ const saveUserDataAndCloseModal = async () => {
         email: formData.value.email.toLowerCase().trim(),
         nama_pegawai: formData.value.nama_pegawai.trim(),
         role_id: parseInt(formData.value.role_id),
-        // password: formData.value.password,
         level_id: parseInt(formData.value.level_id),
         id_pembina: parseInt(formData.value.id_pembina),
         id_sentral: parseInt(formData.value.id_sentral),
@@ -1170,13 +1066,13 @@ const saveUserDataAndCloseModal = async () => {
 
 const resetPasswordIndicator = () => {
   pwStrength.value = {
-    strengthMessage: 'Masukkan Password',
+    strengthMessage: 'Masukkan Kata Sandi',
     strengthWidth: 0,
     strengthColor: '',
     strengthTextColor: 'text-gray-500'
   }
-  confirmPasswordStrength.value = {
-    strengthMessage: 'Masukkan Konfirmasi Password',
+  confirmKataSandiStrength.value = {
+    strengthMessage: 'Masukkan Konfirmasi Kata Sandi',
     strengthWidth: 0,
     strengthColor: '',
     strengthTextColor: 'text-gray-500'
@@ -1277,19 +1173,19 @@ const pwStrength = ref<{
   strengthColor: string
   strengthTextColor: string
 }>({
-  strengthMessage: 'Masukkan Password',
+  strengthMessage: 'Masukkan Kata Sandi',
   strengthWidth: 0,
   strengthColor: '',
   strengthTextColor: 'text-gray-500'
 })
 
-const confirmPasswordStrength = ref<{
+const confirmKataSandiStrength = ref<{
   strengthMessage: string
   strengthWidth: number
   strengthColor: string
   strengthTextColor: string
 }>({
-  strengthMessage: 'Masukkan Konfirmasi Password',
+  strengthMessage: 'Masukkan Konfirmasi Kata Sandi',
   strengthWidth: 0,
   strengthColor: '',
   strengthTextColor: 'text-gray-500'
@@ -1297,19 +1193,6 @@ const confirmPasswordStrength = ref<{
 
 const checkPasswordStrength = (formPasswordType: string) => {
   let strength = 0;
-  let value = formPasswordType === 'password'
-  // ? formData.value.password
-  // : formData.value.konfirmasi_password;
-
-  // Hapus spasi langsung dari input
-  const sanitizedValue = value
-
-  // Hitung kekuatan password
-  // if (sanitizedValue.length >= 8) strength++;
-  // if (/[A-Z]/.test(sanitizedValue)) strength++;
-  // if (/[a-z]/.test(sanitizedValue)) strength++;
-  // if (/\d/.test(sanitizedValue)) strength++;
-  // if (/[^A-Za-z0-9]/.test(sanitizedValue)) strength++;
 
   // Atur status kekuatan password
   if (formPasswordType === 'password') {
@@ -1345,7 +1228,7 @@ const checkPasswordStrength = (formPasswordType: string) => {
         pwStrength.value.strengthTextColor = 'text-blue-500';
         break;
       default:
-        pwStrength.value.strengthMessage = 'Masukkan Password';
+        pwStrength.value.strengthMessage = 'Masukkan Kata Sandi';
         pwStrength.value.strengthWidth = 0;
         pwStrength.value.strengthColor = 'bg-gray-300';
         pwStrength.value.strengthTextColor = 'text-gray-500';
@@ -1353,40 +1236,40 @@ const checkPasswordStrength = (formPasswordType: string) => {
   } else {
     switch (strength) {
       case 1:
-        confirmPasswordStrength.value.strengthMessage = 'Sangat Lemah';
-        confirmPasswordStrength.value.strengthWidth = 20;
-        confirmPasswordStrength.value.strengthColor = 'bg-red-500';
-        confirmPasswordStrength.value.strengthTextColor = 'text-red-500';
+        confirmKataSandiStrength.value.strengthMessage = 'Sangat Lemah';
+        confirmKataSandiStrength.value.strengthWidth = 20;
+        confirmKataSandiStrength.value.strengthColor = 'bg-red-500';
+        confirmKataSandiStrength.value.strengthTextColor = 'text-red-500';
         break;
       case 2:
-        confirmPasswordStrength.value.strengthMessage = 'Lemah';
-        confirmPasswordStrength.value.strengthWidth = 40;
-        confirmPasswordStrength.value.strengthColor = 'bg-orange-500';
-        confirmPasswordStrength.value.strengthTextColor = 'text-orange-500';
+        confirmKataSandiStrength.value.strengthMessage = 'Lemah';
+        confirmKataSandiStrength.value.strengthWidth = 40;
+        confirmKataSandiStrength.value.strengthColor = 'bg-orange-500';
+        confirmKataSandiStrength.value.strengthTextColor = 'text-orange-500';
         break;
       case 3:
-        confirmPasswordStrength.value.strengthMessage = 'Menengah';
-        confirmPasswordStrength.value.strengthWidth = 60;
-        confirmPasswordStrength.value.strengthColor = 'bg-yellow-500';
-        confirmPasswordStrength.value.strengthTextColor = 'text-yellow-500';
+        confirmKataSandiStrength.value.strengthMessage = 'Menengah';
+        confirmKataSandiStrength.value.strengthWidth = 60;
+        confirmKataSandiStrength.value.strengthColor = 'bg-yellow-500';
+        confirmKataSandiStrength.value.strengthTextColor = 'text-yellow-500';
         break;
       case 4:
-        confirmPasswordStrength.value.strengthMessage = 'Kuat';
-        confirmPasswordStrength.value.strengthWidth = 80;
-        confirmPasswordStrength.value.strengthColor = 'bg-green-500';
-        confirmPasswordStrength.value.strengthTextColor = 'text-green-500';
+        confirmKataSandiStrength.value.strengthMessage = 'Kuat';
+        confirmKataSandiStrength.value.strengthWidth = 80;
+        confirmKataSandiStrength.value.strengthColor = 'bg-green-500';
+        confirmKataSandiStrength.value.strengthTextColor = 'text-green-500';
         break;
       case 5:
-        confirmPasswordStrength.value.strengthMessage = 'Sangat Kuat';
-        confirmPasswordStrength.value.strengthWidth = 100;
-        confirmPasswordStrength.value.strengthColor = 'bg-blue-500';
-        confirmPasswordStrength.value.strengthTextColor = 'text-blue-500';
+        confirmKataSandiStrength.value.strengthMessage = 'Sangat Kuat';
+        confirmKataSandiStrength.value.strengthWidth = 100;
+        confirmKataSandiStrength.value.strengthColor = 'bg-blue-500';
+        confirmKataSandiStrength.value.strengthTextColor = 'text-blue-500';
         break;
       default:
-        confirmPasswordStrength.value.strengthMessage = 'Masukkan Konfirmasi Password';
-        confirmPasswordStrength.value.strengthWidth = 0;
-        confirmPasswordStrength.value.strengthColor = 'bg-gray-300';
-        confirmPasswordStrength.value.strengthTextColor = 'text-gray-500';
+        confirmKataSandiStrength.value.strengthMessage = 'Masukkan Konfirmasi Kata Sandi';
+        confirmKataSandiStrength.value.strengthWidth = 0;
+        confirmKataSandiStrength.value.strengthColor = 'bg-gray-300';
+        confirmKataSandiStrength.value.strengthTextColor = 'text-gray-500';
     }
   }
 };

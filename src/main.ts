@@ -1,7 +1,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
-import { createPinia } from "pinia";
+import { createPinia, getActivePinia } from "pinia";
 import axios from "axios";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 
@@ -16,9 +16,7 @@ import "./assets/style.css";
 import "./assets/main.css";
 
 import { initXssProtection, sanitizeDirective } from "./utils/xssProtection";
-import { bruteForceProtection } from "./utils/bruteForceProtection";
 import { initPathTraversalProtection } from "./utils/pathTraversalProtection";
-import { registerFileValidation } from "./utils/fileUploadValidation";
 import { initEnvProtection } from "./utils/envProtection";
 import { initDevToolsRestriction } from "./utils/devToolsRestriction";
 
@@ -34,8 +32,6 @@ const app = createApp(App)
   .use(Vue3Lottie, { player: lottie })
   .use(GoCaptcha)
   .directive("sanitize", sanitizeDirective);
-
-registerFileValidation(app);
 
 initXssProtection();
 initDevToolsRestriction();
@@ -56,7 +52,6 @@ app.config.globalProperties.$secureConfig = appConfig;
 app.provide("secureConfig", appConfig);
 
 import { decryptAES } from "./services/helper/encryption";
-import { getActivePinia } from "pinia";
 import { useSessionStore } from "@/store/storeSession";
 import { notifyError } from "./services/helper/toast-notification";
 const sessionStore = useSessionStore(getActivePinia());
@@ -87,13 +82,6 @@ axios.interceptors.response.use(
     return response;
   },
   async (error) => {
-    const requestUrl = error?.config?.url;
-
-    // ✅ Cek jika URL mengandung "/download", langsung keluar dari interceptor
-    if (requestUrl && requestUrl.includes("/download")) {
-      return Promise.reject(error);
-    }
-    console.log(error, "ERROR nih bous");
     if (
       error.response &&
       error.response.status === 401 &&
@@ -114,9 +102,9 @@ axios.interceptors.response.use(
       }
       sessionStore.invalidateSession();
       router.push({ name: "login" });
-    } else if (error.code === "ERR_NETWORK") {
+    } else if (error.code === "ERR_NETWORK" && error.config.url !== (nodeMode === 'development' ? 'https://stg-be-valiant.pln.co.id/v1/mutasiasset/download/' : 'http://localhost:8000/v1/mutasiasset/download/')) {
       sessionStore.setErrNetwork();
-      console.log("Network error detected, setting network error state");
+      console.log("Network error detected, setting network error state", error);
       router.push({ name: "503" });
     } else if (
       error.response &&
@@ -133,7 +121,7 @@ axios.interceptors.response.use(
         data: error.response?.data,
       });
     }
-    return Promise.reject(error);
+    return Promise.reject(error instanceof Error ? error : new Error(String(error)));
   },
 );
 

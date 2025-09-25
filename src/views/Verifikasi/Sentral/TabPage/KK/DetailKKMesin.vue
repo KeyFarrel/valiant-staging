@@ -575,7 +575,7 @@ const fetchPersetujuanKK = async () => {
     tahunTerakhirAsumsi.value = approveMesinKK.value.tahun;
     statusMesin.value = approveMesinKK.value.id_status;
   } catch (error) {
-    console.error('Fetch Persetujuan KK Sentral Error : ' + error)
+    console.error('Fetch Persetujuan KK Sentral Error : ', error)
   }
 }
 
@@ -591,7 +591,7 @@ const fetchAsumsiParameter = async () => {
     parameterTeknisFinansial.value = response.data.parameter_teknis_financial
     bahanBakars.value = response.data.harga_bahan_bakars
   } catch (error) {
-    console.error("Fetch Asumsi Parameter Error : " + error)
+    console.error("Fetch Asumsi Parameter Error : ", error)
     asumsiParameter.value.isFetchingError = true
     parameterTeknisFinansial.value.isFetchingError = true
   }
@@ -621,7 +621,7 @@ const fetchDataTeknis = async () => {
       tahunGrafik.value = parseInt(route.query.tahun?.toString() ?? '0')
     }
   } catch (error) {
-    console.error("Fetch Data Teknis Error : " + error)
+    console.error("Fetch Data Teknis Error : ", error)
     dataTeknis.value.isFetchingError = true
   }
 };
@@ -697,7 +697,7 @@ const fetchDataFinansial = async () => {
       dataFinansial.value = response.data;
     }
   } catch (error) {
-    console.error("Fetch Data Finansial Error : " + error)
+    console.error("Fetch Data Finansial Error : ", error)
     dataFinansial.value.isFetchingError = true
   }
 }
@@ -716,7 +716,7 @@ const fetchHasilSimulasi = async () => {
     );
     hasilSimulasi.value = response.data;
   } catch (error) {
-    console.error("Fetch Hasil Simulasi Error : " + error);
+    console.error("Fetch Hasil Simulasi Error : ", error);
     hasilSimulasi.value.isFetchingError = true;
   }
 }
@@ -733,7 +733,7 @@ const fetchTypePeriodic = async () => {
     );
     typePeriodic.value = response.data;
   } catch (error) {
-    console.error("Fetch Type Periodic Error : " + error);
+    console.error("Fetch Type Periodic Error : ", error);
   }
 };
 
@@ -756,7 +756,7 @@ const downloadEvidence = async () => {
     document.body.removeChild(link);
     isLoading.value = false;
   } catch (error) {
-    // console.error('Evidence Error : ' + error)
+    console.error('Evidence Error : ', error)
     isLoading.value = false
     notifyError('Evidence Tidak Ada', 5000)
   };
@@ -769,7 +769,7 @@ const fetchComboBahanBakar = async () => {
     )
     comboBahanBakar.value = response.data;
   } catch (error) {
-    console.error('Fetch Combo Bahan Bakar Error : ' + error);
+    console.error('Fetch Combo Bahan Bakar Error : ', error);
   }
 }
 
@@ -802,7 +802,7 @@ const updateKK = async () => {
     fetchDataFinansial();
   } catch (error) {
     isLoading.value = false;
-    console.error("Error Fetch Update Kertas Kerja : " + error);
+    console.error("Error Fetch Update Kertas Kerja : ", error);
     notifyError('Gagal kirim kertas kerja, mohon coba lagi', 5000)
   }
 }
@@ -811,7 +811,7 @@ const fetchListPembina = async () => {
     const response: any = await userService.getPembina('')
     return response.data
   } catch (error) {
-    console.error('Fetch Pembina Error : ' + error)
+    console.error('Fetch Pembina Error : ', error)
   }
 }
 const fetchUnitPengelola = async () => {
@@ -833,7 +833,7 @@ const fetchUnitPengelola = async () => {
       namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina
     }
   } catch (error) {
-    console.error("Fetch Unit Pengelola Error : " + error)
+    console.error("Fetch Unit Pengelola Error : ", error)
   }
 };
 

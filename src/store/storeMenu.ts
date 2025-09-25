@@ -1,10 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import AuthService from "@/services/auth-service";
-import router from "@/router";
-
-const nodeMode: any = import.meta.env.MODE;
 
 export interface MenuItem {
   url: string;
@@ -42,7 +38,7 @@ export const useMenuStore = defineStore("menu", () => {
       const authService = new AuthService();
 
       const response: any = await authService.getMenu();
-      if (response && response.data) {
+      if (response?.data) {
         menuList.value = response.data;
         isMenuLoaded.value = true;
       }

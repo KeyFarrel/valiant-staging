@@ -583,8 +583,10 @@
                         </li>
                       </ul>
                     </nav>
-                    <AkhirMasaManfaat :irr-on-project="hasilSimulasi1.trackIrrProject"
-                      :irr-on-equity="hasilSimulasi1.trackIrrEquity" :npv-on-equity="hasilSimulasi1.trackNpvEquity ?? 0"
+                    <AkhirMasaManfaat :id-mesin="hasilSimulasi1.idMesin"
+                      :is-fetching-error="hasilSimulasi1.isFetchingError"
+                      :irr-on-project="hasilSimulasi1.trackIrrProject" :irr-on-equity="hasilSimulasi1.trackIrrEquity"
+                      :npv-on-equity="hasilSimulasi1.trackNpvEquity ?? 0"
                       :npv-on-project="hasilSimulasi1.trackNpvProject ?? 0"
                       :average-ncf="hasilSimulasi1.trackAverageNcf ?? 0"
                       :average-eaf="hasilSimulasi1.trackAverageEaf ?? 0" />
@@ -607,8 +609,10 @@
                         </li>
                       </ul>
                     </nav>
-                    <AkhirMasaManfaat :irr-on-project="hasilSimulasi2.trackIrrProject"
-                      :irr-on-equity="hasilSimulasi2.trackIrrEquity" :npv-on-equity="hasilSimulasi2.trackNpvEquity ?? 0"
+                    <AkhirMasaManfaat :id-mesin="hasilSimulasi2.idMesin"
+                      :is-fetching-error="hasilSimulasi2.isFetchingError"
+                      :irr-on-project="hasilSimulasi2.trackIrrProject" :irr-on-equity="hasilSimulasi2.trackIrrEquity"
+                      :npv-on-equity="hasilSimulasi2.trackNpvEquity ?? 0"
                       :npv-on-project="hasilSimulasi2.trackNpvProject ?? 0"
                       :average-ncf="hasilSimulasi2.trackAverageNcf ?? 0"
                       :average-eaf="hasilSimulasi2.trackAverageEaf ?? 0" />
@@ -687,7 +691,7 @@ import TableDataFinansial from "@/components/RekapKertasKerja/TableDataFinansial
 import AkhirMasaManfaat from "@/views/Data/RekapKertasKerja/DetailRekap/HasilSimulasi/AkhirMasaManfaat.vue";
 
 const nodeMode = import.meta.env.MODE;
-const idMesin = ref<any>('');
+const uuidMesin = ref<any>('');
 const mesinDataById = ref<MesinItem>();
 const tahunTerakhirRealisasi = ref<number>(0);
 const tahunTerakhirAsumsi = ref<number>(0);
@@ -916,6 +920,7 @@ const hasilSimulasi1 = ref<{
   trackNpvEquity: number | null
   trackAverageEaf: number | null
   trackAverageNcf: number | null
+  isFetchingError: boolean
 }>({
   idMesin: 0,
   trackIrrProject: '',
@@ -923,7 +928,8 @@ const hasilSimulasi1 = ref<{
   trackNpvProject: null,
   trackNpvEquity: null,
   trackAverageEaf: null,
-  trackAverageNcf: null
+  trackAverageNcf: null,
+  isFetchingError: false
 });
 const hasilSimulasi2 = ref<{
   idMesin: number | null
@@ -933,6 +939,7 @@ const hasilSimulasi2 = ref<{
   trackNpvEquity: number | null
   trackAverageEaf: number | null
   trackAverageNcf: number | null
+  isFetchingError: boolean
 }>({
   idMesin: 0,
   trackIrrProject: '',
@@ -940,7 +947,8 @@ const hasilSimulasi2 = ref<{
   trackNpvProject: null,
   trackNpvEquity: null,
   trackAverageEaf: null,
-  trackAverageNcf: null
+  trackAverageNcf: null,
+  isFetchingError: false
 });
 const selectedFileSimulasi1: any = ref(null);
 const isUnggahModalOpenSimulasi1 = ref<boolean>(false);
@@ -1108,7 +1116,7 @@ interface ComboTypePeriodicItem {
 const fetchMesinById = async () => {
   try {
     const response: MesinItem = await perbaruiDataService.getMesinById(
-      idMesin.value
+      uuidMesin.value
     );
     mesinDataById.value = response.data;
     kodeMesin.value = response.data.kode_mesin;
@@ -1118,7 +1126,7 @@ const fetchMesinById = async () => {
     tahunTerakhirAsumsi.value = parseInt(response.data.tahun_asumsi);
     tahunUpdate.value = parseInt(response.data.tahun_realisasi) + 1;
   } catch (error) {
-    console.error("Fetch Mesin By Id Error : " + error);
+    console.error("Fetch Mesin By Id Error : ", error);
   }
 };
 const fetchListPembina = async () => {
@@ -1126,16 +1134,16 @@ const fetchListPembina = async () => {
     const response: any = await userService.getPembina('');
     return response.data;
   } catch (error) {
-    console.error('Fetch Pembina Error : ' + error)
+    console.error('Fetch Pembina Error : ', error)
   }
 }
 const fetchCheckIntegrasi = async () => {
   try {
-    const response: any = await perbaruiDataService.getCheckIntegrasi(tahunTerakhirRealisasi.value, idMesin.value);
+    const response: any = await perbaruiDataService.getCheckIntegrasi(tahunTerakhirRealisasi.value, uuidMesin.value);
     isIntegrasi.value = response.data[0].status_data_integrasi !== "0";
     console.log(isIntegrasi.value, 'dds');
   } catch (error) {
-    console.error('Fetch Check Integrasi Error : ' + error)
+    console.error('Fetch Check Integrasi Error : ', error)
   }
 }
 const fetchUnitPengelola = async () => {
@@ -1157,7 +1165,7 @@ const fetchUnitPengelola = async () => {
       namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina;
     }
   } catch (error) {
-    console.error("Fetch Unit Pengelola Error : " + error);
+    console.error("Fetch Unit Pengelola Error : ", error);
   }
 };
 const fetchPersetujuanKK = async () => {
@@ -1166,10 +1174,10 @@ const fetchPersetujuanKK = async () => {
       uuid_sentral: idSentral.value,
       tahun: tahunBerjalan
     });
-    approveMesinKK.value = response.data.mesins.filter((val: any) => val.uuid_mesin == idMesin.value)[0];
+    approveMesinKK.value = response.data.mesins.filter((val: any) => val.uuid_mesin == uuidMesin.value)[0];
     statusMesin.value = approveMesinKK.value.id_status;
   } catch (error) {
-    console.error('Fetch Persetujuan KK Sentral Error : ' + error);
+    console.error('Fetch Persetujuan KK Sentral Error : ', error);
   }
 }
 const fetchAsumsiParameter = async () => {
@@ -1177,7 +1185,7 @@ const fetchAsumsiParameter = async () => {
     const response: AsumsiParameterItem =
       await perbaruiDataService.getAsumsiParameterData(
         tahunBerjalan - 1,
-        idMesin.value,
+        uuidMesin.value,
         tahunBerjalan
       );
     const tempBahanBakars = response.data.harga_bahan_bakars.map((value: any) => {
@@ -1223,7 +1231,7 @@ const fetchAsumsiParameter = async () => {
     isPermanent.value = asumsiParameterInit.value.parameterTeknis.electricityPriceA === '0,00' && asumsiParameterInit.value.parameterTeknis.electricityPriceB === '0,00' && asumsiParameterInit.value.parameterTeknis.electricityPriceC === '0,00' && asumsiParameterInit.value.parameterTeknis.electricityPriceD === '0,00';
     console.log(isPermanent.value)
   } catch (error) {
-    console.error("Fetch Asumsi Parameter Error : " + error);
+    console.error("Fetch Asumsi Parameter Error : ", error);
   }
 };
 const fetchTypePeriodic = async (idTypePeriodic: any) => {
@@ -1232,7 +1240,7 @@ const fetchTypePeriodic = async (idTypePeriodic: any) => {
     const result = response.data.filter((value: any) => value.id_type_periodic === idTypePeriodic);
     return result;
   } catch (error) {
-    console.error('Fetch Type Periodic Error : ' + error);
+    console.error('Fetch Type Periodic Error : ', error);
   }
 }
 const fetchListTypePeriodic = async () => {
@@ -1240,7 +1248,7 @@ const fetchListTypePeriodic = async () => {
     const response: any = await perbaruiDataService.getTypePeriodic(jenisPembangkit.value)
     listTypePeriodic.value = response.data
   } catch (error) {
-    console.error('Fetch Type Periodic Error : ' + error);
+    console.error('Fetch Type Periodic Error : ', error);
   }
 }
 const fetchDataTeknisByPeriode = async () => {
@@ -1248,17 +1256,17 @@ const fetchDataTeknisByPeriode = async () => {
     const responseSimulasi1: any =
       await perbaruiDataService.getDataTeknisByPeriodeSimulasi1(
         tahunBerjalan - 1,
-        idMesin.value
+        uuidMesin.value
       );
     const responseSimulasi2: any =
       await perbaruiDataService.getDataTeknisByPeriodeSimulasi2(
         tahunBerjalan - 1,
-        idMesin.value
+        uuidMesin.value
       );
     if (responseSimulasi1.data === null || responseSimulasi2.data === null) {
       const response: any = await perbaruiDataService.getDataTeknisByPeriode(
         tahunTerakhirRealisasi.value,
-        idMesin.value
+        uuidMesin.value
       );
       dataTeknisByPeriode.value = response.data;
       statusDataTeknis.value = 'Permanent';
@@ -1293,9 +1301,15 @@ const fetchDataTeknisByPeriode = async () => {
         const words = item.uraian.split(" ");
         const fuelIndex = words.indexOf("Fuel");
         const textAfterFuel = words.slice(fuelIndex + 2).join(" ");
+        const filteredComboBahanBakar = comboBahanBakar.value.find((bahanBakar) => {
+          const lowerCaseBahanBakar = bahanBakar.bahan_bakar.toLowerCase();
+          const lowerCaseTextAfterFuel = textAfterFuel.toLowerCase();
+          return lowerCaseBahanBakar === lowerCaseTextAfterFuel;
+        })
         bahanBakarGroup.value.fuelConsumption.push({
           id_uraian: item.IdUraian,
           bahan_bakar: textAfterFuel,
+          kode_bahan_bakar: filteredComboBahanBakar ? filteredComboBahanBakar.kode_bahan_bakar : '',
           value: globalFormat.formatCurrencyNotFixed(item.value.toString())
         })
       }
@@ -1328,13 +1342,20 @@ const fetchDataTeknisByPeriode = async () => {
       dataTeknisInit.value.productionBrutto = globalFormat.formatCurrencyNotFixed(prodBruttoItem1[0].value.toString());
       dataTeknisInit.value.productionNetto = globalFormat.formatCurrencyNotFixed(prodNettoItem1[0].value.toString());
       dataTeknisInit.value.energySales = globalFormat.formatCurrencyNotFixed(energySalesItem1[0].value.toString());
+      console.log(fuelConsItem1, 'FUELCONSUMPTION')
       for (const item of fuelConsItem1) {
         const words = item.uraian.split(" ");
         const fuelIndex = words.indexOf("Fuel");
         const textAfterFuel = words.slice(fuelIndex + 2).join(" ");
+        const filteredComboBahanBakar = comboBahanBakar.value.find((bahanBakar) => {
+          const lowerCaseBahanBakar = bahanBakar.bahan_bakar.toLowerCase();
+          const lowerCaseTextAfterFuel = textAfterFuel.toLowerCase();
+          return lowerCaseBahanBakar === lowerCaseTextAfterFuel;
+        })
         bahanBakarGroup.value.fuelConsumption.push({
           id_uraian: item.IdUraian,
           bahan_bakar: textAfterFuel,
+          kode_bahan_bakar: filteredComboBahanBakar ? filteredComboBahanBakar.kode_bahan_bakar : '',
           value: globalFormat.formatCurrencyNotFixed(item.value.toString())
         })
         fuelConsumptionFinal.push({
@@ -1343,7 +1364,7 @@ const fetchDataTeknisByPeriode = async () => {
         })
       }
       dataTeknisSimulasi1.value = {
-        uuid_mesin: idMesin.value,
+        uuid_mesin: uuidMesin.value,
         tahun: tahunBerjalan,
         tahun_realisasi: tahunBerjalan - 1,
         id_type_periodic: typePeriodic.value,
@@ -1375,7 +1396,7 @@ const fetchDataTeknisByPeriode = async () => {
         })
       }
       dataTeknisSimulasi2.value = {
-        uuid_mesin: idMesin.value,
+        uuid_mesin: uuidMesin.value,
         tahun: tahunBerjalan,
         tahun_realisasi: tahunBerjalan - 1,
         id_type_periodic: typePeriodic2,
@@ -1388,7 +1409,7 @@ const fetchDataTeknisByPeriode = async () => {
       }
     }
   } catch (error) {
-    console.error("Fetch Data Teknis Error : " + error);
+    console.error("Fetch Data Teknis Error : ", error);
   }
 };
 const fetchComboTypePeriodic = async () => {
@@ -1404,22 +1425,22 @@ const fetchComboTypePeriodic = async () => {
     comboTypePeriodic.value = response.data;
     comboTypePeriodic.value.unshift(newValue);
   } catch (error) {
-    console.error("Fetch Combo Type Periodic Error : " + error);
+    console.error("Fetch Combo Type Periodic Error : ", error);
   }
 };
 const fetchDataFinansialDetail = async () => {
   try {
     const responseSimulasi1: any = await perbaruiDataService.getDataFinansialDetailSimulasi1(
       tahunBerjalan - 1,
-      idMesin.value
+      uuidMesin.value
     );
     const responseSimulasi2: any = await perbaruiDataService.getDataFinansialDetailSimulasi2(
       tahunBerjalan - 1,
-      idMesin.value
+      uuidMesin.value
     );
-    const response: ComboTypePeriodicItem = await perbaruiDataService.getDataFinansialDetail(tahunTerakhirRealisasi.value, idMesin.value);
+    const response: ComboTypePeriodicItem = await perbaruiDataService.getDataFinansialDetail(tahunTerakhirRealisasi.value, uuidMesin.value);
     isAudited.value = response.data.is_audited;
-    if (responseSimulasi1.data.uuid_mesin === 0 || responseSimulasi2.data.uuid_mesin === 0) {
+    if (responseSimulasi1.data.id_mesin === 0 || responseSimulasi2.data.id_mesin === 0) {
       statusDataFinansial.value = 'Permanent';
       dataFinansialDetail.value = response.data;
       costComponentA.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_a);
@@ -1494,14 +1515,14 @@ const fetchDataFinansialDetail = async () => {
       dataFinansialInit.value.costComponentC = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_c);
       dataFinansialInit.value.costComponentD = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_d);
       formFinansialSimulasi1.value = {
-        uuid_mesin: idMesin.value,
+        uuid_mesin: uuidMesin.value,
         tahun: tahunBerjalan - 1,
         status_b_d: responseSimulasi1.data.status_b_d,
         cost_component_a: responseSimulasi1.data.cost_component_a,
         cost_component_b: responseSimulasi1.data.cost_component_b,
         cost_component_b_detail: {
           id_ao: 0,
-          uuid_mesin: idMesin.value,
+          uuid_mesin: uuidMesin.value,
           tahun: tahunBerjalan - 1,
           biaya_kepegawaian: responseSimulasi1.data.cost_component_b_detail.biaya_kepegawaian,
           biaya_pemeliharaan_rutin: responseSimulasi1.data.cost_component_b_detail.biaya_pemeliharaan_rutin,
@@ -1516,7 +1537,7 @@ const fetchDataFinansialDetail = async () => {
         cost_component_d: responseSimulasi1.data.cost_component_d,
         cost_component_d_detail: {
           id_pelumas_bahan_kimia: 0,
-          uuid_mesin: idMesin.value,
+          uuid_mesin: uuidMesin.value,
           tahun: tahunBerjalan - 1,
           biaya_pelumas: responseSimulasi1.data.cost_component_d_detail.biaya_pelumas,
           biaya_bahan_kimia: responseSimulasi1.data.cost_component_d_detail.biaya_bahan_kimia,
@@ -1530,14 +1551,14 @@ const fetchDataFinansialDetail = async () => {
         opsi_simulasi: 1
       };
       formFinansialSimulasi2.value = {
-        uuid_mesin: idMesin.value,
+        uuid_mesin: uuidMesin.value,
         tahun: tahunBerjalan - 1,
         status_b_d: responseSimulasi2.data.status_b_d,
         cost_component_a: responseSimulasi2.data.cost_component_a,
         cost_component_b: responseSimulasi2.data.cost_component_b,
         cost_component_b_detail: {
           id_ao: 0,
-          uuid_mesin: idMesin.value,
+          uuid_mesin: uuidMesin.value,
           tahun: tahunBerjalan - 1,
           biaya_kepegawaian: responseSimulasi2.data.cost_component_b_detail.biaya_kepegawaian,
           biaya_pemeliharaan_rutin: responseSimulasi2.data.cost_component_b_detail.biaya_pemeliharaan_rutin,
@@ -1552,7 +1573,7 @@ const fetchDataFinansialDetail = async () => {
         cost_component_d: responseSimulasi2.data.cost_component_d,
         cost_component_d_detail: {
           id_pelumas_bahan_kimia: 0,
-          uuid_mesin: idMesin.value,
+          uuid_mesin: uuidMesin.value,
           tahun: tahunBerjalan - 1,
           biaya_pelumas: responseSimulasi2.data.cost_component_d_detail.biaya_pelumas,
           biaya_bahan_kimia: responseSimulasi2.data.cost_component_d_detail.biaya_bahan_kimia,
@@ -1567,13 +1588,13 @@ const fetchDataFinansialDetail = async () => {
       };
     }
   } catch (error) {
-    console.error("Fetch Data Finansial Simulasi Error : " + error);
+    console.error("Fetch Data Finansial Simulasi Error : ", error);
   }
 };
 const fetchHasilSimulasi1 = async () => {
   try {
-    const response: any = await perbaruiDataService.getHasilSimulasi(idMesin.value, tahunBerjalan, 6);
-    hasilSimulasi1.value.idMesin = response.data.uuid_mesin;
+    const response: any = await perbaruiDataService.getHasilSimulasi(uuidMesin.value, tahunBerjalan, 6);
+    hasilSimulasi1.value.idMesin = response.data.id_mesin;
     hasilSimulasi1.value.trackAverageEaf = response.data.track_average_eaf;
     hasilSimulasi1.value.trackAverageNcf = response.data.track_average_cf;
     hasilSimulasi1.value.trackIrrEquity = response.data.track_irr_equity;
@@ -1581,13 +1602,14 @@ const fetchHasilSimulasi1 = async () => {
     hasilSimulasi1.value.trackNpvEquity = response.data.track_npv_equity;
     hasilSimulasi1.value.trackNpvProject = response.data.track_npv_project;
   } catch (error) {
+    hasilSimulasi1.value.isFetchingError = true;
     console.error(error);
   }
 }
 const fetchHasilSimulasi2 = async () => {
   try {
-    const response: any = await perbaruiDataService.getHasilSimulasi(idMesin.value, tahunBerjalan, 7);
-    hasilSimulasi2.value.idMesin = response.data.uuid_mesin;
+    const response: any = await perbaruiDataService.getHasilSimulasi(uuidMesin.value, tahunBerjalan, 7);
+    hasilSimulasi2.value.idMesin = response.data.id_mesin;
     hasilSimulasi2.value.trackAverageEaf = response.data.track_average_eaf;
     hasilSimulasi2.value.trackAverageNcf = response.data.track_average_cf;
     hasilSimulasi2.value.trackIrrEquity = response.data.track_irr_equity;
@@ -1595,6 +1617,7 @@ const fetchHasilSimulasi2 = async () => {
     hasilSimulasi2.value.trackNpvEquity = response.data.track_npv_equity;
     hasilSimulasi2.value.trackNpvProject = response.data.track_npv_project;
   } catch (error) {
+    hasilSimulasi2.value.isFetchingError = true;
     console.error(error);
   }
 }
@@ -1627,7 +1650,7 @@ const uploadFileEvidence = async () => {
     const formData = new FormData();
     formData.append('file', selectedFileEvidence.value);
     const response: any = await rekapService.uploadEvidence(formData);
-    await rekapService.updateEvidencePath(idMesin.value, tahunBerjalan.toString(), response.data, 0, selectedFileEvidence.value.name);
+    await rekapService.updateEvidencePath(uuidMesin.value, tahunBerjalan.toString(), response.data, 0, selectedFileEvidence.value.name);
     isShowFinalConfirmation.value = false;
     isShowModalEvidence.value = false;
     isLoading.value = false;
@@ -1733,7 +1756,7 @@ function handleTambahBahanBakar() {
   bahanBakarGroup.value.bahanBakars.push({
     flag_bahan_bakar: 0,
     harga_bahan_bakar: "0",
-    uuid_mesin: idMesin.value,
+    uuid_mesin: uuidMesin.value,
     kode_bahan_bakar: "",
     sfc: "0",
     tahun: (tahunBerjalan - 1).toString(),
@@ -1745,7 +1768,7 @@ function handleTambahBahanBakar() {
     value: "0"
   });
   bahanBakarGroup.value.costCDetail.push({
-    uuid_mesin: idMesin.value,
+    uuid_mesin: uuidMesin.value,
     tahun: tahunBerjalan - 1,
     kode_bahan_bakar: "",
     fuel_cost: "0"
@@ -1782,20 +1805,24 @@ const handleChange = () => {
 
 function handleHapusBahanBakar() {
   if (checkedBahanBakar.value.length) {
-    checkedBahanBakar.value.forEach((checkedItemId) => {
-      const result = bahanBakarGroup.value.bahanBakars.findIndex((checkbox) => checkbox.id === checkedItemId);
-      if (result !== -1) {
-        bahanBakarGroup.value.bahanBakars.splice(result, 1);
-        bahanBakarGroup.value.fuelConsumption.splice(result, 1);
-        bahanBakarGroup.value.costCDetail.splice(result, 1);
-      }
-    });
+    bahanBakarGroup.value.bahanBakars = bahanBakarGroup.value.bahanBakars.filter(
+      (item) => !checkedBahanBakar.value.includes(item.kode_bahan_bakar)
+    );
+
+    bahanBakarGroup.value.fuelConsumption = bahanBakarGroup.value.fuelConsumption.filter(
+      (item) => !checkedBahanBakar.value.includes(item.kode_bahan_bakar)
+    );
+
+    bahanBakarGroup.value.costCDetail = bahanBakarGroup.value.costCDetail.filter(
+      (item) => !checkedBahanBakar.value.includes(item.kode_bahan_bakar)
+    );
+
     checkedBahanBakar.value = [];
   }
 }
 const fetchDataTeknisSimulasi1 = async () => {
   try {
-    const response: any = await perbaruiDataService.getDataTeknisSimulasi1(tahunBerjalan, idMesin.value);
+    const response: any = await perbaruiDataService.getDataTeknisSimulasi1(tahunBerjalan, uuidMesin.value);
     simulasi1DataTeknis.value = response.data;
     console.log('Simulasi Teknis 1 : ', response.data);
   } catch (error) {
@@ -1804,7 +1831,7 @@ const fetchDataTeknisSimulasi1 = async () => {
 }
 const fetchDataTeknisSimulasi2 = async () => {
   try {
-    const response: any = await perbaruiDataService.getDataTeknisSimulasi2(tahunBerjalan, idMesin.value);
+    const response: any = await perbaruiDataService.getDataTeknisSimulasi2(tahunBerjalan, uuidMesin.value);
     simulasi2DataTeknis.value = response.data;
     console.log('Simulasi Teknis 2: ', response.data);
   } catch (error) {
@@ -1814,7 +1841,7 @@ const fetchDataTeknisSimulasi2 = async () => {
 const fetchDataFinansialSimulasi1 = async () => {
   try {
     simulasi1DataFinansial.value = [];
-    const response: any = await perbaruiDataService.getDataFinansialSimulasi1(tahunBerjalan, idMesin.value);
+    const response: any = await perbaruiDataService.getDataFinansialSimulasi1(tahunBerjalan, uuidMesin.value);
     let currentLevel1: any | null = null;
     let currentLevel2: any | null = null;
     let currentLevel3: any | null = null;
@@ -1850,7 +1877,7 @@ const fetchDataFinansialSimulasi1 = async () => {
 const fetchDataFinansialSimulasi2 = async () => {
   try {
     simulasi2DataFinansial.value = []
-    const response: any = await perbaruiDataService.getDataFinansialSimulasi2(tahunBerjalan, idMesin.value)
+    const response: any = await perbaruiDataService.getDataFinansialSimulasi2(tahunBerjalan, uuidMesin.value)
     let currentLevel1: any | null = null
     let currentLevel2: any | null = null;
     let currentLevel3: any | null = null;
@@ -2112,7 +2139,7 @@ const handleSubmit = async () => {
           tahun: tahunBerjalan,
           // Tahun Realisasi
           tahun_realisasi: tahunBerjalan - 1,
-          uuid_mesin: idMesin.value,
+          uuid_mesin: uuidMesin.value,
           interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
           umur_teknis: parseInt(masaManfaat.value),
           loan_tenor: parseInt(asumsiParameter.value.asumsiMakro.loanTenor),
@@ -2127,7 +2154,7 @@ const handleSubmit = async () => {
         const response: AsumsiParameterItem =
           await perbaruiDataService.getAsumsiParameterData(
             tahunBerjalan - 1,
-            idMesin.value,
+            uuidMesin.value,
             tahunBerjalan
           );
         statusAsumsi.value = response.data.status;
@@ -2139,7 +2166,7 @@ const handleSubmit = async () => {
           tahun: tahunBerjalan,
           // Tahun Realisasi
           tahun_realisasi: tahunBerjalan - 1,
-          uuid_mesin: idMesin.value,
+          uuid_mesin: uuidMesin.value,
           interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
           umur_teknis: parseInt(masaManfaat.value),
           loan_tenor: parseInt(asumsiParameter.value.asumsiMakro.loanTenor),
@@ -2152,7 +2179,7 @@ const handleSubmit = async () => {
         const response: AsumsiParameterItem =
           await perbaruiDataService.getAsumsiParameterData(
             tahunBerjalan - 1,
-            idMesin.value,
+            uuidMesin.value,
             tahunBerjalan
           );
         statusAsumsi.value = response.data.status;
@@ -2181,7 +2208,7 @@ const handleSubmit = async () => {
       let formParameterUpdate = {};
       formParameterUpdate = {
         id_asumsi: idAsumsi.value,
-        uuid_mesin: idMesin.value,
+        uuid_mesin: uuidMesin.value,
         tahun: tahunBerjalan,
         tahun_realisasi: tahunBerjalan - 1,
         nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
@@ -2197,7 +2224,7 @@ const handleSubmit = async () => {
       // } else {
       //   formParameterUpdate = {
       //     id_asumsi: idAsumsi.value,
-      //     uuid_mesin: idMesin.value,
+      //     uuid_mesin: uuidMesin.value,
       //     tahun: tahunBerjalan,
       //     tahun_realisasi: tahunBerjalan - 1,
       //     nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
@@ -2229,7 +2256,7 @@ const handleSubmit = async () => {
       const finalEnergySales = energySales.value.includes('.') ? energySales.value.replace(/[.]/g, '') : energySales.value;
 
       const formDataTeknisUpdate = {
-        uuid_mesin: idMesin.value,
+        uuid_mesin: uuidMesin.value,
         tahun: tahunBerjalan,
         tahun_realisasi: tahunBerjalan - 1,
         id_type_periodic: typePeriodic.value,
@@ -2283,7 +2310,7 @@ const handleSubmit = async () => {
         const formattedFuelCost = item.fuel_cost.includes('.') ? item.fuel_cost.replace(/[.]/g, '') : item.fuel_cost;
         console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail', item.fuel_cost)
         finalCostComponentCDetail.push({
-          uuid_mesin: idMesin.value,
+          uuid_mesin: uuidMesin.value,
           tahun: tahunBerjalan - 1,
           kode_bahan_bakar: item.kode_bahan_bakar,
           fuel_cost: parseFloat(formattedFuelCost.replace(/,/g, '.'))
@@ -2300,14 +2327,14 @@ const handleSubmit = async () => {
 
       let formDataFinansialUpdate;
       formDataFinansialUpdate = {
-        uuid_mesin: idMesin.value,
+        uuid_mesin: uuidMesin.value,
         tahun: tahunBerjalan - 1,
         status_b_d: 2,
         cost_component_a: parseFloat(finalCostComponentA.replace(/,/g, '.')),
         cost_component_b: parseFloat(finalCostComponentB.replace(/,/g, '.')),
         cost_component_b_detail: {
           id_ao: 0,
-          uuid_mesin: idMesin.value,
+          uuid_mesin: uuidMesin.value,
           tahun: tahunBerjalan - 1,
           biaya_kepegawaian: parseFloat(finalBiayaKepegawaian.replace(/,/g, '.')),
           biaya_pemeliharaan_rutin: parseFloat(finalBiayaPemeliharaanRutin.replace(/,/g, '.')),
@@ -2322,7 +2349,7 @@ const handleSubmit = async () => {
         cost_component_d: parseFloat(finalCostComponentD.replace(/,/g, '.')),
         cost_component_d_detail: {
           id_pelumas_bahan_kimia: 0,
-          uuid_mesin: idMesin.value,
+          uuid_mesin: uuidMesin.value,
           tahun: tahunBerjalan - 1,
           biaya_pelumas: parseFloat(finalBiayaPelumas.replace(/,/g, '.')),
           biaya_bahan_kimia: parseFloat(finalBahanKimia.replace(/,/g, '.')),
@@ -2336,14 +2363,14 @@ const handleSubmit = async () => {
       }
       // } else {
       //   formDataFinansialUpdate = {
-      //     uuid_mesin: idMesin.value,
+      //     uuid_mesin: uuidMesin.value,
       //     tahun: tahunBerjalan - 1,
       //     status_b_d: 1,
       //     cost_component_a: parseFloat(finalCostComponentA.replace(/,/g, '.')),
       //     cost_component_b: parseFloat(finalCostComponentB.replace(/,/g, '.')),
       //     cost_component_b_detail: {
       //       id_ao: 0,
-      //       uuid_mesin: idMesin.value,
+      //       uuid_mesin: uuidMesin.value,
       //       tahun: tahunBerjalan - 1,
       //       biaya_kepegawaian: 0,
       //       biaya_pemeliharaan_rutin: 0,
@@ -2358,7 +2385,7 @@ const handleSubmit = async () => {
       //     cost_component_d: 0,
       //     cost_component_d_detail: {
       //       id_pelumas_bahan_kimia: 0,
-      //       uuid_mesin: idMesin.value,
+      //       uuid_mesin: uuidMesin.value,
       //       tahun: tahunBerjalan - 1,
       //       biaya_pelumas: 0,
       //       biaya_bahan_kimia: 0,
@@ -2392,8 +2419,8 @@ const handleSubmit = async () => {
       console.log(bahanBakarGroup.value);
       storePerbaruiTab.currentTab = 'Opsi Simulasi';
     } catch (error: any) {
-      console.error('Update Error : ' + error);
-      notifyError('Update Error: ' + error.response.data.message, 1000);
+      console.error('Update Error : ', error);
+      notifyError(`Update Error: ${error.response.data.message}`, 1000);
     } finally {
       isLoading.value = false;
     }
@@ -2412,7 +2439,7 @@ const handleFinalSubmit = async () => {
       for (const item of formFinansialSimulasi1.value.cost_component_c_detail) {
         const formattedFuelCost = item.fuel_cost.includes('.') ? item.fuel_cost.replace(/[.]/g, '') : item.fuel_cost;
         finalCostComponentCDetail.push({
-          uuid_mesin: idMesin.value,
+          uuid_mesin: uuidMesin.value,
           tahun: tahunBerjalan - 1,
           kode_bahan_bakar: item.kode_bahan_bakar,
           fuel_cost: parseFloat(formattedFuelCost.replace(/,/g, '.'))
@@ -2440,12 +2467,12 @@ const handleFinalSubmit = async () => {
     await wait(3000);
     isFinalSubmitSuccess.value = false;
     if (userAuthStore.levelAlias === 'Mb*0yT%3') {
-      router.replace({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(idMesin.value) : idMesin.value }, query: { uuid_sentral: idSentral.value, tahun: tahunBerjalan } });
+      router.replace({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(uuidMesin.value) : uuidMesin.value }, query: { uuid_sentral: idSentral.value, tahun: tahunBerjalan } });
     } else {
       router.replace({ name: 'persetujuan-by-approve' });
     }
   } catch (error) {
-    console.error('Final Submit Error : ' + error);
+    console.error('Final Submit Error : ', error);
     isLoading.value = false;
   } finally {
     isLoading.value = false;
@@ -2483,11 +2510,11 @@ const handleDownloadExcelSimulasi1 = async () => {
     isLoading.value = true;
     console.log('Form 1', formFinansialSimulasi1.value);
     console.log('Form 2', formFinansialSimulasi2.value);
-    const response: any = await rekapService.downloadSimulasi1(tahunBerjalan, tahunBerjalan - 1, idMesin.value);
+    const response: any = await rekapService.downloadSimulasi1(tahunBerjalan, tahunBerjalan - 1, uuidMesin.value);
     console.log(response);
     const contentDisposition = response.headers['content-disposition'];
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
-    const fileName = fileNameMatch ? fileNameMatch[1] : `Simulasi 1 - Kertas Kerja Actual - ${mesinDataById.value?.mesin}_${tahunBerjalan}_${globalFormat.formatNumberFiveDigits(idMesin.value)}.xlsx`
+    const fileName = fileNameMatch ? fileNameMatch[1] : `Simulasi 1 - Kertas Kerja Actual - ${mesinDataById.value?.mesin}_${tahunBerjalan}_${globalFormat.formatNumberFiveDigits(uuidMesin.value)}.xlsx`
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a')
@@ -2498,7 +2525,7 @@ const handleDownloadExcelSimulasi1 = async () => {
     document.body.removeChild(link);
     isLoading.value = false
   } catch (error) {
-    console.error('Handle Download Template Rekap Error : ' + error);
+    console.error('Handle Download Template Rekap Error : ', error);
   } finally {
     isLoading.value = false;
   }
@@ -2506,10 +2533,10 @@ const handleDownloadExcelSimulasi1 = async () => {
 const handleDownloadExcelSimulasi2 = async () => {
   try {
     isLoading.value = true
-    const response: any = await rekapService.downloadSimulasi2(tahunBerjalan, tahunBerjalan - 1, idMesin.value);
+    const response: any = await rekapService.downloadSimulasi2(tahunBerjalan, tahunBerjalan - 1, uuidMesin.value);
     const contentDisposition = response.headers['content-disposition']
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
-    const fileName = fileNameMatch ? fileNameMatch[1] : `Simulasi 2 - Kertas Kerja Actual - ${mesinDataById.value?.mesin}_${tahunBerjalan}_${globalFormat.formatNumberFiveDigits(idMesin.value)}.xlsx`
+    const fileName = fileNameMatch ? fileNameMatch[1] : `Simulasi 2 - Kertas Kerja Actual - ${mesinDataById.value?.mesin}_${tahunBerjalan}_${globalFormat.formatNumberFiveDigits(uuidMesin.value)}.xlsx`
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a');
@@ -2520,7 +2547,7 @@ const handleDownloadExcelSimulasi2 = async () => {
     document.body.removeChild(link)
     isLoading.value = false;
   } catch (error) {
-    console.error('Handle Download Template Rekap Error : ' + error)
+    console.error('Handle Download Template Rekap Error : ', error)
   } finally {
     isLoading.value = false;
   }
@@ -2532,7 +2559,7 @@ onUnmounted(() => {
 
 onMounted(async () => {
   const encryptStorage = await encryptStoragePromise;
-  idMesin.value = parseInt(nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString());
+  uuidMesin.value = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString();
   await fetchMesinById();
   await fetchUnitPengelola();
   await fetchPersetujuanKK();

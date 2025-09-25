@@ -18,7 +18,7 @@ export const useSessionStore = defineStore("session", () => {
     if (!force && sessionCache.value && 
       sessionCache.value.isAuthenticated && 
       sessionCache.value.expiry > Date.now()) {
-      return sessionCache.value!.isAuthenticated;
+      return sessionCache.value.isAuthenticated;
     }
 
     if (isLoading.value) {

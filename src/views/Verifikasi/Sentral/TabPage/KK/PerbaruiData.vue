@@ -583,8 +583,10 @@
                         </li>
                       </ul>
                     </nav>
-                    <AkhirMasaManfaat :irr-on-project="hasilSimulasi1.trackIrrProject"
-                      :irr-on-equity="hasilSimulasi1.trackIrrEquity" :npv-on-equity="hasilSimulasi1.trackNpvEquity ?? 0"
+                    <AkhirMasaManfaat :id-mesin="hasilSimulasi1.idMesin"
+                      :irr-on-project="hasilSimulasi1.trackIrrProject"
+                      :is-fetching-error="hasilSimulasi1.isFetchingError" :irr-on-equity="hasilSimulasi1.trackIrrEquity"
+                      :npv-on-equity="hasilSimulasi1.trackNpvEquity ?? 0"
                       :npv-on-project="hasilSimulasi1.trackNpvProject ?? 0"
                       :average-ncf="hasilSimulasi1.trackAverageNcf ?? 0"
                       :average-eaf="hasilSimulasi1.trackAverageEaf ?? 0" />
@@ -607,8 +609,10 @@
                         </li>
                       </ul>
                     </nav>
-                    <AkhirMasaManfaat :irr-on-project="hasilSimulasi2.trackIrrProject"
-                      :irr-on-equity="hasilSimulasi2.trackIrrEquity" :npv-on-equity="hasilSimulasi2.trackNpvEquity ?? 0"
+                    <AkhirMasaManfaat :id-mesin="hasilSimulasi1.idMesin"
+                      :irr-on-project="hasilSimulasi2.trackIrrProject"
+                      :is-fetching-error="hasilSimulasi2.isFetchingError" :irr-on-equity="hasilSimulasi2.trackIrrEquity"
+                      :npv-on-equity="hasilSimulasi2.trackNpvEquity ?? 0"
                       :npv-on-project="hasilSimulasi2.trackNpvProject ?? 0"
                       :average-ncf="hasilSimulasi2.trackAverageNcf ?? 0"
                       :average-eaf="hasilSimulasi2.trackAverageEaf ?? 0" />
@@ -642,161 +646,161 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, onUnmounted, watchEffect } from "vue";
-import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
-import { notifyError } from "@/services/helper/toast-notification";
-import { useUserAuthStore } from "@/store/storeUserAuth";
-const userAuthStore = useUserAuthStore();
-import { usePerbaruiTabStore } from "@/store/storeRekapKertasKerja";
-const storePerbaruiTab = usePerbaruiTabStore();
-import { useRoute, useRouter } from "vue-router";
-const route = useRoute();
-const router = useRouter();
-import PerbaruiDataService from "@/services/perbarui-data";
-const perbaruiDataService = new PerbaruiDataService();
+import { ref, onMounted, watch, onUnmounted, watchEffect } from "vue"
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage"
+import { notifyError } from "@/services/helper/toast-notification"
+import { useUserAuthStore } from "@/store/storeUserAuth"
+const userAuthStore = useUserAuthStore()
+import { usePerbaruiTabStore } from "@/store/storeRekapKertasKerja"
+const storePerbaruiTab = usePerbaruiTabStore()
+import { useRoute, useRouter } from "vue-router"
+const route = useRoute()
+const router = useRouter()
+import PerbaruiDataService from "@/services/perbarui-data"
+const perbaruiDataService = new PerbaruiDataService()
 import GlobalFormat from '@/services/format/global-format'
-const globalFormat = new GlobalFormat();
-import UserService from "@/services/user-service";
-const userService = new UserService();
-import AuthService from "@/services/auth-service";
-const authService = new AuthService();
-import RekapService from "@/services/rekap-service";
-const rekapService = new RekapService();
-import PersetujuanService from "@/services/persetujuan-service";
-const persetujuanService = new PersetujuanService();
-import TabAsumsiMakro from "@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabAsumsiMakro.vue";
-import TabParameterTeknis from "@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabParameterTeknis.vue";
-import TabDataTeknis from "@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabDataTeknis.vue";
-import TabDataFinansial from "@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabDataFinansial.vue";
-import TabsWrapper from "@/components/ui/TabsWrapper.vue";
-import TabItem from "@/components/ui/TabItem.vue";
-import Loading from "@/components/ui/LoadingSpinner.vue";
-import InfoHeader from '@/components/ui/InfoHeader.vue';
-import InfoComponent from "@/views/Data/RekapKertasKerja/PerbaruiData/InfoComponent.vue";
-import AsumsiInfoBox from "@/views/Data/RekapKertasKerja/PerbaruiData/AsumsiInfoBox.vue";
-import ParameterTeknisInfoBox from "@/views/Data/RekapKertasKerja/PerbaruiData/ParameterTeknisInfoBox.vue";
-import errorJsonData from '@/assets/lottie/error.json';
-import ModalWrapper from '@/components/ui/ModalWrapper.vue';
-import ModalNotification from '@/components/ui/ModalNotification.vue';
-import ConfirmationDialog from '@/components/ui/ConfirmationDialog.vue';
-import IconFolder from "@/components/icons/IconFolder.vue";
-import IconFolderBlue from "@/components/icons/IconFolderBlue.vue";
-import successJsonData from "@/assets/lottie/success.json";
-import TableDataTeknis from "@/components/RekapKertasKerja/TableDataTeknis.vue";
-import TableDataFinansial from "@/components/RekapKertasKerja/TableDataFinansial.vue";
-import AkhirMasaManfaat from "@/views/Data/RekapKertasKerja/DetailRekap/HasilSimulasi/AkhirMasaManfaat.vue";
+const globalFormat = new GlobalFormat()
+import UserService from "@/services/user-service"
+const userService = new UserService()
+import AuthService from "@/services/auth-service"
+const authService = new AuthService()
+import RekapService from "@/services/rekap-service"
+const rekapService = new RekapService()
+import PersetujuanService from "@/services/persetujuan-service"
+const persetujuanService = new PersetujuanService()
+import TabAsumsiMakro from "@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabAsumsiMakro.vue"
+import TabParameterTeknis from "@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabParameterTeknis.vue"
+import TabDataTeknis from "@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabDataTeknis.vue"
+import TabDataFinansial from "@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabDataFinansial.vue"
+import TabsWrapper from "@/components/ui/TabsWrapper.vue"
+import TabItem from "@/components/ui/TabItem.vue"
+import Loading from "@/components/ui/LoadingSpinner.vue"
+import InfoHeader from '@/components/ui/InfoHeader.vue'
+import InfoComponent from "@/views/Data/RekapKertasKerja/PerbaruiData/InfoComponent.vue"
+import AsumsiInfoBox from "@/views/Data/RekapKertasKerja/PerbaruiData/AsumsiInfoBox.vue"
+import ParameterTeknisInfoBox from "@/views/Data/RekapKertasKerja/PerbaruiData/ParameterTeknisInfoBox.vue"
+import errorJsonData from '@/assets/lottie/error.json'
+import ModalWrapper from '@/components/ui/ModalWrapper.vue'
+import ModalNotification from '@/components/ui/ModalNotification.vue'
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog.vue'
+import IconFolder from "@/components/icons/IconFolder.vue"
+import IconFolderBlue from "@/components/icons/IconFolderBlue.vue"
+import successJsonData from "@/assets/lottie/success.json"
+import TableDataTeknis from "@/components/RekapKertasKerja/TableDataTeknis.vue"
+import TableDataFinansial from "@/components/RekapKertasKerja/TableDataFinansial.vue"
+import AkhirMasaManfaat from "@/views/Data/RekapKertasKerja/DetailRekap/HasilSimulasi/AkhirMasaManfaat.vue"
 
-const nodeMode = import.meta.env.MODE;
-const idMesin = ref<any>('');
-const mesinDataById = ref<MesinItem>();
-const tahunTerakhirRealisasi = ref<number>(0);
-const tahunTerakhirAsumsi = ref<number>(0);
-const tahunUpdate = ref<number>(0);
+const nodeMode = import.meta.env.MODE
+const uuidMesin = ref<any>('')
+const mesinDataById = ref<MesinItem>()
+const tahunTerakhirRealisasi = ref<number>(0)
+const tahunTerakhirAsumsi = ref<number>(0)
+const tahunUpdate = ref<number>(0)
 const tahunBerjalan = parseInt(route.query.tahun as string, 10)
-const kodeMesin = ref();
-const isPermanent = ref<boolean>(false);
-const jenisPembangkit = ref();
-const approveMesinKK = ref<any>();
-const statusMesin = ref<string>('');
-const namaPengelola = ref<string>('');
-const namaPembina = ref<string>('');
-const comboTypePeriodic = ref<ComboTypePeriodicItem[]>([]);
-const isLoading = ref(true);
-const selectedAside = ref<string>('Asumsi Makro');
-const selectedSimulasiTab = ref<string>('Simulasi 1');
-const isShowModalNotification = ref(false);
-const isSuccess = ref(false);
-const picked = ref('pisah');
-const kodePengelola = ref<string>('');
-const pickedParameterValue = ref<string>('auxiliarySusut');
-const masaManfaat = ref<any>();
-const isFinalSubmitSuccess = ref<boolean>(false);
-const isSuccessSimulasi = ref<boolean>(false);
-const isSuccessPermanent = ref<boolean>(false);
-const isShowModalEvidence = ref<boolean>(false);
-const isSuccessEvidence = ref<boolean>(false);
-const idSentral = ref<string>('');
-const isShowFinalConfirmation = ref<boolean>(false);
-const isShowRejected = ref<boolean>(true);
-const isIntegrasi = ref<boolean>(false);
+const kodeMesin = ref()
+const isPermanent = ref<boolean>(false)
+const jenisPembangkit = ref()
+const approveMesinKK = ref<any>()
+const statusMesin = ref<string>('')
+const namaPengelola = ref<string>('')
+const namaPembina = ref<string>('')
+const comboTypePeriodic = ref<ComboTypePeriodicItem[]>([])
+const isLoading = ref(true)
+const selectedAside = ref<string>('Asumsi Makro')
+const selectedSimulasiTab = ref<string>('Simulasi 1')
+const isShowModalNotification = ref(false)
+const isSuccess = ref(false)
+const picked = ref('pisah')
+const kodePengelola = ref<string>('')
+const pickedParameterValue = ref<string>('auxiliarySusut')
+const masaManfaat = ref<any>()
+const isFinalSubmitSuccess = ref<boolean>(false)
+const isSuccessSimulasi = ref<boolean>(false)
+const isSuccessPermanent = ref<boolean>(false)
+const isShowModalEvidence = ref<boolean>(false)
+const isSuccessEvidence = ref<boolean>(false)
+const idSentral = ref<string>('')
+const isShowFinalConfirmation = ref<boolean>(false)
+const isShowRejected = ref<boolean>(true)
+const isIntegrasi = ref<boolean>(false)
 // Tab Asumsi Makro & Parameter Teknis Model
-const statusAsumsi = ref<string>('');
-const idAsumsi = ref<number>(0);
+const statusAsumsi = ref<string>('')
+const idAsumsi = ref<number>(0)
 const asumsiParameter = ref<{
   asumsiMakro: {
-    interestRate: string,
     umurTeknis: string,
-    loanTenor: string,
+    interestRate: string,
     loanPortion: string,
+    loanTenor: string,
     totalProjectCost: string,
     dayaMampuNettoMW: string
   },
   parameterTeknis: {
-    nphr: string,
     auxiliary: string,
-    susutTrafo: string,
+    nphr: string,
     pemakaianSendiri: string,
-    electricityPriceA: string,
+    susutTrafo: string,
     electricityPriceB: string,
-    electricityPriceC: string,
+    electricityPriceA: string,
     electricityPriceD: string,
+    electricityPriceC: string,
   }
 }>({
   asumsiMakro: {
-    interestRate: '',
     umurTeknis: '',
-    loanTenor: '',
+    interestRate: '',
     loanPortion: '',
+    loanTenor: '',
     totalProjectCost: '',
     dayaMampuNettoMW: ''
   },
   parameterTeknis: {
-    nphr: '',
     auxiliary: '',
-    susutTrafo: '',
+    nphr: '',
     pemakaianSendiri: '',
-    electricityPriceA: '',
+    susutTrafo: '',
     electricityPriceB: '',
-    electricityPriceC: '',
+    electricityPriceA: '',
     electricityPriceD: '',
+    electricityPriceC: '',
   }
-});
+})
 const asumsiParameterInit = ref<{
   asumsiMakro: {
-    interestRate: string,
     umurTeknis: string,
+    interestRate: string,
     loanTenor: string,
     loanPortion: string
   },
   parameterTeknis: {
-    nphr: string,
     auxiliary: string,
-    susutTrafo: string,
+    nphr: string,
     pemakaianSendiri: string,
-    electricityPriceA: string,
+    susutTrafo: string,
     electricityPriceB: string,
-    electricityPriceC: string,
+    electricityPriceA: string,
     electricityPriceD: string,
+    electricityPriceC: string,
   }
 }>({
   asumsiMakro: {
-    interestRate: '',
     umurTeknis: '',
+    interestRate: '',
     loanTenor: '',
     loanPortion: ''
   },
   parameterTeknis: {
-    nphr: '',
     auxiliary: '',
-    susutTrafo: '',
+    nphr: '',
     pemakaianSendiri: '',
-    electricityPriceA: '',
+    susutTrafo: '',
     electricityPriceB: '',
-    electricityPriceC: '',
+    electricityPriceA: '',
     electricityPriceD: '',
+    electricityPriceC: '',
   }
-});
-const i = ref(1);
+})
+const i = ref(1)
 const bahanBakarGroup = ref<{
   bahanBakars: any[],
   fuelConsumption: any[],
@@ -805,24 +809,24 @@ const bahanBakarGroup = ref<{
   bahanBakars: [],
   fuelConsumption: [],
   costCDetail: []
-});
+})
 // Tab Parameter Teknis & Finansial Model
-const comboBahanBakar = ref<any[]>([]);
-const checkedBahanBakar = ref<number[]>([]);
+const comboBahanBakar = ref<any[]>([])
+const checkedBahanBakar = ref<number[]>([])
 // Tab Data Teknis
-const typePeriodic = ref<string | number>('');
-const listTypePeriodic = ref<any[]>([]);
-const ncf = ref();
-const eaf = ref();
-const productionBrutto = ref();
-const productionNetto = ref();
-const energySales = ref();
-const fuelConsumption = ref<any[]>([]);
-const dataTeknisByPeriode = ref();
-const bahanBakars = ref<any[]>([]);
-const statusDataTeknis = ref<string>('');
-const dataTeknisSimulasi1 = ref();
-const dataTeknisSimulasi2 = ref();
+const typePeriodic = ref<string | number>('')
+const listTypePeriodic = ref<any[]>([])
+const ncf = ref()
+const eaf = ref()
+const productionBrutto = ref()
+const productionNetto = ref()
+const energySales = ref()
+const fuelConsumption = ref<any[]>([])
+const dataTeknisByPeriode = ref()
+const bahanBakars = ref<any[]>([])
+const statusDataTeknis = ref<string>('')
+const dataTeknisSimulasi1 = ref()
+const dataTeknisSimulasi2 = ref()
 const dataTeknisInit = ref<{
   typePeriodic: string | number,
   ncf: string,
@@ -839,75 +843,75 @@ const dataTeknisInit = ref<{
   productionNetto: '',
   energySales: '',
   // fuelConsumption: ''
-});
+})
 // Tab Data Finansial
-const dataFinansialDetail = ref();
-const biayaKepegawaian = ref('');
-const costComponentA = ref('');
-const costComponentADetail = ref<any[]>([]);
-const costComponentB = ref('');
-const biayaPemeliharaanRutin = ref('');
-const biayaAdministrasiUmum = ref('');
-const biayaPembelianTenagaListrik = ref('');
-const biayaLainLain = ref('');
-const oMCost = ref('');
-const periodicMaintenanceCost = ref('');
-const costComponentC = ref('');
-const biayaMinyakPelumas = ref('');
-const bahanKimia = ref('');
-const statusDataFinansial = ref<string>('');
-const costComponentD = ref('');
-const totalRevenue = ref<string>('');
-const revenueKompA = ref<string>('');
-const revenueKompB = ref<string>('');
-const revenueKompC = ref<string>('');
-const revenueKompD = ref<string>('');
-const isAudited = ref<boolean>(false);
-const formFinansialSimulasi1 = ref();
-const formFinansialSimulasi2 = ref();
+const dataFinansialDetail = ref()
+const biayaKepegawaian = ref('')
+const costComponentA = ref('')
+const costComponentADetail = ref<any[]>([])
+const costComponentB = ref('')
+const biayaPemeliharaanRutin = ref('')
+const biayaAdministrasiUmum = ref('')
+const biayaPembelianTenagaListrik = ref('')
+const biayaLainLain = ref('')
+const oMCost = ref('')
+const periodicMaintenanceCost = ref('')
+const costComponentC = ref('')
+const biayaMinyakPelumas = ref('')
+const bahanKimia = ref('')
+const statusDataFinansial = ref<string>('')
+const costComponentD = ref('')
+const totalRevenue = ref<string>('')
+const revenueKompA = ref<string>('')
+const revenueKompB = ref<string>('')
+const revenueKompC = ref<string>('')
+const revenueKompD = ref<string>('')
+const isAudited = ref<boolean>(false)
+const formFinansialSimulasi1 = ref()
+const formFinansialSimulasi2 = ref()
 const dataFinansialInit = ref<{
-  costComponentA: string,
-  biayaPeriodicMaintenance: string,
-  costComponentB: string,
-  oMCost: string,
-  periodicMaintenanceCost: string,
-  biayaKepegawaian: string,
-  biayaPemeliharaanRutin: string,
-  biayaAdministrasiUmum: string,
-  biayaPembelianTenagaListrik: string,
-  biayaLainLain: string,
-  costComponentC: string,
-  costComponentCDetail: string,
-  costComponentD: string,
-  biayaMinyakPelumas: string,
+  costComponentA: string
+  biayaPeriodicMaintenance: string
+  costComponentB: string
+  oMCost: string
+  periodicMaintenanceCost: string
+  biayaKepegawaian: string
+  biayaPemeliharaanRutin: string
+  biayaAdministrasiUmum: string
+  biayaPembelianTenagaListrik: string
+  biayaLainLain: string
+  costComponentC: string
+  costComponentCDetail: string
+  costComponentD: string
+  biayaMinyakPelumas: string
   biayaBahanKimia: string
 }>({
-  costComponentA: '',
   biayaPeriodicMaintenance: '',
-  costComponentB: '',
+  costComponentA: '',
   oMCost: '',
-  periodicMaintenanceCost: '',
+  costComponentB: '',
   biayaKepegawaian: '',
-  biayaPemeliharaanRutin: '',
+  periodicMaintenanceCost: '',
   biayaAdministrasiUmum: '',
-  biayaPembelianTenagaListrik: '',
+  biayaPemeliharaanRutin: '',
   biayaLainLain: '',
-  costComponentC: '',
+  biayaPembelianTenagaListrik: '',
   costComponentCDetail: '',
-  costComponentD: '',
+  costComponentC: '',
   biayaMinyakPelumas: '',
+  costComponentD: '',
   biayaBahanKimia: ''
-});
+})
 // Tab Opsi Simulasi
-const simulasiAsumsiParameter = ref();
-const simulasi1DataTeknis = ref();
-const simulasi2DataTeknis = ref();
-const dataFinansialSimulasi1 = ref();
-const simulasi1DataFinansial = ref<any[]>([]);
-const dataFinansialSimulasi2 = ref();
-const simulasi2DataFinansial = ref<any[]>([]);
-const isRowTabOpenSimulasi1 = ref<number[]>([]);
-const isRowTabOpenSimulasi2 = ref<number[]>([]);
+const simulasiAsumsiParameter = ref()
+const simulasi1DataTeknis = ref()
+const simulasi2DataTeknis = ref()
+const dataFinansialSimulasi1 = ref()
+const simulasi1DataFinansial = ref<any[]>([])
+const dataFinansialSimulasi2 = ref()
+const simulasi2DataFinansial = ref<any[]>([])
+const isRowTabOpenSimulasi1 = ref<number[]>([])
+const isRowTabOpenSimulasi2 = ref<number[]>([])
 const hasilSimulasi1 = ref<{
   idMesin: number | null
   trackIrrProject: number | string
@@ -916,6 +920,7 @@ const hasilSimulasi1 = ref<{
   trackNpvEquity: number | null
   trackAverageEaf: number | null
   trackAverageNcf: number | null
+  isFetchingError: boolean
 }>({
   idMesin: 0,
   trackIrrProject: '',
@@ -923,8 +928,9 @@ const hasilSimulasi1 = ref<{
   trackNpvProject: null,
   trackNpvEquity: null,
   trackAverageEaf: null,
-  trackAverageNcf: null
-});
+  trackAverageNcf: null,
+  isFetchingError: false
+})
 const hasilSimulasi2 = ref<{
   idMesin: number | null
   trackIrrProject: number | string
@@ -933,6 +939,7 @@ const hasilSimulasi2 = ref<{
   trackNpvEquity: number | null
   trackAverageEaf: number | null
   trackAverageNcf: number | null
+  isFetchingError: boolean
 }>({
   idMesin: 0,
   trackIrrProject: '',
@@ -940,71 +947,66 @@ const hasilSimulasi2 = ref<{
   trackNpvProject: null,
   trackNpvEquity: null,
   trackAverageEaf: null,
-  trackAverageNcf: null
-});
-const selectedFileSimulasi1: any = ref(null);
-const isUnggahModalOpenSimulasi1 = ref<boolean>(false);
-const isUnggahModalOpen = ref(false);
-const selectedFile: any = ref(null);
-const selectedFileEvidence: any = ref(null);
+  trackAverageNcf: null,
+  isFetchingError: false
+})
+const selectedFileSimulasi1: any = ref(null)
+const isUnggahModalOpenSimulasi1 = ref<boolean>(false)
+const isUnggahModalOpen = ref(false)
+const selectedFile: any = ref(null)
+const selectedFileEvidence: any = ref(null)
 const error = ref<{
   asumsi: {
-    interestRate: boolean,
-    umurTeknis: boolean,
-    loanTenor: boolean,
+    interestRate: boolean
+    umurTeknis: boolean
+    loanTenor: boolean
     loanPortion: boolean
   },
   parameter: {
-    nphr: boolean,
-    auxiliary: boolean,
-    susutTrafo: boolean,
-    pemakaianSendiri: boolean,
-    electricityPriceA: boolean,
-    electricityPriceB: boolean,
-    electricityPriceC: boolean,
-    electricityPriceD: boolean,
+    nphr: boolean
+    auxiliary: boolean
+    susutTrafo: boolean
+    pemakaianSendiri: boolean
+    electricityPriceA: boolean
+    electricityPriceB: boolean
+    electricityPriceC: boolean
+    electricityPriceD: boolean
     bahanBakar: boolean
   },
   teknis: {
-    periodicMaintenance: boolean,
-    ncf: boolean,
-    eaf: boolean,
-    productionBrutto: boolean,
-    productionNetto: boolean,
-    energySales: boolean,
+    periodicMaintenance: boolean
+    ncf: boolean
+    eaf: boolean
+    productionBrutto: boolean
+    productionNetto: boolean
+    energySales: boolean
     fuelConsumption: boolean
   },
   finansial: {
-    costComponentA: boolean,
-    biayaInvestasiTambahan: boolean,
-    biayaPeriodicMaintenance: boolean,
-    biayaInvestasiAiAki: boolean,
-    costComponentB: boolean,
-    oMCost: boolean,
-    periodicMaintenanceCost: boolean,
-    biayaKepegawaian: boolean,
-    biayaPemeliharaanRutin: boolean,
-    biayaAdministrasiUmum: boolean,
-    biayaPembelianTenagaListrik: boolean,
-    biayaLainLain: boolean,
-    costComponentC: boolean,
-    costComponentCDetail: boolean,
-    costComponentD: boolean,
-    biayaMinyakPelumas: boolean,
-    biayaBahanKimia: boolean,
-    totalRevenue: boolean,
-    revenueKompA: boolean,
-    revenueKompB: boolean,
-    revenueKompC: boolean,
+    costComponentA: boolean
+    biayaInvestasiTambahan: boolean
+    biayaPeriodicMaintenance: boolean
+    biayaInvestasiAiAki: boolean
+    costComponentB: boolean
+    oMCost: boolean
+    periodicMaintenanceCost: boolean
+    biayaKepegawaian: boolean
+    biayaPemeliharaanRutin: boolean
+    biayaAdministrasiUmum: boolean
+    biayaPembelianTenagaListrik: boolean
+    biayaLainLain: boolean
+    costComponentC: boolean
+    costComponentCDetail: boolean
+    costComponentD: boolean
+    biayaMinyakPelumas: boolean
+    biayaBahanKimia: boolean
+    totalRevenue: boolean
+    revenueKompA: boolean
+    revenueKompB: boolean
+    revenueKompC: boolean
     revenueKompD: boolean
   }
 }>({
-  asumsi: {
-    interestRate: false,
-    umurTeknis: false,
-    loanTenor: false,
-    loanPortion: false
-  },
   parameter: {
     nphr: false,
     auxiliary: false,
@@ -1016,14 +1018,11 @@ const error = ref<{
     electricityPriceD: false,
     bahanBakar: false
   },
-  teknis: {
-    periodicMaintenance: false,
-    ncf: false,
-    eaf: false,
-    productionBrutto: false,
-    productionNetto: false,
-    energySales: false,
-    fuelConsumption: false
+  asumsi: {
+    interestRate: false,
+    umurTeknis: false,
+    loanTenor: false,
+    loanPortion: false
   },
   finansial: {
     costComponentA: false,
@@ -1048,22 +1047,31 @@ const error = ref<{
     revenueKompB: false,
     revenueKompC: false,
     revenueKompD: false
-  }
-});
+  },
+  teknis: {
+    periodicMaintenance: false,
+    ncf: false,
+    eaf: false,
+    productionBrutto: false,
+    productionNetto: false,
+    energySales: false,
+    fuelConsumption: false
+  },
+})
 
 interface MesinItem {
-  data: any
   uuid_mesin: number
-  kode_sentral: string
+  data: any
   kode_mesin: string
-  mesin: string
+  kode_sentral: string
   kode_jenis_pembangkit: string
-  kondisi_unit: string
+  mesin: string
   daya_terpasang: number
-  daya_mampu: number
+  kondisi_unit: string
   tahun_operasi: string
-  tahun_realisasi: string
+  daya_mampu: number
   masa_manfaat: number
+  tahun_realisasi: string
 }
 interface AsumsiParameterItem {
   data: any
@@ -1075,101 +1083,96 @@ interface AsumsiParameterItem {
   parameter_teknis_financial: ParameterTeknisFinancialItem
 }
 interface AsumsiMakroItem {
-  corporate_tax_rate: number
   discount_rate: number
-  interest_rate: number
+  corporate_tax_rate: number
   loan_tenor: number
-  loan_portion: number
+  interest_rate: number
   equity: number
+  loan_portion: number
   umur_teknis: number
 }
 interface ParameterTeknisFinancialItem {
-  daya_terpasang: number
   daya_mampu_netto_mw: number
-  auxiliary: number
+  daya_terpasang: number
   susut_trafo: number
-  ps: number
+  auxiliary: number
   total_project_cost: number
-  load: number
+  ps: number
   equity: number
-  electricity_price_a_rp_per_kwbln: number
+  load: number
   electricity_price_b_rp_per_kwbln: number
-  electricity_price_c_rp_per_kwh: number
+  electricity_price_a_rp_per_kwbln: number
   electricity_price_d_rp_per_kwh: number
-}
-interface DataTeknisItem {
-  data: any
-  tahun: any
-  detail: any
+  electricity_price_c_rp_per_kwh: number
 }
 interface ComboTypePeriodicItem {
   data: any
-}
+};
 const fetchMesinById = async () => {
   try {
     const response: MesinItem = await perbaruiDataService.getMesinById(
-      idMesin.value
-    );
-    mesinDataById.value = response.data;
-    kodeMesin.value = response.data.kode_mesin;
-    masaManfaat.value = response.data.masa_manfaat;
-    jenisPembangkit.value = response.data.kode_jenis_pembangkit;
-    tahunTerakhirRealisasi.value = parseInt(response.data.tahun_realisasi);
-    tahunTerakhirAsumsi.value = parseInt(response.data.tahun_asumsi);
-    tahunUpdate.value = parseInt(response.data.tahun_realisasi) + 1;
+      uuidMesin.value
+    )
+    mesinDataById.value = response.data
+    kodeMesin.value = response.data.kode_mesin
+    masaManfaat.value = response.data.masa_manfaat
+    jenisPembangkit.value = response.data.kode_jenis_pembangkit
+    tahunTerakhirRealisasi.value = parseInt(response.data.tahun_realisasi)
+    tahunTerakhirAsumsi.value = parseInt(response.data.tahun_asumsi)
+    tahunUpdate.value = parseInt(response.data.tahun_realisasi) + 1
   } catch (error) {
-    console.error("Fetch Mesin By Id Error : " + error);
+    console.error("Fetch Mesin By Id Error : ", error)
   }
-};
+}
 const fetchListPembina = async () => {
   try {
-    const response: any = await userService.getPembina('');
-    return response.data;
+    const response: any = await userService.getPembina('')
+    return response.data
   } catch (error) {
-    console.error('Fetch Pembina Error : ' + error)
+    console.error('Fetch Pembina Error : ', error)
   }
 }
 const fetchCheckIntegrasi = async () => {
   try {
-    const response: any = await perbaruiDataService.getCheckIntegrasi(tahunTerakhirRealisasi.value, idMesin.value);
-    isIntegrasi.value = response.data[0].status_data_integrasi !== "0";
-    console.log(isIntegrasi.value, 'dds');
+    const response: any = await perbaruiDataService.getCheckIntegrasi(tahunTerakhirRealisasi.value, uuidMesin.value)
+    isIntegrasi.value = response.data[0].status_data_integrasi !== "0"
+    console.log(isIntegrasi.value, 'dds')
   } catch (error) {
-    console.error('Fetch Check Integrasi Error : ' + error)
+    console.error('Fetch Check Integrasi Error : ', error)
   }
 }
 const fetchUnitPengelola = async () => {
   try {
     if (mesinDataById.value) {
-      const kodeSentral = mesinDataById.value.kode_sentral;
+      const kodeSentral = mesinDataById.value.kode_sentral
       const pembangkitResponse: any =
-        await perbaruiDataService.getPembangkitByKode(kodeSentral);
-      kodePengelola.value = pembangkitResponse.data.kode_pengelola;
-      idSentral.value = pembangkitResponse.data.uuid_sentral;
+        await perbaruiDataService.getPembangkitByKode(kodeSentral)
+      kodePengelola.value = pembangkitResponse.data.kode_pengelola
+      idSentral.value = pembangkitResponse.data.uuid_sentral
       const pengelolaResponse: any =
-        await perbaruiDataService.getPengelolaData();
+        await perbaruiDataService.getPengelolaData()
       const pengelola = pengelolaResponse.data.filter(
         (pengelola: any) => pengelola.kode_pengelola === kodePengelola.value
-      );
-      namaPengelola.value = pengelola[0].pengelola;
-      const idPembina = pembangkitResponse.data.uuid_pembina;
-      const pembinaList: any = await fetchListPembina();
-      namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina;
+      )
+      namaPengelola.value = pengelola[0].pengelola
+      const idPembina = pembangkitResponse.data.uuid_pembina
+      const pembinaList: any = await fetchListPembina()
+      namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina
     }
   } catch (error) {
-    console.error("Fetch Unit Pengelola Error : " + error);
+    console.error("Fetch Unit Pengelola Error : ", error)
   }
-};
+}
 const fetchPersetujuanKK = async () => {
   try {
     const response: any = await persetujuanService.getPersetujuanKKSentral({
       uuid_sentral: idSentral.value,
       tahun: tahunBerjalan
-    });
-    approveMesinKK.value = response.data.mesins.filter((val: any) => val.uuid_mesin == idMesin.value)[0];
-    statusMesin.value = approveMesinKK.value.id_status;
+    })
+    approveMesinKK.value = response.data.mesins.filter((val: any) => val.uuid_mesin == uuidMesin.value)[0]
+    statusMesin.value = approveMesinKK.value.id_status
   } catch (error) {
-    console.error('Fetch Persetujuan KK Sentral Error : ' + error);
+    console.error('Fetch Persetujuan KK Sentral Error : ', error)
   }
 }
 const fetchAsumsiParameter = async () => {
@@ -1177,62 +1180,62 @@ const fetchAsumsiParameter = async () => {
     const response: AsumsiParameterItem =
       await perbaruiDataService.getAsumsiParameterData(
         tahunBerjalan - 1,
-        idMesin.value,
+        uuidMesin.value,
         tahunBerjalan
-      );
+      )
     const tempBahanBakars = response.data.harga_bahan_bakars.map((value: any) => {
-      const newValue = { ...value };
-      newValue.id = i.value++;
-      newValue.harga_bahan_bakar = globalFormat.formatCurrencyNotFixed(newValue.harga_bahan_bakar.toString());
-      newValue.sfc = globalFormat.formatCurrencyNotFixed(newValue.sfc.toString());
-      return newValue;
-    });
-    bahanBakarGroup.value.bahanBakars = tempBahanBakars;
-    statusAsumsi.value = response.data.status;
-    simulasiAsumsiParameter.value = response.data;
-    idAsumsi.value = response.data.id_asumsi;
+      const newValue = { ...value }
+      newValue.id = i.value++
+      newValue.harga_bahan_bakar = globalFormat.formatCurrencyNotFixed(newValue.harga_bahan_bakar.toString())
+      newValue.sfc = globalFormat.formatCurrencyNotFixed(newValue.sfc.toString())
+      return newValue
+    })
+    bahanBakarGroup.value.bahanBakars = tempBahanBakars
+    statusAsumsi.value = response.data.status
+    simulasiAsumsiParameter.value = response.data
+    idAsumsi.value = response.data.id_asumsi
     // Mengisi Asumsi Makro Data Variable
-    asumsiParameter.value.asumsiMakro.interestRate = globalFormat.formatCurrencyNotFixed(response.data.asumsi_makro.interest_rate.toString());
-    asumsiParameter.value.asumsiMakro.umurTeknis = masaManfaat.value.toString();
-    asumsiParameter.value.asumsiMakro.loanTenor = response.data.asumsi_makro.loan_tenor.toString();
-    asumsiParameter.value.asumsiMakro.loanPortion = globalFormat.formatCurrencyNotFixed(response.data.asumsi_makro.loan_portion.toString());
-    asumsiParameter.value.asumsiMakro.totalProjectCost = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.total_project_cost.toString());
-    asumsiParameter.value.asumsiMakro.dayaMampuNettoMW = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.daya_mampu_netto_mw.toString());
-    asumsiParameterInit.value.asumsiMakro.interestRate = globalFormat.formatCurrencyNotFixed(response.data.asumsi_makro.interest_rate.toString());
-    asumsiParameterInit.value.asumsiMakro.umurTeknis = masaManfaat.value.toString();
-    asumsiParameterInit.value.asumsiMakro.loanTenor = response.data.asumsi_makro.loan_tenor.toString();
-    asumsiParameterInit.value.asumsiMakro.loanPortion = globalFormat.formatCurrencyNotFixed(response.data.asumsi_makro.loan_portion.toString());
+    asumsiParameter.value.asumsiMakro.interestRate = globalFormat.formatCurrencyNotFixed(response.data.asumsi_makro.interest_rate.toString())
+    asumsiParameter.value.asumsiMakro.umurTeknis = masaManfaat.value.toString()
+    asumsiParameter.value.asumsiMakro.loanTenor = response.data.asumsi_makro.loan_tenor.toString()
+    asumsiParameter.value.asumsiMakro.loanPortion = globalFormat.formatCurrencyNotFixed(response.data.asumsi_makro.loan_portion.toString())
+    asumsiParameter.value.asumsiMakro.totalProjectCost = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.total_project_cost.toString())
+    asumsiParameter.value.asumsiMakro.dayaMampuNettoMW = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.daya_mampu_netto_mw.toString())
+    asumsiParameterInit.value.asumsiMakro.interestRate = globalFormat.formatCurrencyNotFixed(response.data.asumsi_makro.interest_rate.toString())
+    asumsiParameterInit.value.asumsiMakro.umurTeknis = masaManfaat.value.toString()
+    asumsiParameterInit.value.asumsiMakro.loanTenor = response.data.asumsi_makro.loan_tenor.toString()
+    asumsiParameterInit.value.asumsiMakro.loanPortion = globalFormat.formatCurrencyNotFixed(response.data.asumsi_makro.loan_portion.toString())
     // Mengisi Parameter Teknis & Finansial Data Variable
-    asumsiParameter.value.parameterTeknis.nphr = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.nphr.toString());
-    asumsiParameter.value.parameterTeknis.auxiliary = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.auxiliary.toString());
-    asumsiParameter.value.parameterTeknis.susutTrafo = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.susut_trafo.toString());
-    asumsiParameter.value.parameterTeknis.pemakaianSendiri = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.ps.toString());
-    asumsiParameter.value.parameterTeknis.electricityPriceA = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_a_rp_per_kwbln.toString());
-    asumsiParameter.value.parameterTeknis.electricityPriceB = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_b_rp_per_kwbln.toString());
-    asumsiParameter.value.parameterTeknis.electricityPriceC = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_c_rp_per_kwh.toString());
-    asumsiParameter.value.parameterTeknis.electricityPriceD = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_d_rp_per_kwh.toString());
-    asumsiParameterInit.value.parameterTeknis.nphr = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.nphr.toString());
-    asumsiParameterInit.value.parameterTeknis.auxiliary = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.auxiliary.toString());
-    asumsiParameterInit.value.parameterTeknis.susutTrafo = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.susut_trafo.toString());
-    asumsiParameterInit.value.parameterTeknis.pemakaianSendiri = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.ps.toString());
-    asumsiParameterInit.value.parameterTeknis.electricityPriceA = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_a_rp_per_kwbln.toString());
-    asumsiParameterInit.value.parameterTeknis.electricityPriceB = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_b_rp_per_kwbln.toString());
-    asumsiParameterInit.value.parameterTeknis.electricityPriceC = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_c_rp_per_kwh.toString());
-    asumsiParameterInit.value.parameterTeknis.electricityPriceD = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_d_rp_per_kwh.toString());
-    pickedParameterValue.value = asumsiParameter.value.parameterTeknis.pemakaianSendiri === '0,00' ? 'auxiliarySusut' : 'pemakaianSendiri';
-    isPermanent.value = asumsiParameterInit.value.parameterTeknis.electricityPriceA === '0,00' && asumsiParameterInit.value.parameterTeknis.electricityPriceB === '0,00' && asumsiParameterInit.value.parameterTeknis.electricityPriceC === '0,00' && asumsiParameterInit.value.parameterTeknis.electricityPriceD === '0,00';
+    asumsiParameter.value.parameterTeknis.nphr = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.nphr.toString())
+    asumsiParameter.value.parameterTeknis.auxiliary = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.auxiliary.toString())
+    asumsiParameter.value.parameterTeknis.susutTrafo = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.susut_trafo.toString())
+    asumsiParameter.value.parameterTeknis.pemakaianSendiri = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.ps.toString())
+    asumsiParameter.value.parameterTeknis.electricityPriceA = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_a_rp_per_kwbln.toString())
+    asumsiParameter.value.parameterTeknis.electricityPriceB = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_b_rp_per_kwbln.toString())
+    asumsiParameter.value.parameterTeknis.electricityPriceC = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_c_rp_per_kwh.toString())
+    asumsiParameter.value.parameterTeknis.electricityPriceD = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_d_rp_per_kwh.toString())
+    asumsiParameterInit.value.parameterTeknis.nphr = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.nphr.toString())
+    asumsiParameterInit.value.parameterTeknis.auxiliary = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.auxiliary.toString())
+    asumsiParameterInit.value.parameterTeknis.susutTrafo = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.susut_trafo.toString())
+    asumsiParameterInit.value.parameterTeknis.pemakaianSendiri = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.ps.toString())
+    asumsiParameterInit.value.parameterTeknis.electricityPriceA = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_a_rp_per_kwbln.toString())
+    asumsiParameterInit.value.parameterTeknis.electricityPriceB = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_b_rp_per_kwbln.toString())
+    asumsiParameterInit.value.parameterTeknis.electricityPriceC = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_c_rp_per_kwh.toString())
+    asumsiParameterInit.value.parameterTeknis.electricityPriceD = globalFormat.formatCurrencyNotFixed(response.data.parameter_teknis_financial.electricity_price_d_rp_per_kwh.toString())
+    pickedParameterValue.value = asumsiParameter.value.parameterTeknis.pemakaianSendiri === '0,00' ? 'auxiliarySusut' : 'pemakaianSendiri'
+    isPermanent.value = asumsiParameterInit.value.parameterTeknis.electricityPriceA === '0,00' && asumsiParameterInit.value.parameterTeknis.electricityPriceB === '0,00' && asumsiParameterInit.value.parameterTeknis.electricityPriceC === '0,00' && asumsiParameterInit.value.parameterTeknis.electricityPriceD === '0,00'
     console.log(isPermanent.value)
   } catch (error) {
-    console.error("Fetch Asumsi Parameter Error : " + error);
+    console.error("Fetch Asumsi Parameter Error : ", error)
   }
-};
+}
 const fetchTypePeriodic = async (idTypePeriodic: any) => {
   try {
     const response: any = await perbaruiDataService.getTypePeriodic(jenisPembangkit.value)
-    const result = response.data.filter((value: any) => value.id_type_periodic === idTypePeriodic);
-    return result;
+    const result = response.data.filter((value: any) => value.id_type_periodic === idTypePeriodic)
+    return result
   } catch (error) {
-    console.error('Fetch Type Periodic Error : ' + error);
+    console.error('Fetch Type Periodic Error : ', error)
   }
 }
 const fetchListTypePeriodic = async () => {
@@ -1240,7 +1243,7 @@ const fetchListTypePeriodic = async () => {
     const response: any = await perbaruiDataService.getTypePeriodic(jenisPembangkit.value)
     listTypePeriodic.value = response.data
   } catch (error) {
-    console.error('Fetch Type Periodic Error : ' + error);
+    console.error('Fetch Type Periodic Error : ', error)
   }
 }
 const fetchDataTeknisByPeriode = async () => {
@@ -1248,612 +1251,630 @@ const fetchDataTeknisByPeriode = async () => {
     const responseSimulasi1: any =
       await perbaruiDataService.getDataTeknisByPeriodeSimulasi1(
         tahunBerjalan - 1,
-        idMesin.value
-      );
+        uuidMesin.value
+      )
     const responseSimulasi2: any =
       await perbaruiDataService.getDataTeknisByPeriodeSimulasi2(
         tahunBerjalan - 1,
-        idMesin.value
-      );
+        uuidMesin.value
+      )
     if (responseSimulasi1.data === null || responseSimulasi2.data === null) {
       const response: any = await perbaruiDataService.getDataTeknisByPeriode(
         tahunTerakhirRealisasi.value,
-        idMesin.value
-      );
-      dataTeknisByPeriode.value = response.data;
-      statusDataTeknis.value = 'Permanent';
-      const periodicItem = response.data.filter((value: any) => value.uraian.includes('Periodic'));
-      const ncfItem = response.data.filter((value: any) => value.uraian.includes('NCF'));
-      const eafItem = response.data.filter((value: any) => value.uraian.includes('EAF'));
-      const prodBruttoItem = response.data.filter((value: any) => value.uraian.includes('Bruto'));
-      const prodNettoItem = response.data.filter((value: any) => value.uraian.includes('Netto'));
-      const energySalesItem = response.data.filter((value: any) => value.uraian.includes('Energy'));
-      const fuelConsItem = response.data.filter((value: any) => value.uraian.includes('Consumption'));
-      const tempTypePeriodic = periodicItem.length !== 0 ? periodicItem[0].value : '';
+        uuidMesin.value
+      )
+      dataTeknisByPeriode.value = response.data
+      statusDataTeknis.value = 'Permanent'
+      const periodicItem = response.data.filter((value: any) => value.uraian.includes('Periodic'))
+      const ncfItem = response.data.filter((value: any) => value.uraian.includes('NCF'))
+      const eafItem = response.data.filter((value: any) => value.uraian.includes('EAF'))
+      const prodBruttoItem = response.data.filter((value: any) => value.uraian.includes('Bruto'))
+      const prodNettoItem = response.data.filter((value: any) => value.uraian.includes('Netto'))
+      const energySalesItem = response.data.filter((value: any) => value.uraian.includes('Energy'))
+      const fuelConsItem = response.data.filter((value: any) => value.uraian.includes('Consumption'))
+      const tempTypePeriodic = periodicItem.length !== 0 ? periodicItem[0].value : ''
       if (tempTypePeriodic !== '' && tempTypePeriodic !== 0) {
-        const fetchTypePeriodicResult = await fetchTypePeriodic(tempTypePeriodic);
-        typePeriodic.value = fetchTypePeriodicResult[0].id_type_periodic;
-        dataTeknisInit.value.typePeriodic = fetchTypePeriodicResult[0].id_type_periodic;
+        const fetchTypePeriodicResult = await fetchTypePeriodic(tempTypePeriodic)
+        typePeriodic.value = fetchTypePeriodicResult[0].id_type_periodic
+        dataTeknisInit.value.typePeriodic = fetchTypePeriodicResult[0].id_type_periodic
       }
       else if (tempTypePeriodic === 0) {
-        typePeriodic.value = 0;
-        dataTeknisInit.value.typePeriodic = 0;
+        typePeriodic.value = 0
+        dataTeknisInit.value.typePeriodic = 0
       }
-      ncf.value = globalFormat.formatCurrencyNotFixed(ncfItem[0].value.toString());
-      eaf.value = globalFormat.formatCurrencyNotFixed(eafItem[0].value.toString());
-      productionBrutto.value = globalFormat.formatCurrencyNotFixed(prodBruttoItem[0].value.toString());
-      productionNetto.value = globalFormat.formatCurrencyNotFixed(prodNettoItem[0].value.toString());
-      energySales.value = globalFormat.formatCurrencyNotFixed(energySalesItem[0].value.toString());
-      dataTeknisInit.value.ncf = globalFormat.formatCurrencyNotFixed(ncfItem[0].value.toString());
-      dataTeknisInit.value.eaf = globalFormat.formatCurrencyNotFixed(eafItem[0].value.toString());
-      dataTeknisInit.value.productionBrutto = globalFormat.formatCurrencyNotFixed(prodBruttoItem[0].value.toString());
-      dataTeknisInit.value.productionNetto = globalFormat.formatCurrencyNotFixed(prodNettoItem[0].value.toString());
-      dataTeknisInit.value.energySales = globalFormat.formatCurrencyNotFixed(energySalesItem[0].value.toString());
+      ncf.value = globalFormat.formatCurrencyNotFixed(ncfItem[0].value.toString())
+      eaf.value = globalFormat.formatCurrencyNotFixed(eafItem[0].value.toString())
+      productionBrutto.value = globalFormat.formatCurrencyNotFixed(prodBruttoItem[0].value.toString())
+      productionNetto.value = globalFormat.formatCurrencyNotFixed(prodNettoItem[0].value.toString())
+      energySales.value = globalFormat.formatCurrencyNotFixed(energySalesItem[0].value.toString())
+      dataTeknisInit.value.ncf = globalFormat.formatCurrencyNotFixed(ncfItem[0].value.toString())
+      dataTeknisInit.value.eaf = globalFormat.formatCurrencyNotFixed(eafItem[0].value.toString())
+      dataTeknisInit.value.productionBrutto = globalFormat.formatCurrencyNotFixed(prodBruttoItem[0].value.toString())
+      dataTeknisInit.value.productionNetto = globalFormat.formatCurrencyNotFixed(prodNettoItem[0].value.toString())
+      dataTeknisInit.value.energySales = globalFormat.formatCurrencyNotFixed(energySalesItem[0].value.toString())
       for (const item of fuelConsItem) {
-        const words = item.uraian.split(" ");
-        const fuelIndex = words.indexOf("Fuel");
-        const textAfterFuel = words.slice(fuelIndex + 2).join(" ");
+        const words = item.uraian.split(" ")
+        const fuelIndex = words.indexOf("Fuel")
+        const textAfterFuel = words.slice(fuelIndex + 2).join(" ")
+        const filteredComboBahanBakar = comboBahanBakar.value.find((bahanBakar) => {
+          const lowerCaseBahanBakar = bahanBakar.bahan_bakar.toLowerCase();
+          const lowerCaseTextAfterFuel = textAfterFuel.toLowerCase();
+          return lowerCaseBahanBakar === lowerCaseTextAfterFuel;
+        })
         bahanBakarGroup.value.fuelConsumption.push({
           id_uraian: item.IdUraian,
           bahan_bakar: textAfterFuel,
+          kode_bahan_bakar: filteredComboBahanBakar ? filteredComboBahanBakar.kode_bahan_bakar : '',
           value: globalFormat.formatCurrencyNotFixed(item.value.toString())
         })
       }
     } else {
-      dataTeknisByPeriode.value = responseSimulasi1.data;
-      statusDataTeknis.value = 'Simulasi';
-      const fuelConsumptionFinal: any = [];
-      const periodicItem1 = responseSimulasi1.data.filter((value: any) => value.uraian.includes('Periodic'));
-      const ncfItem1 = responseSimulasi1.data.filter((value: any) => value.uraian.includes('NCF'));
-      const eafItem1 = responseSimulasi1.data.filter((value: any) => value.uraian.includes('EAF'));
-      const prodBruttoItem1 = responseSimulasi1.data.filter((value: any) => value.uraian.includes('Bruto'));
-      const prodNettoItem1 = responseSimulasi1.data.filter((value: any) => value.uraian.includes('Netto'));
-      const energySalesItem1 = responseSimulasi1.data.filter((value: any) => value.uraian.includes('Energy'));
-      const fuelConsItem1 = responseSimulasi1.data.filter((value: any) => value.uraian.includes('Consumption'));
-      const tempTypePeriodic1 = periodicItem1.length !== 0 ? periodicItem1[0].value : '';
+      dataTeknisByPeriode.value = responseSimulasi1.data
+      statusDataTeknis.value = 'Simulasi'
+      const fuelConsumptionFinal: any = []
+      const periodicItem1 = responseSimulasi1.data.filter((value: any) => value.uraian.includes('Periodic'))
+      const ncfItem1 = responseSimulasi1.data.filter((value: any) => value.uraian.includes('NCF'))
+      const eafItem1 = responseSimulasi1.data.filter((value: any) => value.uraian.includes('EAF'))
+      const prodBruttoItem1 = responseSimulasi1.data.filter((value: any) => value.uraian.includes('Bruto'))
+      const prodNettoItem1 = responseSimulasi1.data.filter((value: any) => value.uraian.includes('Netto'))
+      const energySalesItem1 = responseSimulasi1.data.filter((value: any) => value.uraian.includes('Energy'))
+      const fuelConsItem1 = responseSimulasi1.data.filter((value: any) => value.uraian.includes('Consumption'))
+      const tempTypePeriodic1 = periodicItem1.length !== 0 ? periodicItem1[0].value : ''
       if (tempTypePeriodic1 !== '' && tempTypePeriodic1 !== 0) {
-        const fetchTypePeriodicResult = await fetchTypePeriodic(tempTypePeriodic1);
-        typePeriodic.value = fetchTypePeriodicResult[0].id_type_periodic;
+        const fetchTypePeriodicResult = await fetchTypePeriodic(tempTypePeriodic1)
+        typePeriodic.value = fetchTypePeriodicResult[0].id_type_periodic
       }
       else if (tempTypePeriodic1 === 0) {
-        typePeriodic.value = 0;
+        typePeriodic.value = 0
       }
-      ncf.value = globalFormat.formatCurrencyNotFixed(ncfItem1[0].value.toString());
-      eaf.value = globalFormat.formatCurrencyNotFixed(eafItem1[0].value.toString());
-      productionBrutto.value = globalFormat.formatCurrencyNotFixed(prodBruttoItem1[0].value.toString());
-      productionNetto.value = globalFormat.formatCurrencyNotFixed(prodNettoItem1[0].value.toString());
-      energySales.value = globalFormat.formatCurrencyNotFixed(energySalesItem1[0].value.toString());
-      dataTeknisInit.value.ncf = globalFormat.formatCurrencyNotFixed(ncfItem1[0].value.toString());
-      dataTeknisInit.value.eaf = globalFormat.formatCurrencyNotFixed(eafItem1[0].value.toString());
-      dataTeknisInit.value.productionBrutto = globalFormat.formatCurrencyNotFixed(prodBruttoItem1[0].value.toString());
-      dataTeknisInit.value.productionNetto = globalFormat.formatCurrencyNotFixed(prodNettoItem1[0].value.toString());
-      dataTeknisInit.value.energySales = globalFormat.formatCurrencyNotFixed(energySalesItem1[0].value.toString());
+      ncf.value = globalFormat.formatCurrencyNotFixed(ncfItem1[0].value.toString())
+      eaf.value = globalFormat.formatCurrencyNotFixed(eafItem1[0].value.toString())
+      productionBrutto.value = globalFormat.formatCurrencyNotFixed(prodBruttoItem1[0].value.toString())
+      productionNetto.value = globalFormat.formatCurrencyNotFixed(prodNettoItem1[0].value.toString())
+      energySales.value = globalFormat.formatCurrencyNotFixed(energySalesItem1[0].value.toString())
+      dataTeknisInit.value.ncf = globalFormat.formatCurrencyNotFixed(ncfItem1[0].value.toString())
+      dataTeknisInit.value.eaf = globalFormat.formatCurrencyNotFixed(eafItem1[0].value.toString())
+      dataTeknisInit.value.productionBrutto = globalFormat.formatCurrencyNotFixed(prodBruttoItem1[0].value.toString())
+      dataTeknisInit.value.productionNetto = globalFormat.formatCurrencyNotFixed(prodNettoItem1[0].value.toString())
+      dataTeknisInit.value.energySales = globalFormat.formatCurrencyNotFixed(energySalesItem1[0].value.toString())
       for (const item of fuelConsItem1) {
-        const words = item.uraian.split(" ");
-        const fuelIndex = words.indexOf("Fuel");
-        const textAfterFuel = words.slice(fuelIndex + 2).join(" ");
+        const words = item.uraian.split(" ")
+        const fuelIndex = words.indexOf("Fuel")
+        const textAfterFuel = words.slice(fuelIndex + 2).join(" ")
+        const filteredComboBahanBakar = comboBahanBakar.value.find((bahanBakar) => {
+          const lowerCaseBahanBakar = bahanBakar.bahan_bakar.toLowerCase();
+          const lowerCaseTextAfterFuel = textAfterFuel.toLowerCase();
+          return lowerCaseBahanBakar === lowerCaseTextAfterFuel;
+        })
         bahanBakarGroup.value.fuelConsumption.push({
           id_uraian: item.IdUraian,
           bahan_bakar: textAfterFuel,
-          value: globalFormat.formatCurrencyNotFixed(item.value.toString())
+          kode_bahan_bakar: filteredComboBahanBakar ? filteredComboBahanBakar.kode_bahan_bakar : '',
+          value: globalFormat.formatCurrencyNotFixed(item.value.toString()),
         })
         fuelConsumptionFinal.push({
           id_uraian: item.IdUraian,
-          value: item.value
+          value: item.value,
         })
-      }
+      };
       dataTeknisSimulasi1.value = {
-        uuid_mesin: idMesin.value,
-        tahun: tahunBerjalan,
+        uuid_mesin: uuidMesin.value,
         tahun_realisasi: tahunBerjalan - 1,
-        id_type_periodic: typePeriodic.value,
+        tahun: tahunBerjalan,
         nfc: ncfItem1[0].value,
+        id_type_periodic: typePeriodic.value,
         eaf: eafItem1[0].value,
-        production_bruto: prodBruttoItem1[0].value,
         production_netto: prodNettoItem1[0].value,
         energy_sales: energySalesItem1[0].value,
+        production_bruto: prodBruttoItem1[0].value,
         fuel_consumption: fuelConsumptionFinal
       }
-      let typePeriodic2 = 0;
-      const fuelConsumptionFinal2: any = [];
-      const periodicItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('Periodic'));
-      const ncfItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('NCF'));
-      const eafItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('EAF'));
-      const prodBruttoItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('Bruto'));
-      const prodNettoItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('Netto'));
-      const energySalesItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('Energy'));
-      const fuelConsItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('Consumption'));
-      const tempTypePeriodic2 = periodicItem2.length !== 0 ? periodicItem2[0].value : '';
+      let typePeriodic2 = 0
+      const fuelConsumptionFinal2: any = []
+      const periodicItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('Periodic'))
+      const ncfItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('NCF'))
+      const eafItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('EAF'))
+      const prodBruttoItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('Bruto'))
+      const prodNettoItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('Netto'))
+      const energySalesItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('Energy'))
+      const fuelConsItem2 = responseSimulasi2.data.filter((value: any) => value.uraian.includes('Consumption'))
+      const tempTypePeriodic2 = periodicItem2.length !== 0 ? periodicItem2[0].value : ''
       if (tempTypePeriodic2 !== '' && tempTypePeriodic2 !== 0) {
-        const fetchTypePeriodicResult = await fetchTypePeriodic(tempTypePeriodic2);
-        typePeriodic2 = fetchTypePeriodicResult[0].id_type_periodic;
+        const fetchTypePeriodicResult = await fetchTypePeriodic(tempTypePeriodic2)
+        typePeriodic2 = fetchTypePeriodicResult[0].id_type_periodic
       }
       for (const item of fuelConsItem2) {
         fuelConsumptionFinal2.push({
           id_uraian: item.IdUraian,
-          value: item.value
+          value: item.value,
         })
-      }
+      };
       dataTeknisSimulasi2.value = {
-        uuid_mesin: idMesin.value,
+        uuid_mesin: uuidMesin.value,
         tahun: tahunBerjalan,
         tahun_realisasi: tahunBerjalan - 1,
-        id_type_periodic: typePeriodic2,
         nfc: ncfItem2[0].value,
-        eaf: eafItem2[0].value,
+        id_type_periodic: typePeriodic2,
         production_bruto: prodBruttoItem2[0].value,
-        production_netto: prodNettoItem2[0].value,
+        eaf: eafItem2[0].value,
         energy_sales: energySalesItem2[0].value,
+        production_netto: prodNettoItem2[0].value,
         fuel_consumption: fuelConsumptionFinal2
-      }
+      };
     }
   } catch (error) {
-    console.error("Fetch Data Teknis Error : " + error);
+    console.error("Fetch Data Teknis Error : ", error)
   }
-};
+}
 const fetchComboTypePeriodic = async () => {
   try {
     const response: ComboTypePeriodicItem =
       await perbaruiDataService.getTypePeriodic(
         jenisPembangkit.value
-      );
+      )
     const newValue: any = {
       id_type_periodic: 0,
       kode_type_periodic: '-',
     }
-    comboTypePeriodic.value = response.data;
-    comboTypePeriodic.value.unshift(newValue);
+    comboTypePeriodic.value = response.data
+    comboTypePeriodic.value.unshift(newValue)
   } catch (error) {
-    console.error("Fetch Combo Type Periodic Error : " + error);
+    console.error("Fetch Combo Type Periodic Error : ", error)
   }
-};
+}
 const fetchDataFinansialDetail = async () => {
   try {
     const responseSimulasi1: any = await perbaruiDataService.getDataFinansialDetailSimulasi1(
       tahunBerjalan - 1,
-      idMesin.value
-    );
+      uuidMesin.value
+    )
     const responseSimulasi2: any = await perbaruiDataService.getDataFinansialDetailSimulasi2(
       tahunBerjalan - 1,
-      idMesin.value
-    );
-    const response: ComboTypePeriodicItem = await perbaruiDataService.getDataFinansialDetail(tahunTerakhirRealisasi.value, idMesin.value);
-    isAudited.value = response.data.is_audited;
-    if (responseSimulasi1.data.uuid_mesin === 0 || responseSimulasi2.data.uuid_mesin === 0) {
-      statusDataFinansial.value = 'Permanent';
-      dataFinansialDetail.value = response.data;
-      costComponentA.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_a);
-      costComponentB.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b);
-      biayaKepegawaian.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_kepegawaian);
-      biayaPemeliharaanRutin.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_pemeliharaan_rutin);
-      biayaAdministrasiUmum.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_administrasi_umum);
-      biayaPembelianTenagaListrik.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_pembelian_tenaga_listrik);
-      biayaLainLain.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_lain_lain);
-      oMCost.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_lain_lain);
-      periodicMaintenanceCost.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_periodic_maintenance_non_mi);
-      costComponentC.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_c);
-      costComponentD.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_d);
-      totalRevenue.value = globalFormat.formatCurrencyNotFixed(response.data.revenue);
-      revenueKompA.value = globalFormat.formatCurrencyNotFixed(response.data.revenue_a);
-      revenueKompB.value = globalFormat.formatCurrencyNotFixed(response.data.revenue_b);
-      revenueKompC.value = globalFormat.formatCurrencyNotFixed(response.data.revenue_c);
-      revenueKompD.value = globalFormat.formatCurrencyNotFixed(response.data.revenue_d);
+      uuidMesin.value
+    )
+    const response: ComboTypePeriodicItem = await perbaruiDataService.getDataFinansialDetail(tahunTerakhirRealisasi.value, uuidMesin.value)
+    isAudited.value = response.data.is_audited
+    if (responseSimulasi1.data.id_mesin === 0 || responseSimulasi2.data.id_mesin === 0) {
+      statusDataFinansial.value = 'Permanent'
+      dataFinansialDetail.value = response.data
+      costComponentA.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_a)
+      costComponentB.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b)
+      biayaKepegawaian.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_kepegawaian)
+      biayaPemeliharaanRutin.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_pemeliharaan_rutin)
+      biayaAdministrasiUmum.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_administrasi_umum)
+      biayaPembelianTenagaListrik.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_pembelian_tenaga_listrik)
+      biayaLainLain.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_lain_lain)
+      oMCost.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_lain_lain)
+      periodicMaintenanceCost.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_periodic_maintenance_non_mi)
+      costComponentC.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_c)
+      costComponentD.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_d)
+      totalRevenue.value = globalFormat.formatCurrencyNotFixed(response.data.revenue)
+      revenueKompA.value = globalFormat.formatCurrencyNotFixed(response.data.revenue_a)
+      revenueKompB.value = globalFormat.formatCurrencyNotFixed(response.data.revenue_b)
+      revenueKompC.value = globalFormat.formatCurrencyNotFixed(response.data.revenue_c)
+      revenueKompD.value = globalFormat.formatCurrencyNotFixed(response.data.revenue_d)
       for (const value of response.data.cost_component_c_detail) {
-        value.fuel_cost = globalFormat.formatCurrencyNotFixed(value.fuel_cost);
+        value.fuel_cost = globalFormat.formatCurrencyNotFixed(value.fuel_cost)
       }
-      bahanBakarGroup.value.costCDetail = response.data.cost_component_c_detail;
-      biayaMinyakPelumas.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_d_detail.biaya_pelumas);
-      bahanKimia.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_d_detail.biaya_bahan_kimia);
-      dataFinansialInit.value.costComponentA = globalFormat.formatCurrencyNotFixed(response.data.cost_component_a);
-      dataFinansialInit.value.costComponentA = globalFormat.formatCurrencyNotFixed(response.data.cost_component_a);
-      dataFinansialInit.value.costComponentB = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b);
-      dataFinansialInit.value.biayaKepegawaian = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_kepegawaian);
-      dataFinansialInit.value.biayaPemeliharaanRutin = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_pemeliharaan_rutin);
-      dataFinansialInit.value.biayaAdministrasiUmum = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_administrasi_umum);
-      dataFinansialInit.value.biayaPembelianTenagaListrik = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_pembelian_tenaga_listrik);
-      dataFinansialInit.value.biayaLainLain = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_lain_lain);
-      dataFinansialInit.value.oMCost = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_lain_lain);
-      dataFinansialInit.value.periodicMaintenanceCost = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_periodic_maintenance_non_mi);
-      dataFinansialInit.value.costComponentC = globalFormat.formatCurrencyNotFixed(response.data.cost_component_c);
+      bahanBakarGroup.value.costCDetail = response.data.cost_component_c_detail
+      biayaMinyakPelumas.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_d_detail.biaya_pelumas)
+      bahanKimia.value = globalFormat.formatCurrencyNotFixed(response.data.cost_component_d_detail.biaya_bahan_kimia)
+      dataFinansialInit.value.costComponentA = globalFormat.formatCurrencyNotFixed(response.data.cost_component_a)
+      dataFinansialInit.value.costComponentA = globalFormat.formatCurrencyNotFixed(response.data.cost_component_a)
+      dataFinansialInit.value.costComponentB = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b)
+      dataFinansialInit.value.biayaKepegawaian = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_kepegawaian)
+      dataFinansialInit.value.biayaPemeliharaanRutin = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_pemeliharaan_rutin)
+      dataFinansialInit.value.biayaAdministrasiUmum = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_administrasi_umum)
+      dataFinansialInit.value.biayaPembelianTenagaListrik = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_pembelian_tenaga_listrik)
+      dataFinansialInit.value.biayaLainLain = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_lain_lain)
+      dataFinansialInit.value.oMCost = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_lain_lain)
+      dataFinansialInit.value.periodicMaintenanceCost = globalFormat.formatCurrencyNotFixed(response.data.cost_component_b_detail.biaya_periodic_maintenance_non_mi)
+      dataFinansialInit.value.costComponentC = globalFormat.formatCurrencyNotFixed(response.data.cost_component_c)
       dataFinansialInit.value.costComponentD = globalFormat.formatCurrencyNotFixed(response.data.cost_component_d)
     } else {
-      statusDataFinansial.value = 'Simulasi';
-      dataFinansialDetail.value = responseSimulasi1.data;
-      costComponentA.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_a);
-      costComponentB.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b);
-      biayaKepegawaian.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_kepegawaian);
-      biayaPemeliharaanRutin.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_pemeliharaan_rutin);
-      biayaAdministrasiUmum.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_administrasi_umum);
-      biayaPembelianTenagaListrik.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_pembelian_tenaga_listrik);
-      biayaLainLain.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_lain_lain);
-      oMCost.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_lain_lain);
-      periodicMaintenanceCost.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_periodic_maintenance_non_mi);
-      costComponentC.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_c);
-      costComponentD.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_d);
+      statusDataFinansial.value = 'Simulasi'
+      dataFinansialDetail.value = responseSimulasi1.data
+      costComponentA.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_a)
+      costComponentB.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b)
+      biayaKepegawaian.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_kepegawaian)
+      biayaPemeliharaanRutin.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_pemeliharaan_rutin)
+      biayaAdministrasiUmum.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_administrasi_umum)
+      biayaPembelianTenagaListrik.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_pembelian_tenaga_listrik)
+      biayaLainLain.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_lain_lain)
+      oMCost.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_lain_lain)
+      periodicMaintenanceCost.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_periodic_maintenance_non_mi)
+      costComponentC.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_c)
+      costComponentD.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_d)
       for (const value of responseSimulasi1.data.cost_component_c_detail) {
-        value.fuel_cost = globalFormat.formatCurrencyNotFixed(value.fuel_cost);
+        value.fuel_cost = globalFormat.formatCurrencyNotFixed(value.fuel_cost)
       }
-      bahanBakarGroup.value.costCDetail = responseSimulasi1.data.cost_component_c_detail;
-      biayaMinyakPelumas.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_d_detail.biaya_pelumas);
-      bahanKimia.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_d_detail.biaya_bahan_kimia);
-      totalRevenue.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.revenue);
-      revenueKompA.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.revenue_a);
-      revenueKompB.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.revenue_b);
-      revenueKompC.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.revenue_c);
-      revenueKompD.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.revenue_d);
-      dataFinansialInit.value.costComponentA = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_a);
-      dataFinansialInit.value.costComponentA = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_a);
-      dataFinansialInit.value.costComponentB = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b);
-      dataFinansialInit.value.biayaKepegawaian = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_kepegawaian);
-      dataFinansialInit.value.biayaPemeliharaanRutin = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_pemeliharaan_rutin);
-      dataFinansialInit.value.biayaAdministrasiUmum = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_administrasi_umum);
-      dataFinansialInit.value.biayaPembelianTenagaListrik = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_pembelian_tenaga_listrik);
-      dataFinansialInit.value.biayaLainLain = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_lain_lain);
-      dataFinansialInit.value.oMCost = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_lain_lain);
-      dataFinansialInit.value.periodicMaintenanceCost = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_periodic_maintenance_non_mi);
-      dataFinansialInit.value.costComponentC = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_c);
-      dataFinansialInit.value.costComponentD = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_d);
+      bahanBakarGroup.value.costCDetail = responseSimulasi1.data.cost_component_c_detail
+      biayaMinyakPelumas.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_d_detail.biaya_pelumas)
+      bahanKimia.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_d_detail.biaya_bahan_kimia)
+      totalRevenue.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.revenue)
+      revenueKompA.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.revenue_a)
+      revenueKompB.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.revenue_b)
+      revenueKompC.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.revenue_c)
+      revenueKompD.value = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.revenue_d)
+      dataFinansialInit.value.costComponentA = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_a)
+      dataFinansialInit.value.costComponentA = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_a)
+      dataFinansialInit.value.costComponentB = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b)
+      dataFinansialInit.value.biayaKepegawaian = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_kepegawaian)
+      dataFinansialInit.value.biayaPemeliharaanRutin = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_pemeliharaan_rutin)
+      dataFinansialInit.value.biayaAdministrasiUmum = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_administrasi_umum)
+      dataFinansialInit.value.biayaPembelianTenagaListrik = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_pembelian_tenaga_listrik)
+      dataFinansialInit.value.biayaLainLain = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_lain_lain)
+      dataFinansialInit.value.oMCost = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_lain_lain)
+      dataFinansialInit.value.periodicMaintenanceCost = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_b_detail.biaya_periodic_maintenance_non_mi)
+      dataFinansialInit.value.costComponentC = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_c)
+      dataFinansialInit.value.costComponentD = globalFormat.formatCurrencyNotFixed(responseSimulasi1.data.cost_component_d)
       formFinansialSimulasi1.value = {
-        uuid_mesin: idMesin.value,
         tahun: tahunBerjalan - 1,
-        status_b_d: responseSimulasi1.data.status_b_d,
+        uuid_mesin: uuidMesin.value,
         cost_component_a: responseSimulasi1.data.cost_component_a,
+        status_b_d: responseSimulasi1.data.status_b_d,
         cost_component_b: responseSimulasi1.data.cost_component_b,
         cost_component_b_detail: {
           id_ao: 0,
-          uuid_mesin: idMesin.value,
           tahun: tahunBerjalan - 1,
-          biaya_kepegawaian: responseSimulasi1.data.cost_component_b_detail.biaya_kepegawaian,
+          uuid_mesin: uuidMesin.value,
           biaya_pemeliharaan_rutin: responseSimulasi1.data.cost_component_b_detail.biaya_pemeliharaan_rutin,
-          biaya_administrasi_umum: responseSimulasi1.data.cost_component_b_detail.biaya_administrasi_umum,
+          biaya_kepegawaian: responseSimulasi1.data.cost_component_b_detail.biaya_kepegawaian,
           biaya_pembelian_tenaga_listrik: responseSimulasi1.data.cost_component_b_detail.biaya_pembelian_tenaga_listrik,
-          biaya_penyusutan_aset_tetap: responseSimulasi1.data.cost_component_b_detail.biaya_penyusutan_aset_tetap,
+          biaya_administrasi_umum: responseSimulasi1.data.cost_component_b_detail.biaya_administrasi_umum,
           biaya_lain_lain: responseSimulasi1.data.cost_component_b_detail.biaya_lain_lain,
+          biaya_penyusutan_aset_tetap: responseSimulasi1.data.cost_component_b_detail.biaya_penyusutan_aset_tetap,
           biaya_periodic_maintenance_non_mi: responseSimulasi1.data.cost_component_b_detail.biaya_periodic_maintenance_non_mi
         },
-        cost_component_c: responseSimulasi1.data.cost_component_c,
         cost_component_c_detail: responseSimulasi1.data.cost_component_c_detail,
+        cost_component_c: responseSimulasi1.data.cost_component_c,
         cost_component_d: responseSimulasi1.data.cost_component_d,
         cost_component_d_detail: {
           id_pelumas_bahan_kimia: 0,
-          uuid_mesin: idMesin.value,
           tahun: tahunBerjalan - 1,
-          biaya_pelumas: responseSimulasi1.data.cost_component_d_detail.biaya_pelumas,
+          uuid_mesin: uuidMesin.value,
           biaya_bahan_kimia: responseSimulasi1.data.cost_component_d_detail.biaya_bahan_kimia,
+          biaya_pelumas: responseSimulasi1.data.cost_component_d_detail.biaya_pelumas,
           biaya_lain_lain: responseSimulasi1.data.cost_component_d_detail.biaya_lain_lain
         },
-        revenue: responseSimulasi1.data.revenue,
         revenue_a: responseSimulasi1.data.revenue_a,
-        revenue_b: responseSimulasi1.data.revenue_b,
+        revenue: responseSimulasi1.data.revenue,
         revenue_c: responseSimulasi1.data.revenue_c,
         revenue_d: responseSimulasi1.data.revenue_d,
+        revenue_b: responseSimulasi1.data.revenue_b,
         opsi_simulasi: 1
-      };
+      }
       formFinansialSimulasi2.value = {
-        uuid_mesin: idMesin.value,
-        tahun: tahunBerjalan - 1,
+        uuid_mesin: uuidMesin.value,
         status_b_d: responseSimulasi2.data.status_b_d,
-        cost_component_a: responseSimulasi2.data.cost_component_a,
+        tahun: tahunBerjalan - 1,
         cost_component_b: responseSimulasi2.data.cost_component_b,
+        cost_component_a: responseSimulasi2.data.cost_component_a,
         cost_component_b_detail: {
           id_ao: 0,
-          uuid_mesin: idMesin.value,
           tahun: tahunBerjalan - 1,
-          biaya_kepegawaian: responseSimulasi2.data.cost_component_b_detail.biaya_kepegawaian,
+          uuid_mesin: uuidMesin.value,
           biaya_pemeliharaan_rutin: responseSimulasi2.data.cost_component_b_detail.biaya_pemeliharaan_rutin,
-          biaya_administrasi_umum: responseSimulasi2.data.cost_component_b_detail.biaya_administrasi_umum,
+          biaya_kepegawaian: responseSimulasi2.data.cost_component_b_detail.biaya_kepegawaian,
           biaya_pembelian_tenaga_listrik: responseSimulasi2.data.cost_component_b_detail.biaya_pembelian_tenaga_listrik,
           biaya_penyusutan_aset_tetap: responseSimulasi2.data.cost_component_b_detail.biaya_penyusutan_aset_tetap,
+          biaya_administrasi_umum: responseSimulasi2.data.cost_component_b_detail.biaya_administrasi_umum,
           biaya_lain_lain: responseSimulasi2.data.cost_component_b_detail.biaya_lain_lain,
           biaya_periodic_maintenance_non_mi: responseSimulasi2.data.cost_component_b_detail.biaya_periodic_maintenance_non_mi
         },
-        cost_component_c: responseSimulasi2.data.cost_component_c,
         cost_component_c_detail: responseSimulasi2.data.cost_component_c_detail,
+        cost_component_c: responseSimulasi2.data.cost_component_c,
         cost_component_d: responseSimulasi2.data.cost_component_d,
         cost_component_d_detail: {
           id_pelumas_bahan_kimia: 0,
-          uuid_mesin: idMesin.value,
           tahun: tahunBerjalan - 1,
-          biaya_pelumas: responseSimulasi2.data.cost_component_d_detail.biaya_pelumas,
+          uuid_mesin: uuidMesin.value,
           biaya_bahan_kimia: responseSimulasi2.data.cost_component_d_detail.biaya_bahan_kimia,
+          biaya_pelumas: responseSimulasi2.data.cost_component_d_detail.biaya_pelumas,
           biaya_lain_lain: responseSimulasi2.data.cost_component_d_detail.biaya_lain_lain
         },
-        revenue: responseSimulasi2.data.revenue,
         revenue_a: responseSimulasi2.data.revenue_a,
-        revenue_b: responseSimulasi2.data.revenue_b,
+        revenue: responseSimulasi2.data.revenue,
         revenue_c: responseSimulasi2.data.revenue_c,
+        revenue_b: responseSimulasi2.data.revenue_b,
         revenue_d: responseSimulasi2.data.revenue_d,
         opsi_simulasi: 2
-      };
+      }
     }
   } catch (error) {
-    console.error("Fetch Data Finansial Simulasi Error : " + error);
+    console.error("Fetch Data Finansial Simulasi Error : ", error)
   }
-};
+}
 const fetchHasilSimulasi1 = async () => {
   try {
-    const response: any = await perbaruiDataService.getHasilSimulasi(idMesin.value, tahunBerjalan, 6);
-    hasilSimulasi1.value.idMesin = response.data.uuid_mesin;
-    hasilSimulasi1.value.trackAverageEaf = response.data.track_average_eaf;
-    hasilSimulasi1.value.trackAverageNcf = response.data.track_average_cf;
-    hasilSimulasi1.value.trackIrrEquity = response.data.track_irr_equity;
-    hasilSimulasi1.value.trackIrrProject = response.data.track_irr_project;
-    hasilSimulasi1.value.trackNpvEquity = response.data.track_npv_equity;
-    hasilSimulasi1.value.trackNpvProject = response.data.track_npv_project;
+    const response: any = await perbaruiDataService.getHasilSimulasi(uuidMesin.value, tahunBerjalan, 6)
+    hasilSimulasi1.value.idMesin = response.data.id_mesin
+    hasilSimulasi1.value.trackAverageEaf = response.data.track_average_eaf
+    hasilSimulasi1.value.trackAverageNcf = response.data.track_average_cf
+    hasilSimulasi1.value.trackIrrEquity = response.data.track_irr_equity
+    hasilSimulasi1.value.trackIrrProject = response.data.track_irr_project
+    hasilSimulasi1.value.trackNpvEquity = response.data.track_npv_equity
+    hasilSimulasi1.value.trackNpvProject = response.data.track_npv_project
   } catch (error) {
-    console.error(error);
+    hasilSimulasi1.value.isFetchingError = true;
+    console.error(error)
   }
 }
 const fetchHasilSimulasi2 = async () => {
   try {
-    const response: any = await perbaruiDataService.getHasilSimulasi(idMesin.value, tahunBerjalan, 7);
-    hasilSimulasi2.value.idMesin = response.data.uuid_mesin;
-    hasilSimulasi2.value.trackAverageEaf = response.data.track_average_eaf;
-    hasilSimulasi2.value.trackAverageNcf = response.data.track_average_cf;
-    hasilSimulasi2.value.trackIrrEquity = response.data.track_irr_equity;
-    hasilSimulasi2.value.trackIrrProject = response.data.track_irr_project;
-    hasilSimulasi2.value.trackNpvEquity = response.data.track_npv_equity;
-    hasilSimulasi2.value.trackNpvProject = response.data.track_npv_project;
+    const response: any = await perbaruiDataService.getHasilSimulasi(uuidMesin.value, tahunBerjalan, 7)
+    hasilSimulasi2.value.idMesin = response.data.id_mesin
+    hasilSimulasi2.value.trackAverageEaf = response.data.track_average_eaf
+    hasilSimulasi2.value.trackAverageNcf = response.data.track_average_cf
+    hasilSimulasi2.value.trackIrrEquity = response.data.track_irr_equity
+    hasilSimulasi2.value.trackIrrProject = response.data.track_irr_project
+    hasilSimulasi2.value.trackNpvEquity = response.data.track_npv_equity
+    hasilSimulasi2.value.trackNpvProject = response.data.track_npv_project
   } catch (error) {
-    console.error(error);
+    hasilSimulasi2.value.isFetchingError = true;
+    console.error(error)
   }
 }
 const fetchComboBahanBakar = async () => {
   try {
-    const response: any = await perbaruiDataService.getComboBahanBakar(jenisPembangkit.value);
-    comboBahanBakar.value = response.data;
+    const response: any = await perbaruiDataService.getComboBahanBakar(jenisPembangkit.value)
+    comboBahanBakar.value = response.data
   } catch (error) {
-    console.error(error);
+    console.error(error)
   }
 }
 const getTypePeriodic = (num: number) => {
-  let filteredTypePeriodic: any;
+  let filteredTypePeriodic: any
   if (listTypePeriodic.value.length !== 0) {
-    filteredTypePeriodic = listTypePeriodic.value.filter((periodic: any) => periodic.id_type_periodic === num);
-    return filteredTypePeriodic.length === 0 ? '-' : filteredTypePeriodic[0].kode_type_periodic;
+    filteredTypePeriodic = listTypePeriodic.value.filter((periodic: any) => periodic.id_type_periodic === num)
+    return filteredTypePeriodic.length === 0 ? '-' : filteredTypePeriodic[0].kode_type_periodic
   }
-  return "-";
+  return "-"
 }
 const handleFileChangeEvidence = (event: any) => {
   if (event.target.files.length === 1) {
-    selectedFileEvidence.value = event.target.files[0];
+    selectedFileEvidence.value = event.target.files[0]
   } else {
-    selectedFileEvidence.value = null;
+    selectedFileEvidence.value = null
   }
-};
+}
 const uploadFileEvidence = async () => {
   try {
     isLoading.value = true
-    const formData = new FormData();
-    formData.append('file', selectedFileEvidence.value);
-    const response: any = await rekapService.uploadEvidence(formData);
-    await rekapService.updateEvidencePath(idMesin.value, tahunBerjalan.toString(), response.data, 0, selectedFileEvidence.value.name);
-    isShowFinalConfirmation.value = false;
-    isShowModalEvidence.value = false;
-    isLoading.value = false;
-    isSuccessEvidence.value = true;
+    const formData = new FormData()
+    formData.append('file', selectedFileEvidence.value)
+    const response: any = await rekapService.uploadEvidence(formData)
+    await rekapService.updateEvidencePath(uuidMesin.value, tahunBerjalan.toString(), response.data, 0, selectedFileEvidence.value.name)
+    isShowFinalConfirmation.value = false
+    isShowModalEvidence.value = false
+    isLoading.value = false
+    isSuccessEvidence.value = true
     await wait(3000)
-    isSuccessEvidence.value = false;
+    isSuccessEvidence.value = false
   } catch (error) {
-    isLoading.value = false;
-    console.error('Error upload file : ', error);
+    isLoading.value = false
+    console.error('Error upload file : ', error)
   }
-};
+}
 const handleFileChangeSimulasi1 = (event: any) => {
   if (event.target.files.length === 1) {
-    selectedFileSimulasi1.value = event.target.files[0];
+    selectedFileSimulasi1.value = event.target.files[0]
   } else {
-    selectedFileSimulasi1.value = null;
+    selectedFileSimulasi1.value = null
   }
-};
+}
 const uploadFileSimulasi1 = async () => {
   try {
     isLoading.value = true
     if (selectedFileSimulasi1.value == null) {
       notifyError('Mohon pilih file excel terlebih dahulu', 3000)
       isLoading.value = false
-      return;
+      return
     }
-    const formData = new FormData();
-    formData.append('file', selectedFileSimulasi1.value);
-    const response: any = await rekapService.uploadSimulasi1(formData);
-    await fetchHasilSimulasi1();
-    console.log('Sukses mengirim file : ', response.data);
-    isUnggahModalOpenSimulasi1.value = false;
-    isLoading.value = false;
+    const formData = new FormData()
+    formData.append('file', selectedFileSimulasi1.value)
+    const response: any = await rekapService.uploadSimulasi1(formData)
+    await fetchHasilSimulasi1()
+    console.log('Sukses mengirim file : ', response.data)
+    isUnggahModalOpenSimulasi1.value = false
+    isLoading.value = false
     // Fetching Data Simulasi Disini
-    isSuccess.value = true;
+    isSuccess.value = true
     await wait(3000)
-    isSuccess.value = false;
-    isLoading.value = true;
-    simulasi1DataFinansial.value = [];
-    dataFinansialSimulasi1.value = [];
-    bahanBakarGroup.value.fuelConsumption = [];
-    await fetchAsumsiParameter();
-    await fetchDataFinansialDetail();
-    await fetchDataTeknisByPeriode();
-    await fetchDataTeknisSimulasi1();
-    await fetchDataTeknisSimulasi2();
-    await fetchDataFinansialSimulasi1();
-    await fetchDataFinansialSimulasi2();
-    console.log(bahanBakarGroup.value);
+    isSuccess.value = false
+    isLoading.value = true
+    simulasi1DataFinansial.value = []
+    dataFinansialSimulasi1.value = []
+    bahanBakarGroup.value.fuelConsumption = []
+    await fetchAsumsiParameter()
+    await fetchDataFinansialDetail()
+    await fetchDataTeknisByPeriode()
+    await fetchDataTeknisSimulasi1()
+    await fetchDataTeknisSimulasi2()
+    await fetchDataFinansialSimulasi1()
+    await fetchDataFinansialSimulasi2()
+    console.log(bahanBakarGroup.value)
     selectedFileSimulasi1.value = null
-    isLoading.value = false;
+    isLoading.value = false
   } catch (error) {
-    isLoading.value = false;
-    console.error('Error upload file : ', error);
+    isLoading.value = false
+    console.error('Error upload file : ', error)
   }
-};
+}
 const handleFileChange = (event: any) => {
   if (event.target.files.length === 1) {
-    selectedFile.value = event.target.files[0];
+    selectedFile.value = event.target.files[0]
   } else {
-    selectedFile.value = null;
+    selectedFile.value = null
   }
-};
+}
 
 const uploadFile = async () => {
   try {
     isLoading.value = true
     if (!selectedFile.value) {
-      console.error('Mohon pilih file excel terlebih dahulu');
-      return;
+      console.error('Mohon pilih file excel terlebih dahulu')
+      return
     }
-    const formData = new FormData();
-    formData.append('file', selectedFile.value);
-    const response: any = await rekapService.uploadSimulasi2(formData);
-    await fetchHasilSimulasi2();
-    console.log('Sukses mengirim file : ', response.data);
-    isUnggahModalOpen.value = false;
-    isLoading.value = false;
+    const formData = new FormData()
+    formData.append('file', selectedFile.value)
+    const response: any = await rekapService.uploadSimulasi2(formData)
+    await fetchHasilSimulasi2()
+    console.log('Sukses mengirim file : ', response.data)
+    isUnggahModalOpen.value = false
+    isLoading.value = false
     // Fetching Data Simulasi Disini
-    isSuccess.value = true;
+    isSuccess.value = true
     await wait(3000)
-    isSuccess.value = false;
-    isLoading.value = true;
-    simulasi2DataFinansial.value = [];
-    dataFinansialSimulasi2.value = [];
-    bahanBakarGroup.value.fuelConsumption = [];
-    await fetchAsumsiParameter();
-    await fetchDataFinansialDetail();
-    await fetchDataTeknisByPeriode();
-    await fetchDataTeknisSimulasi1();
-    await fetchDataTeknisSimulasi2();
-    await fetchDataFinansialSimulasi1();
-    await fetchDataFinansialSimulasi2();
-    console.log(bahanBakarGroup.value);
+    isSuccess.value = false
+    isLoading.value = true
+    simulasi2DataFinansial.value = []
+    dataFinansialSimulasi2.value = []
+    bahanBakarGroup.value.fuelConsumption = []
+    await fetchAsumsiParameter()
+    await fetchDataFinansialDetail()
+    await fetchDataTeknisByPeriode()
+    await fetchDataTeknisSimulasi1()
+    await fetchDataTeknisSimulasi2()
+    await fetchDataFinansialSimulasi1()
+    await fetchDataFinansialSimulasi2()
+    console.log(bahanBakarGroup.value)
     selectedFile.value = null
-    isLoading.value = false;
+    isLoading.value = false
   } catch (error) {
-    isLoading.value = false;
-    console.error('Error upload file : ', error);
+    isLoading.value = false
+    console.error('Error upload file : ', error)
   }
-};
+}
 function handleTambahBahanBakar() {
   bahanBakarGroup.value.bahanBakars.push({
     flag_bahan_bakar: 0,
     harga_bahan_bakar: "0",
-    uuid_mesin: idMesin.value,
+    uuid_mesin: uuidMesin.value,
     kode_bahan_bakar: "",
     sfc: "0",
     tahun: (tahunBerjalan - 1).toString(),
     id: i.value++
-  });
+  })
   bahanBakarGroup.value.fuelConsumption.push({
     id_uraian: 0,
     bahan_bakar: "",
     value: "0"
-  });
+  })
   bahanBakarGroup.value.costCDetail.push({
-    uuid_mesin: idMesin.value,
+    uuid_mesin: uuidMesin.value,
     tahun: tahunBerjalan - 1,
     kode_bahan_bakar: "",
     fuel_cost: "0"
   })
   watch(() => bahanBakarGroup.value.bahanBakars.map(b => b.kode_bahan_bakar), (newValues, oldValues) => {
     newValues.forEach((newValue, index) => {
-      const selectedBahanBakar = comboBahanBakar.value.find(data => data.kode_bahan_bakar === newValue);
-      console.log(selectedBahanBakar, 'Selected Bahan Bakar');
+      const selectedBahanBakar = comboBahanBakar.value.find(data => data.kode_bahan_bakar === newValue)
+      console.log(selectedBahanBakar, 'Selected Bahan Bakar')
       if (selectedBahanBakar) {
-        bahanBakarGroup.value.fuelConsumption[index].id_uraian = parseInt(selectedBahanBakar.id_uraian_fuel_consumption);
-        bahanBakarGroup.value.fuelConsumption[index].bahan_bakar = selectedBahanBakar.bahan_bakar;
+        bahanBakarGroup.value.fuelConsumption[index].id_uraian = parseInt(selectedBahanBakar.id_uraian_fuel_consumption)
+        bahanBakarGroup.value.fuelConsumption[index].bahan_bakar = selectedBahanBakar.bahan_bakar
       }
-      bahanBakarGroup.value.costCDetail[index].kode_bahan_bakar = newValue;
+      bahanBakarGroup.value.costCDetail[index].kode_bahan_bakar = newValue
       console.log(bahanBakarGroup.value, 'Bahan Bakar Group')
-    });
-  });
+    })
+  })
 }
 
 const handleChange = () => {
   watchEffect(() => {
     bahanBakarGroup.value.bahanBakars.forEach((bahanBakar, index) => {
-      const newValue = bahanBakar.kode_bahan_bakar;
-      const selectedBahanBakar = comboBahanBakar.value.find(data => data.kode_bahan_bakar === newValue);
+      const newValue = bahanBakar.kode_bahan_bakar
+      const selectedBahanBakar = comboBahanBakar.value.find(data => data.kode_bahan_bakar === newValue)
 
       if (selectedBahanBakar) {
-        bahanBakarGroup.value.fuelConsumption[index].id_uraian = parseInt(selectedBahanBakar.id_uraian_fuel_consumption);
-        bahanBakarGroup.value.fuelConsumption[index].bahan_bakar = selectedBahanBakar.bahan_bakar;
+        bahanBakarGroup.value.fuelConsumption[index].id_uraian = parseInt(selectedBahanBakar.id_uraian_fuel_consumption)
+        bahanBakarGroup.value.fuelConsumption[index].bahan_bakar = selectedBahanBakar.bahan_bakar
       }
-      bahanBakarGroup.value.costCDetail[index].kode_bahan_bakar = newValue;
-      console.log(bahanBakarGroup.value, 'Bahan Bakar Group');
-    });
-  });
+      bahanBakarGroup.value.costCDetail[index].kode_bahan_bakar = newValue
+      console.log(bahanBakarGroup.value, 'Bahan Bakar Group')
+    })
+  })
 }
 
 function handleHapusBahanBakar() {
   if (checkedBahanBakar.value.length) {
-    checkedBahanBakar.value.forEach((checkedItemId) => {
-      const result = bahanBakarGroup.value.bahanBakars.findIndex((checkbox) => checkbox.id === checkedItemId);
-      if (result !== -1) {
-        bahanBakarGroup.value.bahanBakars.splice(result, 1);
-        bahanBakarGroup.value.fuelConsumption.splice(result, 1);
-        bahanBakarGroup.value.costCDetail.splice(result, 1);
-      }
-    });
+    bahanBakarGroup.value.bahanBakars = bahanBakarGroup.value.bahanBakars.filter(
+      (item) => !checkedBahanBakar.value.includes(item.kode_bahan_bakar)
+    );
+
+    bahanBakarGroup.value.fuelConsumption = bahanBakarGroup.value.fuelConsumption.filter(
+      (item) => !checkedBahanBakar.value.includes(item.kode_bahan_bakar)
+    );
+
+    bahanBakarGroup.value.costCDetail = bahanBakarGroup.value.costCDetail.filter(
+      (item) => !checkedBahanBakar.value.includes(item.kode_bahan_bakar)
+    );
+
     checkedBahanBakar.value = [];
   }
 }
 const fetchDataTeknisSimulasi1 = async () => {
   try {
-    const response: any = await perbaruiDataService.getDataTeknisSimulasi1(tahunBerjalan, idMesin.value);
-    simulasi1DataTeknis.value = response.data;
-    console.log('Simulasi Teknis 1 : ', response.data);
+    const response: any = await perbaruiDataService.getDataTeknisSimulasi1(tahunBerjalan, uuidMesin.value)
+    simulasi1DataTeknis.value = response.data
+    console.log('Simulasi Teknis 1 : ', response.data)
   } catch (error) {
-    console.error('Fetch Opsi Simulasi Error : ', error);
+    console.error('Fetch Opsi Simulasi Error : ', error)
   }
 }
 const fetchDataTeknisSimulasi2 = async () => {
   try {
-    const response: any = await perbaruiDataService.getDataTeknisSimulasi2(tahunBerjalan, idMesin.value);
-    simulasi2DataTeknis.value = response.data;
-    console.log('Simulasi Teknis 2: ', response.data);
+    const response: any = await perbaruiDataService.getDataTeknisSimulasi2(tahunBerjalan, uuidMesin.value)
+    simulasi2DataTeknis.value = response.data
+    console.log('Simulasi Teknis 2: ', response.data)
   } catch (error) {
-    console.error('Fetch Opsi Simulasi Error : ', error);
+    console.error('Fetch Opsi Simulasi Error : ', error)
   }
 }
 const fetchDataFinansialSimulasi1 = async () => {
   try {
-    simulasi1DataFinansial.value = [];
-    const response: any = await perbaruiDataService.getDataFinansialSimulasi1(tahunBerjalan, idMesin.value);
-    let currentLevel1: any | null = null;
-    let currentLevel2: any | null = null;
-    let currentLevel3: any | null = null;
+    simulasi1DataFinansial.value = []
+    const response: any = await perbaruiDataService.getDataFinansialSimulasi1(tahunBerjalan, uuidMesin.value)
+    let currentLevel1: any | null = null
+    let currentLevel2: any | null = null
+    let currentLevel3: any | null = null
     for (const item of response.data.detail) {
       if (item.level === 1) {
         currentLevel1 = {
           ...item,
           level2: [],
-        };
-        simulasi1DataFinansial.value.push(currentLevel1);
+        }
+        simulasi1DataFinansial.value.push(currentLevel1)
       } else if (item.level === 2 && currentLevel1 !== null) {
         currentLevel2 = {
           ...item,
           level3: [],
-        };
-        currentLevel1.level2.push(currentLevel2);
+        }
+        currentLevel1.level2.push(currentLevel2)
       } else if (item.level === 3 && currentLevel1 !== null) {
         currentLevel3 = {
           ...item,
           level4: [],
-        };
-        currentLevel2.level3.push(currentLevel3);
+        }
+        currentLevel2.level3.push(currentLevel3)
       } else if (item.level === 4 && currentLevel1 !== null) {
-        currentLevel3.level4.push({ ...item });
+        currentLevel3.level4.push({ ...item })
       }
-    };
-    dataFinansialSimulasi1.value = response.data;
-    console.log('Simulasi Finansial 1 : ', response.data);
+    }
+    dataFinansialSimulasi1.value = response.data
+    console.log('Simulasi Finansial 1 : ', response.data)
   } catch (error) {
-    console.error('Fetch Opsi Simulasi Error : ', error);
-  };
-};
+    console.error('Fetch Opsi Simulasi Error : ', error)
+  }
+}
 const fetchDataFinansialSimulasi2 = async () => {
   try {
     simulasi2DataFinansial.value = []
-    const response: any = await perbaruiDataService.getDataFinansialSimulasi2(tahunBerjalan, idMesin.value)
+    const response: any = await perbaruiDataService.getDataFinansialSimulasi2(tahunBerjalan, uuidMesin.value)
     let currentLevel1: any | null = null
-    let currentLevel2: any | null = null;
-    let currentLevel3: any | null = null;
+    let currentLevel2: any | null = null
+    let currentLevel3: any | null = null
     for (const item of response.data.detail) {
       if (item.level === 1) {
         currentLevel1 = {
@@ -1866,272 +1887,272 @@ const fetchDataFinansialSimulasi2 = async () => {
           ...item,
           level3: [],
         }
-        currentLevel1.level2.push(currentLevel2);
+        currentLevel1.level2.push(currentLevel2)
       } else if (item.level === 3 && currentLevel1 !== null) {
         currentLevel3 = {
           ...item,
           level4: [],
-        };
+        }
         currentLevel2.level3.push(currentLevel3)
       } else if (item.level === 4 && currentLevel1 !== null) {
         currentLevel3.level4.push({ ...item })
       }
-    };
-    dataFinansialSimulasi2.value = response.data;
+    }
+    dataFinansialSimulasi2.value = response.data
     console.log('Simulasi : Finansial 2', simulasi2DataFinansial.value)
   } catch (error) {
     console.error('Fetch Opsi Simulasi Error : ', error)
   }
-};
-const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+}
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 const handleSubmit = async () => {
-  const errorAsumsiInput = error.value.asumsi;
-  const errorParameterTeknis = error.value.parameter;
-  const errorDataTeknis = error.value.teknis;
-  const errorDataFinansial = error.value.finansial;
+  const errorAsumsiInput = error.value.asumsi
+  const errorParameterTeknis = error.value.parameter
+  const errorDataTeknis = error.value.teknis
+  const errorDataFinansial = error.value.finansial
   if (asumsiParameter.value.asumsiMakro.interestRate === '') {
-    errorAsumsiInput.interestRate = true;
+    errorAsumsiInput.interestRate = true
   } else {
-    errorAsumsiInput.interestRate = false;
+    errorAsumsiInput.interestRate = false
   }
   if (asumsiParameter.value.asumsiMakro.umurTeknis === '') {
-    errorAsumsiInput.umurTeknis = true;
+    errorAsumsiInput.umurTeknis = true
   } else {
-    errorAsumsiInput.umurTeknis = false;
+    errorAsumsiInput.umurTeknis = false
   }
   if (asumsiParameter.value.asumsiMakro.loanTenor === '') {
-    errorAsumsiInput.loanTenor = true;
+    errorAsumsiInput.loanTenor = true
   } else {
-    errorAsumsiInput.loanTenor = false;
+    errorAsumsiInput.loanTenor = false
   }
   if (asumsiParameter.value.asumsiMakro.loanPortion === '') {
-    errorAsumsiInput.loanPortion = true;
+    errorAsumsiInput.loanPortion = true
   } else {
-    errorAsumsiInput.loanPortion = false;
+    errorAsumsiInput.loanPortion = false
   }
   if (asumsiParameter.value.parameterTeknis.nphr === '') {
-    errorParameterTeknis.nphr = true;
+    errorParameterTeknis.nphr = true
   } else {
-    errorParameterTeknis.nphr = false;
+    errorParameterTeknis.nphr = false
   }
   if (asumsiParameter.value.parameterTeknis.auxiliary === '') {
-    errorParameterTeknis.auxiliary = true;
+    errorParameterTeknis.auxiliary = true
   } else {
-    errorParameterTeknis.auxiliary = false;
+    errorParameterTeknis.auxiliary = false
   }
   if (asumsiParameter.value.parameterTeknis.susutTrafo === '') {
-    errorParameterTeknis.susutTrafo = true;
+    errorParameterTeknis.susutTrafo = true
   } else {
-    errorParameterTeknis.susutTrafo = false;
+    errorParameterTeknis.susutTrafo = false
   }
   if (asumsiParameter.value.parameterTeknis.pemakaianSendiri === '') {
-    errorParameterTeknis.pemakaianSendiri = true;
+    errorParameterTeknis.pemakaianSendiri = true
   } else {
-    errorParameterTeknis.pemakaianSendiri = false;
+    errorParameterTeknis.pemakaianSendiri = false
   }
   if (asumsiParameter.value.parameterTeknis.electricityPriceA === '') {
-    errorParameterTeknis.electricityPriceA = true;
+    errorParameterTeknis.electricityPriceA = true
   } else {
-    errorParameterTeknis.electricityPriceA = false;
+    errorParameterTeknis.electricityPriceA = false
   }
   if (asumsiParameter.value.parameterTeknis.electricityPriceB === '') {
-    errorParameterTeknis.electricityPriceB = true;
+    errorParameterTeknis.electricityPriceB = true
   } else {
-    errorParameterTeknis.electricityPriceB = false;
+    errorParameterTeknis.electricityPriceB = false
   }
   if (asumsiParameter.value.parameterTeknis.electricityPriceC === '') {
-    errorParameterTeknis.electricityPriceC = true;
+    errorParameterTeknis.electricityPriceC = true
   } else {
-    errorParameterTeknis.electricityPriceC = false;
+    errorParameterTeknis.electricityPriceC = false
   }
   if (asumsiParameter.value.parameterTeknis.electricityPriceD === '') {
-    errorParameterTeknis.electricityPriceD = true;
+    errorParameterTeknis.electricityPriceD = true
   } else {
-    errorParameterTeknis.electricityPriceD = false;
+    errorParameterTeknis.electricityPriceD = false
   }
   if (bahanBakarGroup.value.bahanBakars.some(obj => Object.values(obj).some(value => value === ""))) {
-    errorParameterTeknis.bahanBakar = true;
+    errorParameterTeknis.bahanBakar = true
   } else {
-    errorParameterTeknis.bahanBakar = false;
+    errorParameterTeknis.bahanBakar = false
   }
   if (typePeriodic.value === '') {
-    errorDataTeknis.periodicMaintenance = true;
+    errorDataTeknis.periodicMaintenance = true
   } else {
-    errorDataTeknis.periodicMaintenance = false;
+    errorDataTeknis.periodicMaintenance = false
   }
   if (ncf.value === '') {
-    errorDataTeknis.ncf = true;
+    errorDataTeknis.ncf = true
   } else {
-    errorDataTeknis.ncf = false;
+    errorDataTeknis.ncf = false
   }
   if (eaf.value === '') {
-    errorDataTeknis.eaf = true;
+    errorDataTeknis.eaf = true
   } else {
-    errorDataTeknis.eaf = false;
+    errorDataTeknis.eaf = false
   }
   if (productionBrutto.value === '') {
-    errorDataTeknis.productionBrutto = true;
+    errorDataTeknis.productionBrutto = true
   } else {
-    errorDataTeknis.productionBrutto = false;
+    errorDataTeknis.productionBrutto = false
   }
   if (productionNetto.value === '') {
-    errorDataTeknis.productionNetto = true;
+    errorDataTeknis.productionNetto = true
   } else {
-    errorDataTeknis.productionNetto = false;
+    errorDataTeknis.productionNetto = false
   }
   if (energySales.value === '') {
-    errorDataTeknis.energySales = true;
+    errorDataTeknis.energySales = true
   } else {
-    errorDataTeknis.energySales = false;
+    errorDataTeknis.energySales = false
   }
   if (bahanBakarGroup.value.fuelConsumption.filter((value: any) => value.value === '').length !== 0) {
-    errorDataTeknis.fuelConsumption = true;
+    errorDataTeknis.fuelConsumption = true
   } else {
-    errorDataTeknis.fuelConsumption = false;
+    errorDataTeknis.fuelConsumption = false
   }
   if (costComponentA.value === 'NaN' || costComponentA.value === '') {
-    errorDataFinansial.costComponentA = true;
+    errorDataFinansial.costComponentA = true
   } else {
-    errorDataFinansial.costComponentA = false;
+    errorDataFinansial.costComponentA = false
   }
   if (costComponentADetail.value.some(obj => Object.values(obj).some(value => value === ""))) {
-    errorDataFinansial.biayaInvestasiAiAki = true;
+    errorDataFinansial.biayaInvestasiAiAki = true
   } else {
-    errorDataFinansial.biayaInvestasiAiAki = false;
+    errorDataFinansial.biayaInvestasiAiAki = false
   }
   if (costComponentB.value === 'NaN' || costComponentB.value === '') {
-    errorDataFinansial.costComponentB = true;
+    errorDataFinansial.costComponentB = true
   } else {
-    errorDataFinansial.costComponentB = false;
+    errorDataFinansial.costComponentB = false
   }
   if (biayaKepegawaian.value === 'NaN' || biayaKepegawaian.value === '') {
-    errorDataFinansial.biayaKepegawaian = true;
+    errorDataFinansial.biayaKepegawaian = true
   } else {
-    errorDataFinansial.biayaKepegawaian = false;
+    errorDataFinansial.biayaKepegawaian = false
   }
   if (biayaPemeliharaanRutin.value === 'NaN' || biayaPemeliharaanRutin.value === '') {
-    errorDataFinansial.biayaPemeliharaanRutin = true;
+    errorDataFinansial.biayaPemeliharaanRutin = true
   } else {
-    errorDataFinansial.biayaPemeliharaanRutin = false;
+    errorDataFinansial.biayaPemeliharaanRutin = false
   }
   if (biayaAdministrasiUmum.value === 'NaN' || biayaAdministrasiUmum.value === '') {
-    errorDataFinansial.biayaAdministrasiUmum = true;
+    errorDataFinansial.biayaAdministrasiUmum = true
   } else {
-    errorDataFinansial.biayaAdministrasiUmum = false;
+    errorDataFinansial.biayaAdministrasiUmum = false
   }
   if (biayaPembelianTenagaListrik.value === 'NaN' || biayaPembelianTenagaListrik.value === '') {
-    errorDataFinansial.biayaPembelianTenagaListrik = true;
+    errorDataFinansial.biayaPembelianTenagaListrik = true
   } else {
-    errorDataFinansial.biayaPembelianTenagaListrik = false;
+    errorDataFinansial.biayaPembelianTenagaListrik = false
   }
   if (biayaLainLain.value === 'NaN' || biayaLainLain.value === '') {
-    errorDataFinansial.biayaLainLain = true;
+    errorDataFinansial.biayaLainLain = true
   } else {
-    errorDataFinansial.biayaLainLain = false;
+    errorDataFinansial.biayaLainLain = false
   }
   // } else if (picked.value === 'gabung') {
   // if (oMCost.value === 'NaN' || oMCost.value === '') {
-  //   errorDataFinansial.oMCost = true;
+  //   errorDataFinansial.oMCost = true
   // } else {
-  //   errorDataFinansial.oMCost = false;
+  //   errorDataFinansial.oMCost = false
   // }
   // if (periodicMaintenanceCost.value === 'NaN' || periodicMaintenanceCost.value === '') {
-  //   errorDataFinansial.periodicMaintenanceCost = true;
+  //   errorDataFinansial.periodicMaintenanceCost = true
   // } else {
-  //   errorDataFinansial.periodicMaintenanceCost = false;
+  //   errorDataFinansial.periodicMaintenanceCost = false
   // }
   // }
   if (costComponentC.value === 'NaN' || costComponentC.value === '') {
-    errorDataFinansial.costComponentC = true;
+    errorDataFinansial.costComponentC = true
   } else {
-    errorDataFinansial.costComponentC = false;
+    errorDataFinansial.costComponentC = false
   }
   if (bahanBakarGroup.value.costCDetail.some(obj => Object.values(obj).some(value => value === ""))) {
-    errorDataFinansial.costComponentCDetail = true;
+    errorDataFinansial.costComponentCDetail = true
   } else {
-    errorDataFinansial.costComponentCDetail = false;
+    errorDataFinansial.costComponentCDetail = false
   }
   if (costComponentD.value === 'NaN' || costComponentD.value === '') {
-    errorDataFinansial.costComponentD = true;
+    errorDataFinansial.costComponentD = true
   } else {
-    errorDataFinansial.costComponentD = false;
+    errorDataFinansial.costComponentD = false
   }
   if (biayaMinyakPelumas.value === 'NaN' || biayaMinyakPelumas.value === '') {
-    errorDataFinansial.biayaMinyakPelumas = true;
+    errorDataFinansial.biayaMinyakPelumas = true
   } else {
-    errorDataFinansial.biayaMinyakPelumas = false;
+    errorDataFinansial.biayaMinyakPelumas = false
   }
   if (bahanKimia.value === 'NaN' || bahanKimia.value === '') {
-    errorDataFinansial.biayaBahanKimia = true;
+    errorDataFinansial.biayaBahanKimia = true
   } else {
-    errorDataFinansial.biayaBahanKimia = false;
+    errorDataFinansial.biayaBahanKimia = false
   }
   if (totalRevenue.value === 'NaN' || totalRevenue.value === '') {
-    errorDataFinansial.totalRevenue = true;
+    errorDataFinansial.totalRevenue = true
   } else {
-    errorDataFinansial.totalRevenue = false;
+    errorDataFinansial.totalRevenue = false
   }
   if (revenueKompA.value === 'NaN' || revenueKompA.value === '') {
-    errorDataFinansial.revenueKompA = true;
+    errorDataFinansial.revenueKompA = true
   } else {
-    errorDataFinansial.revenueKompA = false;
+    errorDataFinansial.revenueKompA = false
   }
   if (revenueKompB.value === 'NaN' || revenueKompB.value === '') {
-    errorDataFinansial.revenueKompB = true;
+    errorDataFinansial.revenueKompB = true
   } else {
-    errorDataFinansial.revenueKompB = false;
+    errorDataFinansial.revenueKompB = false
   }
   if (revenueKompC.value === 'NaN' || revenueKompC.value === '') {
-    errorDataFinansial.revenueKompC = true;
+    errorDataFinansial.revenueKompC = true
   } else {
-    errorDataFinansial.revenueKompC = false;
+    errorDataFinansial.revenueKompC = false
   }
   if (revenueKompD.value === 'NaN' || revenueKompD.value === '') {
-    errorDataFinansial.revenueKompD = true;
+    errorDataFinansial.revenueKompD = true
   } else {
-    errorDataFinansial.revenueKompD = false;
+    errorDataFinansial.revenueKompD = false
   }
   if (Object.values(errorAsumsiInput).some(value => value === true) || Object.values(errorParameterTeknis).some(value => value === true) || Object.values(errorDataTeknis).some(value => value === true) || Object.values(errorDataFinansial).some(value => value === true)) {
-    isShowModalNotification.value = true;
+    isShowModalNotification.value = true
     console.log(error.value)
-    await wait(5000);
-    isShowModalNotification.value = false;
+    await wait(5000)
+    isShowModalNotification.value = false
   } else {
     try {
-      isLoading.value = true;
+      isLoading.value = true
       // Update Asumsi Makro 
-      const finalInterestRate = asumsiParameter.value.asumsiMakro.interestRate.includes('.') ? asumsiParameter.value.asumsiMakro.interestRate.replace(/[.]/g, '') : asumsiParameter.value.asumsiMakro.interestRate;
-      const finalLoanPortion = asumsiParameter.value.asumsiMakro.loanPortion.includes('.') ? asumsiParameter.value.asumsiMakro.loanPortion.replace(/[.]/g, '') : asumsiParameter.value.asumsiMakro.loanPortion;
-      const finalTotalProjectCost = asumsiParameter.value.asumsiMakro.totalProjectCost.includes('.') ? asumsiParameter.value.asumsiMakro.totalProjectCost.replace(/[.]/g, '') : asumsiParameter.value.asumsiMakro.totalProjectCost;
-      const finalDayaMampuNettoMW = asumsiParameter.value.asumsiMakro.dayaMampuNettoMW.includes('.') ? asumsiParameter.value.asumsiMakro.dayaMampuNettoMW.replace(/[.]/g, '') : asumsiParameter.value.asumsiMakro.dayaMampuNettoMW;
-      console.log(finalTotalProjectCost, 'Total Project Cost');
-      console.log(finalDayaMampuNettoMW, 'Daya Mampu Netto MW');
+      const finalInterestRate = asumsiParameter.value.asumsiMakro.interestRate.includes('.') ? asumsiParameter.value.asumsiMakro.interestRate.replace(/[.]/g, '') : asumsiParameter.value.asumsiMakro.interestRate
+      const finalLoanPortion = asumsiParameter.value.asumsiMakro.loanPortion.includes('.') ? asumsiParameter.value.asumsiMakro.loanPortion.replace(/[.]/g, '') : asumsiParameter.value.asumsiMakro.loanPortion
+      const finalTotalProjectCost = asumsiParameter.value.asumsiMakro.totalProjectCost.includes('.') ? asumsiParameter.value.asumsiMakro.totalProjectCost.replace(/[.]/g, '') : asumsiParameter.value.asumsiMakro.totalProjectCost
+      const finalDayaMampuNettoMW = asumsiParameter.value.asumsiMakro.dayaMampuNettoMW.includes('.') ? asumsiParameter.value.asumsiMakro.dayaMampuNettoMW.replace(/[.]/g, '') : asumsiParameter.value.asumsiMakro.dayaMampuNettoMW
+      console.log(finalTotalProjectCost, 'Total Project Cost')
+      console.log(finalDayaMampuNettoMW, 'Daya Mampu Netto MW')
       if (idAsumsi.value === 0 && statusAsumsi.value === 'create') {
         const formAsumsiCreate = {
           // Tahun Berjalan
           tahun: tahunBerjalan,
           // Tahun Realisasi
           tahun_realisasi: tahunBerjalan - 1,
-          uuid_mesin: idMesin.value,
-          interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
+          uuid_mesin: uuidMesin.value,
           umur_teknis: parseInt(masaManfaat.value),
-          loan_tenor: parseInt(asumsiParameter.value.asumsiMakro.loanTenor),
+          interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
           loan_portion: parseFloat(finalLoanPortion.replace(/,/g, '.')),
           status_fs: 0,
+          loan_tenor: parseInt(asumsiParameter.value.asumsiMakro.loanTenor),
           total_project_cost: parseFloat(finalTotalProjectCost.replace(/,/g, '.')),
           daya_mampu_netto_mw: parseFloat(finalDayaMampuNettoMW.replace(/,/g, '.'))
         }
         console.log(formAsumsiCreate)
-        await perbaruiDataService.createAsumsiMakroPermanent(formAsumsiCreate);
-        await fetchMesinById();
+        await perbaruiDataService.createAsumsiMakroPermanent(formAsumsiCreate)
+        await fetchMesinById()
         const response: AsumsiParameterItem =
           await perbaruiDataService.getAsumsiParameterData(
             tahunBerjalan - 1,
-            idMesin.value,
+            uuidMesin.value,
             tahunBerjalan
-          );
-        statusAsumsi.value = response.data.status;
-        idAsumsi.value = response.data.id_asumsi;
+          )
+        statusAsumsi.value = response.data.status
+        idAsumsi.value = response.data.id_asumsi
       } else {
         const formAsumsiUpdate = {
           id_asumsi: idAsumsi.value,
@@ -2139,211 +2160,194 @@ const handleSubmit = async () => {
           tahun: tahunBerjalan,
           // Tahun Realisasi
           tahun_realisasi: tahunBerjalan - 1,
-          uuid_mesin: idMesin.value,
-          interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
+          uuid_mesin: uuidMesin.value,
           umur_teknis: parseInt(masaManfaat.value),
-          loan_tenor: parseInt(asumsiParameter.value.asumsiMakro.loanTenor),
+          interest_rate: parseFloat(finalInterestRate.replace(/,/g, '.')),
           loan_portion: parseFloat(finalLoanPortion.replace(/,/g, '.')),
+          loan_tenor: parseInt(asumsiParameter.value.asumsiMakro.loanTenor),
           total_project_cost: parseFloat(finalTotalProjectCost.replace(/,/g, '.')),
           daya_mampu_netto_mw: parseFloat(finalDayaMampuNettoMW.replace(/,/g, '.'))
         }
-        await perbaruiDataService.updateAsumsiMakroPermanent(formAsumsiUpdate);
-        await fetchMesinById();
+        await perbaruiDataService.updateAsumsiMakroPermanent(formAsumsiUpdate)
+        await fetchMesinById()
         const response: AsumsiParameterItem =
           await perbaruiDataService.getAsumsiParameterData(
             tahunBerjalan - 1,
-            idMesin.value,
+            uuidMesin.value,
             tahunBerjalan
-          );
-        statusAsumsi.value = response.data.status;
-        idAsumsi.value = response.data.id_asumsi;
+          )
+        statusAsumsi.value = response.data.status
+        idAsumsi.value = response.data.id_asumsi
       }
       // Update Parameter Teknis & Finansial
       const finalBahanBakars = bahanBakarGroup.value.bahanBakars.map(value => {
-        delete value.id;
-        let newValue = { ...value };
-        let finalHargaBahanBakar = newValue.harga_bahan_bakar.includes('.') ? newValue.harga_bahan_bakar.replace(/[.]/g, '') : newValue.harga_bahan_bakar;
-        newValue.harga_bahan_bakar = parseFloat(finalHargaBahanBakar.replace(/,/g, '.'));
-        let finalSFC = newValue.sfc.includes('.') ? newValue.sfc.replace(/[.]/g, '') : newValue.sfc;
-        newValue.sfc = parseFloat(finalSFC.replace(/,/g, '.'));
-        newValue.tahun = (tahunBerjalan - 1).toString();
-        return newValue;
-      });
-      console.log(finalBahanBakars, 'Final');
-      const finalNPHR = asumsiParameter.value.parameterTeknis.nphr.includes('.') ? asumsiParameter.value.parameterTeknis.nphr.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.nphr;
-      const finalAuxiliary = asumsiParameter.value.parameterTeknis.auxiliary.includes('.') ? asumsiParameter.value.parameterTeknis.auxiliary.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.auxiliary;
-      const finalSusutTrafo = asumsiParameter.value.parameterTeknis.susutTrafo.includes('.') ? asumsiParameter.value.parameterTeknis.susutTrafo.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.susutTrafo;
-      const finalPemakaianSendiri = asumsiParameter.value.parameterTeknis.pemakaianSendiri.includes('.') ? asumsiParameter.value.parameterTeknis.pemakaianSendiri.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.pemakaianSendiri;
-      const finalElecA = asumsiParameter.value.parameterTeknis.electricityPriceA.includes('.') ? asumsiParameter.value.parameterTeknis.electricityPriceA.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.electricityPriceA;
-      const finalElecB = asumsiParameter.value.parameterTeknis.electricityPriceB.includes('.') ? asumsiParameter.value.parameterTeknis.electricityPriceB.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.electricityPriceB;
-      const finalElecC = asumsiParameter.value.parameterTeknis.electricityPriceC.includes('.') ? asumsiParameter.value.parameterTeknis.electricityPriceC.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.electricityPriceC;
-      const finalElecD = asumsiParameter.value.parameterTeknis.electricityPriceD.includes('.') ? asumsiParameter.value.parameterTeknis.electricityPriceD.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.electricityPriceD;
-      let formParameterUpdate = {};
+        delete value.id
+        let newValue = { ...value }
+        let finalHargaBahanBakar = newValue.harga_bahan_bakar.includes('.') ? newValue.harga_bahan_bakar.replace(/[.]/g, '') : newValue.harga_bahan_bakar
+        newValue.harga_bahan_bakar = parseFloat(finalHargaBahanBakar.replace(/,/g, '.'))
+        let finalSFC = newValue.sfc.includes('.') ? newValue.sfc.replace(/[.]/g, '') : newValue.sfc
+        newValue.sfc = parseFloat(finalSFC.replace(/,/g, '.'))
+        newValue.tahun = (tahunBerjalan - 1).toString()
+        return newValue
+      })
+      console.log(finalBahanBakars, 'Final')
+      const finalNPHR = asumsiParameter.value.parameterTeknis.nphr.includes('.') ? asumsiParameter.value.parameterTeknis.nphr.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.nphr
+      const finalAuxiliary = asumsiParameter.value.parameterTeknis.auxiliary.includes('.') ? asumsiParameter.value.parameterTeknis.auxiliary.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.auxiliary
+      const finalSusutTrafo = asumsiParameter.value.parameterTeknis.susutTrafo.includes('.') ? asumsiParameter.value.parameterTeknis.susutTrafo.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.susutTrafo
+      const finalPemakaianSendiri = asumsiParameter.value.parameterTeknis.pemakaianSendiri.includes('.') ? asumsiParameter.value.parameterTeknis.pemakaianSendiri.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.pemakaianSendiri
+      const finalElecA = asumsiParameter.value.parameterTeknis.electricityPriceA.includes('.') ? asumsiParameter.value.parameterTeknis.electricityPriceA.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.electricityPriceA
+      const finalElecB = asumsiParameter.value.parameterTeknis.electricityPriceB.includes('.') ? asumsiParameter.value.parameterTeknis.electricityPriceB.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.electricityPriceB
+      const finalElecC = asumsiParameter.value.parameterTeknis.electricityPriceC.includes('.') ? asumsiParameter.value.parameterTeknis.electricityPriceC.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.electricityPriceC
+      const finalElecD = asumsiParameter.value.parameterTeknis.electricityPriceD.includes('.') ? asumsiParameter.value.parameterTeknis.electricityPriceD.replace(/[.]/g, '') : asumsiParameter.value.parameterTeknis.electricityPriceD
+      let formParameterUpdate = {}
       formParameterUpdate = {
+        uuid_mesin: uuidMesin.value,
         id_asumsi: idAsumsi.value,
-        uuid_mesin: idMesin.value,
-        tahun: tahunBerjalan,
         tahun_realisasi: tahunBerjalan - 1,
-        nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
+        tahun: tahunBerjalan,
         auxiliary: parseFloat(finalAuxiliary.replace(/,/g, '.')),
-        susut_trafo: parseFloat(finalSusutTrafo.replace(/,/g, '.')),
+        nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
         ps: parseFloat(finalPemakaianSendiri.replace(/,/g, '.')),
-        electricity_price_a_rp_per_kwbln: parseFloat(finalElecA.replace(/,/g, '.')),
+        susut_trafo: parseFloat(finalSusutTrafo.replace(/,/g, '.')),
         electricity_price_b_rp_per_kwbln: parseFloat(finalElecB.replace(/,/g, '.')),
-        electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),
+        electricity_price_a_rp_per_kwbln: parseFloat(finalElecA.replace(/,/g, '.')),
         electricity_price_d_rp_per_kwh: parseFloat(finalElecD.replace(/,/g, '.')),
+        electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),
         harga_bahan_bakars: finalBahanBakars
       }
-      // } else {
-      //   formParameterUpdate = {
-      //     id_asumsi: idAsumsi.value,
-      //     uuid_mesin: idMesin.value,
-      //     tahun: tahunBerjalan,
-      //     tahun_realisasi: tahunBerjalan - 1,
-      //     nphr: parseFloat(finalNPHR.replace(/,/g, '.')),
-      //     auxiliary: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalAuxiliary.replace(/,/g, '.')) : 0,
-      //     susut_trafo: pickedParameterValue.value === 'auxiliarySusut' ? parseFloat(finalSusutTrafo.replace(/,/g, '.')) : 0,
-      //     ps: pickedParameterValue.value === 'pemakaianSendiri' ? parseFloat(finalPemakaianSendiri.replace(/,/g, '.')) : 0,
-      //     electricity_price_a_rp_per_kwbln: parseFloat(finalElecA.replace(/,/g, '.')),
-      //     electricity_price_b_rp_per_kwbln: parseFloat(finalElecB.replace(/,/g, '.')),
-      //     electricity_price_c_rp_per_kwh: parseFloat(finalElecC.replace(/,/g, '.')),
-      //     electricity_price_d_rp_per_kwh: parseFloat(finalElecD.replace(/,/g, '.')),
-      //     harga_bahan_bakars: finalBahanBakars
-      //   }
-      // }
-      await perbaruiDataService.updateParameterTeknisPermanent(formParameterUpdate);
+      await perbaruiDataService.updateParameterTeknisPermanent(formParameterUpdate)
 
       // Update Data Teknis
-      const finalFuelConsumption: any = [];
+      const finalFuelConsumption: any = []
       for (const itemTeknis of bahanBakarGroup.value.fuelConsumption) {
-        let finalItem = itemTeknis.value.includes('.') ? itemTeknis.value.replace(/[.]/g, '') : itemTeknis.value;
+        let finalItem = itemTeknis.value.includes('.') ? itemTeknis.value.replace(/[.]/g, '') : itemTeknis.value
         finalFuelConsumption.push({
           id_uraian: itemTeknis.id_uraian,
           value: parseFloat(finalItem.replace(/,/g, '.'))
         })
       }
-      const finalNFC = ncf.value.includes('.') ? ncf.value.replace(/[.]/g, '') : ncf.value;
-      const finalEAF = eaf.value.includes('.') ? eaf.value.replace(/[.]/g, '') : eaf.value;
-      const finalProductionBrutto = productionBrutto.value.includes('.') ? productionBrutto.value.replace(/[.]/g, '') : productionBrutto.value;
-      const finalProductionNetto = productionNetto.value.includes('.') ? productionNetto.value.replace(/[.]/g, '') : productionNetto.value;
-      const finalEnergySales = energySales.value.includes('.') ? energySales.value.replace(/[.]/g, '') : energySales.value;
+      const finalNFC = ncf.value.includes('.') ? ncf.value.replace(/[.]/g, '') : ncf.value
+      const finalEAF = eaf.value.includes('.') ? eaf.value.replace(/[.]/g, '') : eaf.value
+      const finalProductionBrutto = productionBrutto.value.includes('.') ? productionBrutto.value.replace(/[.]/g, '') : productionBrutto.value
+      const finalProductionNetto = productionNetto.value.includes('.') ? productionNetto.value.replace(/[.]/g, '') : productionNetto.value
+      const finalEnergySales = energySales.value.includes('.') ? energySales.value.replace(/[.]/g, '') : energySales.value
 
       const formDataTeknisUpdate = {
-        uuid_mesin: idMesin.value,
         tahun: tahunBerjalan,
-        tahun_realisasi: tahunBerjalan - 1,
+        uuid_mesin: uuidMesin.value,
         id_type_periodic: typePeriodic.value,
-        nfc: parseFloat(finalNFC.replace(/,/g, '.')),
+        tahun_realisasi: tahunBerjalan - 1,
         eaf: parseFloat(finalEAF.replace(/,/g, '.')),
-        production_bruto: parseFloat(finalProductionBrutto.replace(/,/g, '.')),
+        nfc: parseFloat(finalNFC.replace(/,/g, '.')),
         production_netto: parseFloat(finalProductionNetto.replace(/,/g, '.')),
         energy_sales: parseFloat(finalEnergySales.replace(/,/g, '.')),
+        production_bruto: parseFloat(finalProductionBrutto.replace(/,/g, '.')),
         fuel_consumption: finalFuelConsumption
       }
-      console.log(formDataTeknisUpdate);
+      console.log(formDataTeknisUpdate)
       // Matikan Comment dibawah ini jika sudah di FIX API Update Data Teknis
-      await perbaruiDataService.updateDataTeknisSimulasi(formDataTeknisUpdate);
+      await perbaruiDataService.updateDataTeknisSimulasi(formDataTeknisUpdate)
 
       // Update Data Finansial
       for (const item of costComponentADetail.value) {
-        delete item.id;
+        delete item.id
       }
       for (const value of costComponentADetail.value) {
         if (value.ai !== '') {
-          value.ai = parseFloat(value.ai.toString().replace(/,/g, ''));
+          value.ai = parseFloat(value.ai.toString().replace(/,/g, ''))
         }
         if (value.realisasi_aki !== '') {
-          value.realisasi_aki = parseFloat(value.realisasi_aki.toString().replace(/,/g, ''));
+          value.realisasi_aki = parseFloat(value.realisasi_aki.toString().replace(/,/g, ''))
         }
       }
       console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 1')
-      const finalCostComponentA = costComponentA.value.includes('.') ? costComponentA.value.replace(/[.]/g, '') : costComponentA.value;
+      const finalCostComponentA = costComponentA.value.includes('.') ? costComponentA.value.replace(/[.]/g, '') : costComponentA.value
       console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 2')
-      const finalCostComponentB = costComponentB.value.includes('.') ? costComponentB.value.replace(/[.]/g, '') : costComponentB.value;
+      const finalCostComponentB = costComponentB.value.includes('.') ? costComponentB.value.replace(/[.]/g, '') : costComponentB.value
       console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 3')
-      const finalBiayaKepegawaian = biayaKepegawaian.value.includes('.') ? biayaKepegawaian.value.replace(/[.]/g, '') : biayaKepegawaian.value;
+      const finalBiayaKepegawaian = biayaKepegawaian.value.includes('.') ? biayaKepegawaian.value.replace(/[.]/g, '') : biayaKepegawaian.value
       console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 4')
       console.log(periodicMaintenanceCost.value, 'Cost C Detail 4.1')
-      const finalBiayaPeriodic = periodicMaintenanceCost.value.includes('.') ? periodicMaintenanceCost.value.replace(/[.]/g, '') : periodicMaintenanceCost.value;
+      const finalBiayaPeriodic = periodicMaintenanceCost.value.includes('.') ? periodicMaintenanceCost.value.replace(/[.]/g, '') : periodicMaintenanceCost.value
       console.log(finalBiayaPeriodic, 'Cost C Detail 5')
-      const finalBiayaPemeliharaanRutin = biayaPemeliharaanRutin.value.includes('.') ? biayaPemeliharaanRutin.value.replace(/[.]/g, '') : biayaPemeliharaanRutin.value;
+      const finalBiayaPemeliharaanRutin = biayaPemeliharaanRutin.value.includes('.') ? biayaPemeliharaanRutin.value.replace(/[.]/g, '') : biayaPemeliharaanRutin.value
       console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 6')
-      const finalBiayaAdministrasiUmum = biayaAdministrasiUmum.value.includes('.') ? biayaAdministrasiUmum.value.replace(/[.]/g, '') : biayaAdministrasiUmum.value;
+      const finalBiayaAdministrasiUmum = biayaAdministrasiUmum.value.includes('.') ? biayaAdministrasiUmum.value.replace(/[.]/g, '') : biayaAdministrasiUmum.value
       console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 7')
-      const finalBiayaPembelianTenagaListrik = biayaPembelianTenagaListrik.value.includes('.') ? biayaPembelianTenagaListrik.value.replace(/[.]/g, '') : biayaPembelianTenagaListrik.value;
+      const finalBiayaPembelianTenagaListrik = biayaPembelianTenagaListrik.value.includes('.') ? biayaPembelianTenagaListrik.value.replace(/[.]/g, '') : biayaPembelianTenagaListrik.value
       console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 8')
-      const finalBiayaLainLain = biayaLainLain.value.includes('.') ? biayaLainLain.value.replace(/[.]/g, '') : biayaLainLain.value;
+      const finalBiayaLainLain = biayaLainLain.value.includes('.') ? biayaLainLain.value.replace(/[.]/g, '') : biayaLainLain.value
       console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 9')
       console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 10')
-      const finalCostComponentC = costComponentC.value.includes('.') ? costComponentC.value.replace(/[.]/g, '') : costComponentC.value;
+      const finalCostComponentC = costComponentC.value.includes('.') ? costComponentC.value.replace(/[.]/g, '') : costComponentC.value
       console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail 11')
-      const finalCostComponentCDetail = [];
+      const finalCostComponentCDetail = []
 
       for (const item of bahanBakarGroup.value.costCDetail) {
-        const formattedFuelCost = item.fuel_cost.includes('.') ? item.fuel_cost.replace(/[.]/g, '') : item.fuel_cost;
+        const formattedFuelCost = item.fuel_cost.includes('.') ? item.fuel_cost.replace(/[.]/g, '') : item.fuel_cost
         console.log(bahanBakarGroup.value.costCDetail, 'Cost C Detail', item.fuel_cost)
         finalCostComponentCDetail.push({
-          uuid_mesin: idMesin.value,
+          uuid_mesin: uuidMesin.value,
           tahun: tahunBerjalan - 1,
           kode_bahan_bakar: item.kode_bahan_bakar,
           fuel_cost: parseFloat(formattedFuelCost.replace(/,/g, '.'))
-        });
+        })
       }
-      const finalCostComponentD = costComponentD.value.includes('.') ? costComponentD.value.replace(/[.]/g, '') : costComponentD.value;
-      const finalBiayaPelumas = biayaMinyakPelumas.value.includes('.') ? biayaMinyakPelumas.value.replace(/[.]/g, '') : biayaMinyakPelumas.value;
-      const finalBahanKimia = bahanKimia.value.includes('.') ? bahanKimia.value.replace(/[.]/g, '') : bahanKimia.value;
-      const finalRevenue = totalRevenue.value.includes('.') ? totalRevenue.value.replace(/[.]/g, '') : totalRevenue.value;
-      const finalRevenueKompA = revenueKompA.value.includes('.') ? revenueKompA.value.replace(/[.]/g, '') : revenueKompA.value;
-      const finalRevenueKompB = revenueKompB.value.includes('.') ? revenueKompB.value.replace(/[.]/g, '') : revenueKompB.value;
-      const finalRevenueKompC = revenueKompC.value.includes('.') ? revenueKompC.value.replace(/[.]/g, '') : revenueKompC.value;
-      const finalRevenueKompD = revenueKompD.value.includes('.') ? revenueKompD.value.replace(/[.]/g, '') : revenueKompD.value;
+      const finalCostComponentD = costComponentD.value.includes('.') ? costComponentD.value.replace(/[.]/g, '') : costComponentD.value
+      const finalBiayaPelumas = biayaMinyakPelumas.value.includes('.') ? biayaMinyakPelumas.value.replace(/[.]/g, '') : biayaMinyakPelumas.value
+      const finalBahanKimia = bahanKimia.value.includes('.') ? bahanKimia.value.replace(/[.]/g, '') : bahanKimia.value
+      const finalRevenue = totalRevenue.value.includes('.') ? totalRevenue.value.replace(/[.]/g, '') : totalRevenue.value
+      const finalRevenueKompA = revenueKompA.value.includes('.') ? revenueKompA.value.replace(/[.]/g, '') : revenueKompA.value
+      const finalRevenueKompB = revenueKompB.value.includes('.') ? revenueKompB.value.replace(/[.]/g, '') : revenueKompB.value
+      const finalRevenueKompC = revenueKompC.value.includes('.') ? revenueKompC.value.replace(/[.]/g, '') : revenueKompC.value
+      const finalRevenueKompD = revenueKompD.value.includes('.') ? revenueKompD.value.replace(/[.]/g, '') : revenueKompD.value
 
-      let formDataFinansialUpdate;
+      let formDataFinansialUpdate
       formDataFinansialUpdate = {
-        uuid_mesin: idMesin.value,
         tahun: tahunBerjalan - 1,
-        status_b_d: 2,
+        uuid_mesin: uuidMesin.value,
         cost_component_a: parseFloat(finalCostComponentA.replace(/,/g, '.')),
+        status_b_d: 2,
         cost_component_b: parseFloat(finalCostComponentB.replace(/,/g, '.')),
         cost_component_b_detail: {
+          uuid_mesin: uuidMesin.value,
           id_ao: 0,
-          uuid_mesin: idMesin.value,
-          tahun: tahunBerjalan - 1,
           biaya_kepegawaian: parseFloat(finalBiayaKepegawaian.replace(/,/g, '.')),
-          biaya_pemeliharaan_rutin: parseFloat(finalBiayaPemeliharaanRutin.replace(/,/g, '.')),
+          tahun: tahunBerjalan - 1,
           biaya_administrasi_umum: parseFloat(finalBiayaAdministrasiUmum.replace(/,/g, '.')),
-          biaya_pembelian_tenaga_listrik: parseFloat(finalBiayaPembelianTenagaListrik.replace(/,/g, '.')),
+          biaya_pemeliharaan_rutin: parseFloat(finalBiayaPemeliharaanRutin.replace(/,/g, '.')),
           biaya_penyusutan_aset_tetap: 0,
+          biaya_pembelian_tenaga_listrik: parseFloat(finalBiayaPembelianTenagaListrik.replace(/,/g, '.')),
           biaya_lain_lain: parseFloat(finalBiayaLainLain.replace(/,/g, '.')),
           biaya_periodic_maintenance_non_mi: 0
         },
-        cost_component_c: parseFloat(finalCostComponentC.replace(/,/g, '.')),
         cost_component_c_detail: finalCostComponentCDetail,
+        cost_component_c: parseFloat(finalCostComponentC.replace(/,/g, '.')),
         cost_component_d: parseFloat(finalCostComponentD.replace(/,/g, '.')),
         cost_component_d_detail: {
+          uuid_mesin: uuidMesin.value,
           id_pelumas_bahan_kimia: 0,
-          uuid_mesin: idMesin.value,
-          tahun: tahunBerjalan - 1,
           biaya_pelumas: parseFloat(finalBiayaPelumas.replace(/,/g, '.')),
+          tahun: tahunBerjalan - 1,
           biaya_bahan_kimia: parseFloat(finalBahanKimia.replace(/,/g, '.')),
           biaya_lain_lain: 0
         },
-        revenue: parseFloat(finalRevenue.replace(/,/g, '.')),
         revenue_a: parseFloat(finalRevenueKompA.replace(/,/g, '.')),
-        revenue_b: parseFloat(finalRevenueKompB.replace(/,/g, '.')),
+        revenue: parseFloat(finalRevenue.replace(/,/g, '.')),
         revenue_c: parseFloat(finalRevenueKompC.replace(/,/g, '.')),
+        revenue_b: parseFloat(finalRevenueKompB.replace(/,/g, '.')),
         revenue_d: parseFloat(finalRevenueKompD.replace(/,/g, '.'))
       }
       // } else {
       //   formDataFinansialUpdate = {
-      //     uuid_mesin: idMesin.value,
+      //     uuid_mesin: uuidMesin.value,
       //     tahun: tahunBerjalan - 1,
       //     status_b_d: 1,
       //     cost_component_a: parseFloat(finalCostComponentA.replace(/,/g, '.')),
       //     cost_component_b: parseFloat(finalCostComponentB.replace(/,/g, '.')),
       //     cost_component_b_detail: {
       //       id_ao: 0,
-      //       uuid_mesin: idMesin.value,
+      //       uuid_mesin: uuidMesin.value,
       //       tahun: tahunBerjalan - 1,
       //       biaya_kepegawaian: 0,
       //       biaya_pemeliharaan_rutin: 0,
@@ -2358,7 +2362,7 @@ const handleSubmit = async () => {
       //     cost_component_d: 0,
       //     cost_component_d_detail: {
       //       id_pelumas_bahan_kimia: 0,
-      //       uuid_mesin: idMesin.value,
+      //       uuid_mesin: uuidMesin.value,
       //       tahun: tahunBerjalan - 1,
       //       biaya_pelumas: 0,
       //       biaya_bahan_kimia: 0,
@@ -2371,31 +2375,31 @@ const handleSubmit = async () => {
       //     revenue_d: parseFloat(finalRevenueKompD.replace(/,/g, '.'))
       //   }
       // }
-      await perbaruiDataService.updateDataFinansialSimulasi(formDataFinansialUpdate);
+      await perbaruiDataService.updateDataFinansialSimulasi(formDataFinansialUpdate)
       // Handle Sesudah Submit
-      bahanBakarGroup.value.fuelConsumption = [];
-      isLoading.value = false;
-      isSuccessSimulasi.value = true;
-      await wait(3000);
-      isSuccessSimulasi.value = false;
-      isLoading.value = true;
+      bahanBakarGroup.value.fuelConsumption = []
+      isLoading.value = false
+      isSuccessSimulasi.value = true
+      await wait(3000)
+      isSuccessSimulasi.value = false
+      isLoading.value = true
       // Disini harusnya fetching data lagi
-      await fetchAsumsiParameter();
-      await fetchDataFinansialDetail();
-      await fetchDataTeknisByPeriode();
-      await fetchDataTeknisSimulasi1();
-      await fetchDataTeknisSimulasi2();
-      await fetchDataFinansialSimulasi1();
-      await fetchDataFinansialSimulasi2();
-      await fetchHasilSimulasi1();
-      await fetchHasilSimulasi2();
-      console.log(bahanBakarGroup.value);
-      storePerbaruiTab.currentTab = 'Opsi Simulasi';
+      await fetchAsumsiParameter()
+      await fetchDataFinansialDetail()
+      await fetchDataTeknisByPeriode()
+      await fetchDataTeknisSimulasi1()
+      await fetchDataTeknisSimulasi2()
+      await fetchDataFinansialSimulasi1()
+      await fetchDataFinansialSimulasi2()
+      await fetchHasilSimulasi1()
+      await fetchHasilSimulasi2()
+      console.log(bahanBakarGroup.value)
+      storePerbaruiTab.currentTab = 'Opsi Simulasi'
     } catch (error: any) {
-      console.error('Update Error : ' + error);
-      notifyError('Update Error: ' + error.response.data.message, 1000);
+      console.error('Update Error : ', error)
+      notifyError(error.response.data.message, 1000)
     } finally {
-      isLoading.value = false;
+      isLoading.value = false
     }
   }
 }
@@ -2403,159 +2407,161 @@ const handleFinalSubmit = async () => {
   try {
     console.log(dataTeknisSimulasi1.value)
     console.log(dataTeknisSimulasi2.value)
-    const encryptStorage = await encryptStoragePromise;
-    isShowFinalConfirmation.value = false;
-    isShowModalEvidence.value = false;
-    isLoading.value = true;
+    const encryptStorage = await encryptStoragePromise
+    isShowFinalConfirmation.value = false
+    isShowModalEvidence.value = false
+    isLoading.value = true
     if (selectedSimulasiTab.value === 'Simulasi 1') {
-      const finalCostComponentCDetail = [];
+      const finalCostComponentCDetail = []
       for (const item of formFinansialSimulasi1.value.cost_component_c_detail) {
-        const formattedFuelCost = item.fuel_cost.includes('.') ? item.fuel_cost.replace(/[.]/g, '') : item.fuel_cost;
+        const formattedFuelCost = item.fuel_cost.includes('.') ? item.fuel_cost.replace(/[.]/g, '') : item.fuel_cost
         finalCostComponentCDetail.push({
-          uuid_mesin: idMesin.value,
+          uuid_mesin: uuidMesin.value,
           tahun: tahunBerjalan - 1,
           kode_bahan_bakar: item.kode_bahan_bakar,
           fuel_cost: parseFloat(formattedFuelCost.replace(/,/g, '.'))
-        });
+        })
       }
-      formFinansialSimulasi1.value.cost_component_c_detail = finalCostComponentCDetail;
+      formFinansialSimulasi1.value.cost_component_c_detail = finalCostComponentCDetail
       if (selectedFileEvidence.value) {
-        await uploadFileEvidence();
+        await uploadFileEvidence()
       }
-      isLoading.value = true;
-      await perbaruiDataService.updateDataTeknisPermanent(dataTeknisSimulasi1.value);
-      await perbaruiDataService.updateDataFinansialPermanent(formFinansialSimulasi1.value);
+      isLoading.value = true
+      await perbaruiDataService.updateDataTeknisPermanent(dataTeknisSimulasi1.value)
+      await perbaruiDataService.updateDataFinansialPermanent(formFinansialSimulasi1.value)
     } else {
       if (selectedFileEvidence.value) {
-        await uploadFileEvidence();
+        await uploadFileEvidence()
       }
-      isLoading.value = true;
-      await perbaruiDataService.updateDataTeknisPermanent(dataTeknisSimulasi2.value);
-      await perbaruiDataService.updateDataFinansialPermanent(formFinansialSimulasi2.value);
+      isLoading.value = true
+      await perbaruiDataService.updateDataTeknisPermanent(dataTeknisSimulasi2.value)
+      await perbaruiDataService.updateDataFinansialPermanent(formFinansialSimulasi2.value)
     }
-    isShowFinalConfirmation.value = false;
-    isShowModalEvidence.value = false;
-    isLoading.value = false;
-    isFinalSubmitSuccess.value = true;
-    await wait(3000);
-    isFinalSubmitSuccess.value = false;
+    isShowFinalConfirmation.value = false
+    isShowModalEvidence.value = false
+    isLoading.value = false
+    isFinalSubmitSuccess.value = true
+    await wait(3000)
+    isFinalSubmitSuccess.value = false
     if (userAuthStore.levelAlias === 'Mb*0yT%3') {
-      router.replace({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(idMesin.value) : idMesin.value }, query: { uuid_sentral: idSentral.value, tahun: tahunBerjalan } });
+      router.replace({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(uuidMesin.value) : uuidMesin.value }, query: { uuid_sentral: idSentral.value, tahun: tahunBerjalan } })
     } else {
-      router.replace({ name: 'persetujuan-by-approve' });
+      router.replace({ name: 'persetujuan-by-approve' })
     }
   } catch (error) {
-    console.error('Final Submit Error : ' + error);
-    isLoading.value = false;
+    console.error('Final Submit Error : ', error)
+    isLoading.value = false
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
 }
 const toggleRowSimulasi1 = (itemId: number) => {
   if (isRowOpenSimulasi1(itemId)) {
     isRowTabOpenSimulasi1.value = isRowTabOpenSimulasi1.value.filter(
       (id) => id !== itemId
-    );
+    )
   } else {
-    isRowTabOpenSimulasi1.value.push(itemId);
+    isRowTabOpenSimulasi1.value.push(itemId)
   }
-};
+}
 
 const isRowOpenSimulasi1 = (itemId: number) => {
-  return isRowTabOpenSimulasi1.value.includes(itemId);
-};
+  return isRowTabOpenSimulasi1.value.includes(itemId)
+}
 
 const toggleRowSimulasi2 = (itemId: number) => {
   if (isRowOpenSimulasi2(itemId)) {
     isRowTabOpenSimulasi2.value = isRowTabOpenSimulasi2.value.filter(
       (id) => id !== itemId
-    );
+    )
   } else {
-    isRowTabOpenSimulasi2.value.push(itemId);
+    isRowTabOpenSimulasi2.value.push(itemId)
   }
-};
+}
 
 const isRowOpenSimulasi2 = (itemId: number) => {
-  return isRowTabOpenSimulasi2.value.includes(itemId);
-};
+  return isRowTabOpenSimulasi2.value.includes(itemId)
+}
 const handleDownloadExcelSimulasi1 = async () => {
   try {
-    isLoading.value = true;
-    console.log('Form 1', formFinansialSimulasi1.value);
-    console.log('Form 2', formFinansialSimulasi2.value);
-    const response: any = await rekapService.downloadSimulasi1(tahunBerjalan, tahunBerjalan - 1, idMesin.value);
-    console.log(response);
+    isLoading.value = true
+    console.log('Form 1', formFinansialSimulasi1.value)
+    console.log('Form 2', formFinansialSimulasi2.value)
+    const response: any = await rekapService.downloadSimulasi1(tahunBerjalan, tahunBerjalan - 1, uuidMesin.value);
+    console.log(response)
     const contentDisposition = response.headers['content-disposition'];
-    const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
-    const fileName = fileNameMatch ? fileNameMatch[1] : `Simulasi 1 - Kertas Kerja Actual - ${mesinDataById.value?.mesin}_${tahunBerjalan}_${globalFormat.formatNumberFiveDigits(idMesin.value)}.xlsx`
+    const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/)
+    const fileName = fileNameMatch ? fileNameMatch[1] : `Simulasi 1 - Kertas Kerja Actual - ${mesinDataById.value?.mesin}_${tahunBerjalan}_${globalFormat.formatNumberFiveDigits(uuidMesin.value)}.xlsx`
     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a')
     link.href = url;
-    link.setAttribute('download', fileName);
-    document.body.appendChild(link)
-    link.click();
-    document.body.removeChild(link);
-    isLoading.value = false
-  } catch (error) {
-    console.error('Handle Download Template Rekap Error : ' + error);
-  } finally {
-    isLoading.value = false;
-  }
-};
-const handleDownloadExcelSimulasi2 = async () => {
-  try {
-    isLoading.value = true
-    const response: any = await rekapService.downloadSimulasi2(tahunBerjalan, tahunBerjalan - 1, idMesin.value);
-    const contentDisposition = response.headers['content-disposition']
-    const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
-    const fileName = fileNameMatch ? fileNameMatch[1] : `Simulasi 2 - Kertas Kerja Actual - ${mesinDataById.value?.mesin}_${tahunBerjalan}_${globalFormat.formatNumberFiveDigits(idMesin.value)}.xlsx`
-    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a');
-    link.href = url
-    link.setAttribute('download', fileName);
-    document.body.appendChild(link)
-    link.click();
+    link.setAttribute('download', fileName)
+    document.body.appendChild(link);
+    link.click()
     document.body.removeChild(link)
     isLoading.value = false;
   } catch (error) {
-    console.error('Handle Download Template Rekap Error : ' + error)
+    console.error('Handle Download Template Rekap Error : ', error)
   } finally {
     isLoading.value = false;
   }
-};
+}
+const handleDownloadExcelSimulasi2 = async () => {
+  try {
+    isLoading.value = true
+    const response: any = await rekapService.downloadSimulasi2(tahunBerjalan, tahunBerjalan - 1, uuidMesin.value)
+    const contentDisposition = response.headers['content-disposition']
+    const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/)
+    const fileName = fileNameMatch ? fileNameMatch[1] : `Simulasi 2 - Kertas Kerja Actual - ${mesinDataById.value?.mesin}_${tahunBerjalan}_${globalFormat.formatNumberFiveDigits(uuidMesin.value)}.xlsx`
+    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', fileName)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    isLoading.value = false
+  } catch (error) {
+    console.error('Handle Download Template Rekap Error : ', error)
+  } finally {
+    isLoading.value = false
+  }
+}
 
 onUnmounted(() => {
-  storePerbaruiTab.currentTab = 'Asumsi Makro';
-});
+  storePerbaruiTab.currentTab = 'Asumsi Makro'
+})
 
 onMounted(async () => {
-  const encryptStorage = await encryptStoragePromise;
-  idMesin.value = parseInt(nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString());
-  await fetchMesinById();
-  await fetchUnitPengelola();
-  await fetchPersetujuanKK();
-  await fetchCheckIntegrasi();
-  await fetchComboBahanBakar();
-  await fetchAsumsiParameter();
-  await fetchComboTypePeriodic();
-  await fetchDataFinansialDetail();
-  await fetchDataTeknisByPeriode();
-  await fetchDataTeknisSimulasi1();
-  await fetchDataTeknisSimulasi2();
-  await fetchDataFinansialSimulasi1();
-  await fetchDataFinansialSimulasi2();
-  await fetchHasilSimulasi1();
-  await fetchHasilSimulasi2();
-  await fetchListTypePeriodic();
-  isLoading.value = false;
-});
+  const encryptStorage = await encryptStoragePromise
+  uuidMesin.value = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString()
+  await fetchMesinById()
+  await fetchUnitPengelola()
+  await fetchPersetujuanKK()
+  await fetchCheckIntegrasi()
+  await fetchComboBahanBakar()
+  await fetchAsumsiParameter()
+  await fetchComboTypePeriodic()
+  await fetchDataFinansialDetail()
+  await fetchDataTeknisByPeriode()
+  await fetchDataTeknisSimulasi1()
+  await fetchDataTeknisSimulasi2()
+  await fetchDataFinansialSimulasi1()
+  await fetchDataFinansialSimulasi2()
+  await fetchHasilSimulasi1()
+  await fetchHasilSimulasi2()
+  await fetchListTypePeriodic()
+  console.log(bahanBakarGroup.value, 'Bahan Bakar Group');
+
+  isLoading.value = false
+})
 </script>
 
 <style scoped>
 button:hover svg g path {
-  fill: white;
+  fill: white
 }
 
 th {
@@ -2564,7 +2570,7 @@ th {
 }
 
 td {
-  padding: 1rem;
+  padding: 1rem
 }
 
 li.selected #triangle {
@@ -2583,31 +2589,31 @@ li.selected#aside {
 }
 
 li.selected#tab {
-  outline: 1px solid #0099AD;
+  outline: 1px solid #0099AD
 }
 
 #level2 {
-  padding-left: 3.1rem;
+  padding-left: 3.1rem
 }
 
 #level2.selected {
-  padding-left: 5.1rem;
+  padding-left: 5.1rem
 }
 
 #level3 {
-  padding-left: 5.3rem;
+  padding-left: 5.3rem
 }
 
 #level3.selected {
-  padding-left: 7.3rem;
+  padding-left: 7.3rem
 }
 
 #level4 {
-  padding-left: 9.3rem;
+  padding-left: 9.3rem
 }
 
 #tableHeader {
-  padding-right: 30rem;
+  padding-right: 30rem
 }
 
 :disabled {

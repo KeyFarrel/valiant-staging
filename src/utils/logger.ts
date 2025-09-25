@@ -45,7 +45,6 @@ const noop = (): void => {};
  */
 const createEnvironmentAwareLogger = (): LoggerInterface => {
   // Check current environment
-  const environment = getEnvironment();
   const isDevMode = isDevelopment();
   
   // In production/staging, return no-op functions

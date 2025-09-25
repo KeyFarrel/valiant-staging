@@ -596,7 +596,7 @@ const fetchPersetujuanKK = async () => {
     statusMesin.value = arrMesin.value?.id_status;
     console.log(arrMesin.value);
   } catch (error) {
-    console.error('Fetch Persetujuan KK Sentral Error : ' + error);
+    console.error('Fetch Persetujuan KK Sentral Error : ', error);
   }
 }
 
@@ -612,7 +612,7 @@ const fetchAsumsiParameter = async () => {
     parameterTeknisFinansial.value = response.data.parameter_teknis_financial;
     bahanBakars.value = response.data.harga_bahan_bakars;
   } catch (error) {
-    console.error("Fetch Asumsi Parameter Error : " + error);
+    console.error("Fetch Asumsi Parameter Error : ", error);
     asumsiParameter.value.isFetchingError = true;
     parameterTeknisFinansial.value.isFetchingError = true;
   }
@@ -642,7 +642,7 @@ const fetchDataTeknis = async () => {
       tahunGrafik.value = parseInt(route.query.tahun?.toString() ?? '0');
     }
   } catch (error) {
-    console.error("Fetch Data Teknis Error : " + error);
+    console.error("Fetch Data Teknis Error : ", error);
     dataTeknis.value.isFetchingError = true;
   }
 };
@@ -718,7 +718,7 @@ const fetchDataFinansial = async () => {
       dataFinansial.value = response.data
     }
   } catch (error) {
-    console.error("Fetch Data Finansial Error : " + error);
+    console.error("Fetch Data Finansial Error : ", error);
     dataFinansial.value.isFetchingError = true
   }
 };
@@ -737,7 +737,7 @@ const fetchHasilSimulasi = async () => {
     );
     hasilSimulasi.value = response.data;
   } catch (error) {
-    console.error("Fetch Hasil Simulasi Error : " + error);
+    console.error("Fetch Hasil Simulasi Error : ", error);
     hasilSimulasi.value.isFetchingError = true;
   }
 }
@@ -752,7 +752,7 @@ const fetchListPembina = async () => {
     const response: any = await userService.getPembina('');
     return response.data;
   } catch (error) {
-    console.error('Fetch Pembina Error : ' + error)
+    console.error('Fetch Pembina Error : ', error)
   }
 }
 const fetchUnitPengelola = async () => {
@@ -773,7 +773,7 @@ const fetchUnitPengelola = async () => {
       namaPembina.value = pembinaList.find((pembina: any) => pembina.uuid_pembina === idPembina).pembina
     };
   } catch (error) {
-    console.error("Fetch Unit Pengelola Error : " + error)
+    console.error("Fetch Unit Pengelola Error : ", error)
   };
 }
 
@@ -784,7 +784,7 @@ const fetchTypePeriodic = async () => {
     );
     typePeriodic.value = response.data;
   } catch (error) {
-    console.error("Fetch Type Periodic Error : " + error);
+    console.error("Fetch Type Periodic Error : ", error);
   }
 };
 
@@ -794,7 +794,7 @@ const fetchComboBahanBakar = async () => {
     const response: any = await detailRekapService.getComboBahanBakar(kodeJenisPembangkit.value);
     comboBahanBakar.value = response.data;
   } catch (error) {
-    console.error('Fetch Combo Bahan Bakar Error : ' + error);
+    console.error('Fetch Combo Bahan Bakar Error : ', error);
   }
 }
 
@@ -825,7 +825,7 @@ const updateKKPengelola = async () => {
     fetchDataFinansial();
     fetchComboBahanBakar();
   } catch (error) {
-    console.error("Error Fetch Update Kertas Kerja : " + error);
+    console.error("Error Fetch Update Kertas Kerja : ", error);
   }
 }
 
@@ -848,7 +848,7 @@ const downloadEvidence = async () => {
     document.body.removeChild(link);
     isLoading.value = false
   } catch (error) {
-    console.error('Evidence Error : ' + error);
+    console.error('Evidence Error : ', error);
     isLoading.value = false;
     notifyError('Evidence Tidak Ada', 5000)
   };
@@ -890,7 +890,7 @@ const rejectKKPengelola = async () => {
       fetchComboBahanBakar();
     }
   } catch (error) {
-    console.error("Error Fetch Update Kertas Kerja : " + error);
+    console.error("Error Fetch Update Kertas Kerja : ", error);
   }
 }
 
@@ -921,7 +921,7 @@ const updateKKPembina = async () => {
     fetchDataFinansial();
     fetchComboBahanBakar();
   } catch (error) {
-    console.error("Error Fetch Update Kertas Kerja : " + error);
+    console.error("Error Fetch Update Kertas Kerja : ", error);
   }
 }
 
@@ -961,7 +961,7 @@ const rejectKKPembina = async () => {
       fetchComboBahanBakar();
     }
   } catch (error) {
-    console.error("Error Fetch Update Kertas Kerja : " + error);
+    console.error("Error Fetch Update Kertas Kerja : ", error);
   }
 }
 

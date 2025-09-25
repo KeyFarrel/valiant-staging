@@ -107,7 +107,7 @@
                   <IconDocument />
                 </div>
                 <p class="text-xs text-[#0A448F]">Excel {{ itemData.status_fs == 0 ? 'KK' : 'FS' }} {{ itemData.sentral
-                  }}.xlsx</p>
+                }}.xlsx</p>
               </button>
               <button
                 class="flex items-center space-x-1.5 bg-[#F7FBFC] rounded-md w-fit px-2 py-1 active:ring-1 active:ring-[#E7F1FD]"
@@ -333,7 +333,7 @@ const goToPage = async (page: any) => {
     navigation.value.currentPage = page;
     await fetchLogActivity();
   } catch (error) {
-    console.error('Go To Page Error : ' + error);
+    console.error('Go To Page Error : ', error);
   } finally {
     isLoading.value = false;
   }
@@ -434,7 +434,7 @@ const fetchLogActivity = async () => {
     navigation.value.limit = response.meta.limit;
     isLoading.value = false;
   } catch (error) {
-    console.error('Fetch Log Error : ' + error);
+    console.error('Fetch Log Error : ', error);
     isLoading.value = false;
   }
 };
@@ -456,7 +456,7 @@ const downloadEvidenceKK = async (dokumenEvidence: string, namaFileEvidence: str
     document.body.removeChild(link)
     isLoading.value = false
   } catch (error) {
-    console.error('Evidence Error : ' + error);
+    console.error('Evidence Error : ', error);
     isLoading.value = false
     notifyError('Evidence Tidak Ada', 5000)
   };
@@ -479,7 +479,7 @@ const downloadEvidenceFS = async (dokumenEvidence: string, namaFileEvidence: str
     document.body.removeChild(link)
     isLoading.value = false
   } catch (error) {
-    console.error('Evidence Error : ' + error)
+    console.error('Evidence Error : ', error)
     isLoading.value = false
     notifyError('Evidence Tidak Ada', 5000)
   }
@@ -492,7 +492,7 @@ const downloadExcelKK = async (tahun: number, tahunRealisasi: number, idMesin: n
     try {
       responseMesin = await detailRekapService.getMesinById(idMesin);
     } catch (error) {
-      console.error('Error : ' + error);
+      console.error('Error : ', error);
     }
     const response: any = await rekapService.downloadExcelKK(tahun, tahunRealisasi, idMesin);
     const contentDisposition = response.headers['content-disposition'];
@@ -508,7 +508,7 @@ const downloadExcelKK = async (tahun: number, tahunRealisasi: number, idMesin: n
     document.body.removeChild(link)
     isLoading.value = false;
   } catch (error) {
-    console.error("Handle Download Template Rekap Error : " + error)
+    console.error("Handle Download Template Rekap Error : ", error)
   }
 };
 
@@ -519,7 +519,7 @@ const downloadExcelFS = async (tahun: number, tahunRealisasi: number, idMesin: n
     try {
       responseMesin = await detailRekapService.getMesinById(idMesin);
     } catch (error) {
-      console.error('Error : ' + error);
+      console.error('Error : ', error);
     }
     const response: any = await feasibilityStudyService.downloadExcelFS(tahun, tahunRealisasi, idMesin);
     const contentDisposition = response.headers['content-disposition'];
@@ -536,6 +536,7 @@ const downloadExcelFS = async (tahun: number, tahunRealisasi: number, idMesin: n
     isLoading.value = false;
   } catch (error) {
     isLoading.value = false
+    console.error("Handle Download Template Rekap Error : ", error)
   };
 }
 

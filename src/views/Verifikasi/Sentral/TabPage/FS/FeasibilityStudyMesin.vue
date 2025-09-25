@@ -212,7 +212,7 @@ const goToPage = async (page: any) => {
   try {
     navigation.value.currentPage = page
   } catch (error) {
-    console.error('Go To Page Error : ' + error)
+    console.error('Go To Page Error : ', error)
   }
 };
 const goToPrevious = () => {

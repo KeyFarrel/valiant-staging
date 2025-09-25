@@ -17,7 +17,7 @@
               " :loan-tenor="asumsiParameter ? asumsiParameter.asumsi_makro.loan_tenor : '-'
                 " :loan-portion="asumsiParameter ? asumsiParameter.asumsi_makro.loan_portion : '-'
                   " :equity-portion="asumsiParameter ? asumsiParameter.asumsi_makro.equity : '-'
-            " />
+                    " />
       </TabItem>
       <TabItem title="Parameter Teknis & Finansial">
         <ParameterTeknis v-model="tahunRealisasi" :daya-terpasang="asumsiParameter
@@ -36,34 +36,34 @@
                   ? asumsiParameter.parameter_teknis_financial.ps
                   : '-'
                   " :net-plant-heat-rate="asumsiParameter
-            ? asumsiParameter.parameter_teknis_financial.nphr
-            : '-'
-            " :total-project-cost="asumsiParameter
-            ? asumsiParameter.parameter_teknis_financial.total_project_cost
-            : '-'
-            " :loan="asumsiParameter
-            ? asumsiParameter.parameter_teknis_financial.loan
-            : '-'
-            " :equity="asumsiParameter
-            ? asumsiParameter.parameter_teknis_financial.equity
-            : '-'
-            " :electricity-price-a="asumsiParameter
-            ? asumsiParameter.parameter_teknis_financial
-              .electricity_price_a_rp_per_kwbln
-            : '-'
-            " :electricity-price-b="asumsiParameter
-            ? asumsiParameter.parameter_teknis_financial
-              .electricity_price_b_rp_per_kwbln
-            : '-'
-            " :electricity-price-c="asumsiParameter
-            ? asumsiParameter.parameter_teknis_financial
-              .electricity_price_c_rp_per_kwh
-            : '-'
-            " :electricity-price-d="asumsiParameter
-            ? asumsiParameter.parameter_teknis_financial
-              .electricity_price_d_rp_per_kwh
-            : '-'
-            " :bahan-bakars="asumsiParameter ? asumsiParameter.bahan_bakars : '-'" />
+                    ? asumsiParameter.parameter_teknis_financial.nphr
+                    : '-'
+                    " :total-project-cost="asumsiParameter
+              ? asumsiParameter.parameter_teknis_financial.total_project_cost
+              : '-'
+              " :loan="asumsiParameter
+              ? asumsiParameter.parameter_teknis_financial.loan
+              : '-'
+              " :equity="asumsiParameter
+              ? asumsiParameter.parameter_teknis_financial.equity
+              : '-'
+              " :electricity-price-a="asumsiParameter
+              ? asumsiParameter.parameter_teknis_financial
+                .electricity_price_a_rp_per_kwbln
+              : '-'
+              " :electricity-price-b="asumsiParameter
+              ? asumsiParameter.parameter_teknis_financial
+                .electricity_price_b_rp_per_kwbln
+              : '-'
+              " :electricity-price-c="asumsiParameter
+              ? asumsiParameter.parameter_teknis_financial
+                .electricity_price_c_rp_per_kwh
+              : '-'
+              " :electricity-price-d="asumsiParameter
+              ? asumsiParameter.parameter_teknis_financial
+                .electricity_price_d_rp_per_kwh
+              : '-'
+              " :bahan-bakars="asumsiParameter ? asumsiParameter.bahan_bakars : '-'" />
       </TabItem>
       <TabItem title="Data Teknis">
         <div class="w-full overflow-auto border rounded-lg whitespace-nowrap">
@@ -317,7 +317,7 @@ const fetchSentralById = async () => {
     const pengelola = pengelolaResponse.data.filter((pengelola: any) => pengelola.kode_pengelola === response.data.kode_pengelola);
     namaPengelola.value = pengelola[0].pengelola;
   } catch (error) {
-    console.error('Fetch Sentral By Id Error : ' + error);
+    console.error('Fetch Sentral By Id Error : ', error);
   }
 }
 const fetchAsumsiParameter = async () => {
@@ -329,7 +329,7 @@ const fetchAsumsiParameter = async () => {
       );
     asumsiParameter.value = response.data;
   } catch (error) {
-    console.error("Fetch Asumsi Parameter Error : " + error);
+    console.error("Fetch Asumsi Parameter Error : ", error);
   }
 };
 const fetchDataTeknis = async () => {
@@ -340,7 +340,7 @@ const fetchDataTeknis = async () => {
     );
     dataTeknis.value = response.data;
   } catch (error) {
-    console.error("Fetch Data Teknis Error : " + error);
+    console.error("Fetch Data Teknis Error : ", error);
   }
 };
 const fetchDataFinansial = async () => {
@@ -377,7 +377,7 @@ const fetchDataFinansial = async () => {
     };
     dataFinansial.value = response.data
   } catch (error) {
-    console.error("Fetch Data Finansial Error : " + error);
+    console.error("Fetch Data Finansial Error : ", error);
   };
 };
 const fetchTypePeriodic = async () => {
@@ -385,7 +385,7 @@ const fetchTypePeriodic = async () => {
     const response: any = await detailRekapService.getTypePeriodic(sentral.value?.kode_jenis_pembangkit);
     typePeriodic.value = response.data;
   } catch (error) {
-    console.error("Fetch Type Periodic Error : " + error);
+    console.error("Fetch Type Periodic Error : ", error);
   }
 };
 const getTypePeriodic = (num: number) => {

@@ -244,7 +244,7 @@ const fetchTahunSelected = async () => {
   try {
     await lamanService.getTahunSelected();
   } catch (error) {
-    console.error('Fetch Tahun Terakhir Realisasi Error : ' + error);
+    console.error('Fetch Tahun Terakhir Realisasi Error : ', error);
   }
 }
 const fetchListTahun = async () => {
@@ -252,7 +252,7 @@ const fetchListTahun = async () => {
     const response: any = await lamanService.getListTahun()
     periodeTahun.value = [response.data[0].tahun, response.data[response.data.length - 1].tahun];
   } catch (error) {
-    console.error('Fetch List Tahun Error : ' + error)
+    console.error('Fetch List Tahun Error : ', error)
   }
 };
 const toggleUp = (itemKode: string) => {
@@ -296,7 +296,7 @@ const handleExport = async () => {
     document.body.removeChild(link);
     isLoading.value = false
   } catch (error) {
-    console.error('Handle Download Template Rekap Error : ' + error);
+    console.error('Handle Download Template Rekap Error : ', error);
   }
 };
 
