@@ -32,13 +32,13 @@ prepare_env_file_stg:
     - export VAULT_ADDR=$VAULT_ADDR
     - vault login -method=userpass username="$VAULT_USERNAME" password="$VAULT_PASSWORD"
     
-    # Mengambil data dari Vault dan menyimpannya ke file .env
+    # Mengambil data dari Vault dan menyimpannya ke file .env.development
     - echo "Fetching secrets from Vault..."
     - vault kv get -mount="valiant-staging" "frontend-env-secret" > kv.secret
-    - awk '/====== Data ======/{flag=1; next} /======/{flag=0} flag && $1 !~ /---/ && $1 != "" {print $1 "=" $2}' kv.secret > .env
+    - awk '/====== Data ======/{flag=1; next} /======/{flag=0} flag && $1 !~ /---/ && $1 != "" {print $1 "=" $2}' kv.secret > .env.development
   artifacts:
     paths:
-      - .env
+      - .env.development
     expire_in: 1 hour
   rules:
     - if: '$CI_COMMIT_BRANCH == "staging" && $CI_PIPELINE_SOURCE == "push"'
