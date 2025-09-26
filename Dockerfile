@@ -14,7 +14,7 @@ RUN npm ci \
 COPY . .
 
 # Build the Vue.js application
-ARG BUILD_MODE=staging
+ARG BUILD_MODE=development
 RUN npx vite build --mode $BUILD_MODE
 
 # Stage 2: Serve the staging build with Nginx

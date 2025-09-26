@@ -15,7 +15,6 @@ const nodeMode = import.meta.env.MODE;
 // Define types for environment variables
 interface EnvVariables {
   // Public variables (safe to expose)
-  NODE_ENV: string;
   VITE_API_URL: string;
   
   // Add other safe variables here
@@ -24,7 +23,6 @@ interface EnvVariables {
 
 // Whitelist of environment variables that are safe to access
 const SAFE_ENV_VARS: Array<keyof EnvVariables> = [
-  'NODE_ENV',
   'VITE_API_URL',
   // Add other safe variables here as needed
 ];
@@ -69,10 +67,10 @@ export const getEnv = <K extends keyof EnvVariables>(
  * Get the current environment (development, staging, production)
  */
 export const getEnvironment = (): 'development' | 'staging' | 'production' => {
-  const env = getEnv('NODE_ENV', 'development');
+  const mode = nodeMode || 'development';
   
-  if (env === 'production' || env === 'staging') {
-    return env;
+  if (mode === 'production' || mode === 'staging') {
+    return mode as 'production' | 'staging';
   }
   
   return 'development';

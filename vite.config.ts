@@ -100,6 +100,7 @@ export default defineConfig(({ mode }) => {
       ...exposedEnvs,
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: "true",
       __BUILD_TIMESTAMP__: JSON.stringify(new Date().toISOString()),
+      'process.env.NODE_ENV': JSON.stringify(isProd ? 'production' : 'development'),
     },
 
     build: {
