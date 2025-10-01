@@ -18,7 +18,6 @@ const ssoCode = route.query.code as string;
 import errorJsonData from '@/assets/lottie/error.json';
 import ModalNotification from '@/components/ui/ModalNotification.vue';
 import CryptoJS from "crypto-js";
-import { notifyError } from "@/services/helper/toast-notification";
 
 const isError = ref(false);
 const nodeMode = import.meta.env.MODE;

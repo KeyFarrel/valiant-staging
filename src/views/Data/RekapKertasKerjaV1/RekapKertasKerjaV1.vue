@@ -1491,7 +1491,7 @@ watch(pengelola, (val) => {
     indeterminate.value = false;
   } else {
     indeterminate.value = true
-  };
+  }
 });
 
 watch(dmn, (val) => {
