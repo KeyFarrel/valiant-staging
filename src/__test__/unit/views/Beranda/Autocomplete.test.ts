@@ -1,4 +1,4 @@
-import { shallowMount } from '@vue/test-utils';
+import { shallowMount, mount } from '@vue/test-utils';
 import Autocomplete from '@/views/Beranda/Autocomplete.vue';
 import SearchBox from '@/components/ui/SearchBox.vue';
 
@@ -13,6 +13,7 @@ describe('Autocomplete.vue', () => {
     const wrapper = shallowMount(Autocomplete, {
       props: {
         data: mockData,
+        modelValue: '',
       },
     });
 
@@ -23,10 +24,9 @@ describe('Autocomplete.vue', () => {
       isOpen: boolean;
     };
 
-    // Simulate typing in search box
-    const searchBox = wrapper.findComponent(SearchBox);
-    vm.searchQuery = 'PAITON';  // Set searchQuery value
-    await searchBox.vm.$emit('on-input');
+    // Update the modelValue prop to simulate typing
+    await wrapper.setProps({ modelValue: 'PAITON' });
+    vm.isOpen = true;
     await wrapper.vm.$nextTick();  // Wait for DOM update
 
     // Check if the dropdown opens and displays the filtered result
@@ -38,6 +38,7 @@ describe('Autocomplete.vue', () => {
     const wrapper = shallowMount(Autocomplete, {
       props: {
         data: mockData,
+        modelValue: '',
       },
     });
 
@@ -51,6 +52,7 @@ describe('Autocomplete.vue', () => {
     const wrapper = shallowMount(Autocomplete, {
       props: {
         data: mockData,
+        modelValue: 'PLTU',
       },
     });
 
@@ -58,23 +60,25 @@ describe('Autocomplete.vue', () => {
     const vm = wrapper.vm as unknown as {
       searchQuery: string;
       isOpen: boolean;
+      setSelected: (item: string) => void;
     };
 
     vm.isOpen = true;
-    vm.searchQuery = 'PLTU';  // Simulate typing
     await wrapper.vm.$nextTick();
 
-    const resultItem = wrapper.find('li');
-    await resultItem.trigger('click');
+    // Directly call the setSelected method to simulate click
+    vm.setSelected('PLTU PAITON');
 
-    // Verify searchQuery is updated with selected item
-    expect(vm.searchQuery).toBe('PLTU PAITON');
+    // Verify modelValue update is emitted
+    expect(wrapper.emitted('update:modelValue')).toBeTruthy();
+    expect(wrapper.emitted('update:modelValue')![0]).toEqual(['PLTU PAITON']);
   });
 
   it('should filter search results based on query', async () => {
     const wrapper = shallowMount(Autocomplete, {
       props: {
         data: mockData,
+        modelValue: '',
       },
     });
 
@@ -82,11 +86,12 @@ describe('Autocomplete.vue', () => {
     const vm = wrapper.vm as unknown as {
       searchQuery: string;
       searchResults: { sentral: string }[];
+      isOpen: boolean;
     };
 
-    const searchBox = wrapper.findComponent(SearchBox);
-    vm.searchQuery = 'SURALAYA';  // Simulate typing
-    await searchBox.vm.$emit('on-input');
+    // Update the modelValue prop to simulate typing
+    await wrapper.setProps({ modelValue: 'SURALAYA' });
+    vm.isOpen = true;
     await wrapper.vm.$nextTick();  // Wait for DOM update
 
     expect(vm.searchResults).toEqual([{ sentral: 'PLTU SURALAYA' }]);
@@ -97,6 +102,7 @@ describe('Autocomplete.vue', () => {
     const wrapper = shallowMount(Autocomplete, {
       props: {
         data: mockData,
+        modelValue: '',
       },
     });
 
@@ -104,14 +110,14 @@ describe('Autocomplete.vue', () => {
     const vm = wrapper.vm as unknown as {
       searchQuery: string;
       searchResults: { sentral: string }[];
+      isOpen: boolean;
     };
 
-    const searchBox = wrapper.findComponent(SearchBox);
-    vm.searchQuery = '';  // Set empty search query
-    await searchBox.vm.$emit('on-input');
     await wrapper.vm.$nextTick();  // Wait for DOM update
 
     expect(vm.searchResults).toEqual([]);
-    expect(wrapper.find('ul').exists()).toBe(false);
+    // Check if ul is hidden due to v-show condition (searchResults.length && isOpen)
+    const ul = wrapper.find('ul');
+    expect(ul.attributes('style')).toContain('display: none');
   });
 });

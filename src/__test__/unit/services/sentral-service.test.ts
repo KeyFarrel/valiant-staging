@@ -1,173 +1,262 @@
-import axios from 'axios';
-import SentralService from '@/services/sentral-service'; // Sesuaikan dengan path yang benar ke file SentralService
+import SentralService from '@/services/sentral-service';
+import BaseService from '@/services/base-service';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.MockedFunction<typeof axios>;
+// Mock FingerprintJS
+jest.mock('@fingerprintjs/fingerprintjs', () => ({
+  load: jest.fn().mockResolvedValue({
+    get: jest.fn().mockResolvedValue({
+      visitorId: 'mocked-visitor-id'
+    })
+  })
+}));
 
-const mockUrl = import.meta.env.VITE_API_URL;
+// Mock CryptoJS
+jest.mock('crypto-js', () => ({
+  AES: {
+    encrypt: jest.fn().mockReturnValue({
+      toString: jest.fn().mockReturnValue('encrypted-data')
+    })
+  },
+  enc: {
+    Utf8: {}
+  }
+}));
 
 describe('SentralService', () => {
   let service: SentralService;
+  let mockGet: jest.SpyInstance;
+  let mockPost: jest.SpyInstance;
 
   beforeEach(() => {
     service = new SentralService();
-
-    // Mock localStorage and encryptStorage for token retrieval
-    jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
-      if (key === 'token') {
-        return 'mockToken';
-      }
-      return null;
-    });
-
-    (localStorage.getItem as jest.Mock).mockReturnValue('mockToken');
+    
+    // Mock BaseService methods
+    mockGet = jest.spyOn(BaseService.prototype, 'get');
+    mockPost = jest.spyOn(BaseService.prototype, 'post');
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should call getSentralData with correct POST parameters', async () => {
+  it('should call getSentralData with all parameters', async () => {
     const mockResponse = { data: 'mocked response for getSentralData' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockPost.mockResolvedValueOnce(mockResponse);
 
-    const params = {
-      pengelola: 'Pengelola1',
+    const result = await service.getSentralData('PENGELOLA001', 1, 10, 'SearchTerm');
+
+    expect(mockPost).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/pembangkit/all-no-pembina', {
+      pengelola: 'PENGELOLA001',
       page: 1,
       limit: 10,
-      search: 'SearchTerm',
-    };
-
-    const result = await service.getSentralData(params.pengelola, params.page, params.limit, params.search);
-
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'POST',
-      url: `${mockUrl}pembangkit/all-no-pembina`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      data: params,
-      timeout: 120000,
+      search: 'SearchTerm'
     });
-
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getComboJenisKitData with correct GET parameters', async () => {
+  it('should call getSentralData without search parameter', async () => {
+    const mockResponse = { data: 'mocked response for getSentralData no search' };
+    mockPost.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getSentralData('PENGELOLA001', 1, 10);
+
+    expect(mockPost).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/pembangkit/all-no-pembina', {
+      pengelola: 'PENGELOLA001',
+      page: 1,
+      limit: 10,
+      search: undefined
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should call getComboJenisKitData with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getComboJenisKitData' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getComboJenisKitData();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}filter/combo-jenis-kit`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-jenis-kit');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getComboBahanBakarData with correct GET parameters', async () => {
+  it('should call getComboBahanBakarData with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getComboBahanBakarData' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
-    const params = { jenis_pembangkit: 'jenisA' };
+    const result = await service.getComboBahanBakarData('PLTU');
 
-    const result = await service.getComboBahanBakarData(params.jenis_pembangkit);
-
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}filter/combo-bahan-bakar`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      params,
-      timeout: 120000,
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-bahan-bakar', {
+      jenis_pembangkit: 'PLTU'
     });
-
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getPengelolaData with correct GET parameters', async () => {
+  it('should call getPengelolaData with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getPengelolaData' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getPengelolaData();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}filter/combo-pengelola`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-pengelola');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getNilaiSentral with correct GET parameters', async () => {
+  it('should call getNilaiSentral with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getNilaiSentral' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getNilaiSentral();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}pembangkit/sentral-nilai`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/pembangkit/sentral-nilai');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getNilaiMesin with correct GET parameters', async () => {
+  it('should call getNilaiMesin with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getNilaiMesin' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getNilaiMesin();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}pembangkit/mesin-nilai`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/pembangkit/mesin-nilai');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getSuggestionSentral with correct GET parameters', async () => {
+  it('should call getSuggestionSentral with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getSuggestionSentral' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getSuggestionSentral();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}filter/combo-sentral`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-sentral');
     expect(result).toEqual(mockResponse);
+  });
+
+  // Test error handling
+  it('should handle errors in getSentralData', async () => {
+    const mockError = new Error('Sentral Data Error');
+    mockPost.mockRejectedValueOnce(mockError);
+
+    await expect(service.getSentralData('PENGELOLA001', 1, 10, 'search')).rejects.toThrow('Sentral Data Error');
+  });
+
+  it('should handle errors in getComboJenisKitData', async () => {
+    const mockError = new Error('Jenis Kit Data Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getComboJenisKitData()).rejects.toThrow('Jenis Kit Data Error');
+  });
+
+  it('should handle errors in getComboBahanBakarData', async () => {
+    const mockError = new Error('Bahan Bakar Data Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getComboBahanBakarData('PLTU')).rejects.toThrow('Bahan Bakar Data Error');
+  });
+
+  it('should handle errors in getPengelolaData', async () => {
+    const mockError = new Error('Pengelola Data Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getPengelolaData()).rejects.toThrow('Pengelola Data Error');
+  });
+
+  it('should handle errors in getNilaiSentral', async () => {
+    const mockError = new Error('Nilai Sentral Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getNilaiSentral()).rejects.toThrow('Nilai Sentral Error');
+  });
+
+  it('should handle errors in getNilaiMesin', async () => {
+    const mockError = new Error('Nilai Mesin Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getNilaiMesin()).rejects.toThrow('Nilai Mesin Error');
+  });
+
+  it('should handle errors in getSuggestionSentral', async () => {
+    const mockError = new Error('Suggestion Sentral Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getSuggestionSentral()).rejects.toThrow('Suggestion Sentral Error');
+  });
+
+  // Test parameter edge cases
+  it('should handle null parameters in getSentralData', async () => {
+    const mockResponse = { data: 'mocked response for null params' };
+    mockPost.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getSentralData(null, null, null, null);
+
+    expect(mockPost).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/pembangkit/all-no-pembina', {
+      pengelola: null,
+      page: null,
+      limit: null,
+      search: null
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should handle different jenis_pembangkit types', async () => {
+    // Test with different power plant types
+    const powerPlantTypes = ['PLTU', 'PLTA', 'PLTG', 'PLTS', 'PLTB'];
+    
+    for (const type of powerPlantTypes) {
+      const mockResponse = { data: `mocked response for ${type}` };
+      mockGet.mockResolvedValueOnce(mockResponse);
+      
+      const result = await service.getComboBahanBakarData(type);
+      expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-bahan-bakar', {
+        jenis_pembangkit: type
+      });
+      expect(result).toEqual(mockResponse);
+    }
+  });
+
+  it('should handle numeric parameters in getSentralData', async () => {
+    const mockResponse = { data: 'mocked response for numeric params' };
+    mockPost.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getSentralData(123, 'string_page', true, 456);
+
+    expect(mockPost).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/pembangkit/all-no-pembina', {
+      pengelola: 123,
+      page: 'string_page',
+      limit: true,
+      search: 456
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should handle undefined jenis_pembangkit in getComboBahanBakarData', async () => {
+    const mockResponse = { data: 'mocked response for undefined jenis_pembangkit' };
+    mockGet.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getComboBahanBakarData(undefined);
+
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-bahan-bakar', {
+      jenis_pembangkit: undefined
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should handle empty string parameters', async () => {
+    const mockResponse = { data: 'mocked response for empty strings' };
+    mockPost.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getSentralData('', 0, 0, '');
+
+    expect(mockPost).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/pembangkit/all-no-pembina', {
+      pengelola: '',
+      page: 0,
+      limit: 0,
+      search: ''
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  // Test service inheritance
+  it('should extend BaseService', () => {
+    expect(service).toBeInstanceOf(BaseService);
   });
 });

@@ -26,15 +26,23 @@ describe('TabItem.vue', () => {
   });
 
   it('does not render the slot content when title does not match selectedTitle', async () => {
-    // Update the provide value
-    await wrapper.setProps({ title: 'Tab 2' });
-    await wrapper.setGlobal({
-      provide: {
-        selectedTitle: 'Tab 2'
+    // Create a new wrapper with different selectedTitle
+    const newWrapper = shallowMount(TabItem, {
+      props: {
+        title: 'Tab 1'
+      },
+      global: {
+        provide: {
+          selectedTitle: 'Tab 2' // Different title
+        }
+      },
+      slots: {
+        default: '<p>Tab 1 Content</p>'
       }
     });
 
-    // Check if the slot content is not rendered
-    expect(wrapper.find('p').exists()).toBe(false);
+    // Check if the div is hidden (v-show=false)
+    const tabDiv = newWrapper.find('div');
+    expect(tabDiv.isVisible()).toBe(false);
   });
 });

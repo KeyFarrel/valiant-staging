@@ -1,188 +1,307 @@
-import axios from 'axios';
-import RoleService from '@/services/role-service'; // Sesuaikan dengan path yang benar ke file RoleService
+import RoleService from '@/services/role-service';
+import BaseService from '@/services/base-service';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.MockedFunction<typeof axios>;
+// Mock FingerprintJS
+jest.mock('@fingerprintjs/fingerprintjs', () => ({
+  load: jest.fn().mockResolvedValue({
+    get: jest.fn().mockResolvedValue({
+      visitorId: 'mocked-visitor-id'
+    })
+  })
+}));
 
-const mockUrl = import.meta.env.VITE_API_URL;
+// Mock CryptoJS
+jest.mock('crypto-js', () => ({
+  AES: {
+    encrypt: jest.fn().mockReturnValue({
+      toString: jest.fn().mockReturnValue('encrypted-data')
+    })
+  },
+  enc: {
+    Utf8: {}
+  }
+}));
 
 describe('RoleService', () => {
   let service: RoleService;
+  let mockGet: jest.SpyInstance;
+  let mockPost: jest.SpyInstance;
+  let consoleSpy: jest.SpyInstance;
 
   beforeEach(() => {
     service = new RoleService();
-
-    // Mock localStorage and encryptStorage for token retrieval
-    jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
-      if (key === 'token') {
-        return 'mockToken';
-      }
-      return null;
-    });
-
-    (localStorage.getItem as jest.Mock).mockReturnValue('mockToken');
+    
+    // Mock BaseService methods
+    mockGet = jest.spyOn(BaseService.prototype, 'get');
+    mockPost = jest.spyOn(BaseService.prototype, 'post');
+    
+    // Mock console.log for updateRolePermission
+    consoleSpy = jest.spyOn(console, 'log').mockImplementation();
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should call getRoleData with correct GET parameters', async () => {
+  it('should call getRoleData with all parameters', async () => {
     const mockResponse = { data: 'mocked response for getRoleData' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getRoleData(1, 10, 'admin');
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}role`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      params: { page: 1, limit: 10, role: 'admin' },
-      timeout: 120000,
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/role', {
+      page: 1,
+      limit: 10,
+      role: 'admin'
     });
-
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getLevel with correct GET parameters', async () => {
+  it('should call getRoleData with partial parameters', async () => {
+    const mockResponse = { data: 'mocked response for getRoleData partial' };
+    mockGet.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getRoleData(1, 10);
+
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/role', {
+      page: 1,
+      limit: 10,
+      role: undefined
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should call getRoleData without parameters', async () => {
+    const mockResponse = { data: 'mocked response for getRoleData no params' };
+    mockGet.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getRoleData();
+
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/role', {
+      page: undefined,
+      limit: undefined,
+      role: undefined
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should call getLevel with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getLevel' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getLevel();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}level`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/level');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getRoleById with correct GET parameters', async () => {
+  it('should call getRoleById with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getRoleById' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
-    const result = await service.getRoleById(1);
+    const result = await service.getRoleById(123);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}role/1`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/role/123');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call createRole with correct POST parameters', async () => {
+  it('should call createRole with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for createRole' };
-    const formData = { role: 'admin', permissions: ['read', 'write'] };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    const formData = { 
+      name: 'Admin Role', 
+      description: 'Administrator role with full access',
+      permissions: ['read', 'write', 'delete']
+    };
+    mockPost.mockResolvedValueOnce(mockResponse);
 
     const result = await service.createRole(formData);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'POST',
-      url: `${mockUrl}role`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      data: formData,
-      timeout: 120000,
-    });
-
+    expect(mockPost).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/role', formData);
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call updateRole with correct PUT parameters', async () => {
+  it('should call updateRole with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for updateRole' };
-    const data = { role: 'manager', permissions: ['read'] };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    const data = { 
+      name: 'Manager Role', 
+      description: 'Manager role with limited access',
+      permissions: ['read', 'write']
+    };
+    mockPost.mockResolvedValueOnce(mockResponse);
 
-    const result = await service.updateRole(1, data);
+    const result = await service.updateRole(123, data);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'PUT',
-      url: `${mockUrl}role/1`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      data,
-      timeout: 120000,
-    });
-
+    expect(mockPost).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/role/123', data);
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getPermission with correct GET parameters', async () => {
+  it('should call getPermission with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getPermission' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getPermission();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}permission`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/permission');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getPermissionByRoleId with correct GET parameters', async () => {
+  it('should call getPermissionByRoleId with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getPermissionByRoleId' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
-    const result = await service.getPermissionByRoleId(1);
+    const result = await service.getPermissionByRoleId(123);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}rolepermission?role_id=1`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/rolepermission?role_id=123');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call updateRolePermission with correct PUT parameters', async () => {
+  it('should call updateRolePermission with correct parameters and log data', async () => {
     const mockResponse = { data: 'mocked response for updateRolePermission' };
-    const data = { permissions: ['read', 'write'] };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    const data = { 
+      permissions: ['read', 'write', 'delete'],
+      role_id: 123
+    };
+    mockPost.mockResolvedValueOnce(mockResponse);
 
-    const result = await service.updateRolePermission(1, data);
+    const result = await service.updateRolePermission(123, data);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'PUT',
-      url: `${mockUrl}rolepermission/1`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      data,
-      timeout: 120000,
-    });
-
+    expect(consoleSpy).toHaveBeenCalledWith('Sending data:', data);
+    expect(mockPost).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/rolepermission/123', data);
     expect(result).toEqual(mockResponse);
+  });
+
+  // Test error handling
+  it('should handle errors in getRoleData', async () => {
+    const mockError = new Error('Role Data Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getRoleData(1, 10, 'admin')).rejects.toThrow('Role Data Error');
+  });
+
+  it('should handle errors in getLevel', async () => {
+    const mockError = new Error('Level Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getLevel()).rejects.toThrow('Level Error');
+  });
+
+  it('should handle errors in getRoleById', async () => {
+    const mockError = new Error('Role Not Found');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getRoleById(999)).rejects.toThrow('Role Not Found');
+  });
+
+  it('should handle errors in createRole', async () => {
+    const mockError = new Error('Create Role Error');
+    mockPost.mockRejectedValueOnce(mockError);
+
+    const formData = { name: 'Test Role', permissions: ['read'] };
+    await expect(service.createRole(formData)).rejects.toThrow('Create Role Error');
+  });
+
+  it('should handle errors in updateRole', async () => {
+    const mockError = new Error('Update Role Error');
+    mockPost.mockRejectedValueOnce(mockError);
+
+    const data = { name: 'Updated Role' };
+    await expect(service.updateRole(123, data)).rejects.toThrow('Update Role Error');
+  });
+
+  it('should handle errors in getPermission', async () => {
+    const mockError = new Error('Permission Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getPermission()).rejects.toThrow('Permission Error');
+  });
+
+  it('should handle errors in getPermissionByRoleId', async () => {
+    const mockError = new Error('Permission by Role Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getPermissionByRoleId(123)).rejects.toThrow('Permission by Role Error');
+  });
+
+  it('should handle errors in updateRolePermission', async () => {
+    const mockError = new Error('Update Role Permission Error');
+    mockPost.mockRejectedValueOnce(mockError);
+
+    const data = { permissions: ['read'] };
+    await expect(service.updateRolePermission(123, data)).rejects.toThrow('Update Role Permission Error');
+    expect(consoleSpy).toHaveBeenCalledWith('Sending data:', data);
+  });
+
+  // Test parameter edge cases
+  it('should handle null role filter in getRoleData', async () => {
+    const mockResponse = { data: 'mocked response for null role' };
+    mockGet.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getRoleData(1, 10, null);
+
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/role', {
+      page: 1,
+      limit: 10,
+      role: null
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should handle empty data in createRole', async () => {
+    const mockResponse = { data: 'mocked response for empty data' };
+    mockPost.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.createRole({});
+
+    expect(mockPost).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/role', {});
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should handle complex permissions array in updateRolePermission', async () => {
+    const mockResponse = { data: 'mocked response for complex permissions' };
+    const complexData = {
+      permissions: [
+        { id: 1, name: 'read', module: 'users' },
+        { id: 2, name: 'write', module: 'roles' },
+        { id: 3, name: 'delete', module: 'permissions' }
+      ],
+      role_id: 123,
+      metadata: { updated_by: 'admin', timestamp: '2023-01-01' }
+    };
+    mockPost.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.updateRolePermission(123, complexData);
+
+    expect(consoleSpy).toHaveBeenCalledWith('Sending data:', complexData);
+    expect(mockPost).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/rolepermission/123', complexData);
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should handle zero as role ID', async () => {
+    const mockResponse = { data: 'mocked response for zero ID' };
+    mockGet.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getRoleById(0);
+
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/role/0');
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should handle string role filter in getRoleData', async () => {
+    const mockResponse = { data: 'mocked response for string role' };
+    mockGet.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getRoleData(1, 10, 'super-admin');
+
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/role', {
+      page: 1,
+      limit: 10,
+      role: 'super-admin'
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  // Test service inheritance
+  it('should extend BaseService', () => {
+    expect(service).toBeInstanceOf(BaseService);
   });
 });

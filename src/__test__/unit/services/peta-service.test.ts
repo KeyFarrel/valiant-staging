@@ -1,212 +1,264 @@
-import axios from 'axios';
-import PetaService from '@/services/peta-service'; // Sesuaikan dengan path yang benar ke file PetaService
+import PetaService from '@/services/peta-service';
+import BaseService from '@/services/base-service';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.MockedFunction<typeof axios>;
+// Mock FingerprintJS
+jest.mock('@fingerprintjs/fingerprintjs', () => ({
+  load: jest.fn().mockResolvedValue({
+    get: jest.fn().mockResolvedValue({
+      visitorId: 'mocked-visitor-id'
+    })
+  })
+}));
 
-const mockUrl = import.meta.env.VITE_API_URL;
+// Mock CryptoJS
+jest.mock('crypto-js', () => ({
+  AES: {
+    encrypt: jest.fn().mockReturnValue({
+      toString: jest.fn().mockReturnValue('encrypted-data')
+    })
+  },
+  enc: {
+    Utf8: {}
+  }
+}));
 
 describe('PetaService', () => {
   let service: PetaService;
+  let mockGet: jest.SpyInstance;
+  let mockPost: jest.SpyInstance;
 
   beforeEach(() => {
     service = new PetaService();
-
-    // Mock localStorage and encryptStorage for token retrieval
-    jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
-      if (key === 'token') {
-        return 'mockToken';
-      }
-      return null;
-    });
-
-    (localStorage.getItem as jest.Mock).mockReturnValue('mockToken');
+    
+    // Mock BaseService methods
+    mockGet = jest.spyOn(BaseService.prototype, 'get');
+    mockPost = jest.spyOn(BaseService.prototype, 'post');
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should call getPetaSentral with correct POST parameters', async () => {
+  it('should call getPetaSentral with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getPetaSentral' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockPost.mockResolvedValueOnce(mockResponse);
 
-    const params = { region: 'Jakarta' };
+    const params = { region: 'Jakarta', pengelola: 'PLN', filter: 'active' };
     const result = await service.getPetaSentral(params);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'POST',
-      url: `${mockUrl}peta/all-sentral`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      data: params,
-      timeout: 120000,
-    });
-
+    expect(mockPost).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/peta/all-sentral', params);
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getBestPerformance with correct GET parameters', async () => {
+  it('should call getBestPerformance with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getBestPerformance' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
-    const params = { year: 2023 };
+    const params = { year: 2023, region: 'Jakarta' };
     const result = await service.getBestPerformance(params);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}peta/best-asset`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      params,
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/peta/best-asset', params);
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getYearListBPA with correct GET parameters', async () => {
+  it('should call getYearListBPA with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getYearListBPA' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getYearListBPA();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}filter/best-performance-assets`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/best-performance-assets');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getPembina with correct GET parameters', async () => {
+  it('should call getPembina with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getPembina' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
-    const params = { region: 'East Java' };
+    const params = { region: 'East Java', status: 'active' };
     const result = await service.getPembina(params);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}filter/combo-pembina`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      params,
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-pembina', params);
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getPengelola with correct GET parameters', async () => {
+  it('should call getPengelola with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getPengelola' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getPengelola();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}filter/combo-pengelola`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-pengelola');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getJenisKit with correct GET parameters', async () => {
+  it('should call getJenisKit with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getJenisKit' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
-    const params = { type: 'kitType' };
+    const params = { type: 'kitType', category: 'industrial' };
     const result = await service.getJenisKit(params);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}filter/combo-jenis-kit`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      params,
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-jenis-kit', params);
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getUmurMesin with correct GET parameters', async () => {
+  it('should call getUmurMesin with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getUmurMesin' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
-    const params = { year: 10 };
+    const params = { year: 10, status: 'operational' };
     const result = await service.getUmurMesin(params);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}filter/combo-umur-mesin`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      params,
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-umur-mesin', params);
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getSentralByKode with correct GET parameters', async () => {
+  it('should call getSentralByKode with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getSentralByKode' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const id = 'sentral123';
     const result = await service.getSentralByKode(id);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}peta/detail-sentral?kode_sentral=${id}`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/peta/detail-sentral?kode_sentral=sentral123');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getMesinByKode with correct GET parameters', async () => {
+  it('should call getMesinByKode with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getMesinByKode' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const id = 'mesin123';
     const result = await service.getMesinByKode(id);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}peta/detail-mesin?kode_sentral=${id}`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/peta/detail-mesin?kode_sentral=mesin123');
     expect(result).toEqual(mockResponse);
+  });
+
+  // Test error handling
+  it('should handle errors in getPetaSentral', async () => {
+    const mockError = new Error('Peta Sentral API Error');
+    mockPost.mockRejectedValueOnce(mockError);
+
+    const params = { region: 'Jakarta' };
+    await expect(service.getPetaSentral(params)).rejects.toThrow('Peta Sentral API Error');
+  });
+
+  it('should handle errors in getBestPerformance', async () => {
+    const mockError = new Error('Best Performance API Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    const params = { year: 2023 };
+    await expect(service.getBestPerformance(params)).rejects.toThrow('Best Performance API Error');
+  });
+
+  it('should handle errors in getYearListBPA', async () => {
+    const mockError = new Error('Year List BPA Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getYearListBPA()).rejects.toThrow('Year List BPA Error');
+  });
+
+  it('should handle errors in getPembina', async () => {
+    const mockError = new Error('Pembina Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    const params = { region: 'East Java' };
+    await expect(service.getPembina(params)).rejects.toThrow('Pembina Error');
+  });
+
+  it('should handle errors in getPengelola', async () => {
+    const mockError = new Error('Pengelola Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getPengelola()).rejects.toThrow('Pengelola Error');
+  });
+
+  it('should handle errors in getJenisKit', async () => {
+    const mockError = new Error('Jenis Kit Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    const params = { type: 'kitType' };
+    await expect(service.getJenisKit(params)).rejects.toThrow('Jenis Kit Error');
+  });
+
+  it('should handle errors in getUmurMesin', async () => {
+    const mockError = new Error('Umur Mesin Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    const params = { year: 10 };
+    await expect(service.getUmurMesin(params)).rejects.toThrow('Umur Mesin Error');
+  });
+
+  it('should handle errors in getSentralByKode', async () => {
+    const mockError = new Error('Sentral By Kode Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getSentralByKode('sentral123')).rejects.toThrow('Sentral By Kode Error');
+  });
+
+  it('should handle errors in getMesinByKode', async () => {
+    const mockError = new Error('Mesin By Kode Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getMesinByKode('mesin123')).rejects.toThrow('Mesin By Kode Error');
+  });
+
+  // Test parameter edge cases
+  it('should handle empty parameters in getPetaSentral', async () => {
+    const mockResponse = { data: 'mocked response for empty params' };
+    mockPost.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getPetaSentral({});
+
+    expect(mockPost).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/peta/all-sentral', {});
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should handle null parameters in getBestPerformance', async () => {
+    const mockResponse = { data: 'mocked response for null params' };
+    mockGet.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getBestPerformance(null);
+
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/peta/best-asset', null);
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should handle undefined parameters in getPembina', async () => {
+    const mockResponse = { data: 'mocked response for undefined params' };
+    mockGet.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getPembina(undefined);
+
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-pembina', undefined);
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should handle numeric and string IDs in getSentralByKode', async () => {
+    const mockResponse = { data: 'mocked response for numeric ID' };
+    mockGet.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getSentralByKode(12345);
+
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/peta/detail-sentral?kode_sentral=12345');
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should handle special characters in getMesinByKode', async () => {
+    const mockResponse = { data: 'mocked response for special chars' };
+    mockGet.mockResolvedValueOnce(mockResponse);
+
+    const specialId = 'mesin-123_test@domain';
+    const result = await service.getMesinByKode(specialId);
+
+    expect(mockGet).toHaveBeenCalledWith(`https://portalapp.iconpln.co.id:5080/valiant-be/v1/peta/detail-mesin?kode_sentral=${specialId}`);
+    expect(result).toEqual(mockResponse);
+  });
+
+  // Test service inheritance
+  it('should extend BaseService', () => {
+    expect(service).toBeInstanceOf(BaseService);
   });
 });

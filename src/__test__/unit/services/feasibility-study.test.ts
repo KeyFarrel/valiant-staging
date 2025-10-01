@@ -1,8 +1,43 @@
 import axios from 'axios';
 import FeasibilityStudyService from '@/services/feasibility-study';
+import BaseService from '@/services/base-service';
 
+// Mock axios
 jest.mock('axios');
 const mockedAxios = axios as jest.MockedFunction<typeof axios>;
+
+// Mock FingerprintJS to prevent browser API errors
+jest.mock('@fingerprintjs/fingerprintjs', () => ({
+  load: jest.fn().mockResolvedValue({
+    get: jest.fn().mockResolvedValue({
+      components: {
+        hardwareConcurrency: { value: 4 },
+        deviceMemory: { value: 8 },
+        platform: { value: 'MacIntel' },
+        architecture: { value: 64 },
+        screenResolution: { value: [1920, 1080] },
+        vendor: { value: 'Google Inc.' },
+        vendorFlavors: { value: ['chrome'] },
+        colorDepth: { value: 24 },
+        canvas: { value: 'mock-canvas' },
+        webGlBasics: { value: 'mock-webgl' },
+        timezone: { value: 'Asia/Jakarta' },
+        touchSupport: { value: { maxTouchPoints: 0 } },
+        cookiesEnabled: { value: true },
+        localStorage: { value: true },
+        sessionStorage: { value: true },
+        colorGamut: { value: 'srgb' },
+        hdr: { value: false }
+      }
+    })
+  }),
+  hashComponents: jest.fn().mockReturnValue('mock-fingerprint-id')
+}));
+
+// Mock encryption helper
+jest.mock('@/services/helper/encryption', () => ({
+  encryptAES: jest.fn((data) => `encrypted_${data}`)
+}));
 
 const mockUrl = import.meta.env.VITE_API_URL;
 
@@ -11,16 +46,7 @@ describe('FeasibilityStudyService', () => {
 
   beforeEach(() => {
     service = new FeasibilityStudyService();
-
-    // Mock localStorage and encryptStorage for token retrieval
-    jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
-      if (key === 'token') {
-        return 'mockToken';
-      }
-      return null;
-    });
-
-    (localStorage.getItem as jest.Mock).mockReturnValue('mockToken');
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
@@ -36,10 +62,13 @@ describe('FeasibilityStudyService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}pembangkit/1`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
+      params: undefined,
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -55,11 +84,12 @@ describe('FeasibilityStudyService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/fs-asumsi-sentral`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { id_sentral: 1 },
+      data: { uuid_sentral: 1 },
       timeout: 120000,
     });
 
@@ -75,11 +105,12 @@ describe('FeasibilityStudyService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/fs-kalkulasi-sentral`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { id_sentral: 1 },
+      data: { uuid_sentral: 1 },
       timeout: 120000,
     });
 
@@ -95,11 +126,12 @@ describe('FeasibilityStudyService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/fs-asumsi`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { id_mesin: 1, tahun_realisasi: 2023 },
+      data: { uuid_mesin: 1, tahun_realisasi: 2023 },
       timeout: 120000,
     });
 
@@ -115,11 +147,12 @@ describe('FeasibilityStudyService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/fs-data-teknis`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { id_mesin: 1 },
+      data: { uuid_mesin: 1 },
       timeout: 120000,
     });
 
@@ -135,11 +168,12 @@ describe('FeasibilityStudyService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/fs-data-finansial`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { id_mesin: 1 },
+      data: { uuid_mesin: 1 },
       timeout: 120000,
     });
 
@@ -155,11 +189,12 @@ describe('FeasibilityStudyService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/simulasi-cod-fs`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { id_mesin: 1, status: 'status' },
+      data: { uuid_mesin: 1, status: 'status' },
       timeout: 120000,
     });
 
@@ -175,11 +210,12 @@ describe('FeasibilityStudyService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/fs-kalkulasi`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { id_mesin: 1 },
+      data: { uuid_mesin: 1 },
       timeout: 120000,
     });
 
@@ -195,11 +231,13 @@ describe('FeasibilityStudyService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}kertas-kerja-detail/type-periodic`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       params: { kode_jenis_pembangkit: 'kode-jenis' },
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -215,10 +253,13 @@ describe('FeasibilityStudyService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}mesin-realisasi/1`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
+      params: undefined,
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -234,11 +275,13 @@ describe('FeasibilityStudyService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}pembangkit/by-kode`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       params: { kode_sentral: 'kode_sentral_mock' },
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -254,10 +297,13 @@ describe('FeasibilityStudyService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}filter/combo-pengelola`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
+      params: undefined,
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -273,11 +319,13 @@ describe('FeasibilityStudyService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}filter/combo-bahan-bakar`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       params: { jenis_pembangkit: 'jenis_pembangkit_mock' },
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -293,19 +341,17 @@ describe('FeasibilityStudyService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}kertas-kerja-detail/export-template-fs-detail`,
-      headers: {
-        Authorization: 'Bearer mockToken',
-      },
+      headers: {},
       params: {
         tahun: 2023,
         tahun_realisasi: 2022,
-        id_mesin: 1,
+        uuid_mesin: 1,
       },
       responseType: 'arraybuffer',
       timeout: 120000,
+      withCredentials: true,
     });
   
-    // Perhatikan bahwa axios membungkus response dalam properti 'data'
     expect(result).toEqual({ data: mockResponse });
   });
 });

@@ -35,8 +35,9 @@ describe("CardNotification.vue", () => {
   });
 
   it("renders the date correctly", () => {
-    const dateParagraph = wrapper.find("p.text-xs.text-[#989899]");
-    expect(dateParagraph.exists()).toBe(true);
+    const dateParagraphs = wrapper.findAll("p.text-xs");
+    const dateParagraph = dateParagraphs.find((p: any) => p.text() === "04/04/2023");
+    expect(dateParagraph).toBeTruthy();
     expect(dateParagraph.text()).toBe("04/04/2023");
   });
 

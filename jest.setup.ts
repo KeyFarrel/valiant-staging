@@ -48,47 +48,7 @@ class MockResizeObserver {
 
 global.ResizeObserver = MockResizeObserver;
 
-// Mock DOM Event constructors (as any to avoid TypeScript conflicts)
-(global as any).Event = class MockEvent {
-  constructor(public type: string, options: any = {}) {
-    this.bubbles = options.bubbles || false;
-    this.cancelable = options.cancelable || false;
-  }
-  bubbles: boolean;
-  cancelable: boolean;
-};
-
-(global as any).MouseEvent = class MockMouseEvent extends (global as any).Event {
-  constructor(type: string, options: any = {}) {
-    super(type, options);
-    this.button = options.button || 0;
-    this.clientX = options.clientX || 0;
-    this.clientY = options.clientY || 0;
-  }
-  button: number;
-  clientX: number;
-  clientY: number;
-};
-
-(global as any).KeyboardEvent = class MockKeyboardEvent extends (global as any).Event {
-  constructor(type: string, options: any = {}) {
-    super(type, options);
-    this.key = options.key || '';
-    this.code = options.code || '';
-  }
-  key: string;
-  code: string;
-};
-
-(global as any).InputEvent = class MockInputEvent extends (global as any).Event {
-  constructor(type: string, options: any = {}) {
-    super(type, options);
-    this.data = options.data || null;
-  }
-  data: any;
-};
-
-// Mock window with crypto for WASM
+// Mock window with crypto for WASM (without Event constructors)
 Object.defineProperty(global, 'window', {
   value: {
     crypto: {
@@ -108,10 +68,6 @@ Object.defineProperty(global, 'window', {
       search: '',
       hash: '',
     },
-    Event: (global as any).Event,
-    MouseEvent: (global as any).MouseEvent,
-    KeyboardEvent: (global as any).KeyboardEvent,
-    InputEvent: (global as any).InputEvent,
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
     dispatchEvent: jest.fn(),
@@ -165,139 +121,7 @@ Object.defineProperty(global, 'Go', {
 // Add Go to window as well
 (global as any).window.Go = global.Go;
 
-// Mock DOM insertBefore method
-if (typeof global.document !== 'undefined') {
-  const originalInsertBefore = global.document.head.insertBefore;
-  global.document.head.insertBefore = function(newNode: any, referenceNode: any) {
-    if (referenceNode && referenceNode.parentNode) {
-      return originalInsertBefore.call(this, newNode, referenceNode);
-    }
-    return this.appendChild(newNode);
-  };
-}
-
-// Mock comment insertion
-const originalCreateComment = global.document?.createComment;
-if (originalCreateComment) {
-  global.document.createComment = function(data: string) {
-    const comment = originalCreateComment.call(this, data);
-    // Mock insertBefore for comments
-    comment.insertBefore = function(newNode: any, referenceNode: any) {
-      if (this.parentNode) {
-        return this.parentNode.insertBefore(newNode, referenceNode || this);
-      }
-      return newNode;
-    };
-    return comment;
-  };
-}
-
-// Mock Node methods
-const mockNode = {
-  parentNode: null,
-  childNodes: [],
-  insertBefore: jest.fn((newNode, referenceNode) => {
-    if (newNode) {
-      newNode.parentNode = mockNode;
-      if (referenceNode) {
-        const index = mockNode.childNodes.indexOf(referenceNode);
-        if (index !== -1) {
-          mockNode.childNodes.splice(index, 0, newNode);
-        } else {
-          mockNode.childNodes.push(newNode);
-        }
-      } else {
-        mockNode.childNodes.push(newNode);
-      }
-    }
-    return newNode;
-  }),
-  appendChild: jest.fn((node) => {
-    if (node) {
-      node.parentNode = mockNode;
-      mockNode.childNodes.push(node);
-    }
-    return node;
-  }),
-  removeChild: jest.fn((node) => {
-    if (node) {
-      const index = mockNode.childNodes.indexOf(node);
-      if (index !== -1) {
-        mockNode.childNodes.splice(index, 1);
-      }
-      node.parentNode = null;
-    }
-    return node;
-  }),
-  contains: jest.fn(() => false)
-};
-
-// Enhanced document mock - use Object.defineProperty for protected properties
-Object.defineProperty(global.document, 'head', {
-  value: {
-    ...mockNode,
-    appendChild: jest.fn(),
-    insertBefore: jest.fn((newNode, referenceNode) => {
-      if (newNode) {
-        newNode.parentNode = global.document.head;
-      }
-      return newNode;
-    })
-  },
-  writable: true,
-  configurable: true
-});
-
-Object.defineProperty(global.document, 'body', {
-  value: {
-    ...mockNode,
-    appendChild: jest.fn(),
-    insertBefore: jest.fn((newNode, referenceNode) => {
-      if (newNode) {
-        newNode.parentNode = global.document.body;
-      }
-      return newNode;
-    })
-  },
-  writable: true,
-  configurable: true
-});
-
-// Safe to use Object.assign for methods that aren't protected
-Object.assign(global.document, {
-  createComment: jest.fn(() => ({
-    ...mockNode,
-    nodeType: 8,
-    nodeValue: '',
-    textContent: ''
-  })),
-  createTextNode: jest.fn((text) => ({
-    ...mockNode,
-    nodeType: 3,
-    nodeValue: text,
-    textContent: text
-  })),
-  createElement: jest.fn((tagName) => ({
-    ...mockNode,
-    tagName: tagName.toUpperCase(),
-    nodeType: 1,
-    setAttribute: jest.fn(),
-    getAttribute: jest.fn(),
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    style: {},
-    classList: {
-      add: jest.fn(),
-      remove: jest.fn(),
-      contains: jest.fn(),
-      toggle: jest.fn()
-    }
-  })),
-  createDocumentFragment: jest.fn(() => ({
-    ...mockNode,
-    nodeType: 11
-  }))
-});
+// Simplified DOM mocking for Vue Test Utils compatibility
 
 // Mock fetch API
 global.fetch = jest.fn().mockResolvedValue({

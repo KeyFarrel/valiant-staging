@@ -62,11 +62,17 @@ describe("TableDataFinansial.vue Unit Tests", () => {
   });
 
   it("toggles row open and close when clicked", async () => {
-    const row = wrapper.find("tr");
+    // Test initial state
     expect(wrapper.vm.isRowOpen(1)).toBe(false);
-    await row.trigger("click");
-    expect(wrapper.vm.isRowOpen(1)).toBe(false);
-    await row.trigger("click");
+    
+    // Toggle row open
+    wrapper.vm.toggleRow(1);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.isRowOpen(1)).toBe(true);
+    
+    // Toggle row close
+    wrapper.vm.toggleRow(1);
+    await wrapper.vm.$nextTick();
     expect(wrapper.vm.isRowOpen(1)).toBe(false);
   });
 

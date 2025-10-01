@@ -2,19 +2,8 @@ import { mount } from "@vue/test-utils";
 import CrossIcon from "@/components/icons/CrossIcon.vue";
 
 describe("CrossIcon.vue", () => {
-  let wrapper: any;
-
-  beforeEach(() => {
-    wrapper = mount(CrossIcon);
-  });
-
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.unmount();
-    }
-  });
-
   it("renders the SVG element correctly", () => {
+    const wrapper = mount(CrossIcon);
     const svg = wrapper.find("svg");
     expect(svg.exists()).toBe(true);
     expect(svg.attributes("width")).toBe("18");
@@ -25,34 +14,37 @@ describe("CrossIcon.vue", () => {
   });
 
   it("renders the first rect element correctly", () => {
+    const wrapper = mount(CrossIcon);
     const rects = wrapper.findAll("rect");
     expect(rects.length).toBe(2);
 
     const rect1 = rects.at(0);
-    expect(rect1.exists()).toBe(true);
-    expect(rect1.attributes("x")).toBe("0.5");
-    expect(rect1.attributes("y")).toBe("1");
-    expect(rect1.attributes("width")).toBe("17");
-    expect(rect1.attributes("height")).toBe("17");
-    expect(rect1.attributes("rx")).toBe("8.5");
-    expect(rect1.attributes("fill")).toBe("#FFE5E6");
+    expect(rect1?.exists()).toBe(true);
+    expect(rect1?.attributes("x")).toBe("0.5");
+    expect(rect1?.attributes("y")).toBe("1");
+    expect(rect1?.attributes("width")).toBe("17");
+    expect(rect1?.attributes("height")).toBe("17");
+    expect(rect1?.attributes("rx")).toBe("8.5");
+    expect(rect1?.attributes("fill")).toBe("#FFE5E6");
   });
 
   it("renders the second rect element correctly", () => {
+    const wrapper = mount(CrossIcon);
     const rects = wrapper.findAll("rect");
     expect(rects.length).toBe(2);
 
     const rect2 = rects.at(1);
-    expect(rect2.exists()).toBe(true);
-    expect(rect2.attributes("x")).toBe("0.5");
-    expect(rect2.attributes("y")).toBe("1");
-    expect(rect2.attributes("width")).toBe("17");
-    expect(rect2.attributes("height")).toBe("17");
-    expect(rect2.attributes("rx")).toBe("8.5");
-    expect(rect2.attributes("stroke")).toBe("#FD8A8A");
+    expect(rect2?.exists()).toBe(true);
+    expect(rect2?.attributes("x")).toBe("0.5");
+    expect(rect2?.attributes("y")).toBe("1");
+    expect(rect2?.attributes("width")).toBe("17");
+    expect(rect2?.attributes("height")).toBe("17");
+    expect(rect2?.attributes("rx")).toBe("8.5");
+    expect(rect2?.attributes("stroke")).toBe("#FD8A8A");
   });
 
   it("renders the path element correctly", () => {
+    const wrapper = mount(CrossIcon);
     const path = wrapper.find("path");
     expect(path.exists()).toBe(true);
     expect(path.attributes("fill-rule")).toBe("evenodd");

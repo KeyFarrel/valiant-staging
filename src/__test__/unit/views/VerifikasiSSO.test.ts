@@ -1,76 +1,236 @@
-import { shallowMount } from '@vue/test-utils';
-import VerifikasiSSO from '@/views/VerifikasiSSO.vue';
-import ModalNotification from '@/components/ui/ModalNotification.vue';
-import LoginService from '@/services/auth-service';
-import { encryptStoragePromise } from '@/utils/app-encrypt-storage';
-import router from '@/router';
-import { useRoute } from 'vue-router';
+import { shallowMount } from "@vue/test-utils";
+import VerifikasiSSO from "@/views/VerifikasiSSO.vue";
+import ModalNotification from "@/components/ui/ModalNotification.vue";
+import LoginService from "@/services/auth-service";
+import router from "@/router";
+import { useRoute } from "vue-router";
 
-jest.mock('@/services/auth-service');
-jest.mock('@/utils/app-encrypt-storage');
-jest.mock('vue-router', () => ({
+jest.mock("@/store/storeSession", () => ({
+  useSessionStore: jest.fn(() => ({
+    invalidateSession: jest.fn(),
+    $state: {
+      userSession: null,
+    },
+  })),
+}));
+
+const mockVerifikasiSSO = jest.fn();
+jest.mock("@/services/auth-service", () => {
+  return jest.fn().mockImplementation(() => ({
+    verifikasiSSO: mockVerifikasiSSO,
+  }));
+});
+
+jest.mock("@/utils/app-encrypt-storage", () => ({
+  encryptStoragePromise: Promise.resolve({
+    setItem: jest.fn(),
+    getItem: jest.fn(),
+    clear: jest.fn(),
+  }),
+}));
+
+jest.mock("vue-router", () => ({
   useRoute: jest.fn(),
 }));
-jest.mock('@/router', () => ({
+
+jest.mock("@/router", () => ({
   push: jest.fn(),
 }));
 
-describe('VerifikasiSSO.vue', () => {
-  let loginServiceMock: any;
-  let mockRoute: any;
+jest.mock("crypto-js", () => ({
+  HmacSHA512: jest.fn(() => ({
+    toString: jest.fn(() => "mocked-hash"),
+  })),
+}));
 
+Object.defineProperty(window, "userHashSecretKey", {
+  value: jest.fn(() => "secret-key"),
+  writable: true,
+});
+
+const mockLocalStorage = {
+  setItem: jest.fn(),
+  getItem: jest.fn(),
+  clear: jest.fn(),
+};
+Object.defineProperty(window, "localStorage", {
+  value: mockLocalStorage,
+  writable: true,
+});
+
+Object.defineProperty(import.meta, "env", {
+  value: {
+    MODE: "development",
+  },
+  writable: true,
+});
+
+describe("VerifikasiSSO.vue", () => {
   beforeEach(() => {
-    loginServiceMock = {
-      verifikasiSSO: jest.fn(),
-    };
-    (LoginService as jest.Mock).mockImplementation(() => loginServiceMock);
+    jest.clearAllMocks();
+    mockLocalStorage.setItem.mockClear();
+    mockLocalStorage.getItem.mockClear();
+    mockLocalStorage.clear.mockClear();
 
-    mockRoute = {
-      query: {
-        code: 'test_code',
-      },
-    };
-    (useRoute as jest.Mock).mockReturnValue(mockRoute);
+    (useRoute as jest.Mock).mockReturnValue({
+      query: { code: "test-sso-code" },
+      params: {},
+      path: "/verifikasi-sso",
+      fullPath: "/verifikasi-sso?code=test-sso-code",
+      name: "VerifikasiSSO",
+      meta: {},
+      matched: [],
+      hash: "",
+    });
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should display ModalNotification when isError is true', async () => {
-    loginServiceMock.verifikasiSSO.mockResolvedValueOnce({ success: false });
-    
-    const wrapper = shallowMount(VerifikasiSSO);
-    await wrapper.vm.$nextTick(); // Wait for verifikasiSSO to be called
-
-    expect(wrapper.findComponent(ModalNotification).exists()).toBe(true);
-    expect(router.push).toHaveBeenCalledTimes(0);
-  });
-
-  it('should handle successful SSO verification and store tokens in encryptStorage for production mode', async () => {
-    loginServiceMock.verifikasiSSO.mockResolvedValueOnce({
-      success: true,
-      data: {
-        token: 'token_value',
-        nama_pegawai: 'John Doe',
-        id_level: 1,
-        id_sentral: '',
-        id_pembina: '',
-        kode_pengelola: '',
+  it("should render the component with correct template structure", () => {
+    const wrapper = shallowMount(VerifikasiSSO, {
+      global: {
+        stubs: {
+          ModalNotification: true,
+        },
       },
     });
 
-    const wrapper = shallowMount(VerifikasiSSO);
-    await wrapper.vm.$nextTick(); // Wait for verifikasiSSO to be called
-
-    expect(encryptStorage.setItem).toHaveBeenCalledTimes(0);
+    expect(
+      wrapper.find(".bg-white.text-primaryTextColor.min-h-dvh").exists(),
+    ).toBe(true);
+    expect(wrapper.findComponent(ModalNotification).exists()).toBe(true);
   });
 
-  it('should handle error when verifikasiSSO throws an error', async () => {
-    loginServiceMock.verifikasiSSO.mockRejectedValueOnce(new Error('SSO Error'));
+  it("should call verifikasiSSO on component mount", async () => {
+    mockVerifikasiSSO.mockResolvedValueOnce({
+      success: true,
+      data: {
+        nama_pegawai: "John Doe",
+        uuid_sentral: "123",
+      },
+    });
 
-    const wrapper = shallowMount(VerifikasiSSO);
-    await wrapper.vm.$nextTick(); // Wait for verifikasiSSO to be called
-    expect(router.push).toHaveBeenCalledTimes(0);
+    shallowMount(VerifikasiSSO, {
+      global: {
+        stubs: {
+          ModalNotification: true,
+        },
+      },
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    expect(mockVerifikasiSSO).toHaveBeenCalledWith("test-sso-code");
+  });
+
+  it("should handle successful SSO verification", async () => {
+    mockVerifikasiSSO.mockResolvedValueOnce({
+      success: true,
+      data: {
+        nama_pegawai: "John Doe",
+        uuid_sentral: "123",
+      },
+    });
+
+    const wrapper = shallowMount(VerifikasiSSO, {
+      global: {
+        stubs: {
+          ModalNotification: true,
+        },
+      },
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    expect(mockVerifikasiSSO).toHaveBeenCalledWith("test-sso-code");
+    expect(jest.mocked(router.push)).toHaveBeenCalledWith("/peta");
+  });
+
+  it("should handle SSO verification failure", async () => {
+    mockVerifikasiSSO.mockResolvedValueOnce({
+      success: false,
+    });
+
+    const wrapper = shallowMount(VerifikasiSSO, {
+      global: {
+        stubs: {
+          ModalNotification: true,
+        },
+      },
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const modalNotification = wrapper.findComponent(ModalNotification);
+    expect(modalNotification.props("showModal")).toBe(true);
+    expect(modalNotification.props("title")).toBe("Verifikasi SSO Gagal");
+    expect(modalNotification.props("subtitle")).toBe(
+      "User anda tidak terdaftar pada aplikasi valiant",
+    );
+  });
+
+  it("should handle SSO verification error", async () => {
+    mockVerifikasiSSO.mockRejectedValueOnce(new Error("Network error"));
+
+    const wrapper = shallowMount(VerifikasiSSO, {
+      global: {
+        stubs: {
+          ModalNotification: true,
+        },
+      },
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const modalNotification = wrapper.findComponent(ModalNotification);
+    expect(modalNotification.props("showModal")).toBe(true);
+  });
+
+  it("should handle empty uuid_sentral correctly", async () => {
+    mockVerifikasiSSO.mockResolvedValueOnce({
+      success: true,
+      data: {
+        nama_pegawai: "Jane Doe",
+        uuid_sentral: "",
+      },
+    });
+
+    shallowMount(VerifikasiSSO, {
+      global: {
+        stubs: {
+          ModalNotification: true,
+        },
+      },
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    expect(mockVerifikasiSSO).toHaveBeenCalledWith("test-sso-code");
+    expect(jest.mocked(router.push)).toHaveBeenCalledWith("/peta");
+  });
+
+  it("should handle zero uuid_sentral correctly", async () => {
+    mockVerifikasiSSO.mockResolvedValueOnce({
+      success: true,
+      data: {
+        nama_pegawai: "Jane Doe",
+        uuid_sentral: "0",
+      },
+    });
+
+    shallowMount(VerifikasiSSO, {
+      global: {
+        stubs: {
+          ModalNotification: true,
+        },
+      },
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    expect(mockVerifikasiSSO).toHaveBeenCalledWith("test-sso-code");
+    expect(jest.mocked(router.push)).toHaveBeenCalledWith("/peta");
   });
 });

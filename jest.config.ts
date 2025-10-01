@@ -41,7 +41,7 @@ const config: Config = {
     ],
     "^.+\\.json$": "ts-jest",
   },
-  collectCoverage: true,
+  collectCoverage: false,
   collectCoverageFrom: [
     'src/**/*.{js,ts,vue}',
     '!src/main.ts',

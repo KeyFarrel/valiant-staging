@@ -1,8 +1,43 @@
 import axios from 'axios';
-import RekapService from '@/services/rekap-service'; // Sesuaikan dengan path yang benar ke file RekapService
+import RekapService from '@/services/rekap-service';
+import BaseService from '@/services/base-service';
 
+// Mock axios
 jest.mock('axios');
 const mockedAxios = axios as jest.MockedFunction<typeof axios>;
+
+// Mock FingerprintJS to prevent browser API errors
+jest.mock('@fingerprintjs/fingerprintjs', () => ({
+  load: jest.fn().mockResolvedValue({
+    get: jest.fn().mockResolvedValue({
+      components: {
+        hardwareConcurrency: { value: 4 },
+        deviceMemory: { value: 8 },
+        platform: { value: 'MacIntel' },
+        architecture: { value: 64 },
+        screenResolution: { value: [1920, 1080] },
+        vendor: { value: 'Google Inc.' },
+        vendorFlavors: { value: ['chrome'] },
+        colorDepth: { value: 24 },
+        canvas: { value: 'mock-canvas' },
+        webGlBasics: { value: 'mock-webgl' },
+        timezone: { value: 'Asia/Jakarta' },
+        touchSupport: { value: { maxTouchPoints: 0 } },
+        cookiesEnabled: { value: true },
+        localStorage: { value: true },
+        sessionStorage: { value: true },
+        colorGamut: { value: 'srgb' },
+        hdr: { value: false }
+      }
+    })
+  }),
+  hashComponents: jest.fn().mockReturnValue('mock-fingerprint-id')
+}));
+
+// Mock encryption helper
+jest.mock('@/services/helper/encryption', () => ({
+  encryptAES: jest.fn((data) => `encrypted_${data}`)
+}));
 
 const mockUrl = import.meta.env.VITE_API_URL;
 
@@ -11,16 +46,7 @@ describe('RekapService', () => {
 
   beforeEach(() => {
     service = new RekapService();
-
-    // Mock localStorage and encryptStorage for token retrieval
-    jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
-      if (key === 'token') {
-        return 'mockToken';
-      }
-      return null;
-    });
-
-    (localStorage.getItem as jest.Mock).mockReturnValue('mockToken');
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
@@ -55,9 +81,10 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/all-rekap-kertas-kerja`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       data: params,
       timeout: 120000,
@@ -75,9 +102,9 @@ describe('RekapService', () => {
 
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
-      url: `${mockUrl}mutasiasset/s3-amazon-upload-file`,
+      url: `${mockUrl}mutasiasset/upload-evidence`,
+      withCredentials: true,
       headers: {
-        Authorization: 'Bearer mockToken',
         "Content-Type": "application/octet-stream"
       },
       data: file,
@@ -97,8 +124,8 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/import-template-awal`,
+      withCredentials: true,
       headers: {
-        Authorization: 'Bearer mockToken',
         "Content-Type": "application/octet-stream"
       },
       data: file,
@@ -117,10 +144,9 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}kertas-kerja-detail/export-template-simulasi1`,
-      headers: {
-        Authorization: 'Bearer mockToken',
-      },
-      params: { tahun: 2023, tahun_realisasi: 2022, id_mesin: 1 },
+      withCredentials: true,
+      headers: {},
+      params: { tahun: 2023, tahun_realisasi: 2022, uuid_mesin: 1 },
       responseType: 'arraybuffer',
       timeout: 120000,
     });
@@ -137,11 +163,12 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}evidence`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      params: { id_mesin: 'mesin123', tahun: '2023', status_fs: 'completed' },
+      params: { uuid: 'mesin123', tahun: '2023', status_fs: 'completed' },
       timeout: 120000,
     });
 
@@ -151,7 +178,7 @@ describe('RekapService', () => {
   it('should call updateEvidencePath with correct POST parameters', async () => {
     const mockResponse = { data: 'mocked response for updateEvidencePath' };
     const params = {
-      id_mesin: 'mesin123',
+      uuid: 'mesin123',
       tahun_upload: '2023',
       dokumen_evidence: 'document123',
       status_fs: 'completed',
@@ -160,19 +187,20 @@ describe('RekapService', () => {
     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
 
     const result = await service.updateEvidencePath(
-      params.id_mesin,
-      params.tahun_upload,
-      params.dokumen_evidence,
-      params.status_fs,
-      params.file_name
+      'mesin123',
+      '2023',
+      'document123',
+      'completed',
+      'file.pdf'
     );
 
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}evidence`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       data: params,
       timeout: 120000,
@@ -190,11 +218,14 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}filter/combo-pengelola`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       timeout: 120000,
+      params: undefined,
+      responseType: undefined,
     });
 
     expect(result).toEqual(mockResponse);
@@ -209,11 +240,12 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/all-rekap-kertas-kerja-mesin`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { id_sentral: 'sentral123' },
+      data: { uuid_sentral: 'sentral123' },
       timeout: 120000,
     });
 
@@ -229,11 +261,13 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}pembangkit/sentral-nilai`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       params: { tahun: 2023 },
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -249,11 +283,13 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}pembangkit/mesin-nilai`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       params: { tahun: 2023 },
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -269,10 +305,13 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}filter/combo-jenis-kit`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
+      params: undefined,
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -288,10 +327,13 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}filter/combo-umur-mesin`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
+      params: undefined,
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -307,10 +349,13 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}filter/combo-kondisi-mesin`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
+      params: undefined,
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -326,10 +371,13 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}filter/combo-irr`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
+      params: undefined,
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -345,10 +393,9 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}kertas-kerja-detail/export-template-simulasi2`,
-      headers: {
-        Authorization: 'Bearer mockToken',
-      },
-      params: { tahun: 2023, tahun_realisasi: 2022, id_mesin: 1 },
+      withCredentials: true,
+      headers: {},
+      params: { tahun: 2023, tahun_realisasi: 2022, uuid_mesin: 1 },
       responseType: 'arraybuffer',
       timeout: 120000,
     });
@@ -365,10 +412,9 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}kertas-kerja-detail/export-template-first`,
-      headers: {
-        Authorization: 'Bearer mockToken',
-      },
-      params: { tahun: 2023, tahun_realisasi: 2022, id_mesin: 1 },
+      withCredentials: true,
+      headers: {},
+      params: { tahun: 2023, tahun_realisasi: 2022, uuid_mesin: 1 },
       responseType: 'arraybuffer',
       timeout: 120000,
     });
@@ -385,10 +431,9 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}kertas-kerja-detail/export-template-fs`,
-      headers: {
-        Authorization: 'Bearer mockToken',
-      },
-      params: { tahun: 2023, id_mesin: 1, kode_jenis_pembangkit: 'jenis123' },
+      withCredentials: true,
+      headers: {},
+      params: { tahun: 2023, uuid_mesin: 1, kode_jenis_pembangkit: 'jenis123' },
       responseType: 'arraybuffer',
       timeout: 120000,
     });
@@ -405,10 +450,9 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}kertas-kerja-detail/export-template-awal`,
-      headers: {
-        Authorization: 'Bearer mockToken',
-      },
-      params: { tahun: 2023, tahun_realisasi: 2022, id_mesin: 1 },
+      withCredentials: true,
+      headers: {},
+      params: { tahun: 2023, tahun_realisasi: 2022, uuid_mesin: 1 },
       responseType: 'arraybuffer',
       timeout: 120000,
     });
@@ -425,10 +469,13 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}mesin-realisasi/1`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
+      params: undefined,
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -444,10 +491,13 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}pembangkit/status-fs-sentral`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
+      params: undefined,
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -463,10 +513,13 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}pembangkit/status-fs`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
+      params: undefined,
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -482,10 +535,13 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}kertas-kerja-detail/all-rekap-asumsi`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
+      params: undefined,
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -501,10 +557,13 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}filter/combo-sentral`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
+      params: undefined,
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -521,8 +580,8 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/import-template-fs`,
+      withCredentials: true,
       headers: {
-        Authorization: 'Bearer mockToken',
         "Content-Type": "application/octet-stream"
       },
       data: file,
@@ -542,8 +601,8 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/import-template-simulasi1`,
+      withCredentials: true,
       headers: {
-        Authorization: 'Bearer mockToken',
         "Content-Type": "application/octet-stream"
       },
       data: file,
@@ -563,8 +622,8 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/import-template-simulasi`,
+      withCredentials: true,
       headers: {
-        Authorization: 'Bearer mockToken',
         "Content-Type": "application/octet-stream"
       },
       data: file,
@@ -572,86 +631,6 @@ describe('RekapService', () => {
     });
 
     expect(result).toEqual(mockResponse);
-  });
-
-  it('should call downloadSimulasi2 with correct GET parameters and responseType', async () => {
-    const mockResponse = new ArrayBuffer(8);
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-    const result = await service.downloadSimulasi2(2023, 2022, 1);
-
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}kertas-kerja-detail/export-template-simulasi2`,
-      headers: {
-        Authorization: 'Bearer mockToken',
-      },
-      params: { tahun: 2023, tahun_realisasi: 2022, id_mesin: 1 },
-      responseType: 'arraybuffer',
-      timeout: 120000,
-    });
-
-    expect(result).toEqual({ data: mockResponse });
-  });
-
-  it('should call downloadTemplateRekap with correct GET parameters and responseType', async () => {
-    const mockResponse = new ArrayBuffer(8);
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-    const result = await service.downloadTemplateRekap(2023, 2022, 1);
-
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}kertas-kerja-detail/export-template-first`,
-      headers: {
-        Authorization: 'Bearer mockToken',
-      },
-      params: { tahun: 2023, tahun_realisasi: 2022, id_mesin: 1 },
-      responseType: 'arraybuffer',
-      timeout: 120000,
-    });
-
-    expect(result).toEqual({ data: mockResponse });
-  });
-
-  it('should call downloadTemplateFS with correct GET parameters and responseType', async () => {
-    const mockResponse = new ArrayBuffer(8);
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-    const result = await service.downloadTemplateFS(2023, 1, 'jenis123');
-
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}kertas-kerja-detail/export-template-fs`,
-      headers: {
-        Authorization: 'Bearer mockToken',
-      },
-      params: { tahun: 2023, id_mesin: 1, kode_jenis_pembangkit: 'jenis123' },
-      responseType: 'arraybuffer',
-      timeout: 120000,
-    });
-
-    expect(result).toEqual({ data: mockResponse });
-  });
-
-  it('should call downloadExcelKK with correct GET parameters and responseType', async () => {
-    const mockResponse = new ArrayBuffer(8);
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-    const result = await service.downloadExcelKK(2023, 2022, 1);
-
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}kertas-kerja-detail/export-template-awal`,
-      headers: {
-        Authorization: 'Bearer mockToken',
-      },
-      params: { tahun: 2023, tahun_realisasi: 2022, id_mesin: 1 },
-      responseType: 'arraybuffer',
-      timeout: 120000,
-    });
-
-    expect(result).toEqual({ data: mockResponse });
   });
 
   it('should call downloadEvidence with correct GET parameters and responseType', async () => {
@@ -663,10 +642,9 @@ describe('RekapService', () => {
 
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
-      url: `${mockUrl}mutasiasset/s3-amazon-download/${file}`,
-      headers: {
-        Authorization: 'Bearer mockToken',
-      },
+      url: `${mockUrl}mutasiasset/download-evidence/${file}`,
+      withCredentials: true,
+      headers: {},
       responseType: 'arraybuffer',
       timeout: 120000,
       params:{}
@@ -684,10 +662,13 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}pembangkit/status-realisasi-sentral`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
+      params: undefined,
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -703,10 +684,13 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}pembangkit/status-realisasi`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
+      params: undefined,
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -722,10 +706,13 @@ describe('RekapService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}kertas-kerja-detail/all-rekap-asumsi-mesin`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
+      params: undefined,
+      responseType: undefined,
       timeout: 120000,
     });
 

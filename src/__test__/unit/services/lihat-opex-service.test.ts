@@ -1,226 +1,188 @@
-import axios from 'axios';
-import LihatOPEXService from '@/services/lihat-opex-service'; // Sesuaikan dengan path yang benar ke file LihatOPEXService
+import LihatOPEXService from "@/services/lihat-opex-service";
+import BaseService from "@/services/base-service";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import CryptoJS from "crypto-js";
 
-jest.mock('axios');
-const mockedAxios = axios as jest.MockedFunction<typeof axios>;
+// Mock dependencies
+jest.mock("@/services/base-service");
+jest.mock("@fingerprintjs/fingerprintjs");
+jest.mock("crypto-js");
 
-const mockUrl = import.meta.env.VITE_API_URL;
+// Mock import.meta.env
+Object.defineProperty(import.meta, 'env', {
+  value: {
+    VITE_API_URL: 'https://portalapp.iconpln.co.id:5080/valiant-be/v1/',
+    VITE_ENCRYPTION_KEY: 'test-key'
+  },
+  writable: true
+});
 
-describe('LihatOPEXService', () => {
+describe("LihatOPEXService", () => {
   let service: LihatOPEXService;
+  let mockGet: jest.Mock;
+  let mockPost: jest.Mock;
+  let mockLoad: jest.Mock;
+  let mockHashComponents: jest.Mock;
+  let mockEncrypt: jest.Mock;
 
   beforeEach(() => {
-    service = new LihatOPEXService();
-
-    // Mock localStorage and encryptStorage for token retrieval
-    jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
-      if (key === 'token') {
-        return 'mockToken';
-      }
-      return null;
-    });
-
-    (localStorage.getItem as jest.Mock).mockReturnValue('mockToken');
-  });
-
-  afterEach(() => {
     jest.clearAllMocks();
+
+    // Mock BaseService methods
+    mockGet = jest.fn();
+    mockPost = jest.fn();
+    
+    // Mock BaseService prototype methods
+    BaseService.prototype.get = mockGet;
+    BaseService.prototype.post = mockPost;
+
+    // Mock FingerprintJS
+    mockHashComponents = jest.fn();
+    mockLoad = jest.fn().mockResolvedValue({
+      get: jest.fn().mockResolvedValue({
+        components: { canvas: { value: "test-canvas" } }
+      })
+    });
+    (FingerprintJS.load as jest.Mock) = mockLoad;
+    (FingerprintJS.hashComponents as jest.Mock) = mockHashComponents;
+
+    // Mock CryptoJS
+    mockEncrypt = jest.fn().mockReturnValue({
+      toString: jest.fn().mockReturnValue("encrypted-data")
+    });
+    (CryptoJS.AES.encrypt as jest.Mock) = mockEncrypt;
+
+    service = new LihatOPEXService();
   });
 
-  it('should call getMesinById with correct GET parameters', async () => {
-    const mockResponse = { data: 'mocked response for getMesinById' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+  it("should call getMesinById with correct GET parameters", async () => {
+    const mockResponse = { success: true, data: "mocked response for getMesinById" };
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getMesinById(1);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}mesin-realisasi/1`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/mesin-realisasi/1");
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getPembangkitByKode with correct GET parameters', async () => {
-    const mockResponse = { data: 'mocked response for getPembangkitByKode' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+  it("should call getPembangkitByKode with correct GET parameters", async () => {
+    const mockResponse = { success: true, data: "mocked response for getPembangkitByKode" };
+    mockGet.mockResolvedValueOnce(mockResponse);
 
-    const result = await service.getPembangkitByKode('kode_sentral_mock');
+    const result = await service.getPembangkitByKode("kode_sentral_mock");
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}pembangkit/by-kode`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      params: { kode_sentral: 'kode_sentral_mock' },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/pembangkit/by-kode", { kode_sentral: "kode_sentral_mock" });
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getPengelolaData with correct GET parameters', async () => {
-    const mockResponse = { data: 'mocked response for getPengelolaData' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+  it("should call getPengelolaData with correct GET parameters", async () => {
+    const mockResponse = { success: true, data: "mocked response for getPengelolaData" };
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getPengelolaData();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}filter/combo-pengelola`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-pengelola");
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getAsumsiParameterData with correct POST parameters', async () => {
-    const mockResponse = { data: 'mocked response for getAsumsiParameterData' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+  it("should call getAsumsiParameterData with correct POST parameters", async () => {
+    const mockResponse = { success: true, data: "mocked response for getAsumsiParameterData" };
+    mockPost.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getAsumsiParameterData(2023, 1, 2022);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'POST',
-      url: `${mockUrl}kertas-kerja-detail/asumsi-parameter`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      data: { tahun_realisasi: 2023, id_mesin: 1, tahun: 2022 },
-      timeout: 120000,
-    });
-
+    expect(mockPost).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/asumsi-parameter", { tahun_realisasi: 2023, uuid_mesin: 1, tahun: 2022 });
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getAnggaranDetailCAPEX with correct GET parameters', async () => {
-    const mockResponse = { data: 'mocked response for getAnggaranDetailCAPEX' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+  it("should call getAnggaranDetailCAPEX with correct GET parameters", async () => {
+    const mockResponse = { success: true, data: "mocked response for getAnggaranDetailCAPEX" };
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getAnggaranDetailCAPEX(2023, 1);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}laman/data/anggaran/capex`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      params: { tahun: 2023, id_mesin: 1 },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/data/anggaran/capex", { tahun: 2023, uuid_mesin: 1 });
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getTotalReplacement with correct GET parameters', async () => {
-    const mockResponse = { data: 'mocked response for getTotalReplacement' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+  it("should call getTotalReplacement with correct GET parameters", async () => {
+    const mockResponse = { success: true, data: "mocked response for getTotalReplacement" };
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getTotalReplacement(2023, 1);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}laman/data/anggaran/capex-replacement`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      params: { tahun: 2023, id_mesin: 1 },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/data/anggaran/capex-replacement", { tahun: 2023, uuid_mesin: 1 });
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getOPEXKomponenB with correct GET parameters', async () => {
-    const mockResponse = { data: 'mocked response for getOPEXKomponenB' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+  it("should call getOPEXKomponenB with correct GET parameters", async () => {
+    const mockResponse = { success: true, data: "mocked response for getOPEXKomponenB" };
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getOPEXKomponenB(1, 2023);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}laman/data/anggaran/opex-komponen-b`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      params: { id_mesin: 1, tahun: 2023 },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/data/anggaran/opex-komponen-b", { uuid_mesin: 1, tahun: 2023 });
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getOPEXKomponenC with correct GET parameters', async () => {
-    const mockResponse = { data: 'mocked response for getOPEXKomponenC' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+  it("should call getOPEXKomponenC with correct GET parameters", async () => {
+    const mockResponse = { success: true, data: "mocked response for getOPEXKomponenC" };
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getOPEXKomponenC(1, 2023);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}laman/data/anggaran/opex-komponen-c`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      params: { id_mesin: 1, tahun: 2023 },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/data/anggaran/opex-komponen-c", { uuid_mesin: 1, tahun: 2023 });
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getOPEXKomponenD with correct GET parameters', async () => {
-    const mockResponse = { data: 'mocked response for getOPEXKomponenD' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+  it("should call getOPEXKomponenD with correct GET parameters", async () => {
+    const mockResponse = { success: true, data: "mocked response for getOPEXKomponenD" };
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getOPEXKomponenD(1, 2023);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}laman/data/anggaran/opex-komponen-d`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      params: { id_mesin: 1, tahun: 2023 },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/data/anggaran/opex-komponen-d", { uuid_mesin: 1, tahun: 2023 });
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getTahunAnggaran with correct GET parameters', async () => {
-    const mockResponse = { data: 'mocked response for getTahunAnggaran' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+  it("should call getTahunAnggaran with correct GET parameters", async () => {
+    const mockResponse = { success: true, data: "mocked response for getTahunAnggaran" };
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getTahunAnggaran();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}laman/data/anggaran/tahun`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
+    expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/data/anggaran/tahun");
+    expect(result).toEqual(mockResponse);
+  });
+
+  describe("Error Handling", () => {
+    it("should handle GET request errors", async () => {
+      const error = new Error("Network error");
+      mockGet.mockRejectedValueOnce(error);
+
+      await expect(service.getMesinById(1)).rejects.toThrow("Network error");
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/mesin-realisasi/1");
     });
 
-    expect(result).toEqual(mockResponse);
+    it("should handle POST request errors", async () => {
+      const error = new Error("Server error");
+      mockPost.mockRejectedValueOnce(error);
+
+      await expect(service.getAsumsiParameterData(2023, 1, 2022)).rejects.toThrow("Server error");
+      expect(mockPost).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/kertas-kerja-detail/asumsi-parameter", { tahun_realisasi: 2023, uuid_mesin: 1, tahun: 2022 });
+    });
+  });
+
+  describe("Service Inheritance", () => {
+    it("should extend BaseService", () => {
+      expect(service).toBeInstanceOf(LihatOPEXService);
+      expect(service).toHaveProperty('get');
+      expect(service).toHaveProperty('post');
+    });
+
+    it("should have access to BaseService methods", () => {
+      expect(mockGet).toBeDefined();
+      expect(mockPost).toBeDefined();
+    });
   });
 });

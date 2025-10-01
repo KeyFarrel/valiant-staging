@@ -1,1025 +1,426 @@
-// import axios from 'axios';
-// import GrafikService from '@/services/grafik-service'; // Sesuaikan dengan path yang benar ke file GrafikService
-
-// jest.mock('axios');
-// const mockedAxios = axios as jest.MockedFunction<typeof axios>;
-
-// const mockUrl = import.meta.env.VITE_API_URL;
-
-// describe('GrafikService', () => {
-//   let service: GrafikService;
-
-//   beforeEach(() => {
-//     service = new GrafikService();
-
-//     // Mock localStorage and encryptStorage for token retrieval
-//     jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
-//       if (key === 'token') {
-//         return 'mockToken';
-//       }
-//       return null;
-//     });
-
-//     (localStorage.getItem as jest.Mock).mockReturnValue('mockToken');
-//   });
-
-//   afterEach(() => {
-//     jest.clearAllMocks();
-//   });
-
-//   it('should call getPlanning with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getPlanning' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getPlanning({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}peta/detail-planing`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getRealisasiProyeksi with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getRealisasiProyeksi' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getRealisasiProyeksi({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}peta/detail-realisasi-proyeksi`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getRealisasiYoy with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getRealisasiYoy' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getRealisasiYoy({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}peta/detail-realisasi-yoy`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getPlanReal with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getPlanReal' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getPlanReal({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}peta/detail-planning-realisasi`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getPlanningMesin with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getPlanningMesin' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getPlanningMesin({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}peta/detail-planing-mesin`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getRealisasiProyeksiMesin with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getRealisasiProyeksiMesin' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getRealisasiProyeksiMesin({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}peta/detail-realisasi-proyeksi-mesin`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getRealisasiYoyMesin with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getRealisasiYoyMesin' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getRealisasiYoyMesin({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}peta/detail-realisasi-yoy-mesin`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getPlanRealMesin with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getPlanRealMesin' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getPlanRealMesin({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}peta/detail-planning-realisasi-mesin`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getYearSentral with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getYearSentral' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getYearSentral({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}filter/tahun-persentral`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getYearMesin with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getYearMesin' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getYearMesin({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}filter/tahun-permesin`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getRangeYearSentral with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getRangeYearSentral' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getRangeYearSentral({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}filter/range-tahun-persentral`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getRangeYearMesin with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getRangeYearMesin' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getRangeYearMesin({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}filter/range-tahun-permesin`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikWLCALL with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikWLCALL' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikWLCALL({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/wlc-all-sentral`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikWLCALLDetail with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikWLCALLDetail' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikWLCALLDetail({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/wlc-all-sentral/detail`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikWLCKom with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikWLCKom' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikWLCKom({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/wlc-komponen-sentral`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikWLCKomDetail with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikWLCKomDetail' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikWLCKomDetail({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/wlc-komponen-sentral/detail`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikPlan with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikPlan' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikPlan({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/planning-fs-sentral`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikPlanDetail with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikPlanDetail' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikPlanDetail({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/planning-fs-sentral/detail`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikPRP with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikPRP' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikPRP({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/planning-realisasi-proyeksi-sentral`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikPRPDetail with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikPRPDetail' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikPRPDetail({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/planning-realisasi-proyeksi-sentral/detail`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikPRPLastYear with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikPRPLastYear' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikPRPLastYear({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/prp-lastyear-sentral`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikLastYearDetail with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikLastYearDetail' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikLastYearDetail({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/prp-lastyear-sentral/detail`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikWLCALLMesin with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikWLCALLMesin' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikWLCALLMesin({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/wlc-all`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikWLCALLDetailMesin with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikWLCALLDetailMesin' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikWLCALLDetailMesin({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/wlc-all/detail`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikWLCKomMesin with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikWLCKomMesin' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikWLCKomMesin({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/wlc-komponen`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikWLCKomDetailMesin with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikWLCKomDetailMesin' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikWLCKomDetailMesin({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/wlc-komponen/detail`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikPlanMesin with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikPlanMesin' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikPlanMesin({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/planning-fs`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikPlanDetailMesin with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikPlanDetailMesin' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikPlanDetailMesin({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/planning-fs/detail`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikPlanKomMesin with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikPlanKomMesin' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikPlanKomMesin({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/wlc-komponen-fs`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikPlanKomDetailMesin with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikPlanKomDetailMesin' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikPlanKomDetailMesin({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/wlc-komponen-fs/detail`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikPRPMesin with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikPRPMesin' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikPRPMesin({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/planning-realisasi-proyeksi`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikPRPDetailMesin with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikPRPDetailMesin' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikPRPDetailMesin({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/planning-realisasi-proyeksi/detail`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikPRPLastYearMesin with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikPRPLastYearMesin' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikPRPLastYearMesin({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/prp-lastyear`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGrafikPRPLastYearDetailMesin with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGrafikPRPLastYearDetailMesin' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGrafikPRPLastYearDetailMesin({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}dashboard/grafik/prp-lastyear/detail`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       params: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getAnalitikCapex with correct POST parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getAnalitikCapex' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getAnalitikCapex({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'POST',
-//       url: `${mockUrl}grafik/laman/finansial/eaf`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       data: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getAnalitikOpex with correct POST parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getAnalitikOpex' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getAnalitikOpex({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'POST',
-//       url: `${mockUrl}laman/analitik/opex`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       data: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGraphicBiaya with correct POST parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGraphicBiaya' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGraphicBiaya({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'POST',
-//       url: `${mockUrl}grafik/laman/komponen`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       data: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGraphicRNFA with correct POST parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGraphicRNFA' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGraphicRNFA({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'POST',
-//       url: `${mockUrl}dashboard/grafik/finansial-ebitda`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       data: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGraphicAnalitikEAF with correct POST parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGraphicAnalitikEAF' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGraphicAnalitikEAF({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'POST',
-//       url: `${mockUrl}grafik/laman/finansial/eaf`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       data: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGraphicAnalitikCF with correct POST parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGraphicAnalitikCF' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGraphicAnalitikCF({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'POST',
-//       url: `${mockUrl}grafik/laman/finansial/ncf`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       data: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGraphicAnalitikEFOR with correct POST parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGraphicAnalitikEFOR' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGraphicAnalitikEFOR({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'POST',
-//       url: `${mockUrl}grafik/laman/finansial/efor`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       data: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGraphicOpexBD with correct POST parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGraphicOpexBD' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGraphicOpexBD({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'POST',
-//       url: `${mockUrl}grafik/laman/finansial/opex-bd`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       data: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGraphicOpexC with correct POST parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGraphicOpexC' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGraphicOpexC({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'POST',
-//       url: `${mockUrl}grafik/laman/finansial/opexc-nphr`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       data: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGraphicTeknisNCF with correct POST parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGraphicTeknisNCF' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGraphicTeknisNCF({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'POST',
-//       url: `${mockUrl}grafik/laman/teknis/ncf`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       data: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGraphicTeknisEAF with correct POST parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGraphicTeknisEAF' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGraphicTeknisEAF({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'POST',
-//       url: `${mockUrl}grafik/laman/teknis/eaf`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       data: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getGraphicTeknisNPHR with correct POST parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getGraphicTeknisNPHR' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getGraphicTeknisNPHR({ example: 'param' });
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'POST',
-//       url: `${mockUrl}grafik/laman/teknis/nphr`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       data: { example: 'param' },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getComboKategoriPembangkit with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getComboKategoriPembangkit' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getComboKategoriPembangkit();
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}filter/combo-jenis-kit`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getFilterDaya with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getFilterDaya' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getFilterDaya();
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}grafik/filter/daya`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getTahunTerakhirRealisasiAnalitik with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getTahunTerakhirRealisasiAnalitik' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getTahunTerakhirRealisasiAnalitik();
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}filter/combo-tahun-max`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-
-//   it('should call getInitialPembangkit with correct GET parameters', async () => {
-//     const mockResponse = { data: 'mocked response for getInitialPembangkit' };
-//     mockedAxios.mockResolvedValueOnce({ data: mockResponse });
-
-//     const result = await service.getInitialPembangkit();
-
-//     expect(mockedAxios).toHaveBeenCalledWith({
-//       method: 'GET',
-//       url: `${mockUrl}filter/combo-max-jenis-pembangkit`,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: 'Bearer mockToken',
-//       },
-//       timeout: 120000,
-//     });
-
-//     expect(result).toEqual(mockResponse);
-//   });
-// });
+import GrafikService from "@/services/grafik-service";
+import BaseService from "@/services/base-service";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import CryptoJS from "crypto-js";
+
+// Mock dependencies
+jest.mock("@/services/base-service");
+jest.mock("@fingerprintjs/fingerprintjs");
+jest.mock("crypto-js");
+
+// Mock import.meta.env
+Object.defineProperty(import.meta, 'env', {
+  value: {
+    VITE_API_URL: 'https://portalapp.iconpln.co.id:5080/valiant-be/v1/',
+    VITE_ENCRYPTION_KEY: 'test-key'
+  },
+  writable: true
+});
+
+describe("GrafikService", () => {
+  let grafikService: GrafikService;
+  let mockGet: jest.Mock;
+  let mockPost: jest.Mock;
+  let mockLoad: jest.Mock;
+  let mockHashComponents: jest.Mock;
+  let mockEncrypt: jest.Mock;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    // Mock BaseService methods
+    mockGet = jest.fn();
+    mockPost = jest.fn();
+    
+    // Mock BaseService prototype methods
+    BaseService.prototype.get = mockGet;
+    BaseService.prototype.post = mockPost;
+
+    // Mock FingerprintJS
+    mockHashComponents = jest.fn();
+    mockLoad = jest.fn().mockResolvedValue({
+      get: jest.fn().mockResolvedValue({
+        components: { canvas: { value: "test-canvas" } }
+      })
+    });
+    (FingerprintJS.load as jest.Mock) = mockLoad;
+    (FingerprintJS.hashComponents as jest.Mock) = mockHashComponents;
+
+    // Mock CryptoJS
+    mockEncrypt = jest.fn().mockReturnValue({
+      toString: jest.fn().mockReturnValue("encrypted-data")
+    });
+    (CryptoJS.AES.encrypt as jest.Mock) = mockEncrypt;
+
+    grafikService = new GrafikService();
+  });
+
+  describe("Card Information APIs", () => {
+    const mockParam = { test: "param" };
+
+    it("should call getPlanning with correct parameters", async () => {
+      const mockResponse = { success: true, data: [] };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getPlanning(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/peta/detail-planing", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getRealisasiProyeksi with correct parameters", async () => {
+      const mockResponse = { success: true, data: [] };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getRealisasiProyeksi(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/peta/detail-realisasi-proyeksi", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getRealisasiYoy with correct parameters", async () => {
+      const mockResponse = { success: true, data: [] };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getRealisasiYoy(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/peta/detail-realisasi-yoy", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getPlanReal with correct parameters", async () => {
+      const mockResponse = { success: true, data: [] };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getPlanReal(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/peta/detail-planning-realisasi", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+  });
+
+  describe("Machine APIs", () => {
+    const mockParam = { test: "param" };
+
+    it("should call getPlanningMesin with correct parameters", async () => {
+      const mockResponse = { success: true, data: [] };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getPlanningMesin(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/peta/detail-planing-mesin", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getRealisasiProyeksiMesin with correct parameters", async () => {
+      const mockResponse = { success: true, data: [] };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getRealisasiProyeksiMesin(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/peta/detail-realisasi-proyeksi-mesin", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getRealisasiYoyMesin with correct parameters", async () => {
+      const mockResponse = { success: true, data: [] };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getRealisasiYoyMesin(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/peta/detail-realisasi-yoy-mesin", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getPlanRealMesin with correct parameters", async () => {
+      const mockResponse = { success: true, data: [] };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getPlanRealMesin(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/peta/detail-planning-realisasi-mesin", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+  });
+
+  describe("Year Filter APIs", () => {
+    const mockParam = { test: "param" };
+
+    it("should call getYearSentral with correct parameters", async () => {
+      const mockResponse = { success: true, data: [2020, 2021, 2022] };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getYearSentral(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/tahun-persentral", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getYearMesin with correct parameters", async () => {
+      const mockResponse = { success: true, data: [2020, 2021, 2022] };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getYearMesin(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/tahun-permesin", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getRangeYearSentral with correct parameters", async () => {
+      const mockResponse = { success: true, data: { min: 2020, max: 2023 } };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getRangeYearSentral(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/range-tahun-persentral", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getRangeYearMesin with correct parameters", async () => {
+      const mockResponse = { success: true, data: { min: 2020, max: 2023 } };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getRangeYearMesin(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/range-tahun-permesin", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+  });
+
+  describe("Grafik Sentral APIs", () => {
+    const mockParam = { test: "param" };
+
+    it("should call getGrafikWLCALL with correct parameters", async () => {
+      const mockResponse = { success: true, data: { chart: "data" } };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getGrafikWLCALL(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/dashboard/grafik/wlc-all-sentral", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getGrafikWLCALLDetail with correct parameters", async () => {
+      const mockResponse = { success: true, data: { detail: "data" } };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getGrafikWLCALLDetail(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/dashboard/grafik/wlc-all-sentral/detail", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getGrafikWLCKom with correct parameters", async () => {
+      const mockResponse = { success: true, data: { komponen: "data" } };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getGrafikWLCKom(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/dashboard/grafik/wlc-komponen-sentral", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getGrafikPlan with correct parameters", async () => {
+      const mockResponse = { success: true, data: { planning: "data" } };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getGrafikPlan(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/dashboard/grafik/planning-fs-sentral", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getGrafikPRP with correct parameters", async () => {
+      const mockResponse = { success: true, data: { prp: "data" } };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getGrafikPRP(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/dashboard/grafik/planning-realisasi-proyeksi-sentral", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+  });
+
+  describe("Grafik Mesin APIs", () => {
+    const mockParam = { test: "param" };
+
+    it("should call getGrafikWLCALLMesin with correct parameters", async () => {
+      const mockResponse = { success: true, data: { chart: "data" } };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getGrafikWLCALLMesin(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/dashboard/grafik/wlc-all", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getGrafikPlanMesin with correct parameters", async () => {
+      const mockResponse = { success: true, data: { planning: "data" } };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getGrafikPlanMesin(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/dashboard/grafik/planning-fs", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getGrafikPRPMesin with correct parameters", async () => {
+      const mockResponse = { success: true, data: { prp: "data" } };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getGrafikPRPMesin(mockParam);
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/dashboard/grafik/planning-realisasi-proyeksi", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+  });
+
+  describe("Analitik POST APIs", () => {
+    const mockParam = { test: "param" };
+
+    it("should call getAnalitikCapex with correct parameters", async () => {
+      const mockResponse = { success: true, data: { capex: "data" } };
+      mockPost.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getAnalitikCapex(mockParam);
+
+      expect(mockPost).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/grafik/laman/finansial/eaf", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getAnalitikOpex with correct parameters", async () => {
+      const mockResponse = { success: true, data: { opex: "data" } };
+      mockPost.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getAnalitikOpex(mockParam);
+
+      expect(mockPost).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/analitik/opex", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getGraphicBiaya with correct parameters", async () => {
+      const mockResponse = { success: true, data: { biaya: "data" } };
+      mockPost.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getGraphicBiaya(mockParam);
+
+      expect(mockPost).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/grafik/laman/komponen", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getGraphicRNFA with correct parameters", async () => {
+      const mockResponse = { success: true, data: { rnfa: "data" } };
+      mockPost.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getGraphicRNFA(mockParam);
+
+      expect(mockPost).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/dashboard/grafik/finansial-ebitda", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getGraphicAnalitikEAF with correct parameters", async () => {
+      const mockResponse = { success: true, data: { eaf: "data" } };
+      mockPost.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getGraphicAnalitikEAF(mockParam);
+
+      expect(mockPost).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/grafik/laman/finansial/eaf", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getGraphicAnalitikCF with correct parameters", async () => {
+      const mockResponse = { success: true, data: { cf: "data" } };
+      mockPost.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getGraphicAnalitikCF(mockParam);
+
+      expect(mockPost).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/grafik/laman/finansial/ncf", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getGraphicTeknisNCF with correct parameters", async () => {
+      const mockResponse = { success: true, data: { teknis: "data" } };
+      mockPost.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getGraphicTeknisNCF(mockParam);
+
+      expect(mockPost).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/grafik/laman/teknis/ncf", mockParam);
+      expect(result).toEqual(mockResponse);
+    });
+  });
+
+  describe("Filter Combo APIs", () => {
+    it("should call getComboKategoriPembangkit without parameters", async () => {
+      const mockResponse = { success: true, data: [{ id: "1", name: "PLTU" }] };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getComboKategoriPembangkit();
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-jenis-kit");
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getFilterDaya without parameters", async () => {
+      const mockResponse = { success: true, data: [{ id: "1", daya: "500" }] };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getFilterDaya();
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/grafik/filter/daya");
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getTahunTerakhirRealisasiAnalitik without parameters", async () => {
+      const mockResponse = { success: true, data: { tahun: 2023 } };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getTahunTerakhirRealisasiAnalitik();
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-tahun-max");
+      expect(result).toEqual(mockResponse);
+    });
+
+    it("should call getInitialPembangkit without parameters", async () => {
+      const mockResponse = { success: true, data: [{ id: "1", name: "PLTU" }] };
+      mockGet.mockResolvedValueOnce(mockResponse);
+
+      const result = await grafikService.getInitialPembangkit();
+
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-max-jenis-pembangkit");
+      expect(result).toEqual(mockResponse);
+    });
+  });
+
+  describe("Error Handling", () => {
+    const mockParam = { test: "param" };
+
+    it("should handle GET request errors", async () => {
+      const error = new Error("Network error");
+      mockGet.mockRejectedValueOnce(error);
+
+      await expect(grafikService.getPlanning(mockParam)).rejects.toThrow("Network error");
+      expect(mockGet).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/peta/detail-planing", mockParam);
+    });
+
+    it("should handle POST request errors", async () => {
+      const error = new Error("Server error");
+      mockPost.mockRejectedValueOnce(error);
+
+      await expect(grafikService.getGraphicBiaya(mockParam)).rejects.toThrow("Server error");
+      expect(mockPost).toHaveBeenCalledWith("https://portalapp.iconpln.co.id:5080/valiant-be/v1/grafik/laman/komponen", mockParam);
+    });
+  });
+
+  describe("Service Inheritance", () => {
+    it("should extend BaseService", () => {
+      expect(grafikService).toBeInstanceOf(GrafikService);
+      expect(grafikService).toHaveProperty('get');
+      expect(grafikService).toHaveProperty('post');
+    });
+
+    it("should have access to BaseService methods", () => {
+      expect(mockGet).toBeDefined();
+      expect(mockPost).toBeDefined();
+    });
+  });
+});

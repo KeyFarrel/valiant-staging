@@ -1,419 +1,403 @@
-import axios from 'axios';
-import LamanService from '@/services/laman-service'; // Sesuaikan dengan path yang benar ke file LamanService
+import LamanService from '@/services/laman-service';
+import BaseService from '@/services/base-service';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.MockedFunction<typeof axios>;
+// Mock FingerprintJS
+jest.mock('@fingerprintjs/fingerprintjs', () => ({
+  load: jest.fn().mockResolvedValue({
+    get: jest.fn().mockResolvedValue({
+      visitorId: 'mocked-visitor-id'
+    })
+  })
+}));
 
-const mockUrl = import.meta.env.VITE_API_URL;
+// Mock CryptoJS
+jest.mock('crypto-js', () => ({
+  AES: {
+    encrypt: jest.fn().mockReturnValue({
+      toString: jest.fn().mockReturnValue('encrypted-data')
+    })
+  },
+  enc: {
+    Utf8: {}
+  }
+}));
 
 describe('LamanService', () => {
   let service: LamanService;
+  let mockGet: jest.SpyInstance;
+  let mockPost: jest.SpyInstance;
+  let mockGetFile: jest.SpyInstance;
 
   beforeEach(() => {
     service = new LamanService();
-
-    // Mock localStorage and encryptStorage for token retrieval
-    jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
-      if (key === 'token') {
-        return 'mockToken';
-      }
-      return null;
-    });
-
-    (localStorage.getItem as jest.Mock).mockReturnValue('mockToken');
+    
+    // Mock BaseService methods
+    mockGet = jest.spyOn(BaseService.prototype, 'get');
+    mockPost = jest.spyOn(BaseService.prototype, 'post');
+    mockGetFile = jest.spyOn(BaseService.prototype, 'getFile');
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should call getTotalDaya with correct GET parameters', async () => {
+  it('should call getTotalDaya with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getTotalDaya' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getTotalDaya();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}laman/total-daya`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/total-daya');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getSebaranUnit with correct GET parameters', async () => {
+  it('should call getSebaranUnit with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getSebaranUnit' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getSebaranUnit();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}laman/sebaran-unit-mesin`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/sebaran-unit-mesin');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getMesinBaru with correct GET parameters', async () => {
+  it('should call getMesinBaru with all parameters', async () => {
     const mockResponse = { data: 'mocked response for getMesinBaru' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getMesinBaru(1, 10, 'search-query');
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}laman/mesin-baru`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      params: { page: 1, limit: 10, search: 'search-query' },
-      timeout: 120000,
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/mesin-baru', {
+      page: 1,
+      limit: 10,
+      search: 'search-query'
     });
-
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getMesinBelumInput with correct POST parameters', async () => {
+  it('should call getMesinBaru without parameters', async () => {
+    const mockResponse = { data: 'mocked response for getMesinBaru no params' };
+    mockGet.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getMesinBaru();
+
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/mesin-baru', {
+      page: undefined,
+      limit: undefined,
+      search: undefined
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should call getMesinBelumInput with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getMesinBelumInput' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockPost.mockResolvedValueOnce(mockResponse);
 
-    const result = await service.getMesinBelumInput(1, 10, ['pengelola1'], 'search-query');
+    const result = await service.getMesinBelumInput(1, 10, ['pengelola1', 'pengelola2'], 'search-query');
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'POST',
-      url: `${mockUrl}laman/mesin-belum-terinput`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      data: { page: 1, limit: 10, kode_pengelola: ['pengelola1'], search: 'search-query' },
-      timeout: 120000,
+    expect(mockPost).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/mesin-belum-terinput', {
+      page: 1,
+      limit: 10,
+      kode_pengelola: ['pengelola1', 'pengelola2'],
+      search: 'search-query'
     });
-
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getKategoriPembangkit with correct GET parameters', async () => {
+  it('should call getKategoriPembangkit with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getKategoriPembangkit' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getKategoriPembangkit();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}laman/kategori-pembangkit`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/kategori-pembangkit');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getPengelolaData with correct GET parameters', async () => {
+  it('should call getPengelolaData with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getPengelolaData' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getPengelolaData();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}filter/combo-pengelola`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-pengelola');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getDataAnggaran with correct GET parameters', async () => {
+  it('should call getDataAnggaran with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getDataAnggaran' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getDataAnggaran('search-query', 2022, 2021);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}laman/data/anggaran`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      params: { search: 'search-query', tahun_sampai: 2022, tahun_dari: 2021 },
-      timeout: 120000,
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/data/anggaran', {
+      search: 'search-query',
+      tahun_sampai: 2022,
+      tahun_dari: 2021
     });
-
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getPeriodeTahun with correct GET parameters', async () => {
+  it('should call getPeriodeTahun with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getPeriodeTahun' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getPeriodeTahun();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}filter/combo-tahun`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-tahun');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call downloadExcelCAPEXOPEX with correct GET parameters and responseType', async () => {
-    const mockResponse = new ArrayBuffer(8);
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+  it('should call downloadExcelCAPEXOPEX with correct parameters', async () => {
+    const mockResponse = { data: new ArrayBuffer(8) };
+    mockGetFile.mockResolvedValueOnce(mockResponse);
 
     const result = await service.downloadExcelCAPEXOPEX(2021, 2022, 'search-query', 'type1');
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}laman/capex-opex/export-excel`,
-      headers: {
-        Authorization: 'Bearer mockToken',
-      },
-      params: { tahun_dari: 2021, tahun_sampai: 2022, search: 'search-query', type: 'type1' },
-      responseType: 'arraybuffer',
-      timeout: 120000,
-    });
-
-    expect(result).toEqual({ data: mockResponse });
+    expect(mockGetFile).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/capex-opex/export-excel', {
+      tahun_dari: 2021,
+      tahun_sampai: 2022,
+      search: 'search-query',
+      type: 'type1'
+    }, 'arraybuffer');
+    expect(result).toEqual(mockResponse);
   });
 
-  it('should call getDataFinansial with correct GET parameters', async () => {
+  it('should call getDataFinansial with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getDataFinansial' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getDataFinansial('search-query', 2022, 1, 10);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}laman/data/finansial?tahun=2022`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      params: { search: 'search-query', page: 1, limit: 10 },
-      timeout: 120000,
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/data/finansial?tahun=2022', {
+      search: 'search-query',
+      page: 1,
+      limit: 10
     });
-
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call downloadExcelFinansial with correct GET parameters and responseType', async () => {
-    const mockResponse = new ArrayBuffer(8);
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+  it('should call downloadExcelFinansial with correct parameters', async () => {
+    const mockResponse = { data: new ArrayBuffer(8) };
+    mockGetFile.mockResolvedValueOnce(mockResponse);
 
     const result = await service.downloadExcelFinansial(2022, 'search-query');
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}laman/finansial/export-excel`,
-      headers: {
-        Authorization: 'Bearer mockToken',
-      },
-      params: { tahun: 2022, search: 'search-query' },
-      responseType: 'arraybuffer',
-      timeout: 120000,
-    });
-
-    expect(result).toEqual({ data: mockResponse });
+    expect(mockGetFile).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/finansial/export-excel', {
+      tahun: 2022,
+      search: 'search-query'
+    }, 'arraybuffer');
+    expect(result).toEqual(mockResponse);
   });
 
-  it('should call getDataTeknis with correct GET parameters', async () => {
+  it('should call getDataTeknis with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getDataTeknis' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getDataTeknis('search-query', 1, 10, 2021, 2022);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}laman/data/teknis`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      params: { search: 'search-query', page: 1, limit: 10, tahun_dari: 2021, tahun_sampai: 2022 },
-      timeout: 120000,
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/data/teknis', {
+      search: 'search-query',
+      page: 1,
+      limit: 10,
+      tahun_dari: 2021,
+      tahun_sampai: 2022
     });
-
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call downloadExcelTeknis with correct GET parameters and responseType', async () => {
-    const mockResponse = new ArrayBuffer(8);
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+  it('should call downloadExcelTeknis with correct parameters', async () => {
+    const mockResponse = { data: new ArrayBuffer(8) };
+    mockGetFile.mockResolvedValueOnce(mockResponse);
 
     const result = await service.downloadExcelTeknis(2021, 2022, 'search-query');
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}laman/teknis/export-excel`,
-      headers: {
-        Authorization: 'Bearer mockToken',
-      },
-      params: { tahun_dari: 2021, tahun_sampai: 2022, search: 'search-query' },
-      responseType: 'arraybuffer',
-      timeout: 120000,
-    });
-
-    expect(result).toEqual({ data: mockResponse });
+    expect(mockGetFile).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/teknis/export-excel', {
+      tahun_dari: 2021,
+      tahun_sampai: 2022,
+      search: 'search-query'
+    }, 'arraybuffer');
+    expect(result).toEqual(mockResponse);
   });
 
-  it('should call getInfoSFC with correct GET parameters', async () => {
+  it('should call getInfoSFC with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getInfoSFC' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getInfoSFC();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}laman/data/teknis/info-sfc`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/data/teknis/info-sfc');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getChartDaya with correct GET parameters', async () => {
+  it('should call getChartDaya with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getChartDaya' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getChartDaya();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}dashboard/grafik/perbandingan-daya`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/dashboard/grafik/perbandingan-daya');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getTahunSelected with correct GET parameters', async () => {
+  it('should call getTahunSelected with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getTahunSelected' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getTahunSelected();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}filter/combo-tahun-max`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-tahun-max');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getListTahun with correct GET parameters', async () => {
+  it('should call getListTahun with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getListTahun' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getListTahun();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}filter/combo-tahun-data`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-tahun-data');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getChartKategori with correct GET parameters', async () => {
+  it('should call getChartKategori with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getChartKategori' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getChartKategori('kategori1', 100);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}dashboard/grafik/sebaran-unit`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      params: { kategori: 'kategori1', id_daya: 100 },
-      timeout: 120000,
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/dashboard/grafik/sebaran-unit', {
+      kategori: 'kategori1',
+      id_daya: 100
     });
-
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getCAPEXEAF with correct GET parameters', async () => {
+  it('should call getCAPEXEAF with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getCAPEXEAF' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getCAPEXEAF('kode_jenis_kit_mock', 2023);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}grafik/laman/finansial/eaf`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      params: { kode_jenis_kit: 'kode_jenis_kit_mock', tahun_realisasi: 2023 },
-      timeout: 120000,
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/grafik/laman/finansial/eaf', {
+      kode_jenis_kit: 'kode_jenis_kit_mock',
+      tahun_realisasi: 2023
     });
-
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getListTahunAnalitik with correct GET parameters', async () => {
+  it('should call getListTahunAnalitik with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getListTahunAnalitik' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getListTahunAnalitik();
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}filter/combo-analitik`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/filter/combo-analitik');
     expect(result).toEqual(mockResponse);
+  });
+
+  // Test error handling
+  it('should handle errors in getTotalDaya', async () => {
+    const mockError = new Error('Total Daya Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getTotalDaya()).rejects.toThrow('Total Daya Error');
+  });
+
+  it('should handle errors in getMesinBelumInput', async () => {
+    const mockError = new Error('Mesin Belum Input Error');
+    mockPost.mockRejectedValueOnce(mockError);
+
+    await expect(service.getMesinBelumInput(1, 10, ['pengelola1'], 'search')).rejects.toThrow('Mesin Belum Input Error');
+  });
+
+  it('should handle errors in downloadExcelCAPEXOPEX', async () => {
+    const mockError = new Error('Download Excel CAPEX OPEX Error');
+    mockGetFile.mockRejectedValueOnce(mockError);
+
+    await expect(service.downloadExcelCAPEXOPEX(2021, 2022, 'search', 'type')).rejects.toThrow('Download Excel CAPEX OPEX Error');
+  });
+
+  it('should handle errors in getDataFinansial', async () => {
+    const mockError = new Error('Data Finansial Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getDataFinansial('search', 2022, 1, 10)).rejects.toThrow('Data Finansial Error');
+  });
+
+  it('should handle errors in downloadExcelFinansial', async () => {
+    const mockError = new Error('Download Excel Finansial Error');
+    mockGetFile.mockRejectedValueOnce(mockError);
+
+    await expect(service.downloadExcelFinansial(2022, 'search')).rejects.toThrow('Download Excel Finansial Error');
+  });
+
+  it('should handle errors in getDataTeknis', async () => {
+    const mockError = new Error('Data Teknis Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getDataTeknis('search', 1, 10, 2021, 2022)).rejects.toThrow('Data Teknis Error');
+  });
+
+  it('should handle errors in downloadExcelTeknis', async () => {
+    const mockError = new Error('Download Excel Teknis Error');
+    mockGetFile.mockRejectedValueOnce(mockError);
+
+    await expect(service.downloadExcelTeknis(2021, 2022, 'search')).rejects.toThrow('Download Excel Teknis Error');
+  });
+
+  it('should handle errors in getCAPEXEAF', async () => {
+    const mockError = new Error('CAPEX EAF Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getCAPEXEAF('kit_code', 2023)).rejects.toThrow('CAPEX EAF Error');
+  });
+
+  // Test parameter edge cases
+  it('should handle null parameters in getDataAnggaran', async () => {
+    const mockResponse = { data: 'mocked response for null params' };
+    mockGet.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getDataAnggaran(null, null, null);
+
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/data/anggaran', {
+      search: null,
+      tahun_sampai: null,
+      tahun_dari: null
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should handle empty array in getMesinBelumInput', async () => {
+    const mockResponse = { data: 'mocked response for empty array' };
+    mockPost.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getMesinBelumInput(1, 10, [], '');
+
+    expect(mockPost).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/laman/mesin-belum-terinput', {
+      page: 1,
+      limit: 10,
+      kode_pengelola: [],
+      search: ''
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should handle numeric parameters in getChartKategori', async () => {
+    const mockResponse = { data: 'mocked response for numeric params' };
+    mockGet.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getChartKategori(123, 'string_daya');
+
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/dashboard/grafik/sebaran-unit', {
+      kategori: 123,
+      id_daya: 'string_daya'
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  // Test service inheritance
+  it('should extend BaseService', () => {
+    expect(service).toBeInstanceOf(BaseService);
   });
 });

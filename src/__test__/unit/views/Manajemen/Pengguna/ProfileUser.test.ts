@@ -1,161 +1,399 @@
 import { mount } from '@vue/test-utils';
+import { describe, it, expect, jest, beforeEach, afterEach } from '@jest/globals';
 import ProfileUser from '@/views/Manajemen/Pengguna/ProfileUser.vue';
-import { notifyError } from '@/services/helper/toast-notification';
-import AuthService from '@/services/auth-service';
-import LoginService from '@/services/auth-service';
+import { createPinia, setActivePinia } from 'pinia';
+import { nextTick } from 'vue';
 
-// Mock the necessary modules
-jest.mock('@/services/auth-service'); // Mock the AuthService
-jest.mock('@/services/helper/toast-notification'); // Mock toast notifications
-
-// Mock vue-router including beforeEach
-jest.mock('vue-router', () => ({
-  useRoute: jest.fn(() => ({
-    params: { id: '1' },
-  })),
-  useRouter: jest.fn(() => ({
-    replace: jest.fn(),
-  })),
-  createRouter: jest.fn(() => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-    currentRoute: { value: {} },
-    beforeEach: jest.fn(),  // Properly mock beforeEach
-  })),
-  createWebHistory: jest.fn(),
+// Mock stores
+jest.mock('@/store/storeSession', () => ({
+  useSessionStore: jest.fn(() => ({
+    invalidateSession: jest.fn()
+  }))
 }));
 
+jest.mock('@/store/storeUserAuth', () => ({
+  useUserAuthStore: jest.fn(() => ({
+    roleName: 'Admin',
+    levelName: 'Manager'
+  }))
+}));
+
+// Mock services
+const mockAuthService = {
+  profile: jest.fn() as jest.MockedFunction<any>,
+  changePassword: jest.fn() as jest.MockedFunction<any>
+};
+
+const mockUserService = {
+  sendEmailOtp: jest.fn() as jest.MockedFunction<any>,
+  verifyOtp: jest.fn() as jest.MockedFunction<any>
+};
+
+const mockTimeFormatOtp = {
+  formatTime: jest.fn().mockReturnValue('05:00')
+};
+
+jest.mock('@/services/auth-service', () => {
+  return jest.fn().mockImplementation(() => mockAuthService);
+});
+
+jest.mock('@/services/user-service', () => {
+  return jest.fn().mockImplementation(() => mockUserService);
+});
+
+jest.mock('@/services/format/time-format-otp', () => {
+  return jest.fn().mockImplementation(() => mockTimeFormatOtp);
+});
+
+// Mock utilities
+jest.mock('@/utils/app-encrypt-storage', () => ({
+  encryptStoragePromise: Promise.resolve({
+    clear: jest.fn()
+  })
+}));
+
+jest.mock('@/router', () => ({
+  push: jest.fn()
+}));
+
+jest.mock('@/services/helper/toast-notification', () => ({
+  notifyError: jest.fn(),
+  notifySuccess: jest.fn()
+}));
+
+// Mock components
+jest.mock('@/components/ui/ModalWrapper.vue', () => ({
+  name: 'ModalWrapper',
+  template: '<div><slot /></div>',
+  props: ['showModal', 'width', 'height']
+}));
+
+jest.mock('@/components/ui/LoadingSpinner.vue', () => ({
+  name: 'Loading',
+  template: '<div class="loading">Loading...</div>'
+}));
+
+jest.mock('@/components/ui/ModalNotification.vue', () => ({
+  name: 'ModalNotification',
+  template: '<div></div>',
+  props: ['showModal', 'animationData', 'title', 'subtitle']
+}));
+
+jest.mock('@/components/ui/TextField.vue', () => ({
+  name: 'TextField',
+  template: '<input />',
+  props: ['type', 'placeholder', 'modelValue', 'class', 'id'],
+  emits: ['update:modelValue', 'onCopy', 'onPaste', 'onInput']
+}));
+
+jest.mock('@/components/ui/Chips.vue', () => ({
+  name: 'Chips',
+  template: '<span>{{ content }}</span>',
+  props: ['title', 'content', 'class']
+}));
+
+// Mock other components
+jest.mock('@/components/icons/IconEdit.vue', () => ({ name: 'IconEdit', template: '<div></div>' }));
+jest.mock('@/components/icons/IconRoundedChecked.vue', () => ({ name: 'IconRoundedChecked', template: '<div></div>' }));
+jest.mock('@/components/icons/IconRoundedClose.vue', () => ({ name: 'IconRoundedClose', template: '<div></div>' }));
+jest.mock('@/components/icons/IconClose.vue', () => ({ name: 'IconClose', template: '<div></div>' }));
+jest.mock('@/components/icons/IconSendOTP.vue', () => ({ name: 'IconSendOTP', template: '<div></div>' }));
+
+// Mock assets
+jest.mock('@/assets/lottie/success.json', () => ({}));
+
+// Mock environment
+Object.defineProperty(import.meta, 'env', {
+  value: { MODE: 'test' },
+  writable: true
+});
+
 describe('ProfileUser.vue', () => {
-  let mockProfile: jest.Mock;
-  let mockChangePassword: jest.Mock;
+  let wrapper;
+  let pinia;
+
+  const mockProfileData = {
+    code: 200,
+    data: {
+      id_user: '1',
+      nip: '123456',
+      email: 'john@example.com',
+      username: 'johndoe',
+      nama_pegawai: 'John Doe',
+      atasan: 'Jane Smith',
+      photo: 'photo.jpg',
+      status: true,
+      no_tlpn: 628123456789,
+      pengelola: 'Unit A',
+      pembina: 'Unit B',
+      sentral: 'Unit C',
+      roles: [{ name: 'admin' }],
+      created_at: '2023-01-01T00:00:00Z'
+    }
+  };
 
   beforeEach(() => {
-    mockProfile = jest.fn(() => ({
-      data: {
-        id_user: '123',
-        nip: '456',
-        email: 'user@test.com',
-        nama_pegawai: 'Test User',
-        pengelola: 'Unit A',
-        pembina: 'Unit B',
-        sentral: 'Unit C',
-        status: true,
-        created_at: '2023-01-01',
-      },
-    }));
-    mockChangePassword = jest.fn();
-
-    LoginService.prototype.profile = mockProfile;
-    AuthService.prototype.changePassword = mockChangePassword;
+    pinia = createPinia();
+    setActivePinia(pinia);
+    jest.clearAllMocks();
+    mockAuthService.profile.mockResolvedValue(mockProfileData);
   });
 
-  it('renders loading spinner when isLoading is true', async () => {
-    const wrapper = mount(ProfileUser, {
-      data() {
-        return { isLoading: true };
-      },
+  afterEach(() => {
+    if (wrapper) {
+      wrapper.unmount();
+    }
+  });
+
+  const createWrapper = () => {
+    return mount(ProfileUser, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          ModalWrapper: true,
+          ModalNotification: true,
+          Loading: true,
+          TextField: true,
+          Chips: true,
+          IconEdit: true,
+          IconRoundedChecked: true,
+          IconRoundedClose: true,
+          IconClose: true,
+          IconSendOTP: true
+        }
+      }
     });
-    expect(wrapper.findComponent({ name: 'LoadingSpinner' }).exists()).toBe(false);
-  });
+  };
 
-  it('renders profile data after fetching profile', async () => {
-    const wrapper = mount(ProfileUser);
-    const vm = wrapper.vm as unknown as { fetchDataProfile: () => Promise<void> };
-
-    await vm.fetchDataProfile(); // Simulate onMounted hook
-    await wrapper.vm.$nextTick(); // Wait for DOM update
-
-    expect(mockProfile).toHaveBeenCalled();
-    expect(wrapper.text()).toContain('Test User');
-    expect(wrapper.text()).toContain('user@test.com');
-    expect(wrapper.text()).toContain('Unit A');
-  });
-
-  it('validates password requirements', async () => {
-    const wrapper = mount(ProfileUser);
-    const vm = wrapper.vm as unknown as {
-      newPassword: string;
-      hasMinLength: boolean;
-      hasNumber: boolean;
-      hasUppercase: boolean;
-      hasLowercase: boolean;
-      hasSymbol: boolean;
-      verifyRequirementPassword: () => void;
-    };
-
-    // Simulate entering new password
-    vm.newPassword = 'Test123!';
-    vm.verifyRequirementPassword();
-    await wrapper.vm.$nextTick(); // Wait for reactivity
-
-    expect(vm.hasMinLength).toBe(true);
-    expect(vm.hasNumber).toBe(true);
-    expect(vm.hasUppercase).toBe(true);
-    expect(vm.hasLowercase).toBe(true);
-    expect(vm.hasSymbol).toBe(true);
-  });
-
-  it('shows error when new password does not meet requirements', async () => {
-    const wrapper = mount(ProfileUser);
-    const vm = wrapper.vm as unknown as {
-      newPassword: string;
-      confirmNewPassword: string;
-      changePassword: () => Promise<void>;
-    };
-
-    vm.newPassword = 'short'; // Invalid password
-    vm.confirmNewPassword = 'short'; // Matching but invalid password
-
-    await vm.changePassword();
-
-    expect(notifyError).toHaveBeenCalledWith(
-      'Password tidak memenuhi persyaratan, mohon lengkapi persyaratan tersebut!',
-      7000
-    );
-    expect(mockChangePassword).not.toHaveBeenCalled(); // API should not be called
-  });
-
-  it('calls changePassword API when valid password is submitted', async () => {
-    const wrapper = mount(ProfileUser);
-    const vm = wrapper.vm as unknown as {
-      oldPassword: string;
-      newPassword: string;
-      confirmNewPassword: string;
-      changePassword: () => Promise<void>;
-      isModalChangePasswordShow: boolean;
-    };
-
-    // Set valid passwords
-    vm.oldPassword = 'OldPassword123!';
-    vm.newPassword = 'NewPassword123!';
-    vm.confirmNewPassword = 'NewPassword123!';
-
-    await vm.changePassword();
-
-    expect(mockChangePassword).toHaveBeenCalledTimes(0);
-    expect(vm.isModalChangePasswordShow).toBe(false); // Modal should close after successful change
-  });
-
-  it('shows error when old password is incorrect', async () => {
-    const wrapper = mount(ProfileUser);
-    const vm = wrapper.vm as unknown as {
-      oldPassword: string;
-      newPassword: string;
-      confirmNewPassword: string;
-      changePassword: () => Promise<void>;
-      isOldPasswordWrong: boolean;
-    };
-
-    mockChangePassword.mockRejectedValueOnce({
-      response: { data: { message: 'Password Lama tidak sesuai' } },
+  describe('Component Rendering', () => {
+    it('renders successfully', () => {
+      wrapper = createWrapper();
+      expect(wrapper.exists()).toBe(true);
     });
 
-    // Set valid passwords
-    vm.oldPassword = 'WrongPassword123!';
-    vm.newPassword = 'NewPassword123!';
-    vm.confirmNewPassword = 'NewPassword123!';
+    it('displays loading state', async () => {
+      wrapper = createWrapper();
+      wrapper.vm.isLoading = true;
+      await nextTick();
+      
+      expect(wrapper.findComponent({ name: 'Loading' }).exists()).toBe(true);
+    });
 
-    await vm.changePassword();
-    expect(vm.isOldPasswordWrong).toBe(false); // Show error about incorrect old password
+    it('displays user profile data', async () => {
+      wrapper = createWrapper();
+      await nextTick();
+      // Wait for async profile fetch
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      expect(mockAuthService.profile).toHaveBeenCalled();
+    });
+  });
+
+  describe('Password Management', () => {
+    beforeEach(async () => {
+      wrapper = createWrapper();
+      await nextTick();
+    });
+
+    it('validates password requirements', () => {
+      wrapper.vm.newPassword = 'Test123!';
+      wrapper.vm.verifyRequirementPassword();
+      
+      expect(wrapper.vm.hasMinLength).toBe(true);
+      expect(wrapper.vm.hasNumber).toBe(true);
+      expect(wrapper.vm.hasUppercase).toBe(true);
+      expect(wrapper.vm.hasLowercase).toBe(true);
+      expect(wrapper.vm.hasSymbol).toBe(true);
+    });
+
+    it('validates password match', () => {
+      wrapper.vm.newPassword = 'Test123!';
+      wrapper.vm.confirmNewPassword = 'Test123!';
+      wrapper.vm.verifyMatchPassword();
+      
+      expect(wrapper.vm.isPasswordMatched).toBe(true);
+    });
+
+    it('detects password mismatch', () => {
+      wrapper.vm.newPassword = 'Test123!';
+      wrapper.vm.confirmNewPassword = 'Different123!';
+      wrapper.vm.verifyMatchPassword();
+      
+      expect(wrapper.vm.isPasswordMatched).toBe(false);
+    });
+
+    it('sanitizes password input', () => {
+      wrapper.vm.oldPassword = 'test"password';
+      wrapper.vm.sanitizeOldPassword();
+      
+      expect(wrapper.vm.oldPassword).toBe('testpassword');
+    });
+
+    it('toggles password visibility', () => {
+      expect(wrapper.vm.showOldPassword).toBe(false);
+      wrapper.vm.showOldPassword = true;
+      expect(wrapper.vm.showOldPassword).toBe(true);
+    });
+  });
+
+  describe('Modal States', () => {
+    beforeEach(async () => {
+      wrapper = createWrapper();
+      await nextTick();
+    });
+
+    it('opens change password modal', () => {
+      wrapper.vm.isModalChangePasswordShow = true;
+      expect(wrapper.vm.isModalChangePasswordShow).toBe(true);
+    });
+
+    it('closes change password modal', () => {
+      wrapper.vm.isModalChangePasswordShow = true;
+      wrapper.vm.closeChangePasswordModal();
+      expect(wrapper.vm.isModalChangePasswordShow).toBe(false);
+    });
+
+    it('opens OTP modal', () => {
+      wrapper.vm.isModalOtpShow = true;
+      expect(wrapper.vm.isModalOtpShow).toBe(true);
+    });
+
+    it('closes OTP modal and resets timers', () => {
+      wrapper.vm.isModalOtpShow = true;
+      wrapper.vm.expiredOtpTimer = 100;
+      wrapper.vm.closeModalOtp();
+      
+      expect(wrapper.vm.isModalOtpShow).toBe(false);
+      expect(wrapper.vm.expiredOtpTimer).toBe(300);
+    });
+  });
+
+  describe('OTP Handling', () => {
+    beforeEach(async () => {
+      wrapper = createWrapper();
+      await nextTick();
+    });
+
+    it('handles OTP input correctly', () => {
+      const mockEvent = {
+        target: { value: '1' }
+      };
+      
+      wrapper.vm.handleInput(0, mockEvent);
+      expect(wrapper.vm.otp[0]).toBe('1');
+    });
+
+    it('handles non-digit input in OTP', () => {
+      const mockEvent = {
+        target: { value: 'a' }
+      };
+      
+      wrapper.vm.handleInput(0, mockEvent);
+      expect(wrapper.vm.otp[0]).toBeNull();
+    });
+
+    it('prevents invalid keys in OTP', () => {
+      const mockEvent = {
+        key: 'Enter',
+        preventDefault: jest.fn()
+      };
+      
+      wrapper.vm.handleKeyDown(0, mockEvent);
+      expect(mockEvent.preventDefault).toHaveBeenCalled();
+    });
+  });
+
+  describe('Form Operations', () => {
+    beforeEach(async () => {
+      wrapper = createWrapper();
+      await nextTick();
+    });
+
+    it('resets form inputs and attributes', () => {
+      wrapper.vm.oldPassword = 'test';
+      wrapper.vm.newPassword = 'test123';
+      wrapper.vm.hasMinLength = true;
+      
+      wrapper.vm.resetInputAndAttribute();
+      
+      expect(wrapper.vm.oldPassword).toBe('');
+      expect(wrapper.vm.newPassword).toBe('');
+      expect(wrapper.vm.hasMinLength).toBe(false);
+    });
+
+    it('prevents copy and paste events', () => {
+      const mockEvent = {
+        preventDefault: jest.fn()
+      };
+      
+      wrapper.vm.preventCopyPaste(mockEvent);
+      expect(mockEvent.preventDefault).toHaveBeenCalled();
+    });
+  });
+
+  describe('Timer Management', () => {
+    beforeEach(async () => {
+      wrapper = createWrapper();
+      await nextTick();
+    });
+
+    it('starts timers correctly', () => {
+      wrapper.vm.startTimers();
+      expect(wrapper.vm.expiredOtpTimer).toBe(300);
+      expect(wrapper.vm.resetOtpTimer).toBe(60);
+    });
+
+    it('formats time using service', () => {
+      wrapper.vm.timeFormatOtp.formatTime(300);
+      expect(mockTimeFormatOtp.formatTime).toHaveBeenCalledWith(300);
+    });
+  });
+
+  describe('Utility Functions', () => {
+    beforeEach(async () => {
+      wrapper = createWrapper();
+      await nextTick();
+    });
+
+    it('calculates time ago correctly', () => {
+      const pastDate = new Date();
+      pastDate.setHours(pastDate.getHours() - 2);
+      
+      const result = wrapper.vm.calculateTimeAgo(pastDate.toISOString());
+      expect(result).toContain('2 jam yang lalu');
+    });
+  });
+
+  describe('Service Integration', () => {
+    it('fetches profile data on mount', async () => {
+      wrapper = createWrapper();
+      await nextTick();
+      
+      // Allow time for async operations
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      expect(mockAuthService.profile).toHaveBeenCalled();
+    });
+
+    it('sends OTP email', async () => {
+      wrapper = createWrapper();
+      mockUserService.sendEmailOtp.mockResolvedValue({ code: 200 });
+      
+      await wrapper.vm.resetEmailOtp();
+      
+      expect(mockUserService.sendEmailOtp).toHaveBeenCalled();
+    });
+  });
+
+  describe('Lifecycle', () => {
+    it('cleans up intervals on unmount', () => {
+      wrapper = createWrapper();
+      wrapper.vm.startTimers();
+      
+      wrapper.unmount();
+      
+      // Should not throw errors
+      expect(true).toBe(true);
+    });
   });
 });

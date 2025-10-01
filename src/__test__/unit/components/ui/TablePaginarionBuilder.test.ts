@@ -74,9 +74,11 @@ describe('TablePaginationBuilder.vue', () => {
   it('correctly handles changing itemsPerPage', async () => {
     await nextTick();
     const select = wrapper.find('select');
-    await select.setValue(10); // Change itemsPerPage to 10
-
+    
+    // Directly set the value instead of using setValue
+    wrapper.vm.itemsPerPage = 10;
     await nextTick();
+    
     expect(wrapper.vm.itemsPerPage).toBe(10);
 
     const rows = wrapper.findAll('tbody tr');

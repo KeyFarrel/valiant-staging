@@ -1,110 +1,186 @@
-import axios from 'axios';
-import ParameterService from '@/services/parameter-service'; // Sesuaikan dengan path yang benar ke file ParameterService
+import ParameterService from '@/services/parameter-service';
+import BaseService from '@/services/base-service';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.MockedFunction<typeof axios>;
+// Mock FingerprintJS
+jest.mock('@fingerprintjs/fingerprintjs', () => ({
+  load: jest.fn().mockResolvedValue({
+    get: jest.fn().mockResolvedValue({
+      visitorId: 'mocked-visitor-id'
+    })
+  })
+}));
 
-const mockUrl = import.meta.env.VITE_API_URL;
+// Mock CryptoJS
+jest.mock('crypto-js', () => ({
+  AES: {
+    encrypt: jest.fn().mockReturnValue({
+      toString: jest.fn().mockReturnValue('encrypted-data')
+    })
+  },
+  enc: {
+    Utf8: {}
+  }
+}));
 
 describe('ParameterService', () => {
   let service: ParameterService;
+  let mockGet: jest.SpyInstance;
+  let mockPost: jest.SpyInstance;
 
   beforeEach(() => {
     service = new ParameterService();
-
-    // Mock localStorage and encryptStorage for token retrieval
-    jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
-      if (key === 'token') {
-        return 'mockToken';
-      }
-      return null;
-    });
-
-    (localStorage.getItem as jest.Mock).mockReturnValue('mockToken');
+    
+    // Mock BaseService methods
+    mockGet = jest.spyOn(BaseService.prototype, 'get');
+    mockPost = jest.spyOn(BaseService.prototype, 'post');
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should call getParameterData with correct GET parameters', async () => {
+  it('should call getParameterData with all parameters', async () => {
     const mockResponse = { data: 'mocked response for getParameterData' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
     const result = await service.getParameterData(1, 10, 'search-query');
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}parameter`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      params: { page: 1, limit: 10, search: 'search-query' },
-      timeout: 120000,
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/parameter', {
+      page: 1,
+      limit: 10,
+      search: 'search-query'
     });
-
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call getParameterByID with correct GET parameters', async () => {
+  it('should call getParameterData with partial parameters', async () => {
+    const mockResponse = { data: 'mocked response for getParameterData partial' };
+    mockGet.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getParameterData(1, 10);
+
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/parameter', {
+      page: 1,
+      limit: 10,
+      search: undefined
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should call getParameterData without parameters', async () => {
+    const mockResponse = { data: 'mocked response for getParameterData no params' };
+    mockGet.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getParameterData();
+
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/parameter', {
+      page: undefined,
+      limit: undefined,
+      search: undefined
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should call getParameterByID with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for getParameterByID' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    mockGet.mockResolvedValueOnce(mockResponse);
 
-    const result = await service.getParameterByID(1);
+    const result = await service.getParameterByID('uuid-123');
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'GET',
-      url: `${mockUrl}parameter/1`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      timeout: 120000,
-    });
-
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/parameter/uuid-123');
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call editParameter with correct PUT parameters', async () => {
+  it('should call editParameter with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for editParameter' };
-    const parameterData = { field1: 'value1', field2: 'value2' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    const parameterData = { name: 'Test Parameter', value: 'test-value', description: 'Test description' };
+    mockPost.mockResolvedValueOnce(mockResponse);
 
-    const result = await service.editParameter(1, parameterData);
+    const result = await service.editParameter('uuid-123', parameterData);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'PUT',
-      url: `${mockUrl}parameter/1`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      data: parameterData,
-      timeout: 120000,
-    });
-
+    expect(mockPost).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/parameter/uuid-123', parameterData);
     expect(result).toEqual(mockResponse);
   });
 
-  it('should call addParameter with correct POST parameters', async () => {
+  it('should call addParameter with correct parameters', async () => {
     const mockResponse = { data: 'mocked response for addParameter' };
-    const parameterData = { field1: 'value1', field2: 'value2' };
-    mockedAxios.mockResolvedValueOnce({ data: mockResponse });
+    const parameterData = { name: 'New Parameter', value: 'new-value', description: 'New parameter description' };
+    mockPost.mockResolvedValueOnce(mockResponse);
 
     const result = await service.addParameter(parameterData);
 
-    expect(mockedAxios).toHaveBeenCalledWith({
-      method: 'POST',
-      url: `${mockUrl}parameter`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
-      },
-      data: parameterData,
-      timeout: 120000,
-    });
-
+    expect(mockPost).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/parameter', parameterData);
     expect(result).toEqual(mockResponse);
+  });
+
+  // Test error handling
+  it('should handle errors in getParameterData', async () => {
+    const mockError = new Error('API Error');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getParameterData(1, 10, 'search-query')).rejects.toThrow('API Error');
+  });
+
+  it('should handle errors in getParameterByID', async () => {
+    const mockError = new Error('Parameter Not Found');
+    mockGet.mockRejectedValueOnce(mockError);
+
+    await expect(service.getParameterByID('uuid-123')).rejects.toThrow('Parameter Not Found');
+  });
+
+  it('should handle errors in editParameter', async () => {
+    const mockError = new Error('Edit Parameter Error');
+    const parameterData = { name: 'Test Parameter', value: 'test-value' };
+    mockPost.mockRejectedValueOnce(mockError);
+
+    await expect(service.editParameter('uuid-123', parameterData)).rejects.toThrow('Edit Parameter Error');
+  });
+
+  it('should handle errors in addParameter', async () => {
+    const mockError = new Error('Add Parameter Error');
+    const parameterData = { name: 'New Parameter', value: 'new-value' };
+    mockPost.mockRejectedValueOnce(mockError);
+
+    await expect(service.addParameter(parameterData)).rejects.toThrow('Add Parameter Error');
+  });
+
+  // Test parameter validation scenarios
+  it('should handle null or undefined parameters in getParameterData', async () => {
+    const mockResponse = { data: 'mocked response for null params' };
+    mockGet.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.getParameterData(null, undefined, '');
+
+    expect(mockGet).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/parameter', {
+      page: null,
+      limit: undefined,
+      search: ''
+    });
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should handle empty data in editParameter', async () => {
+    const mockResponse = { data: 'mocked response for empty edit' };
+    mockPost.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.editParameter('uuid-123', {});
+
+    expect(mockPost).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/parameter/uuid-123', {});
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('should handle empty data in addParameter', async () => {
+    const mockResponse = { data: 'mocked response for empty add' };
+    mockPost.mockResolvedValueOnce(mockResponse);
+
+    const result = await service.addParameter({});
+
+    expect(mockPost).toHaveBeenCalledWith('https://portalapp.iconpln.co.id:5080/valiant-be/v1/parameter', {});
+    expect(result).toEqual(mockResponse);
+  });
+
+  // Test service inheritance
+  it('should extend BaseService', () => {
+    expect(service).toBeInstanceOf(BaseService);
   });
 });

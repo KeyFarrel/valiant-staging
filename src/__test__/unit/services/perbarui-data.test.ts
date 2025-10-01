@@ -1,8 +1,43 @@
 import axios from 'axios';
 import PerbaruiDataService from '@/services/perbarui-data';
+import BaseService from '@/services/base-service';
 
+// Mock axios
 jest.mock('axios');
 const mockedAxios = axios as jest.MockedFunction<typeof axios>;
+
+// Mock FingerprintJS to prevent browser API errors
+jest.mock('@fingerprintjs/fingerprintjs', () => ({
+  load: jest.fn().mockResolvedValue({
+    get: jest.fn().mockResolvedValue({
+      components: {
+        hardwareConcurrency: { value: 4 },
+        deviceMemory: { value: 8 },
+        platform: { value: 'MacIntel' },
+        architecture: { value: 64 },
+        screenResolution: { value: [1920, 1080] },
+        vendor: { value: 'Google Inc.' },
+        vendorFlavors: { value: ['chrome'] },
+        colorDepth: { value: 24 },
+        canvas: { value: 'mock-canvas' },
+        webGlBasics: { value: 'mock-webgl' },
+        timezone: { value: 'Asia/Jakarta' },
+        touchSupport: { value: { maxTouchPoints: 0 } },
+        cookiesEnabled: { value: true },
+        localStorage: { value: true },
+        sessionStorage: { value: true },
+        colorGamut: { value: 'srgb' },
+        hdr: { value: false }
+      }
+    })
+  }),
+  hashComponents: jest.fn().mockReturnValue('mock-fingerprint-id')
+}));
+
+// Mock encryption helper
+jest.mock('@/services/helper/encryption', () => ({
+  encryptAES: jest.fn((data) => `encrypted_${data}`)
+}));
 
 const mockUrl = import.meta.env.VITE_API_URL;
 
@@ -11,16 +46,7 @@ describe('PerbaruiDataService', () => {
 
   beforeEach(() => {
     service = new PerbaruiDataService();
-
-    // Mock localStorage and encryptStorage for token retrieval
-    jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
-      if (key === 'token') {
-        return 'mockToken';
-      }
-      return null;
-    });
-
-    (localStorage.getItem as jest.Mock).mockReturnValue('mockToken');
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
@@ -36,10 +62,13 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}mesin-realisasi/1`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
+      params: undefined,
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -55,11 +84,13 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}pembangkit/by-kode`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       params: { kode_sentral: 'kode_sentral_mock' },
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -75,10 +106,13 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}filter/combo-pengelola`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
+      params: undefined,
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -94,11 +128,13 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}filter/data-integrasi`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      params: { tahun: 2023, id_mesin: 1 },
+      params: { tahun: 2023, uuid_mesin: 1 },
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -114,11 +150,12 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/asumsi-parameter`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { tahun_realisasi: 2023, id_mesin: 1, tahun: 2022 },
+      data: { tahun_realisasi: 2023, uuid_mesin: 1, tahun: 2022 },
       timeout: 120000,
     });
 
@@ -134,11 +171,12 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/data-teknis`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { tahun: 2023, id_mesin: 1 },
+      data: { tahun: 2023, uuid_mesin: 1 },
       timeout: 120000,
     });
 
@@ -154,11 +192,12 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/data-teknis-periode`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { tahun_realisasi: 2023, id_mesin: 1 },
+      data: { tahun_realisasi: 2023, uuid_mesin: 1 },
       timeout: 120000,
     });
 
@@ -174,11 +213,12 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/data-finansial-detail`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { tahun: 2023, id_mesin: 1 },
+      data: { tahun: 2023, uuid_mesin: 1 },
       timeout: 120000,
     });
 
@@ -194,11 +234,13 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}filter/combo-type-periodic`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       params: { jenis_pembangkit: 'jenis_pembangkit_mock' },
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -215,9 +257,10 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/asumsi-create`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       data: formData,
       timeout: 120000,
@@ -236,9 +279,10 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/asumsi-wacc-update`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       data: formData,
       timeout: 120000,
@@ -256,11 +300,12 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/data-teknis-periode-simulasi`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { tahun_realisasi: 2023, id_mesin: 1 },
+      data: { tahun_realisasi: 2023, uuid_mesin: 1 },
       timeout: 120000,
     });
 
@@ -276,11 +321,12 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/data-teknis-periode-simulasi2`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { tahun_realisasi: 2023, id_mesin: 1 },
+      data: { tahun_realisasi: 2023, uuid_mesin: 1 },
       timeout: 120000,
     });
 
@@ -296,11 +342,12 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/data-finansial-detail-simulasi`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { tahun: 2023, id_mesin: 1 },
+      data: { tahun: 2023, uuid_mesin: 1 },
       timeout: 120000,
     });
 
@@ -316,11 +363,12 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/data-finansial-detail-simulasi2`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { tahun: 2023, id_mesin: 1 },
+      data: { tahun: 2023, uuid_mesin: 1 },
       timeout: 120000,
     });
 
@@ -336,11 +384,12 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/asumsi-parameter-simulasi`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { tahun_realisasi: 2023, id_mesin: 1 },
+      data: { tahun_realisasi: 2023, uuid_mesin: 1 },
       timeout: 120000,
     });
 
@@ -356,11 +405,12 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/data-teknis`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { tahun: 2023, id_mesin: 1 },
+      data: { tahun: 2023, uuid_mesin: 1 },
       timeout: 120000,
     });
 
@@ -376,11 +426,12 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/data-teknis-simulasi`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { tahun: 2023, id_mesin: 1 },
+      data: { tahun: 2023, uuid_mesin: 1 },
       timeout: 120000,
     });
 
@@ -396,11 +447,12 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/data-finansial`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { tahun: 2023, id_mesin: 1 },
+      data: { tahun: 2023, uuid_mesin: 1 },
       timeout: 120000,
     });
 
@@ -416,11 +468,12 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/data-finansial-simulasi`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { tahun: 2023, id_mesin: 1 },
+      data: { tahun: 2023, uuid_mesin: 1 },
       timeout: 120000,
     });
 
@@ -436,11 +489,12 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/simulasi-cod`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { id_mesin: 1, tahun: 2023, status: 1 },
+      data: { uuid_mesin: 1, tahun: 2023, status: 1 },
       timeout: 120000,
     });
 
@@ -456,11 +510,12 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/export-template-simulasi1`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { tahun_realisasi: 2023, id_mesin: 1 },
+      data: { tahun_realisasi: 2023, uuid_mesin: 1 },
       timeout: 120000,
     });
 
@@ -476,11 +531,12 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/export-template-simulasi2`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
-      data: { tahun_realisasi: 2023, id_mesin: 1 },
+      data: { tahun_realisasi: 2023, uuid_mesin: 1 },
       timeout: 120000,
     });
 
@@ -497,9 +553,10 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/parameter-finansial`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       data: formData,
       timeout: 120000,
@@ -518,9 +575,10 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/parameter-finansial-simulasi`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       data: formData,
       timeout: 120000,
@@ -539,9 +597,10 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/data-teknis-create`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       data: formData,
       timeout: 120000,
@@ -560,9 +619,10 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/data-teknis-create-simulasi`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       data: formData,
       timeout: 120000,
@@ -581,9 +641,10 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/data-finansial-create`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       data: formData,
       timeout: 120000,
@@ -602,9 +663,10 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'POST',
       url: `${mockUrl}kertas-kerja-detail/data-finansial-create-simulasi`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       data: formData,
       timeout: 120000,
@@ -622,11 +684,13 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}kertas-kerja-detail/type-periodic`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       params: { kode_jenis_pembangkit: 'kode_jenis_pembangkit_mock' },
+      responseType: undefined,
       timeout: 120000,
     });
 
@@ -642,11 +706,13 @@ describe('PerbaruiDataService', () => {
     expect(mockedAxios).toHaveBeenCalledWith({
       method: 'GET',
       url: `${mockUrl}filter/combo-bahan-bakar`,
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer mockToken',
+        'X-Fingerprint-ID': 'mock-fingerprint-id',
       },
       params: { jenis_pembangkit: 'jenis_pembangkit_mock' },
+      responseType: undefined,
       timeout: 120000,
     });
 

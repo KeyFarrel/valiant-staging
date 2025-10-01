@@ -38,16 +38,16 @@ describe("DataFinansialForm.vue", () => {
     const textFields = wrapper.findAllComponents(TextField);
     expect(textFields.length).toBe(2);
 
-    textFields.wrappers.forEach((textFieldWrapper) => {
+    textFields.forEach((textFieldWrapper) => {
       expect(textFieldWrapper.classes()).toContain("pl-9");
     });
   });
 
   it("renders Rp. labels with correct classes", () => {
-    const rpLabels = wrapper.findAll("label.text-primaryColor");
+    const rpLabels = wrapper.findAll("span.text-primaryColor");
     expect(rpLabels.length).toBe(2);
 
-    rpLabels.wrappers.forEach((rpLabelWrapper) => {
+    rpLabels.forEach((rpLabelWrapper) => {
       expect(rpLabelWrapper.classes()).toContain("absolute");
       expect(rpLabelWrapper.classes()).toContain("pl-3");
       expect(rpLabelWrapper.text()).toBe("Rp.");

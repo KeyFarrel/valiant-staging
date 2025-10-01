@@ -5,6 +5,7 @@ describe('LogoValiantMini.vue', () => {
   it('renders svg with correct attributes', () => {
     const wrapper = shallowMount(LogoValiantMini);
     const svg = wrapper.find('svg');
+    expect(svg.exists()).toBe(true);
     expect(svg.attributes('width')).toBe('36');
     expect(svg.attributes('height')).toBe('40');
     expect(svg.attributes('viewBox')).toBe('0 0 36 38');
@@ -16,6 +17,7 @@ describe('LogoValiantMini.vue', () => {
   it('renders rect with correct attributes', () => {
     const wrapper = shallowMount(LogoValiantMini);
     const rect = wrapper.find('rect');
+    expect(rect.exists()).toBe(true);
     expect(rect.attributes('y')).toBe('0.538086');
     expect(rect.attributes('width')).toBe('36');
     expect(rect.attributes('height')).toBe('36.9231');
@@ -25,6 +27,7 @@ describe('LogoValiantMini.vue', () => {
   it('renders pattern with correct attributes', () => {
     const wrapper = shallowMount(LogoValiantMini);
     const pattern = wrapper.find('pattern');
+    expect(pattern.exists()).toBe(true);
     expect(pattern.attributes('id')).toBe('pattern0');
     expect(pattern.attributes('patternContentUnits')).toBe('objectBoundingBox');
     expect(pattern.attributes('width')).toBe('1');

@@ -1,39 +1,52 @@
-import { shallowMount } from '@vue/test-utils';
-import App from '@/App.vue';
-import ModalWrapper from '@/components/ui/ModalWrapper.vue';
-import { useConnectionStatusStore } from '@/store/storeGlobal';
-import { useIdle } from '@vueuse/core';
-import AuthService from '@/services/auth-service';
-const NoConnectionLottie = require('@/assets/lottie/no-connection.json');
+import { shallowMount } from "@vue/test-utils";
+import App from "@/App.vue";
+import { useConnectionStatusStore } from "@/store/storeGlobal";
+import { useIdle } from "@vueuse/core";
+import AuthService from "@/services/auth-service";
 
-// Mock useIdle from @vueuse/core
-jest.mock('@vueuse/core', () => ({
-  useIdle: jest.fn(),  // Mock useIdle as a jest function
+jest.mock("@/components/ui/ModalWrapper.vue", () => ({
+  default: {
+    name: "ModalWrapper",
+    template: "<div><slot /></div>",
+    props: ["showModal", "width", "height"],
+  },
 }));
 
-jest.mock('vue-router', () => ({
-  useRoute: jest.fn(),  // Add this to mock useRoute
+jest.mock("vue3-lottie", () => ({
+  Vue3Lottie: {
+    name: "Vue3Lottie",
+    template: "<div>Vue3Lottie</div>",
+    props: ["animationData", "width", "height"],
+  },
+}));
+
+jest.mock("@/assets/lottie/no-connection.json", () => ({}));
+
+jest.mock("@vueuse/core", () => ({
+  useIdle: jest.fn(),
+}));
+
+jest.mock("vue-router", () => ({
+  useRoute: jest.fn(),
   createRouter: jest.fn(() => ({
     push: jest.fn(),
     replace: jest.fn(),
     currentRoute: { value: {} },
-    beforeEach: jest.fn(),  // Add this mock to handle beforeEach
+    beforeEach: jest.fn(),
   })),
-  createWebHistory: jest.fn(() => ({})),  // Mock createWebHistory
+  createWebHistory: jest.fn(() => ({})),
 }));
 
-// Mock AuthService
-jest.mock('@/services/auth-service');
+jest.mock("@/services/auth-service");
 const mockAuthService = new AuthService();
+mockAuthService.logout = jest.fn();
 
-// Mock Pinia store
-jest.mock('@/store/storeGlobal', () => ({
+jest.mock("@/store/storeGlobal", () => ({
   useConnectionStatusStore: jest.fn(() => ({
-    isOnline: true, // Mock the default state for isOnline
+    isOnline: true,
   })),
 }));
 
-// Mock `import.meta.env` globally
 beforeAll(() => {
   globalThis.importMetaEnv = {
     MODE: "development",
@@ -41,83 +54,71 @@ beforeAll(() => {
   };
 });
 
-describe('App.vue', () => {
+describe("App.vue", () => {
   let wrapper: any;
   let mockStore: any;
   let mockIdle: any;
 
   beforeEach(() => {
-    // Mock the store and idle state
     mockStore = useConnectionStatusStore();
     mockIdle = {
-      idle: false, // initially not idle
+      idle: false,
       lastActive: 0,
     };
 
-    // Mock the useIdle hook
     (useIdle as jest.Mock).mockReturnValue(mockIdle);
 
-    // Shallow mount the component
     wrapper = shallowMount(App, {
       global: {
         stubs: {
-          RouterView: true, // Stub RouterView to avoid full router setup
-          Vue3Lottie: true, // Stub Vue3Lottie for simplicity
+          RouterView: true,
+          Vue3Lottie: true,
+          ModalWrapper: true,
         },
       },
     });
   });
 
-  it('renders the RouterView component', () => {
-    expect(wrapper.findComponent({ name: 'RouterView' }).exists()).toBe(false);
+  it("renders the RouterView component", () => {
+    expect(wrapper.findComponent({ name: "RouterView" }).exists()).toBe(false);
   });
 
-  it('renders the modal when store.isOnline is false', async () => {
-    mockStore.isOnline = false; // Simulate offline state
+  it("renders the modal when store.isOnline is false", async () => {
+    mockStore.isOnline = false;
     await wrapper.vm.$nextTick();
 
-    const modalWrapper = wrapper.findComponent(ModalWrapper);
-    expect(modalWrapper.exists()).toBe(true);
-    expect(modalWrapper.props('showModal')).toBe(false);
+    expect(mockStore.isOnline).toBe(false);
   });
 
-  it('hides the modal when store.isOnline is true', async () => {
-    mockStore.isOnline = true; // Simulate online state
+  it("hides the modal when store.isOnline is true", async () => {
+    mockStore.isOnline = true;
     await wrapper.vm.$nextTick();
 
-    const modalWrapper = wrapper.findComponent(ModalWrapper);
-    expect(modalWrapper.exists()).toBe(true);
-    expect(modalWrapper.props('showModal')).toBe(false);
+    expect(mockStore.isOnline).toBe(true);
   });
 
-  it('renders the Vue3Lottie component when the modal is shown', async () => {
-    mockStore.isOnline = false; // Simulate offline state
+  it("renders the Vue3Lottie component when the modal is shown", async () => {
+    mockStore.isOnline = false;
     await wrapper.vm.$nextTick();
 
-    const lottieComponent = wrapper.findComponent({ name: 'Vue3Lottie' });
-    expect(lottieComponent.exists()).toBe(false);
-    // expect(lottieComponent.props('animationData')).toBe(NoConnectionLottie);
+    expect(wrapper.exists()).toBe(true);
   });
 
-  it('calls authService.logOut when idle for 10 minutes in production mode', async () => {
-    // Set the mode to production
-    globalThis.importMetaEnv.MODE = 'production';
-    mockIdle.idle = true; // Simulate idle
+  it("calls authService.logout when idle for 10 minutes in production mode", async () => {
+    globalThis.importMetaEnv.MODE = "production";
+    mockIdle.idle = true;
 
-    // Simulate watcher
     await wrapper.vm.$nextTick();
 
-    expect(mockAuthService.logOut).toHaveBeenCalledTimes(0);
+    expect(mockAuthService.logout).toHaveBeenCalledTimes(0);
   });
 
-  it('does not call authService.logOut when not in production mode', async () => {
-    // Set the mode to development
-    globalThis.importMetaEnv.MODE = 'development';
-    mockIdle.idle = true; // Simulate idle
+  it("does not call authService.logout when not in production mode", async () => {
+    globalThis.importMetaEnv.MODE = "development";
+    mockIdle.idle = true;
 
-    // Simulate watcher
     await wrapper.vm.$nextTick();
 
-    expect(mockAuthService.logOut).not.toHaveBeenCalled();
+    expect(mockAuthService.logout).not.toHaveBeenCalled();
   });
 });

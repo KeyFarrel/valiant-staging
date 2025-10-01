@@ -1,5 +1,4 @@
 import axios, { AxiosResponse } from "axios";
-import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import { encryptAES } from "./helper/encryption";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 
