@@ -50,12 +50,12 @@ function removeVersionSignatures(): Plugin {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd());
 
-  const exposedEnvs = Object.entries(env).reduce((acc: Record<string, string>, [key, val]) => {
+  const exposedEnvs = Object.entries(env).reduce((acc, [key, val]) => {
     if (key.startsWith("VITE_")) {
       acc[`import.meta.env.${key}`] = JSON.stringify(val);
     }
     return acc;
-  }, {} as Record<string, string>);
+  }, {});
 
   const isProd = mode === "production" || mode === "staging";
   console.log("🔍 isProd:", isProd, mode);
@@ -175,7 +175,7 @@ export default defineConfig(({ mode }) => {
       removeVersionSignatures(),
       {
         name: "vite-plugin-html",
-        transformIndexHtml(html: any) {
+        transformIndexHtml(html) {
           html = html.replace(/<meta[^>]*generator[^>]*>/gi, '');
           html = html.replace(/<meta[^>]*version[^>]*>/gi, '');
           html = html.replace(/<meta[^>]*http-equiv=["']X-Frame-Options["'][^>]*>/gi, '');
@@ -201,10 +201,10 @@ export default defineConfig(({ mode }) => {
         name: 'js-obfuscator',
         enforce: 'post' as const,
         apply: 'build' as const,
-        transformIndexHtml(html: any) {
+        transformIndexHtml(html) {
           return html.replace(/<!--[\s\S]*?-->/g, '');
         },
-        generateBundle(options: any, bundle: any) {
+        generateBundle(options, bundle) {
           Object.keys(bundle).forEach(fileName => {
             const asset = bundle[fileName];
             if (fileName.endsWith('.js') && 'source' in asset) {
