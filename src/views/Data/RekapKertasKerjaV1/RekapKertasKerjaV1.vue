@@ -180,7 +180,7 @@
                         <p class="text-sm text-gray-400">
                           <span class="font-semibold text-primaryTextColor">{{ mesinItem.nilai_asset_awal === '-' ?
                             mesinItem.nilai_asset_awal : globalFormat.formatRupiah(mesinItem.nilai_asset_awal / 1000000)
-                          }}</span> Rp (Juta)
+                            }}</span> Rp (Juta)
                         </p>
                       </div>
                       <div>
@@ -1491,7 +1491,7 @@ watch(pengelola, (val) => {
     indeterminate.value = false;
   } else {
     indeterminate.value = true
-  };
+  }
 });
 
 watch(dmn, (val) => {

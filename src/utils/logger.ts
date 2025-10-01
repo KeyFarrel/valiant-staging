@@ -14,7 +14,7 @@
  * logger.debug('This is debug info');
  */
 
-import { getEnvironment, isProduction, isStaging, isDevelopment } from './secureEnv';
+import { isProduction, isStaging, isDevelopment } from './secureEnv';
 
 // Type definitions for logger methods
 type LogMethod = (...args: any[]) => void;

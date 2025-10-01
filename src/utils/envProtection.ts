@@ -62,6 +62,7 @@ const protectAgainstConsoleExtraction = (): void => {
           }
         } catch (e) {
           // Ignore if we can't modify the env object
+          console.error('Failed to secure import.meta.env', e);
         }
       }
       
