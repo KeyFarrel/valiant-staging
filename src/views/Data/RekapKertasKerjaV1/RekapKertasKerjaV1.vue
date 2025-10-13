@@ -180,7 +180,7 @@
                         <p class="text-sm text-gray-400">
                           <span class="font-semibold text-primaryTextColor">{{ mesinItem.nilai_asset_awal === '-' ?
                             mesinItem.nilai_asset_awal : globalFormat.formatRupiah(mesinItem.nilai_asset_awal / 1000000)
-                          }}</span> Rp (Juta)
+                            }}</span> Rp (Juta)
                         </p>
                       </div>
                       <div>
@@ -496,10 +496,10 @@
                   <span class="font-semibold">Cari berkas</span>
                 </label>
                 <input ref="fileInputEvidence" id="fileInputEvidence" type="file" class="hidden"
-                  @change="handleFileChangeEvidence" accept=".xlsx, .zip" />
+                  @change="handleFileChangeEvidence" accept=".xlsx" />
               </div>
               <div class="flex flex-row items-center justify-between">
-                <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx, .zip</p>
+                <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx</p>
                 <p class="text-xs text-textDisabledColor">Ukuran maksimal dokumen : 5 MB</p>
               </div>
             </div>
@@ -601,10 +601,10 @@
                   <span class="font-semibold">Cari berkas</span>
                 </label>
                 <input ref="fileInputEvidenceFS" id="fileInputEvidenceFS" type="file" class="hidden"
-                  @change="handleFileChangeEvidence" accept=".xlsx, .zip" />
+                  @change="handleFileChangeEvidence" accept=".xlsx" />
               </div>
               <div class="flex flex-row items-center justify-between">
-                <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx, .zip</p>
+                <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx</p>
                 <p class="text-xs text-textDisabledColor">Ukuran maksimal dokumen : 5 MB</p>
               </div>
             </div>
@@ -1491,7 +1491,7 @@ watch(pengelola, (val) => {
     indeterminate.value = false;
   } else {
     indeterminate.value = true
-  };
+  }
 });
 
 watch(dmn, (val) => {
