@@ -21,7 +21,7 @@ variables:
       - .npm/
       - node_modules/
   before_script:
-    - npm install --cache .npm --prefer-offline
+    - npm ci --cache .npm --prefer-offline || npm install --cache .npm --prefer-offline
 
 prepare_env_file_stg:
   stage: create-env
@@ -67,6 +67,8 @@ prepare_env_file_prod:
 build-app:
   extends: .npm-cache
   stage: build-app
+  variables:
+    NODE_OPTIONS: '--max-old-space-size=4096'
   script:
     - npm run build
   rules:
