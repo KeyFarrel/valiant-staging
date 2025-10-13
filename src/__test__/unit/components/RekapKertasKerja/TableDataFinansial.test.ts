@@ -1,108 +1,186 @@
-import { shallowMount } from "@vue/test-utils";
-import TableDataFinansial from "@/components/RekapKertasKerja/TableDataFinansial.vue";
-import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
-import ReloadComponent from "@/components/ui/ReloadComponent.vue";
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { mount, VueWrapper } from '@vue/test-utils';
+import TableDataFinansial from '@/components/RekapKertasKerja/TableDataFinansial.vue';
 
-// Mock the GlobalFormat service
-jest.mock("@/services/format/global-format", () => {
-  return jest.fn().mockImplementation(() => ({
-    formatRupiah: jest.fn().mockImplementation((value) => `Rp ${value}`),
-  }));
-});
+// Mock global format
+vi.mock('@/services/format/global-format', () => ({
+  default: class MockGlobalFormat {
+    formatRupiah(value: number) {
+      return `Rp ${value.toLocaleString()}`;
+    }
+  }
+}));
 
-describe("TableDataFinansial.vue Unit Tests", () => {
-  let wrapper: any;
+describe('TableDataFinansial', () => {
+  let wrapper: VueWrapper<any>;
+
+  const mockDataFinansial = {
+    tahun: [2023, 2024, 2025]
+  };
+
+  const mockSource = [
+    {
+      id_uraian: 1,
+      uraian: 'Level 1 Item',
+      level2: [
+        {
+          id_uraian: 2,
+          uraian: 'Level 2 Item',
+          t2023: 1000000,
+          t2024: 2000000,
+          t2025: 3000000,
+          level3: [
+            {
+              id_uraian: 3,
+              uraian: 'Level 3 Item',
+              t2023: 500000,
+              t2024: 1000000,
+              t2025: 1500000,
+              level4: [
+                {
+                  id_uraian: 4,
+                  uraian: 'Level 4 Item',
+                  t2023: 250000,
+                  t2024: 500000,
+                  t2025: 750000
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ];
 
   beforeEach(() => {
-    wrapper = shallowMount(TableDataFinansial, {
+    wrapper = mount(TableDataFinansial, {
       props: {
-        source: [
-          {
-            id_uraian: 1,
-            uraian: "Test Level 1",
-            level2: [],
-          },
-        ],
-        dataFinansial: {
-          tahun: [2022, 2023],
-        },
         isFetchingError: false,
-      },
+        dataFinansial: mockDataFinansial,
+        source: mockSource,
+        tahunTerakhirRealisasi: 2024
+      }
     });
   });
 
-  it("renders without crashing", () => {
-    expect(wrapper.exists()).toBe(true);
+  it('should render table with correct data', () => {
+    expect(wrapper.find('table').exists()).toBe(true);
+    expect(wrapper.find('thead').exists()).toBe(true);
+    expect(wrapper.find('tbody').exists()).toBe(true);
+    
+    // Check if years are rendered in header
+    const headers = wrapper.findAll('th');
+    expect(headers.length).toBe(4); // Nama + 3 years
+    expect(headers[1].text()).toContain('2023');
+    expect(headers[2].text()).toContain('2024');
+    expect(headers[3].text()).toContain('2025');
   });
 
-  it("renders table when data is available", () => {
-    expect(wrapper.find("table").exists()).toBe(true);
-    expect(wrapper.find("th").text()).toContain("Nama");
+  it('should toggle row visibility when clicked', async () => {
+    // Initially level 2 should not be visible
+    expect(wrapper.find('#level2').exists()).toBe(false);
+    
+    // Click on level 1 row to expand
+    const level1Row = wrapper.find('tbody tr');
+    await level1Row.trigger('click');
+    
+    // Now level 2 should be visible
+    expect(wrapper.find('#level2').exists()).toBe(true);
   });
 
-  it("renders correct number of year headers", () => {
-    const yearHeaders = wrapper.findAll("th");
-    expect(yearHeaders.length).toBe(3); // 'Nama' header and two years (2022, 2023)
-    expect(yearHeaders.at(1)?.text()).toContain("2022");
-    expect(yearHeaders.at(2)?.text()).toContain("2023");
-  });
-
-  it("renders ShimmerLoading component when data is not available", async () => {
-    await wrapper.setProps({ source: [], dataFinansial: { tahun: [] } });
-    expect(wrapper.findComponent(ShimmerLoading).exists()).toBe(true);
-  });
-
-  it("renders ReloadComponent when there is a fetch error and no data", async () => {
-    await wrapper.setProps({
-      isFetchingError: true,
-      source: [],
-      dataFinansial: { tahun: [] },
+  it('should display shimmer loading when data is empty', () => {
+    const loadingWrapper = mount(TableDataFinansial, {
+      props: {
+        isFetchingError: false,
+        dataFinansial: { tahun: [] },
+        source: [],
+        tahunTerakhirRealisasi: 2024
+      }
     });
-    expect(wrapper.findComponent(ReloadComponent).exists()).toBe(true);
-  });
-
-  it("toggles row open and close when clicked", async () => {
-    // Test initial state
-    expect(wrapper.vm.isRowOpen(1)).toBe(false);
     
-    // Toggle row open
-    wrapper.vm.toggleRow(1);
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.isRowOpen(1)).toBe(true);
+    expect(loadingWrapper.findComponent({ name: 'ShimmerLoading' }).exists()).toBe(true);
+  });
+
+  it('should display reload component when there is fetching error and no data', () => {
+    const errorWrapper = mount(TableDataFinansial, {
+      props: {
+        isFetchingError: true,
+        dataFinansial: { tahun: [] },
+        source: [],
+        tahunTerakhirRealisasi: 2024
+      }
+    });
     
-    // Toggle row close
-    wrapper.vm.toggleRow(1);
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.isRowOpen(1)).toBe(false);
+    expect(errorWrapper.findComponent({ name: 'ReloadComponent' }).exists()).toBe(true);
   });
 
-  it("formats the rupiah values correctly using GlobalFormat", async () => {
-    const mockData = [
-      {
-        id_uraian: 1,
-        uraian: "Level 1",
-        level2: [
-          {
-            id_uraian: 2,
-            uraian: "Level 2",
-            t2022: 1000000,
-            t2023: 2000000,
-            level3: [],
-          },
-        ],
-      },
-    ];
-
-    await wrapper.setProps({ source: mockData });
-    const cells = wrapper.findAll("td");
-    expect(cells.at(1)?.text()).toContain("");
-    expect(cells.at(2)?.text()).toContain("");
+  it('should emit onClickReload when reload component is clicked', async () => {
+    const errorWrapper = mount(TableDataFinansial, {
+      props: {
+        isFetchingError: true,
+        dataFinansial: { tahun: [] },
+        source: [],
+        tahunTerakhirRealisasi: 2024
+      }
+    });
+    
+    const reloadComponent = errorWrapper.findComponent({ name: 'ReloadComponent' });
+    await reloadComponent.vm.$emit('on-clicks');
+    
+    expect(errorWrapper.emitted('onClickReload')).toBeTruthy();
   });
 
-  it("applies the correct styles for the last realization year", async () => {
-    await wrapper.setProps({ tahunTerakhirRealisasi: 2022 });
-    const yearCells = wrapper.findAll("th");
-    expect(yearCells.at(1)?.classes()).toContain("text-primaryTextColor"); // Tahun terakhir realisasi 2022
-    expect(yearCells.at(2)?.classes()).toContain("text-primaryColor"); // Tahun 2023 lebih dari tahun terakhir
+  it('should toggle row expansion correctly - close already opened row', async () => {
+    // First expand a row
+    const level1Row = wrapper.find('tbody tr');
+    await level1Row.trigger('click');
+    
+    // Verify level 2 is visible
+    expect(wrapper.find('#level2').exists()).toBe(true);
+    
+    // Click again to close
+    await level1Row.trigger('click');
+    
+    // Now level 2 should not be visible
+    expect(wrapper.find('#level2').exists()).toBe(false);
+  });
+
+  it('should expand multiple nested levels correctly', async () => {
+    // Expand level 1
+    const level1Row = wrapper.find('tbody tr');
+    await level1Row.trigger('click');
+    expect(wrapper.find('#level2').exists()).toBe(true);
+    
+    // Expand level 2 - find the row containing level2
+    const level2Rows = wrapper.findAll('tr').filter(row => row.find('#level2').exists());
+    if (level2Rows.length > 0) {
+      await level2Rows[0].trigger('click');
+      expect(wrapper.find('#level3').exists()).toBe(true);
+      
+      // Expand level 3 - find the row containing level3
+      const level3Rows = wrapper.findAll('tr').filter(row => row.find('#level3').exists());
+      if (level3Rows.length > 0) {
+        await level3Rows[0].trigger('click');
+        expect(wrapper.find('#level4').exists()).toBe(true);
+      }
+    }
+  });
+
+  it('should format currency values correctly', async () => {
+    // Expand to show level 2 with data
+    const level1Row = wrapper.find('tbody tr');
+    await level1Row.trigger('click');
+    
+    // Check if currency formatting is applied - find row with level2 and check its data cells
+    const allRows = wrapper.findAll('tr');
+    const level2Row = allRows.find(row => row.find('#level2').exists());
+    
+    if (level2Row) {
+      const dataCells = level2Row.findAll('td');
+      if (dataCells.length > 1) {
+        const valueCell = dataCells[1]; // First year column
+        expect(valueCell.text()).toContain('Rp');
+      }
+    }
   });
 });

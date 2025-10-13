@@ -1,26 +1,30 @@
-import { setActivePinia, createPinia } from 'pinia';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { ref } from 'vue';
+
+// Import real pinia for proper testing
+vi.unmock('pinia');
+import { createPinia, setActivePinia } from 'pinia';
 import { useNavbarLabelStore } from '@/store/storeNavbar';
 
-describe('storeNavbarLabel', () => {
+describe('useNavbarLabelStore', () => {
   beforeEach(() => {
-    // Set up Pinia for testing
     setActivePinia(createPinia());
   });
 
-  it('should initialize label as an empty string', () => {
-    const navbarStore = useNavbarLabelStore();
-
-    // Check if the initial label is an empty string
-    expect(navbarStore.label).toBe('');
+  it('should initialize with empty label', () => {
+    const store = useNavbarLabelStore();
+    expect(store.label).toBe('');
   });
 
-  it('should allow changing the label', () => {
-    const navbarStore = useNavbarLabelStore();
+  it('should allow setting a label value', () => {
+    const store = useNavbarLabelStore();
+    store.label = 'Test Label';
+    expect(store.label).toBe('Test Label');
+  });
 
-    // Change the label value
-    navbarStore.label = 'New Label';
-
-    // Check if the value has been updated correctly
-    expect(navbarStore.label).toBe('New Label');
+  it('should allow setting undefined label', () => {
+    const store = useNavbarLabelStore();
+    store.label = undefined;
+    expect(store.label).toBeUndefined();
   });
 });

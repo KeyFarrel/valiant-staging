@@ -1,39 +1,106 @@
-// File: Button.spec.ts
-import { mount } from '@vue/test-utils';
-import Button from '@/components/ui/Button.vue';
+import { describe, it, expect, vi } from 'vitest'
+import { mount } from '@vue/test-utils'
+import Button from '@/components/ui/Button.vue'
 
 describe('Button.vue', () => {
-  it('renders button with correct text and classes', () => {
-    // Arrange: Props yang akan diteruskan ke komponen
-    const props = {
-      text: 'Click Me',
-      iconPosition: 'Left',
-      bgColor: 'bg-blue-500',
-      hoverBgColor: 'hover:bg-blue-700',
-      borderColor: 'border-blue-500',
-      hoverBorderColor: 'hover:border-blue-700',
-      textColor: 'text-white',
-      hoverTextColor: 'hover:text-gray-200',
-    };
+  const defaultProps = {
+    text: 'Test Button',
+    iconPosition: 'Left',
+    bgColor: 'bg-blue-500',
+    hoverBgColor: 'bg-blue-600',
+    borderColor: 'border-blue-500',
+    hoverBorderColor: 'border-blue-600',
+    textColor: 'text-white',
+    hoverTextColor: 'text-white'
+  }
 
-    // Act: Render komponen menggunakan mount dan beri props
+  it('renders button with correct text', () => {
     const wrapper = mount(Button, {
-      props,
-    });
+      props: defaultProps
+    })
 
-    // Assert: Pastikan button memiliki teks yang benar
-    expect(wrapper.find('span').text()).toBe(props.text);
+    expect(wrapper.text()).toContain('Test Button')
+    expect(wrapper.find('span').text()).toBe('Test Button')
+  })
 
-    // Assert: Pastikan class diterapkan dengan benar pada elemen <button>
-    const button = wrapper.find('button');
-    expect(button.classes()).toContain('bg-blue-500');
-    expect(button.classes()).toContain('border-blue-500');
-    expect(button.classes()).toContain('duration-300');
+  it('emits onClickSubmit event when clicked', async () => {
+    const wrapper = mount(Button, {
+      props: defaultProps
+    })
 
-    // Assert: Pastikan class diterapkan dengan benar pada elemen <span>
-    const span = wrapper.find('span');
-    expect(span.classes()).toContain('text-white');
-  });
+    await wrapper.find('button').trigger('click')
+    
+    expect(wrapper.emitted('onClickSubmit')).toBeTruthy()
+    expect(wrapper.emitted('onClickSubmit')).toHaveLength(1)
+  })
 
-  // Test lainnya tetap sama
-});
+  it('applies correct CSS classes from props', () => {
+    const wrapper = mount(Button, {
+      props: defaultProps
+    })
+
+    const button = wrapper.find('button')
+    expect(button.classes()).toContain('flex')
+    expect(button.classes()).toContain('items-center')
+    expect(button.classes()).toContain('border')
+  })
+
+  it('emits onKeyDown event when keydown is triggered', async () => {
+    const wrapper = mount(Button, {
+      props: defaultProps
+    })
+
+    await wrapper.find('button').trigger('keydown')
+    
+    expect(wrapper.emitted('onKeyDown')).toBeTruthy()
+    expect(wrapper.emitted('onKeyDown')).toHaveLength(1)
+  })
+
+  it('renders slot on the right when iconPosition is Right', () => {
+    const wrapper = mount(Button, {
+      props: {
+        ...defaultProps,
+        iconPosition: 'Right'
+      },
+      slots: {
+        default: '<i class="test-icon">Icon</i>'
+      }
+    })
+
+    const button = wrapper.find('button')
+    const span = wrapper.find('span')
+    const icon = wrapper.find('.test-icon')
+    
+    expect(icon.exists()).toBe(true)
+    // Check if icon comes after the text span
+    const buttonChildren = button.element.children
+    const spanIndex = Array.from(buttonChildren).findIndex(child => child.tagName === 'SPAN')
+    const iconIndex = Array.from(buttonChildren).findIndex(child => child.classList.contains('test-icon'))
+    
+    expect(iconIndex).toBeGreaterThan(spanIndex)
+  })
+
+  it('renders slot on the left when iconPosition is Left', () => {
+    const wrapper = mount(Button, {
+      props: {
+        ...defaultProps,
+        iconPosition: 'Left'
+      },
+      slots: {
+        default: '<i class="test-icon">Icon</i>'
+      }
+    })
+
+    const button = wrapper.find('button')
+    const span = wrapper.find('span')
+    const icon = wrapper.find('.test-icon')
+    
+    expect(icon.exists()).toBe(true)
+    // Check if icon comes before the text span
+    const buttonChildren = button.element.children
+    const spanIndex = Array.from(buttonChildren).findIndex(child => child.tagName === 'SPAN')
+    const iconIndex = Array.from(buttonChildren).findIndex(child => child.classList.contains('test-icon'))
+    
+    expect(iconIndex).toBeLessThan(spanIndex)
+  })
+})

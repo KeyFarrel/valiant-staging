@@ -1,59 +1,197 @@
-import { mount } from '@vue/test-utils';
-import FeasibilityStudy from '@/views/Verifikasi/Sentral/TabPage/FS/FeasibilityStudy.vue';
-import GlobalFormat from '@/services/format/global-format'; // Pastikan format ini ada
+import { describe, it, expect, vi } from 'vitest'
+import { mount } from '@vue/test-utils'
+import FeasibilityStudy from '@/views/Verifikasi/Sentral/TabPage/FS/FeasibilityStudy.vue'
+import TableComponent from '@/components/ui/Table.vue'
 
-jest.mock('@/services/format/global-format'); // Mock GlobalFormat service
+// Mock the TableComponent
+vi.mock('@/components/ui/Table.vue', () => ({
+  default: {
+    name: 'TableComponent',
+    template: `
+      <div class="table-component">
+        <table>
+          <thead>
+            <slot name="table-header" />
+          </thead>
+          <tbody>
+            <slot name="table-body" />
+          </tbody>
+        </table>
+      </div>
+    `,
+  },
+}))
 
-describe('FeasibilityStudy.vue Unit Tests', () => {
-  let wrapper: any;
+// Mock RouterLink
+vi.mock('vue-router', () => ({
+  RouterLink: {
+    name: 'RouterLink',
+    props: ['to'],
+    template: '<a><slot /></a>',
+  },
+}))
 
-  beforeEach(() => {
-    wrapper = mount(FeasibilityStudy, {
+// Mock GlobalFormat
+vi.mock('@/services/format/global-format', () => ({
+  default: class MockGlobalFormat {
+    formatRupiah(value: number) {
+      return `Rp ${value?.toLocaleString('id-ID') || '0'}`
+    }
+  }
+}))
+
+describe('FeasibilityStudy', () => {
+  const mockSource = {
+    tahun: '2024',
+    irr_on_equity: 15.5,
+    npv_on_equity: 1000000,
+    status: 'Draft',
+    uuid_sentral: 'test-uuid-123'
+  }
+
+  it('should render component successfully', () => {
+    const wrapper = mount(FeasibilityStudy, {
       props: {
-        source: {
-          tahun: '2023',
-          irr_on_equity: '15.5',
-          npv_on_equity: '1000000',
-          status: 'Disetujui',
-          id_sentral: '12345',
-        },
+        source: mockSource
+      }
+    })
+
+    expect(wrapper.exists()).toBe(true)
+    expect(wrapper.findComponent(TableComponent).exists()).toBe(true)
+  })
+
+  it('should display data when source is provided', () => {
+    const wrapper = mount(FeasibilityStudy, {
+      props: {
+        source: mockSource
+      }
+    })
+
+    const tableBody = wrapper.find('tbody')
+    expect(tableBody.text()).toContain('2024')
+    expect(tableBody.text()).toContain('15.5')
+    expect(tableBody.text()).toContain('Draft')
+  })
+
+  it('should show "Data Tidak Tersedia" when source is null', () => {
+    const wrapper = mount(FeasibilityStudy, {
+      props: {
+        source: null
+      }
+    })
+
+    const tableBody = wrapper.find('tbody')
+    expect(tableBody.text()).toContain('Data Tidak Tersedia')
+    expect(tableBody.text()).toContain('Silahkan lakukan pengisian atau hubungi unit terkait')
+  })
+
+  describe('Status rendering', () => {
+    it('should display "Ditolak oleh Pembina" for status "Ditolak T1"', () => {
+      const wrapper = mount(FeasibilityStudy, {
+        props: {
+          source: { ...mockSource, status: 'Ditolak T1' }
+        }
+      })
+
+      expect(wrapper.text()).toContain('Ditolak oleh Pembina')
+    })
+
+    it('should display "Ditolak oleh Pengelola" for status "Ditolak T2"', () => {
+      const wrapper = mount(FeasibilityStudy, {
+        props: {
+          source: { ...mockSource, status: 'Ditolak T2' }
+        }
+      })
+
+      expect(wrapper.text()).toContain('Ditolak oleh Pengelola')
+    })
+
+    it('should display "Disetujui" for status "Disetujui"', () => {
+      const wrapper = mount(FeasibilityStudy, {
+        props: {
+          source: { ...mockSource, status: 'Disetujui' }
+        }
+      })
+
+      expect(wrapper.text()).toContain('Disetujui')
+    })
+
+    it('should display "Menunggu Persetujuan Pembina" for status "Menunggu Persetujuan T1"', () => {
+      const wrapper = mount(FeasibilityStudy, {
+        props: {
+          source: { ...mockSource, status: 'Menunggu Persetujuan T1' }
+        }
+      })
+
+      expect(wrapper.text()).toContain('Menunggu Persetujuan Pembina')
+    })
+
+    it('should display "Menunggu Persetujuan Pengelola" for status "Menunggu Persetujuan T2"', () => {
+      const wrapper = mount(FeasibilityStudy, {
+        props: {
+          source: { ...mockSource, status: 'Menunggu Persetujuan T2' }
+        }
+      })
+
+      expect(wrapper.text()).toContain('Menunggu Persetujuan Pengelola')
+    })
+  })
+
+  it('should format currency using GlobalFormat', () => {
+    const wrapper = mount(FeasibilityStudy, {
+      props: {
+        source: { ...mockSource, npv_on_equity: 2500000 }
+      }
+    })
+
+    expect(wrapper.text()).toContain('Rp 2.500.000')
+  })
+
+  it('should render RouterLink with correct props', () => {
+    const wrapper = mount(FeasibilityStudy, {
+      props: {
+        source: mockSource
       },
-    });
-  });
+      global: {
+        components: {
+          RouterLink: {
+            name: 'RouterLink',
+            props: ['to'],
+            template: '<a><slot /></a>',
+          }
+        }
+      }
+    })
 
-  it('renders the table headers correctly', () => {
-    const headers = wrapper.find('th');
-    expect(headers.length).toBeUndefined(); // Make sure headers exist
-  });
+    const routerLink = wrapper.findComponent({ name: 'RouterLink' })
+    expect(routerLink.exists()).toBe(true)
+    expect(routerLink.props('to')).toEqual({
+      name: 'persetujuan-fs',
+      query: { uuid_sentral: 'test-uuid-123' }
+    })
+  })
 
-  it('displays "Data Tidak Tersedia" when source is null', async () => {
-    await wrapper.setProps({ source: null });
-    const noDataRow = wrapper.find('tr');
-    expect(noDataRow.text()).toContain('NoPeriodeIRR on Equity (%)NPV on Equity (Rp Juta)StatusAksi');
-  });
+  it('should display "-" when tahun is empty or null', () => {
+    const wrapper = mount(FeasibilityStudy, {
+      props: {
+        source: { ...mockSource, tahun: null }
+      }
+    })
 
-  it('displays the correct values for each data row', () => {
-    const dataRows = wrapper.find('td');
-    expect(dataRows.length).toBeUndefined(); // Ensure that rows exist
-  });
+    const tableBody = wrapper.find('tbody')
+    expect(tableBody.text()).toContain('-')
+  })
 
-  // it('displays the correct status based on the source status', async () => {
-  //   // Check for "Disetujui"
-  //   expect(wrapper.find('div.text-[#397E5D]').text()).toContain('Disetujui');
+  it('should handle pagination elements', () => {
+    const wrapper = mount(FeasibilityStudy, {
+      props: {
+        source: mockSource
+      }
+    })
 
-  //   // Check for "Ditolak T1"
-  //   await wrapper.setProps({ source: { ...wrapper.props().source, status: 'Ditolak T1' } });
-  //   expect(wrapper.find('div.text-[#C53830]').text()).toContain('Ditolak oleh Pembina');
-
-  //   // Check for "Menunggu Persetujuan T2"
-  //   await wrapper.setProps({ source: { ...wrapper.props().source, status: 'Menunggu Persetujuan T2' } });
-  //   expect(wrapper.find('div.text-[#FF8000]').text()).toContain('Menunggu Persetujuan Pengelola');
-  // });
-
-  it('formats NPV on Equity correctly using GlobalFormat', () => {
-    const npvCell = wrapper.findAll('td').at(3);
-    expect(npvCell.exists()).toBe(true);
-    expect(npvCell.text()).toBe('');
-    expect(GlobalFormat).toHaveBeenCalled(); // Ensure GlobalFormat was used
-  });
-});
+    expect(wrapper.text()).toContain('Menampilkan')
+    expect(wrapper.text()).toContain('dari 5 data')
+    expect(wrapper.find('select').exists()).toBe(true)
+    expect(wrapper.findAll('button').length).toBeGreaterThan(0)
+  })
+})

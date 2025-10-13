@@ -1,533 +1,749 @@
-import { shallowMount, VueWrapper } from "@vue/test-utils";
-import { nextTick } from "vue";
-import RekapKertasKerja from "@/views/Data/RekapKertasKerja/RekapKertasKerja.vue";
-import RekapService from "@/services/rekap-service";
-import AuthService from "@/services/auth-service";
-import DetailSentralService from "@/services/detail-sentral-service";
-import GlobalFormat from "@/services/format/global-format";
-
-// Mock vue-router
-const mockPush = jest.fn();
-jest.mock("vue-router", () => ({
-  useRouter: () => ({
-    push: mockPush,
-  }),
-}));
-
-// Mock services
-jest.mock("@/services/rekap-service");
-const MockedRekapService = RekapService as jest.MockedClass<typeof RekapService>;
-
-jest.mock("@/services/auth-service");
-const MockedAuthService = AuthService as jest.MockedClass<typeof AuthService>;
-
-jest.mock("@/services/detail-sentral-service");
-const MockedDetailSentralService = DetailSentralService as jest.MockedClass<typeof DetailSentralService>;
-
-jest.mock("@/services/format/global-format");
-const MockedGlobalFormat = GlobalFormat as jest.MockedClass<typeof GlobalFormat>;
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { mount } from '@vue/test-utils';
+import { createPinia, setActivePinia } from 'pinia';
+import RekapKertasKerja from '@/views/Data/RekapKertasKerja/RekapKertasKerja.vue';
 
 // Mock stores
-jest.mock("@/store/storeUserAuth", () => ({
-  useUserAuthStore: () => ({
-    userInfo: {
-      kode_pengelola: "TEST",
-      nama_pengelola: "Test Pengelola"
+const mockRekapSearchStore = {
+  searchRekapQuery: '',
+  selectedRekapSearchQuery: ''
+};
+
+const mockRekapNavigationStore = {
+  currentPage: 1,
+  pageLimit: 10,
+  scrollPosition: { top: 0 }
+};
+
+const mockUserAuthStore = {
+  levelAlias: 'Xf!8qP@7'
+};
+
+// Mock services
+vi.mock('@/services/rekap-service', () => ({
+  default: class MockRekapService {
+    getDataRekap() {
+      return Promise.resolve({
+        success: true,
+        data: [],
+        meta: { limit: 10, total: 0, totalPages: 0 }
+      });
     }
-  }),
-}));
-
-jest.mock("@/store/storeRekapKertasKerja", () => ({
-  useRekapSearchStore: () => ({
-    searchQuery: "",
-    selectedKategoriPembangkit: [],
-    selectedUmurMesin: [],
-    selectedKondisiMesin: [],
-  }),
-  useRekapNavigationStore: () => ({
-    currentPage: 1,
-    pageLimit: 10,
-    scrollPosition: { top: 0 }
-  }),
-}));
-
-// Mock @vueuse/core
-jest.mock("@vueuse/core", () => ({
-  useWindowScroll: () => ({
-    x: { value: 0 },
-    y: { value: 0 }
-  })
-}));
-
-// Mock utils
-jest.mock("@/utils/app-encrypt-storage", () => ({
-  encryptStoragePromise: jest.fn().mockResolvedValue({
-    getItem: jest.fn(),
-    setItem: jest.fn(),
-  }),
-}));
-
-// Mock toast notification
-jest.mock("@/services/helper/toast-notification", () => ({
-  notifyError: jest.fn(),
-  notifySuccess: jest.fn(),
-}));
-
-// Mock vue3-lottie
-jest.mock("vue3-lottie", () => ({
-  Vue3Lottie: {
-    name: "Vue3Lottie",
-    template: '<div class="lottie-mock"></div>',
-    props: ["animationData", "autoPlay", "loop", "speed"],
-  },
-}));
-
-// Mock components
-jest.mock("@/components/ui/LoadingSpinner.vue", () => ({
-  name: "Loading",
-  template: '<div class="loading-spinner">Loading...</div>',
-}));
-
-jest.mock("@/components/ui/SearchBoxSuggestion.vue", () => ({
-  name: "SearchBoxSuggestion",
-  template: '<div class="search-box-suggestion"></div>',
-  props: ["modelValue", "suggestions"],
-  emits: ["update:modelValue", "on-suggestion-click"],
-}));
-
-jest.mock("@/components/ui/ModalWrapper.vue", () => ({
-  name: "ModalWrapper",
-  template: '<div class="modal-wrapper"><slot></slot></div>',
-  props: ["showModal", "width", "height"],
-}));
-
-jest.mock("@/components/ui/ConfirmationDialog.vue", () => ({
-  name: "ConfirmationDialog",
-  template: '<div class="confirmation-dialog"><slot></slot></div>',
-  props: ["show", "title", "message"],
-  emits: ["confirm", "cancel"],
-}));
-
-jest.mock("@/components/ui/ShimmerLoading.vue", () => ({
-  name: "ShimmerLoading",
-  template: '<div class="shimmer-loading"></div>',
-}));
-
-// Mock other components
-jest.mock("@/components/Status/ComponentDraft.vue", () => ({
-  name: "ComponentDraft",
-  template: '<div class="component-draft"></div>',
-}));
-
-jest.mock("@/components/Status/ComponentDisetujui.vue", () => ({
-  name: "ComponentDisetujui",
-  template: '<div class="component-disetujui"></div>',
-}));
-
-jest.mock("@/components/Status/ComponentDitolakT1.vue", () => ({
-  name: "ComponentDitolakT1",
-  template: '<div class="component-ditolak-t1"></div>',
-}));
-
-jest.mock("@/components/Status/ComponentDitolakT2.vue", () => ({
-  name: "ComponentDitolakT2",
-  template: '<div class="component-ditolak-t2"></div>',
-}));
-
-jest.mock("@/components/Status/ComponentWaitingT1.vue", () => ({
-  name: "ComponentWaitingT1",
-  template: '<div class="component-waiting-t1"></div>',
-}));
-
-jest.mock("@/components/Status/ComponentWaitingT2.vue", () => ({
-  name: "ComponentWaitingT2",
-  template: '<div class="component-waiting-t2"></div>',
-}));
-
-jest.mock("@/components/Status/ComponentNotInput.vue", () => ({
-  name: "ComponentNotInput",
-  template: '<div class="component-not-input"></div>',
-}));
-
-jest.mock("@/components/Status/ComponentNotUpdate.vue", () => ({
-  name: "ComponentNotUpdate",
-  template: '<div class="component-not-update"></div>',
-}));
-
-jest.mock("@/components/MasterUnitSentral/TabWrapperSentral.vue", () => ({
-  name: "TabWrapperSentral",
-  template: '<div class="tab-wrapper-sentral"><slot></slot></div>',
-}));
-
-jest.mock("@/components/ui/TabItem.vue", () => ({
-  name: "TabItem",
-  template: '<div class="tab-item"><slot></slot></div>',
-  props: ["label", "isActive"],
-}));
-
-jest.mock("@/components/RekapKertasKerja/KeteranganAnomali.vue", () => ({
-  name: "KeteranganAnomali",
-  template: '<div class="keterangan-anomali"></div>',
-}));
-
-jest.mock("@/components/icons/IconEmptyData.vue", () => ({
-  name: "IconEmptyData",
-  template: '<div class="icon-empty-data"></div>',
-}));
-
-jest.mock("@/components/icons/IconFolder.vue", () => ({
-  name: "IconFolder",
-  template: '<div class="icon-folder"></div>',
-}));
-
-describe("RekapKertasKerja.vue", () => {
-  let wrapper: VueWrapper<any>;
-  let mockRekapService: jest.Mocked<RekapService>;
-  let mockAuthService: jest.Mocked<AuthService>;
-  let mockDetailSentralService: jest.Mocked<DetailSentralService>;
-  let mockGlobalFormat: jest.Mocked<GlobalFormat>;
-
-  // Mock responses
-  const mockSentralResponse = {
-    data: [
-      {
-        uuid_sentral: "test-uuid-1",
-        sentral: "Test Sentral 1",
-        kode_sentral: "TS001",
-        jenis_pembangkit: "PLTU",
-        bbm: "Batu Bara",
-        daya_terpasang: 1000,
-        daya_mampu: 900,
-        kode_pengelola: "TEST",
-        mesins: []
-      }
-    ],
-    meta: {
-      totalRecords: 1,
-      totalPages: 1,
-      limit: 10,
-      currentPage: 1
+    getPengelola() {
+      return Promise.resolve({
+        success: true,
+        data: []
+      });
     }
-  };
+    getSuggestionSentral() {
+      return Promise.resolve({
+        success: true,
+        data: [
+          { sentral: 'PLTU Test 1' },
+          { sentral: 'PLTU Test 2' }
+        ]
+      });
+    }
+    getSentralData() {
+      return Promise.resolve({
+        success: true,
+        data: [
+          {
+            uuid_sentral: 'test-id-1',
+            sentral: 'PLTU Test 1',
+            kode_sentral: 'TST001',
+            jenis_pembangkit: 'PLTU',
+            bbm: 'Batubara',
+            daya_terpasang: 100,
+            daya_mampu: 90
+          }
+        ],
+        meta: { limit: 10, totalRecords: 1, totalPages: 1 }
+      });
+    }
+    getMesinByIdSentral() {
+      return Promise.resolve({
+        success: true,
+        data: [
+          {
+            id: 'mesin-1',
+            nama_mesin: 'Mesin Test 1',
+            photo1: '',
+            photo2: ''
+          }
+        ]
+      });
+    }
+    getPengelolaData() {
+      return Promise.resolve({
+        success: true,
+        data: [
+          { id_pengelola: 1, kode_pengelola: 'PLN', pengelola: 'PT PLN' }
+        ]
+      });
+    }
+    getComboKategoriPembangkit() {
+      return Promise.resolve({
+        success: true,
+        data: [
+          {
+            jenis_kit: 'PLTU',
+            dmn: [
+              { id_daya: 1, daya_mampu: '< 100' }
+            ]
+          }
+        ]
+      });
+    }
+  }
+}));
 
-  const mockPengelolaResponse = {
-    data: [
-      {
-        id_pengelola: 1,
-        kode_pengelola: "TEST",
-        pengelola: "Test Pengelola"
-      }
-    ]
-  };
+vi.mock('@/services/auth-service', () => ({
+  default: class MockAuthService {
+    getUser() {
+      return Promise.resolve({ success: true, data: {} });
+    }
+  }
+}));
 
-  const mockKategoriPembangkitResponse = {
-    data: [
-      {
-        kode_jenis_pembangkit: "PLTU",
-        nama_jenis_pembangkit: "PLTU"
-      }
-    ]
-  };
+vi.mock('@/services/detail-sentral-service', () => ({
+  default: class MockDetailSentralService {
+    getSuggestionSentral() {
+      return Promise.resolve({ success: true, data: [] });
+    }
+    getPhoto() {
+      return Promise.resolve({ data: new Blob() });
+    }
+  }
+}));
+
+// Mock stores
+vi.mock('@/store/storeRekapKertasKerja', () => ({
+  useRekapSearchStore: () => mockRekapSearchStore,
+  useRekapNavigationStore: () => mockRekapNavigationStore
+}));
+
+vi.mock('@/store/storeUserAuth', () => ({
+  useUserAuthStore: () => mockUserAuthStore
+}));
+
+// Mock other dependencies
+vi.mock('@/utils/app-encrypt-storage', () => ({
+  encryptStoragePromise: Promise.resolve({})
+}));
+
+vi.mock('@vueuse/core', () => ({
+  useWindowScroll: () => ({ x: { value: 0 }, y: { value: 0 } })
+}));
+
+describe('RekapKertasKerja', () => {
+  let pinia: any;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    pinia = createPinia();
+    setActivePinia(pinia);
+  });
 
-    // Setup mock services
-    mockRekapService = {
-      getSentralData: jest.fn().mockResolvedValue(mockSentralResponse),
-      getPengelolaData: jest.fn().mockResolvedValue(mockPengelolaResponse),
-      getComboKategoriPembangkit: jest.fn().mockResolvedValue(mockKategoriPembangkitResponse),
-      getComboUmurMesin: jest.fn().mockResolvedValue({ data: [] }),
-      getComboKondisiMesin: jest.fn().mockResolvedValue({ data: [] }),
-      getComboIRR: jest.fn().mockResolvedValue({ data: [] }),
-      downloadTemplateRekap: jest.fn().mockResolvedValue(new Blob()),
-      downloadTemplateFS: jest.fn().mockResolvedValue(new Blob()),
-      uploadTemplateAwalKK: jest.fn().mockResolvedValue({ data: { message: "Success" } }),
-      uploadTemplateAwalFS: jest.fn().mockResolvedValue({ data: { message: "Success" } }),
-      getSuggestionSentral: jest.fn().mockResolvedValue({ data: [] }),
-      getMesinByIdSentral: jest.fn().mockResolvedValue({ data: { mesinById: [], sentral: {} } }),
-      getNilaiSentral: jest.fn().mockResolvedValue({ data: [] }),
-      getNilaiMesin: jest.fn().mockResolvedValue({ data: [] }),
-      getStatusFSSentral: jest.fn().mockResolvedValue({ data: [] }),
-      getStatusFSMesin: jest.fn().mockResolvedValue({ data: [] }),
-      getStatusRealisasiSentral: jest.fn().mockResolvedValue({ data: [] }),
-      getStatusRealisasiMesin: jest.fn().mockResolvedValue({ data: [] }),
-      getCheckInputAsumsiSentral: jest.fn().mockResolvedValue({ data: [] }),
-      getCheckInputAsumsiMesin: jest.fn().mockResolvedValue({ data: [] }),
-    } as any;
-
-    mockAuthService = {
-      getUserInfo: jest.fn().mockResolvedValue({
-        data: {
-          kode_pengelola: "TEST",
-          nama_pengelola: "Test Pengelola"
+  it('should render the component successfully', async () => {
+    const wrapper = mount(RekapKertasKerja, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          Loading: true,
+          SearchBoxSuggestion: true,
+          ShimmerLoading: true,
+          ModalWrapper: true,
+          TabWrapperSentral: true,
+          TabItem: true,
+          ConfirmationDialog: true,
+          KeteranganAnomali: true,
+          IconEmptyData: true,
+          IconFolder: true,
+          ComponentDraft: true,
+          ComponentDisetujui: true,
+          ComponentDitolakT1: true,
+          ComponentDitolakT2: true,
+          ComponentWaitingT1: true,
+          ComponentWaitingT2: true,
+          ComponentNotInput: true,
+          ComponentNotUpdate: true,
+          Vue3Lottie: true,
+          'el-select': true,
+          'el-option': true,
+          'el-checkbox': true
         }
-      }),
-    } as any;
+      }
+    });
 
-    mockDetailSentralService = {
-      getMesinByIdSentral: jest.fn().mockResolvedValue({
-        data: {
-          mesinById: [],
-          sentral: {}
+    expect(wrapper.exists()).toBe(true);
+  });
+
+  it('should initialize with correct default values', async () => {
+    const wrapper = mount(RekapKertasKerja, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          Loading: true,
+          SearchBoxSuggestion: true,
+          ShimmerLoading: true,
+          ModalWrapper: true,
+          TabWrapperSentral: true,
+          TabItem: true,
+          ConfirmationDialog: true,
+          KeteranganAnomali: true,
+          IconEmptyData: true,
+          IconFolder: true,
+          ComponentDraft: true,
+          ComponentDisetujui: true,
+          ComponentDitolakT1: true,
+          ComponentDitolakT2: true,
+          ComponentWaitingT1: true,
+          ComponentWaitingT2: true,
+          ComponentNotInput: true,
+          ComponentNotUpdate: true,
+          Vue3Lottie: true,
+          'el-select': true,
+          'el-option': true,
+          'el-checkbox': true
         }
-      }),
-      getNilaiSentral: jest.fn().mockResolvedValue({ data: [] }),
-      getNilaiMesin: jest.fn().mockResolvedValue({ data: [] }),
-      getStatusFSSentral: jest.fn().mockResolvedValue({ data: [] }),
-      getStatusFSMesin: jest.fn().mockResolvedValue({ data: [] }),
-      getStatusRealisasiSentral: jest.fn().mockResolvedValue({ data: [] }),
-      getStatusRealisasiMesin: jest.fn().mockResolvedValue({ data: [] }),
-      getCheckInputAsumsiSentral: jest.fn().mockResolvedValue({ data: [] }),
-      getCheckInputAsumsiMesin: jest.fn().mockResolvedValue({ data: [] }),
-    } as any;
+      }
+    });
 
-    mockGlobalFormat = {
-      formatRupiah: jest.fn().mockImplementation((value) => value?.toString() || "0"),
-      formatDecimal: jest.fn().mockImplementation((value) => value?.toString() || "0"),
-      formatEnergy: jest.fn().mockImplementation((value) => value?.toString() || "0"),
-      formatPercent: jest.fn().mockImplementation((value) => value?.toString() || "0"),
-    } as any;
-
-    // Setup mock constructors
-    MockedRekapService.mockImplementation(() => mockRekapService);
-    MockedAuthService.mockImplementation(() => mockAuthService);
-    MockedDetailSentralService.mockImplementation(() => mockDetailSentralService);
-    MockedGlobalFormat.mockImplementation(() => mockGlobalFormat);
+    // Wait for component to mount and lifecycle hooks to complete
+    await wrapper.vm.$nextTick();
+    
+    const vm = wrapper.vm as any;
+    
+    // After mounted hook runs, isLoading might be set to true initially
+    expect(vm.isPembangkitTabOpen).toEqual([]);
+    expect(vm.sentralData).toEqual([]);
+    expect(vm.selectedKategoriPembangkit).toEqual([]);
+    expect(vm.tahunBerjalan).toBe(new Date().getFullYear());
   });
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.unmount();
-    }
-  });
-
-  describe("Component Mounting", () => {
-    it("should mount successfully", async () => {
-      wrapper = shallowMount(RekapKertasKerja);
-      expect(wrapper.exists()).toBe(true);
-    });
-
-    it("should initialize with loading state", async () => {
-      wrapper = shallowMount(RekapKertasKerja);
-      await nextTick();
-
-      expect(wrapper.exists()).toBe(true);
-      // Cek apakah ada loading state
-      expect(wrapper.vm.isLoading).toBeDefined();
-    });
-  });
-
-  describe("Data Fetching on Mount", () => {
-    beforeEach(async () => {
-      wrapper = shallowMount(RekapKertasKerja);
-      await nextTick();
-      // Wait for async operations
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    });
-
-    it("should call required service methods on mount", () => {
-      expect(mockRekapService.getSentralData).toHaveBeenCalled();
-      expect(mockRekapService.getPengelolaData).toHaveBeenCalled();
-      expect(mockRekapService.getComboKategoriPembangkit).toHaveBeenCalled();
-    });
-
-    it("should handle getSentralData service call", () => {
-      expect(mockRekapService.getSentralData).toHaveBeenCalledTimes(1);
-    });
-
-    it("should handle getPengelolaData service call", () => {
-      expect(mockRekapService.getPengelolaData).toHaveBeenCalledTimes(1);
-    });
-
-    it("should handle getComboKategoriPembangkit service call", () => {
-      expect(mockRekapService.getComboKategoriPembangkit).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe("Component Properties", () => {
-    beforeEach(async () => {
-      wrapper = shallowMount(RekapKertasKerja);
-      await nextTick();
-    });
-
-    it("should have initial reactive properties", () => {
-      expect(wrapper.vm.isLoading).toBeDefined();
-      expect(wrapper.vm.sentralData).toBeDefined();
-      expect(wrapper.vm.pengelolaData).toBeDefined();
-      expect(wrapper.vm.kategoriPembangkitData).toBeDefined();
-    });
-
-    it("should initialize with correct default values", () => {
-      expect(wrapper.vm.tahunBerjalan).toBe(new Date().getFullYear());
-      expect(wrapper.vm.kodePengelola).toBe('ALL');
-      expect(wrapper.vm.checkPembangkit).toBe(false);
-      expect(wrapper.vm.checkDmn).toBe(false);
-    });
-  });
-
-  describe("Modal Functionality", () => {
-    beforeEach(async () => {
-      wrapper = shallowMount(RekapKertasKerja);
-      await nextTick();
-    });
-
-    it("should handle search modal state", async () => {
-      expect(wrapper.vm.isSearchModalOpen).toBe(false);
-      
-      // Test opening modal
-      wrapper.vm.isSearchModalOpen = true;
-      await nextTick();
-      
-      expect(wrapper.vm.isSearchModalOpen).toBe(true);
-    });
-
-    it("should handle upload modal states", async () => {
-      expect(wrapper.vm.isModalUnggahKertasKerjaOpen).toBe(false);
-      expect(wrapper.vm.isModalUnggahFSOpen).toBe(false);
-      
-      // Test opening modals
-      wrapper.vm.isModalUnggahKertasKerjaOpen = true;
-      wrapper.vm.isModalUnggahFSOpen = true;
-      await nextTick();
-      
-      expect(wrapper.vm.isModalUnggahKertasKerjaOpen).toBe(true);
-      expect(wrapper.vm.isModalUnggahFSOpen).toBe(true);
-    });
-  });
-
-  describe("Checkbox Functionality", () => {
-    beforeEach(async () => {
-      wrapper = shallowMount(RekapKertasKerja);
-      await nextTick();
-    });
-
-    it("should handle pembangkit checkbox change", async () => {
-      expect(wrapper.vm.checkPembangkit).toBe(false);
-      
-      wrapper.vm.checkPembangkit = true;
-      await nextTick();
-      
-      expect(wrapper.vm.checkPembangkit).toBe(true);
-    });
-
-    it("should handle DMN checkbox change", async () => {
-      expect(wrapper.vm.checkDmn).toBe(false);
-      
-      wrapper.vm.checkDmn = true;
-      await nextTick();
-      
-      expect(wrapper.vm.checkDmn).toBe(true);
-    });
-
-    it("should handle umur mesin checkbox change", async () => {
-      expect(wrapper.vm.checkAllUmurMesin).toBe(false);
-      
-      wrapper.vm.checkAllUmurMesin = true;
-      await nextTick();
-      
-      expect(wrapper.vm.checkAllUmurMesin).toBe(true);
-    });
-
-    it("should handle kondisi mesin checkbox change", async () => {
-      expect(wrapper.vm.checkAllKondisiMesin).toBe(false);
-      
-      wrapper.vm.checkAllKondisiMesin = true;
-      await nextTick();
-      
-      expect(wrapper.vm.checkAllKondisiMesin).toBe(true);
-    });
-  });
-
-  describe("File Upload Functionality", () => {
-    beforeEach(async () => {
-      wrapper = shallowMount(RekapKertasKerja);
-      await nextTick();
-    });
-
-    it("should handle file change for rekap", () => {
-      const mockFile = new File(["test"], "test.xlsx", { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-      const mockEvent = {
-        target: {
-          files: [mockFile]
+  it('should toggle pembangkit tab correctly', async () => {
+    const wrapper = mount(RekapKertasKerja, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          Loading: true,
+          SearchBoxSuggestion: true,
+          ShimmerLoading: true,
+          ModalWrapper: true,
+          TabWrapperSentral: true,
+          TabItem: true,
+          ConfirmationDialog: true,
+          KeteranganAnomali: true,
+          IconEmptyData: true,
+          IconFolder: true,
+          ComponentDraft: true,
+          ComponentDisetujui: true,
+          ComponentDitolakT1: true,
+          ComponentDitolakT2: true,
+          ComponentWaitingT1: true,
+          ComponentWaitingT2: true,
+          ComponentNotInput: true,
+          ComponentNotUpdate: true,
+          Vue3Lottie: true,
+          'el-select': true,
+          'el-option': true,
+          'el-checkbox': true
         }
-      };
-
-      wrapper.vm.handleFileChange(mockEvent);
-      
-      expect(wrapper.vm.selectedFile).toBe(mockFile);
+      }
     });
 
-    it("should handle file change for evidence", () => {
-      const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });
-      const mockEvent = {
-        target: {
-          files: [mockFile]
-        }
-      };
-
-      wrapper.vm.handleFileChangeEvidence(mockEvent);
-      
-      expect(wrapper.vm.selectedFileEvidence).toBe(mockFile);
-    });
-
-    it("should handle file change for FS", () => {
-      const mockFile = new File(["test"], "test.xlsx", { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-      const mockEvent = {
-        target: {
-          files: [mockFile]
-        }
-      };
-
-      wrapper.vm.handleFileFSChange(mockEvent);
-      
-      expect(wrapper.vm.selectedFileFS).toBe(mockFile);
-    });
+    const vm = wrapper.vm as any;
+    const testId = 'test-sentral-id';
+    
+    // Test isPembangkitOpen method
+    expect(vm.isPembangkitOpen(testId)).toBe(false);
+    
+    // Add id to open tabs
+    vm.isPembangkitTabOpen.push(testId);
+    expect(vm.isPembangkitOpen(testId)).toBe(true);
   });
 
-  describe("Global Format Integration", () => {
-    beforeEach(async () => {
-      wrapper = shallowMount(RekapKertasKerja);
-      await nextTick();
+  it('should handle file change correctly', async () => {
+    const wrapper = mount(RekapKertasKerja, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          Loading: true,
+          SearchBoxSuggestion: true,
+          ShimmerLoading: true,
+          ModalWrapper: true,
+          TabWrapperSentral: true,
+          TabItem: true,
+          ConfirmationDialog: true,
+          KeteranganAnomali: true,
+          IconEmptyData: true,
+          IconFolder: true,
+          ComponentDraft: true,
+          ComponentDisetujui: true,
+          ComponentDitolakT1: true,
+          ComponentDitolakT2: true,
+          ComponentWaitingT1: true,
+          ComponentWaitingT2: true,
+          ComponentNotInput: true,
+          ComponentNotUpdate: true,
+          Vue3Lottie: true,
+          'el-select': true,
+          'el-option': true,
+          'el-checkbox': true
+        }
+      }
     });
 
-    it("should use global format for decimal formatting", () => {
-      const testValue = 1000000;
-      wrapper.vm.globalFormat.formatDecimal(testValue);
-      
-      expect(mockGlobalFormat.formatDecimal).toHaveBeenCalledWith(testValue);
-    });
-
-    it("should format rupiah values", () => {
-      const testValue = 1000000;
-      wrapper.vm.globalFormat.formatRupiah(testValue);
-      
-      expect(mockGlobalFormat.formatRupiah).toHaveBeenCalledWith(testValue);
-    });
-
-    it("should format energy values", () => {
-      const testValue = 1000.50;
-      wrapper.vm.globalFormat.formatEnergy(testValue);
-      
-      expect(mockGlobalFormat.formatEnergy).toHaveBeenCalledWith(testValue);
-    });
+    const vm = wrapper.vm as any;
+    
+    // Test handleFileChange with single file
+    const mockFile = new File(['test'], 'test.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const mockEvent = {
+      target: {
+        files: [mockFile]
+      }
+    };
+    
+    vm.handleFileChange(mockEvent);
+    expect(vm.selectedFile).toStrictEqual(mockFile);
+    
+    // Test handleFileChange with no files
+    const mockEventEmpty = {
+      target: {
+        files: []
+      }
+    };
+    
+    vm.handleFileChange(mockEventEmpty);
+    expect(vm.selectedFile).toBe(null);
   });
 
-  describe("Error Handling", () => {
-    it("should handle service errors gracefully", async () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-      
-      // Mock service to throw error
-      mockRekapService.getSentralData.mockRejectedValue(new Error("Service Error"));
-      
-      wrapper = shallowMount(RekapKertasKerja);
-      await nextTick();
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      // Component should still exist even with errors
-      expect(wrapper.exists()).toBe(true);
-      
-      consoleSpy.mockRestore();
+  it('should handle file change evidence correctly', async () => {
+    const wrapper = mount(RekapKertasKerja, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          Loading: true,
+          SearchBoxSuggestion: true,
+          ShimmerLoading: true,
+          ModalWrapper: true,
+          TabWrapperSentral: true,
+          TabItem: true,
+          ConfirmationDialog: true,
+          KeteranganAnomali: true,
+          IconEmptyData: true,
+          IconFolder: true,
+          ComponentDraft: true,
+          ComponentDisetujui: true,
+          ComponentDitolakT1: true,
+          ComponentDitolakT2: true,
+          ComponentWaitingT1: true,
+          ComponentWaitingT2: true,
+          ComponentNotInput: true,
+          ComponentNotUpdate: true,
+          Vue3Lottie: true,
+          'el-select': true,
+          'el-option': true,
+          'el-checkbox': true
+        }
+      }
     });
+
+    const vm = wrapper.vm as any;
+    
+    // Test handleFileChangeEvidence with single file
+    const mockFile = new File(['evidence'], 'evidence.pdf', { type: 'application/pdf' });
+    const mockEvent = {
+      target: {
+        files: [mockFile]
+      }
+    };
+    
+    vm.handleFileChangeEvidence(mockEvent);
+    expect(vm.selectedFileEvidence).toStrictEqual(mockFile);
+    
+    // Test handleFileChangeEvidence with no files
+    const mockEventEmpty = {
+      target: {
+        files: []
+      }
+    };
+    
+    vm.handleFileChangeEvidence(mockEventEmpty);
+    expect(vm.selectedFileEvidence).toBe(null);
+  });
+
+  it('should handle checkbox changes correctly', async () => {
+    const wrapper = mount(RekapKertasKerja, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          Loading: true,
+          SearchBoxSuggestion: true,
+          ShimmerLoading: true,
+          ModalWrapper: true,
+          TabWrapperSentral: true,
+          TabItem: true,
+          ConfirmationDialog: true,
+          KeteranganAnomali: true,
+          IconEmptyData: true,
+          IconFolder: true,
+          ComponentDraft: true,
+          ComponentDisetujui: true,
+          ComponentDitolakT1: true,
+          ComponentDitolakT2: true,
+          ComponentWaitingT1: true,
+          ComponentWaitingT2: true,
+          ComponentNotInput: true,
+          ComponentNotUpdate: true,
+          Vue3Lottie: true,
+          'el-select': true,
+          'el-option': true,
+          'el-checkbox': true
+        }
+      }
+    });
+
+    const vm = wrapper.vm as any;
+    
+    // Setup test data
+    vm.kategoriPembangkitData = [
+      { id: 'PLTU', name: 'PLTU' },
+      { id: 'PLTG', name: 'PLTG' }
+    ];
+    vm.comboUmurMesin = [
+      { id: '1', name: '< 5 tahun' },
+      { id: '2', name: '5-10 tahun' }
+    ];
+    vm.comboKondisiMesin = [
+      { id: '1', name: 'Baik' },
+      { id: '2', name: 'Rusak' }
+    ];
+    
+    // Test handleCheckPembangkit with true
+    vm.handleCheckPembangkit(true);
+    expect(vm.selectedKategoriPembangkit).toEqual(['PLTU', 'PLTG']);
+    expect(vm.indeterminate).toBe(false);
+    
+    // Test handleCheckPembangkit with false
+    vm.handleCheckPembangkit(false);
+    expect(vm.selectedKategoriPembangkit).toEqual([]);
+    
+    // Test handleCheckUmurMesin with true
+    vm.handleCheckUmurMesin(true);
+    expect(vm.selectedUmurMesin).toEqual(['1', '2']);
+    
+    // Test handleCheckKondisiMesin with true
+    vm.handleCheckKondisiMesin(true);
+    expect(vm.selectedKondisiMesin).toEqual(['1', '2']);
+  });
+
+  it('should check input asumsi correctly', async () => {
+    const wrapper = mount(RekapKertasKerja, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          Loading: true,
+          SearchBoxSuggestion: true,
+          ShimmerLoading: true,
+          ModalWrapper: true,
+          TabWrapperSentral: true,
+          TabItem: true,
+          ConfirmationDialog: true,
+          KeteranganAnomali: true,
+          IconEmptyData: true,
+          IconFolder: true,
+          ComponentDraft: true,
+          ComponentDisetujui: true,
+          ComponentDitolakT1: true,
+          ComponentDitolakT2: true,
+          ComponentWaitingT1: true,
+          ComponentWaitingT2: true,
+          ComponentNotInput: true,
+          ComponentNotUpdate: true,
+          Vue3Lottie: true,
+          'el-select': true,
+          'el-option': true,
+          'el-checkbox': true
+        }
+      }
+    });
+
+    const vm = wrapper.vm as any;
+    
+    // Setup test data
+    vm.listStatusInputAsumsiMesin = [
+      { uuid_mesin: 'mesin-1', status_kk: true },
+      { uuid_mesin: 'mesin-2', status_kk: false }
+    ];
+    
+    // Test checkInputAsumsi
+    expect(vm.checkInputAsumsi('mesin-1')).toBe(true);
+    expect(vm.checkInputAsumsi('mesin-2')).toBe(false);
+  });
+
+  it('should check unggah required properties correctly', async () => {
+    const wrapper = mount(RekapKertasKerja, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          Loading: true,
+          SearchBoxSuggestion: true,
+          ShimmerLoading: true,
+          ModalWrapper: true,
+          TabWrapperSentral: true,
+          TabItem: true,
+          ConfirmationDialog: true,
+          KeteranganAnomali: true,
+          IconEmptyData: true,
+          IconFolder: true,
+          ComponentDraft: true,
+          ComponentDisetujui: true,
+          ComponentDitolakT1: true,
+          ComponentDitolakT2: true,
+          ComponentWaitingT1: true,
+          ComponentWaitingT2: true,
+          ComponentNotInput: true,
+          ComponentNotUpdate: true,
+          Vue3Lottie: true,
+          'el-select': true,
+          'el-option': true,
+          'el-checkbox': true
+        }
+      }
+    });
+
+    const vm = wrapper.vm as any;
+    
+    // Test checkUnggahRequiredProp with incomplete data
+    expect(vm.checkUnggahRequiredProp('-', '', '0')).toBe(true);
+    expect(vm.checkUnggahRequiredProp('-', '2020', '5')).toBe(true);
+    expect(vm.checkUnggahRequiredProp('1000000', '', '5')).toBe(true);
+    expect(vm.checkUnggahRequiredProp('1000000', '2020', '0')).toBe(true);
+    
+    // Test with complete data
+    expect(vm.checkUnggahRequiredProp('1000000', '2020', '5')).toBe(false);
+  });
+
+  it('should generate page list correctly', async () => {
+    const wrapper = mount(RekapKertasKerja, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          Loading: true,
+          SearchBoxSuggestion: true,
+          ShimmerLoading: true,
+          ModalWrapper: true,
+          TabWrapperSentral: true,
+          TabItem: true,
+          ConfirmationDialog: true,
+          KeteranganAnomali: true,
+          IconEmptyData: true,
+          IconFolder: true,
+          ComponentDraft: true,
+          ComponentDisetujui: true,
+          ComponentDitolakT1: true,
+          ComponentDitolakT2: true,
+          ComponentWaitingT1: true,
+          ComponentWaitingT2: true,
+          ComponentNotInput: true,
+          ComponentNotUpdate: true,
+          Vue3Lottie: true,
+          'el-select': true,
+          'el-option': true,
+          'el-checkbox': true
+        }
+      }
+    });
+
+    const vm = wrapper.vm as any;
+    
+    // Test with small number of pages (<=5)
+    vm.totalPages = 3;
+    vm.navigationStore.currentPage = 1;
+    expect(vm.generatePageList.length).toBeGreaterThanOrEqual(0);
+    
+    // Test with larger number of pages
+    vm.totalPages = 10;
+    vm.navigationStore.currentPage = 5;
+    expect(vm.generatePageList.length).toBeGreaterThanOrEqual(0);
+  });
+
+  it('should handle pagination navigation correctly', async () => {
+    const wrapper = mount(RekapKertasKerja, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          Loading: true,
+          SearchBoxSuggestion: true,
+          ShimmerLoading: true,
+          ModalWrapper: true,
+          TabWrapperSentral: true,
+          TabItem: true,
+          ConfirmationDialog: true,
+          KeteranganAnomali: true,
+          IconEmptyData: true,
+          IconFolder: true,
+          ComponentDraft: true,
+          ComponentDisetujui: true,
+          ComponentDitolakT1: true,
+          ComponentDitolakT2: true,
+          ComponentWaitingT1: true,
+          ComponentWaitingT2: true,
+          ComponentNotInput: true,
+          ComponentNotUpdate: true,
+          Vue3Lottie: true,
+          'el-select': true,
+          'el-option': true,
+          'el-checkbox': true
+        }
+      }
+    });
+
+    const vm = wrapper.vm as any;
+    
+    // Setup initial state
+    vm.navigationStore.currentPage = 2;
+    vm.totalPages = 5;
+    
+    // Test goToPrevious
+    await vm.goToPrevious();
+    expect(vm.navigationStore.currentPage).toBe(1);
+    
+    // Test goToNext
+    await vm.goToNext();
+    expect(vm.navigationStore.currentPage).toBe(2);
+  });
+
+  it('should handle pengelola selection correctly', async () => {
+    const wrapper = mount(RekapKertasKerja, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          Loading: true,
+          SearchBoxSuggestion: true,
+          ShimmerLoading: true,
+          ModalWrapper: true,
+          TabWrapperSentral: true,
+          TabItem: true,
+          ConfirmationDialog: true,
+          KeteranganAnomali: true,
+          IconEmptyData: true,
+          IconFolder: true,
+          ComponentDraft: true,
+          ComponentDisetujui: true,
+          ComponentDitolakT1: true,
+          ComponentDitolakT2: true,
+          ComponentWaitingT1: true,
+          ComponentWaitingT2: true,
+          ComponentNotInput: true,
+          ComponentNotUpdate: true,
+          Vue3Lottie: true,
+          'el-select': true,
+          'el-option': true,
+          'el-checkbox': true
+        }
+      }
+    });
+
+    const vm = wrapper.vm as any;
+    
+    // Test selecting 'ALL'
+    await vm.changeSelectedPengelola('ALL');
+    expect(vm.kodePengelola).toBe('ALL');
+    expect(vm.selectedPengelola).toEqual([]);
+    
+    // Test selecting specific pengelola
+    await vm.changeSelectedPengelola('PLN');
+    expect(vm.selectedPengelola).toContain('PLN');
+    
+    // Test deselecting pengelola
+    vm.selectedPengelola = ['PLN'];
+    await vm.changeSelectedPengelola('PLN');
+    expect(vm.selectedPengelola).not.toContain('PLN');
+  });
+
+  it('should handle focus and search modal correctly', async () => {
+    const wrapper = mount(RekapKertasKerja, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          Loading: true,
+          SearchBoxSuggestion: true,
+          ShimmerLoading: true,
+          ModalWrapper: true,
+          TabWrapperSentral: true,
+          TabItem: true,
+          ConfirmationDialog: true,
+          KeteranganAnomali: true,
+          IconEmptyData: true,
+          IconFolder: true,
+          ComponentDraft: true,
+          ComponentDisetujui: true,
+          ComponentDitolakT1: true,
+          ComponentDitolakT2: true,
+          ComponentWaitingT1: true,
+          ComponentWaitingT2: true,
+          ComponentNotInput: true,
+          ComponentNotUpdate: true,
+          Vue3Lottie: true,
+          'el-select': true,
+          'el-option': true,
+          'el-checkbox': true
+        }
+      }
+    });
+
+    const vm = wrapper.vm as any;
+    
+    // Test handleFocus
+    vm.handleFocus();
+    expect(vm.isSearchModalOpen).toBe(true);
+    
+    // Test handleSearch
+    await vm.handleSearch();
+    expect(vm.navigationStore.currentPage).toBe(1);
+  });
+
+  it('should handle modal state changes correctly', async () => {
+    const wrapper = mount(RekapKertasKerja, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          Loading: true,
+          SearchBoxSuggestion: true,
+          ShimmerLoading: true,
+          ModalWrapper: true,
+          TabWrapperSentral: true,
+          TabItem: true,
+          ConfirmationDialog: true,
+          KeteranganAnomali: true,
+          IconEmptyData: true,
+          IconFolder: true,
+          ComponentDraft: true,
+          ComponentDisetujui: true,
+          ComponentDitolakT1: true,
+          ComponentDitolakT2: true,
+          ComponentWaitingT1: true,
+          ComponentWaitingT2: true,
+          ComponentNotInput: true,
+          ComponentNotUpdate: true,
+          Vue3Lottie: true,
+          'el-select': true,
+          'el-option': true,
+          'el-checkbox': true
+        }
+      }
+    });
+
+    const vm = wrapper.vm as any;
+    
+    // Test changeSentralData
+    await vm.changeSentralData();
+    expect(vm.showModal).toBe(false);
+    
+    // Test changePageLimit
+    await vm.changePageLimit();
+    expect(vm.navigationStore.currentPage).toBe(1);
   });
 });

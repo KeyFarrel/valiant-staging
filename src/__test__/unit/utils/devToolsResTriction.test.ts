@@ -1,295 +1,442 @@
-import { initDevToolsRestriction } from "@/utils/devToolsRestriction";
-import * as secureEnv from "@/utils/secureEnv";
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { initDevToolsRestriction } from '@/utils/devToolsRestriction';
 
-// Mock secureEnv module
-jest.mock("@/utils/secureEnv", () => ({
-  isProduction: jest.fn(),
-  isStaging: jest.fn(),
+// Mock secure environment utilities
+vi.mock('@/utils/secureEnv', () => ({
+  isProduction: vi.fn(),
+  isStaging: vi.fn(),
 }));
 
-describe("devToolsRestriction.ts", () => {
-  let mockIsProduction: jest.MockedFunction<typeof secureEnv.isProduction>;
-  let mockIsStaging: jest.MockedFunction<typeof secureEnv.isStaging>;
-  let consoleLogSpy: jest.SpyInstance;
-
+describe('devToolsRestriction', () => {
+  let consoleSpy: any;
+  
   beforeEach(() => {
-    jest.clearAllMocks();
-    
-    // Setup mocks
-    mockIsProduction = secureEnv.isProduction as jest.MockedFunction<typeof secureEnv.isProduction>;
-    mockIsStaging = secureEnv.isStaging as jest.MockedFunction<typeof secureEnv.isStaging>;
-    
-    // Mock console methods
-    consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    // Mock console.log to track calls
+    consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    consoleSpy.mockRestore();
   });
 
-  describe("Environment Detection", () => {
-    it("should restrict dev tools in production environment", () => {
-      mockIsProduction.mockReturnValue(true);
-      mockIsStaging.mockReturnValue(false);
+  it('should log development message when not in production or staging', async () => {
+    // Import the mocked functions
+    const { isProduction, isStaging } = await import('@/utils/secureEnv');
+    
+    // Set environment to development
+    vi.mocked(isProduction).mockReturnValue(false);
+    vi.mocked(isStaging).mockReturnValue(false);
 
-      initDevToolsRestriction();
+    initDevToolsRestriction();
 
-      expect(consoleLogSpy).toHaveBeenCalledWith('Developer tools restricted in this environment');
-      expect(mockIsProduction).toHaveBeenCalled();
-      // isStaging might not be called due to short-circuit evaluation in OR condition
-    });
-
-    it("should restrict dev tools in staging environment", () => {
-      mockIsProduction.mockReturnValue(false);
-      mockIsStaging.mockReturnValue(true);
-
-      initDevToolsRestriction();
-
-      expect(consoleLogSpy).toHaveBeenCalledWith('Developer tools restricted in this environment');
-      expect(mockIsProduction).toHaveBeenCalled();
-      expect(mockIsStaging).toHaveBeenCalled();
-    });
-
-    it("should enable dev tools in development environment", () => {
-      mockIsProduction.mockReturnValue(false);
-      mockIsStaging.mockReturnValue(false);
-
-      initDevToolsRestriction();
-
-      expect(consoleLogSpy).toHaveBeenCalledWith('Developer tools enabled');
-      expect(mockIsProduction).toHaveBeenCalled();
-      expect(mockIsStaging).toHaveBeenCalled();
-    });
-
-    it("should restrict dev tools when both production and staging are true", () => {
-      mockIsProduction.mockReturnValue(true);
-      mockIsStaging.mockReturnValue(true);
-
-      initDevToolsRestriction();
-
-      expect(consoleLogSpy).toHaveBeenCalledWith('Developer tools restricted in this environment');
-    });
+    expect(consoleSpy).toHaveBeenCalledWith('Developer tools enabled');
   });
 
-  describe("Basic Function Behavior", () => {
-    it("should be a function", () => {
-      expect(typeof initDevToolsRestriction).toBe('function');
-    });
+  it('should log restricted message when in production environment', async () => {
+    // Import the mocked functions
+    const { isProduction, isStaging } = await import('@/utils/secureEnv');
+    
+    // Set environment to production
+    vi.mocked(isProduction).mockReturnValue(true);
+    vi.mocked(isStaging).mockReturnValue(false);
 
-    it("should not throw errors when called", () => {
-      mockIsProduction.mockReturnValue(false);
-      mockIsStaging.mockReturnValue(false);
+    initDevToolsRestriction();
 
-      expect(() => {
-        initDevToolsRestriction();
-      }).not.toThrow();
-    });
-
-    it("should handle undefined environment values gracefully", () => {
-      mockIsProduction.mockReturnValue(undefined as any);
-      mockIsStaging.mockReturnValue(undefined as any);
-
-      expect(() => {
-        initDevToolsRestriction();
-      }).not.toThrow();
-    });
+    expect(consoleSpy).toHaveBeenCalledWith('Developer tools restricted in this environment');
   });
 
-  describe("Console Integration", () => {
-    it("should call console.log with appropriate message", () => {
-      mockIsProduction.mockReturnValue(true);
-      mockIsStaging.mockReturnValue(false);
+  it('should log restricted message when in staging environment', async () => {
+    // Import the mocked functions
+    const { isProduction, isStaging } = await import('@/utils/secureEnv');
+    
+    // Set environment to staging
+    vi.mocked(isProduction).mockReturnValue(false);
+    vi.mocked(isStaging).mockReturnValue(true);
 
-      initDevToolsRestriction();
+    initDevToolsRestriction();
 
-      expect(consoleLogSpy).toHaveBeenCalledTimes(1);
-      expect(consoleLogSpy).toHaveBeenCalledWith('Developer tools restricted in this environment');
-    });
-
-    it("should not expose sensitive environment information", () => {
-      mockIsProduction.mockReturnValue(true);
-      mockIsStaging.mockReturnValue(false);
-
-      initDevToolsRestriction();
-
-      // Ensure no sensitive information is logged
-      expect(consoleLogSpy).not.toHaveBeenCalledWith(expect.stringContaining('production'));
-      expect(consoleLogSpy).not.toHaveBeenCalledWith(expect.stringContaining('staging'));
-      expect(consoleLogSpy).toHaveBeenCalledWith('Developer tools restricted in this environment');
-    });
+    expect(consoleSpy).toHaveBeenCalledWith('Developer tools restricted in this environment');
   });
 
-  describe("Error Handling", () => {
-    it("should handle secureEnv module import errors gracefully", () => {
-      // Mock secureEnv functions to throw errors
-      mockIsProduction.mockImplementation(() => {
-        throw new Error("secureEnv error");
-      });
+  it('should handle both production and staging environments', async () => {
+    // Import the mocked functions
+    const { isProduction, isStaging } = await import('@/utils/secureEnv');
+    
+    // Set both environments to true
+    vi.mocked(isProduction).mockReturnValue(true);
+    vi.mocked(isStaging).mockReturnValue(true);
 
-      expect(() => {
-        initDevToolsRestriction();
-      }).toThrow("secureEnv error");
-    });
+    initDevToolsRestriction();
 
-    it("should handle console.log errors gracefully", () => {
-      consoleLogSpy.mockImplementation(() => {
-        throw new Error("Console error");
-      });
-
-      mockIsProduction.mockReturnValue(false);
-      mockIsStaging.mockReturnValue(false);
-
-      expect(() => {
-        initDevToolsRestriction();
-      }).toThrow("Console error");
-    });
+    expect(consoleSpy).toHaveBeenCalledWith('Developer tools restricted in this environment');
   });
 
-  describe("Logic Flow", () => {
-    it("should follow correct logic flow for production", () => {
-      mockIsProduction.mockReturnValue(true);
-      mockIsStaging.mockReturnValue(false);
+  it('should only call console.log once per execution', async () => {
+    // Import the mocked functions
+    const { isProduction, isStaging } = await import('@/utils/secureEnv');
+    
+    // Set environment to development
+    vi.mocked(isProduction).mockReturnValue(false);
+    vi.mocked(isStaging).mockReturnValue(false);
 
-      initDevToolsRestriction();
+    initDevToolsRestriction();
 
-      // Verify the functions were called
-      expect(mockIsProduction).toHaveBeenCalled();
-      expect(consoleLogSpy).toHaveBeenCalledWith('Developer tools restricted in this environment');
-      // isStaging might not be called due to short-circuit evaluation
-    });
-
-    it("should follow correct logic flow for development", () => {
-      mockIsProduction.mockReturnValue(false);
-      mockIsStaging.mockReturnValue(false);
-
-      initDevToolsRestriction();
-
-      // Verify the functions were called
-      expect(mockIsProduction).toHaveBeenCalled();
-      expect(mockIsStaging).toHaveBeenCalled();
-      expect(consoleLogSpy).toHaveBeenCalledWith('Developer tools enabled');
-    });
+    expect(consoleSpy).toHaveBeenCalledTimes(1);
+    expect(consoleSpy).toHaveBeenCalledWith('Developer tools enabled');
   });
 
-  describe("Function Return Value", () => {
-    it("should return void", () => {
-      mockIsProduction.mockReturnValue(false);
-      mockIsStaging.mockReturnValue(false);
+  it('should call isProduction and isStaging functions', async () => {
+    // Import the mocked functions
+    const { isProduction, isStaging } = await import('@/utils/secureEnv');
+    
+    // Set environment to development
+    vi.mocked(isProduction).mockReturnValue(false);
+    vi.mocked(isStaging).mockReturnValue(false);
 
-      const result = initDevToolsRestriction();
+    initDevToolsRestriction();
 
-      expect(result).toBeUndefined();
-    });
+    expect(isProduction).toHaveBeenCalled();
+    expect(isStaging).toHaveBeenCalled();
   });
 
-  describe("Multiple Calls", () => {
-    it("should handle multiple calls correctly", () => {
-      mockIsProduction.mockReturnValue(true);
-      mockIsStaging.mockReturnValue(false);
+  it('should evaluate both environment checks due to OR operator', async () => {
+    // Import the mocked functions
+    const { isProduction, isStaging } = await import('@/utils/secureEnv');
+    
+    // Mock isProduction to return false so isStaging gets evaluated
+    vi.mocked(isProduction).mockReturnValue(false);
+    vi.mocked(isStaging).mockReturnValue(true);
 
-      initDevToolsRestriction();
-      initDevToolsRestriction();
-      initDevToolsRestriction();
+    initDevToolsRestriction();
 
-      expect(consoleLogSpy).toHaveBeenCalledTimes(3);
-      expect(mockIsProduction).toHaveBeenCalledTimes(3);
-      // isStaging might not be called due to short-circuit evaluation in OR condition
-    });
-
-    it("should maintain consistent behavior across multiple calls", () => {
-      mockIsProduction.mockReturnValue(false);
-      mockIsStaging.mockReturnValue(false);
-
-      const results = [
-        initDevToolsRestriction(),
-        initDevToolsRestriction(),
-        initDevToolsRestriction()
-      ];
-
-      // All calls should return undefined
-      results.forEach(result => {
-        expect(result).toBeUndefined();
-      });
-
-      // All calls should log the same message
-      expect(consoleLogSpy).toHaveBeenCalledTimes(3);
-      consoleLogSpy.mock.calls.forEach(call => {
-        expect(call[0]).toBe('Developer tools enabled');
-      });
-    });
+    expect(consoleSpy).toHaveBeenCalledWith('Developer tools restricted in this environment');
+    // Both functions should be called due to OR evaluation
+    expect(isProduction).toHaveBeenCalled();
+    expect(isStaging).toHaveBeenCalled();
   });
 
-  describe("Edge Cases", () => {
-    it("should handle boolean edge cases", () => {
-      // Test with truthy/falsy values
-      mockIsProduction.mockReturnValue(1 as any);
-      mockIsStaging.mockReturnValue(0 as any);
+  it('should call disableDevTools when in production environment', async () => {
+    // Import the mocked functions
+    const { isProduction, isStaging } = await import('@/utils/secureEnv');
+    
+    // Set environment to production
+    vi.mocked(isProduction).mockReturnValue(true);
+    vi.mocked(isStaging).mockReturnValue(false);
 
-      initDevToolsRestriction();
+    // Mock DOM methods
+    const addEventListenerSpy = vi.spyOn(document, 'addEventListener');
+    const clearSpy = vi.spyOn(console, 'clear').mockImplementation(() => {});
+    
+    // Mock setInterval to prevent actual intervals
+    const originalSetInterval = global.setInterval;
+    global.setInterval = vi.fn(() => 1 as any);
 
-      expect(consoleLogSpy).toHaveBeenCalledWith('Developer tools restricted in this environment');
-    });
+    initDevToolsRestriction();
 
-    it("should handle null values", () => {
-      mockIsProduction.mockReturnValue(null as any);
-      mockIsStaging.mockReturnValue(null as any);
+    // Verify that event listener was added (part of disableDevTools)
+    expect(addEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function));
+    
+    // Verify console.clear was called (part of disableConsole)
+    expect(clearSpy).toHaveBeenCalled();
 
-      initDevToolsRestriction();
-
-      expect(consoleLogSpy).toHaveBeenCalledWith('Developer tools enabled');
-    });
+    // Cleanup
+    addEventListenerSpy.mockRestore();
+    clearSpy.mockRestore();
+    global.setInterval = originalSetInterval;
   });
 
-  describe("Performance", () => {
-    it("should execute quickly", () => {
-      mockIsProduction.mockReturnValue(true);
-      mockIsStaging.mockReturnValue(false);
+  it('should prevent F12 keydown event when disableDevTools is active', async () => {
+    const { isProduction, isStaging } = await import('@/utils/secureEnv');
+    
+    // Set environment to production to trigger disableDevTools
+    vi.mocked(isProduction).mockReturnValue(true);
+    vi.mocked(isStaging).mockReturnValue(false);
 
-      const startTime = performance.now();
-      initDevToolsRestriction();
-      const endTime = performance.now();
+    const mockPreventDefault = vi.fn();
+    const mockEvent = {
+      key: 'F12',
+      preventDefault: mockPreventDefault,
+      ctrlKey: false,
+      shiftKey: false,
+      metaKey: false,
+      altKey: false
+    };
 
-      expect(endTime - startTime).toBeLessThan(100); // Should execute in less than 100ms
-    });
+    const addEventListenerSpy = vi.spyOn(document, 'addEventListener');
+    const clearSpy = vi.spyOn(console, 'clear').mockImplementation(() => {});
+    const originalSetInterval = global.setInterval;
+    global.setInterval = vi.fn(() => 1 as any);
+
+    initDevToolsRestriction();
+
+    // Get the keydown event listener that was added
+    const keydownCall = addEventListenerSpy.mock.calls.find((call: any) => call[0] === 'keydown');
+    const keydownListener = keydownCall?.[1];
+    
+    if (keydownListener) {
+      const result = (keydownListener as any)(mockEvent);
+      expect(mockPreventDefault).toHaveBeenCalled();
+      expect(result).toBe(false);
+    }
+
+    // Cleanup
+    addEventListenerSpy.mockRestore();
+    clearSpy.mockRestore();
+    global.setInterval = originalSetInterval;
   });
 
-  describe("Message Content Validation", () => {
-    it("should use exact message for restricted environment", () => {
-      mockIsProduction.mockReturnValue(true);
-      mockIsStaging.mockReturnValue(false);
+  it('should prevent various keyboard shortcuts when disableDevTools is active', async () => {
+    const { isProduction, isStaging } = await import('@/utils/secureEnv');
+    
+    vi.mocked(isProduction).mockReturnValue(true);
+    vi.mocked(isStaging).mockReturnValue(false);
 
-      initDevToolsRestriction();
+    const addEventListenerSpy = vi.spyOn(document, 'addEventListener');
+    const clearSpy = vi.spyOn(console, 'clear').mockImplementation(() => {});
+    const originalSetInterval = global.setInterval;
+    global.setInterval = vi.fn(() => 1 as any);
 
-      expect(consoleLogSpy).toHaveBeenCalledWith('Developer tools restricted in this environment');
-      expect(consoleLogSpy).not.toHaveBeenCalledWith('Developer tools enabled');
-    });
+    initDevToolsRestriction();
 
-    it("should use exact message for development environment", () => {
-      mockIsProduction.mockReturnValue(false);
-      mockIsStaging.mockReturnValue(false);
+    const keydownCall = addEventListenerSpy.mock.calls.find((call: any) => call[0] === 'keydown');
+    const keydownListener = keydownCall?.[1];
 
-      initDevToolsRestriction();
+    if (keydownListener) {
+      // Test Ctrl+Shift+I
+      const mockPreventDefault1 = vi.fn();
+      const ctrlShiftI = {
+        key: 'I',
+        preventDefault: mockPreventDefault1,
+        ctrlKey: true,
+        shiftKey: true,
+        metaKey: false,
+        altKey: false
+      };
+      (keydownListener as any)(ctrlShiftI);
+      expect(mockPreventDefault1).toHaveBeenCalled();
 
-      expect(consoleLogSpy).toHaveBeenCalledWith('Developer tools enabled');
-      expect(consoleLogSpy).not.toHaveBeenCalledWith('Developer tools restricted in this environment');
-    });
+      // Test Ctrl+Shift+J
+      const mockPreventDefault2 = vi.fn();
+      const ctrlShiftJ = {
+        key: 'J',
+        preventDefault: mockPreventDefault2,
+        ctrlKey: true,
+        shiftKey: true,
+        metaKey: false,
+        altKey: false
+      };
+      (keydownListener as any)(ctrlShiftJ);
+      expect(mockPreventDefault2).toHaveBeenCalled();
 
-    it("should not log any other messages", () => {
-      mockIsProduction.mockReturnValue(true);
-      mockIsStaging.mockReturnValue(false);
+      // Test Ctrl+U
+      const mockPreventDefault3 = vi.fn();
+      const ctrlU = {
+        key: 'u',
+        preventDefault: mockPreventDefault3,
+        ctrlKey: true,
+        shiftKey: false,
+        metaKey: false,
+        altKey: false
+      };
+      (keydownListener as any)(ctrlU);
+      expect(mockPreventDefault3).toHaveBeenCalled();
+    }
 
-      initDevToolsRestriction();
-
-      expect(consoleLogSpy).toHaveBeenCalledTimes(1);
-      expect(consoleLogSpy).toHaveBeenCalledWith('Developer tools restricted in this environment');
-    });
+    // Cleanup
+    addEventListenerSpy.mockRestore();
+    clearSpy.mockRestore();
+    global.setInterval = originalSetInterval;
   });
 
-  describe("Component Name Validation", () => {
-    it("should export initDevToolsRestriction function", () => {
-      expect(initDevToolsRestriction).toBeDefined();
-      expect(typeof initDevToolsRestriction).toBe('function');
-      expect(initDevToolsRestriction.name).toBe('initDevToolsRestriction');
+  it('should detect dev tools and reload when threshold exceeded', async () => {
+    const { isProduction, isStaging } = await import('@/utils/secureEnv');
+    
+    vi.mocked(isProduction).mockReturnValue(true);
+    vi.mocked(isStaging).mockReturnValue(false);
+
+    // Mock window dimensions to simulate dev tools opening
+    Object.defineProperty(window, 'outerWidth', { value: 1200, writable: true, configurable: true });
+    Object.defineProperty(window, 'innerWidth', { value: 1000, writable: true, configurable: true });
+    Object.defineProperty(window, 'outerHeight', { value: 800, writable: true, configurable: true });
+    Object.defineProperty(window, 'innerHeight', { value: 600, writable: true, configurable: true });
+
+    const reloadSpy = vi.fn();
+    Object.defineProperty(window.location, 'reload', {
+      value: reloadSpy,
+      writable: true,
+      configurable: true
     });
+
+    const originalSetInterval = global.setInterval;
+    const intervalCallbacks: Function[] = [];
+    global.setInterval = vi.fn((callback: Function) => {
+      intervalCallbacks.push(callback);
+      return 1 as any;
+    });
+
+    const clearSpy = vi.spyOn(console, 'clear').mockImplementation(() => {});
+
+    initDevToolsRestriction();
+
+    // Execute the devtools detector callback
+    if (intervalCallbacks.length > 0) {
+      intervalCallbacks[0](); // Execute devtools detector
+    }
+
+    expect(reloadSpy).toHaveBeenCalled();
+
+    // Cleanup
+    clearSpy.mockRestore();
+    global.setInterval = originalSetInterval;
+  });
+
+  it('should override console methods when disableDevTools is active', async () => {
+    const { isProduction, isStaging } = await import('@/utils/secureEnv');
+    
+    vi.mocked(isProduction).mockReturnValue(true);
+    vi.mocked(isStaging).mockReturnValue(false);
+
+    const originalSetInterval = global.setInterval;
+    global.setInterval = vi.fn(() => 1 as any);
+
+    // Store original console methods
+    const originalLog = console.log;
+    const originalError = console.error;
+    const clearSpy = vi.spyOn(console, 'clear').mockImplementation(() => {});
+
+    initDevToolsRestriction();
+
+    // Verify that console methods have been overridden
+    expect(console.log).not.toBe(originalLog);
+    expect(console.error).not.toBe(originalError);
+
+    // Cleanup
+    clearSpy.mockRestore();
+    global.setInterval = originalSetInterval;
+  });
+
+  it('should prevent Ctrl+Shift+C and Mac Option+Cmd+C shortcuts', async () => {
+    const { isProduction, isStaging } = await import('@/utils/secureEnv');
+    
+    vi.mocked(isProduction).mockReturnValue(true);
+    vi.mocked(isStaging).mockReturnValue(false);
+
+    const addEventListenerSpy = vi.spyOn(document, 'addEventListener');
+    const clearSpy = vi.spyOn(console, 'clear').mockImplementation(() => {});
+    const originalSetInterval = global.setInterval;
+    global.setInterval = vi.fn(() => 1 as any);
+
+    initDevToolsRestriction();
+
+    const keydownCall = addEventListenerSpy.mock.calls.find((call: any) => call[0] === 'keydown');
+    const keydownListener = keydownCall?.[1];
+
+    if (keydownListener) {
+      // Test Ctrl+Shift+C
+      const mockPreventDefault1 = vi.fn();
+      const ctrlShiftC = {
+        key: 'C',
+        preventDefault: mockPreventDefault1,
+        ctrlKey: true,
+        shiftKey: true,
+        metaKey: false,
+        altKey: false
+      };
+      const result1 = (keydownListener as any)(ctrlShiftC);
+      expect(mockPreventDefault1).toHaveBeenCalled();
+      expect(result1).toBe(false);
+
+      // Test Mac Cmd+Option+C (lowercase c)
+      const mockPreventDefault2 = vi.fn();
+      const macOptC = {
+        key: 'c',
+        preventDefault: mockPreventDefault2,
+        ctrlKey: false,
+        shiftKey: false,
+        metaKey: true,
+        altKey: true
+      };
+      const result2 = (keydownListener as any)(macOptC);
+      expect(mockPreventDefault2).toHaveBeenCalled();
+      expect(result2).toBe(false);
+    }
+
+    // Cleanup
+    addEventListenerSpy.mockRestore();
+    clearSpy.mockRestore();
+    global.setInterval = originalSetInterval;
+  });
+
+  it('should handle dev tools detection when dimensions are below threshold', async () => {
+    const { isProduction, isStaging } = await import('@/utils/secureEnv');
+    
+    vi.mocked(isProduction).mockReturnValue(true);
+    vi.mocked(isStaging).mockReturnValue(false);
+
+    // Mock window dimensions to simulate dev tools NOT opening (below threshold)
+    Object.defineProperty(window, 'outerWidth', { value: 1000, writable: true, configurable: true });
+    Object.defineProperty(window, 'innerWidth', { value: 990, writable: true, configurable: true });
+    Object.defineProperty(window, 'outerHeight', { value: 800, writable: true, configurable: true });
+    Object.defineProperty(window, 'innerHeight', { value: 790, writable: true, configurable: true });
+
+    const reloadSpy = vi.fn();
+    Object.defineProperty(window.location, 'reload', {
+      value: reloadSpy,
+      writable: true,
+      configurable: true
+    });
+
+    const originalSetInterval = global.setInterval;
+    const intervalCallbacks: Function[] = [];
+    global.setInterval = vi.fn((callback: Function) => {
+      intervalCallbacks.push(callback);
+      return 1 as any;
+    });
+
+    const clearSpy = vi.spyOn(console, 'clear').mockImplementation(() => {});
+
+    initDevToolsRestriction();
+
+    // Execute the devtools detector callback
+    if (intervalCallbacks.length > 0) {
+      intervalCallbacks[0](); // Execute devtools detector
+    }
+
+    // Should NOT reload because dimensions are below threshold
+    expect(reloadSpy).not.toHaveBeenCalled();
+
+    // Cleanup
+    clearSpy.mockRestore();
+    global.setInterval = originalSetInterval;
+  });
+
+  it('should call console.clear in setInterval callback', async () => {
+    const { isProduction, isStaging } = await import('@/utils/secureEnv');
+    
+    vi.mocked(isProduction).mockReturnValue(true);
+    vi.mocked(isStaging).mockReturnValue(false);
+
+    const originalSetInterval = global.setInterval;
+    const intervalCallbacks: Function[] = [];
+    global.setInterval = vi.fn((callback: Function) => {
+      intervalCallbacks.push(callback);
+      return 1 as any;
+    });
+
+    const clearSpy = vi.spyOn(console, 'clear').mockImplementation(() => {});
+
+    initDevToolsRestriction();
+
+    // Execute the periodic console.clear callback (second setInterval call)
+    if (intervalCallbacks.length > 1) {
+      clearSpy.mockClear(); // Clear previous calls
+      intervalCallbacks[1](); // Execute periodic console clear
+      expect(clearSpy).toHaveBeenCalled();
+    }
+
+    // Cleanup
+    clearSpy.mockRestore();
+    global.setInterval = originalSetInterval;
   });
 });

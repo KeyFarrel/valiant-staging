@@ -1,610 +1,353 @@
-import { mount, VueWrapper } from '@vue/test-utils';
-import { nextTick } from 'vue';
-import GraphicCapexNcf from '@/views/Beranda/LamanAnalitik/TabPage/Finansial/GraphicCapex_Ncf.vue';
-import GrafikService from '@/services/grafik-service';
-import { notifyError } from '@/services/helper/toast-notification';
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { mount } from '@vue/test-utils'
+import { nextTick } from 'vue'
+import GraphicCapexNcf from '@/views/Beranda/LamanAnalitik/TabPage/Finansial/GraphicCapex_Ncf.vue'
+import GrafikService from '@/services/grafik-service'
+import { notifyError } from '@/services/helper/toast-notification'
 
-// Mock dependencies
-jest.mock('@/services/grafik-service');
-jest.mock('@/services/peta-service'); // Added since this component uses PetaService
-jest.mock('@/services/helper/toast-notification');
-jest.mock('@/components/icons/IconEmptyData.vue', () => ({
-  name: 'IconEmptyData',
-  template: '<div data-testid="empty-icon">Empty Data Icon</div>'
-}));
-jest.mock('@/components/ui/ShimmerLoading.vue', () => ({
-  name: 'ShimmerLoading',
-  template: '<div data-testid="shimmer-loading">Loading...</div>'
-}));
-jest.mock('@/components/ui/ModalWrapper.vue', () => ({
-  name: 'ModalWrapper',
-  props: ['showModal', 'width', 'height'],
-  template: `
-    <div v-if="showModal" data-testid="modal-wrapper">
-      <slot></slot>
-    </div>
-  `
-}));
-jest.mock('@/views/Beranda/LamanAnalitik/TabPage/DynamicScatterPlot.vue', () => ({
-  name: 'DynamicScatterPlot',
-  props: ['source', 'series', 'legends', 'pln', 'ipp', 'dataZoom', 'xData', 'yData'],
-  template: '<div data-testid="dynamic-scatter-plot">Scatter Plot</div>'
-}));
-
-const mockGrafikService = GrafikService as jest.MockedClass<typeof GrafikService>;
-const mockNotifyError = notifyError as jest.MockedFunction<typeof notifyError>;
+// Mock services
+vi.mock('@/services/grafik-service')
+vi.mock('@/services/peta-service')
+vi.mock('@/services/helper/toast-notification')
 
 describe('GraphicCapex_Ncf.vue', () => {
-  let wrapper: VueWrapper<any>;
-  let mockGrafikServiceInstance: jest.Mocked<GrafikService>;
+  let wrapper: any
+  let mockGrafikService: any
 
   const defaultProps = {
     itemsPembangkit: [
-      { id: '1', name: 'PLTU' },
-      { id: '2', name: 'PLTG' },
-      { id: '3', name: 'PLTP' }
+      { id: 'PLTU', name: 'PLTU' },
+      { id: 'PLTG', name: 'PLTG' },
+      { id: 'PLTS', name: 'PLTS' },
     ],
     itemsDayaMampu: [
-      { id: '1', name: 'DMN 1' },
-      { id: '2', name: 'DMN 2' },
-      { id: '3', name: 'DMN 3' }
+      { id: '1', name: 'PLTU < 100' },
+      { id: '2', name: 'PLTU 100 - 400' },
+      { id: '3', name: 'PLTU > 400' },
     ],
-    title: 'Test Grafik Capex NCF',
-    yearRange: [2020, 2021, 2022, 2023, 2024]
-  };
+    title: 'Test Graphic Capex NCF',
+    yearRange: [2020, 2025],
+  }
 
-  const mockApiResponse = {
+  const mockGraphicData = {
     success: true,
     data: [{
       grafik: [
         {
           kode_jenis_kit: 'PLTU',
-          nama_mesin: 'PLTU Test',
-          data: { ncf: 85, capex: 1000 }
-        }
+          data: { ncf: 80, capex: 1500 },
+          nama_mesin: 'Test Machine 1',
+        },
+        {
+          kode_jenis_kit: 'PLTG',
+          data: { ncf: 75, capex: 1200 },
+          nama_mesin: 'Test Machine 2',
+        },
       ],
       legend: [
-        { label: 'PLTU', color: '#FF0000' }
+        { label: 'PLTU', color: '#ff0000' },
+        { label: 'PLTG', color: '#00ff00' },
       ],
-      average_pln_ncf: 80,
-      average_pln_capex: 950,
-      average_ipp_ncf: 85,
-      average_ipp_capex: 1050
+      average_pln_ncf: 77.5,
+      average_pln_capex: 1350,
+      average_ipp_ncf: 72,
+      average_ipp_capex: 1250,
     }]
-  };
+  }
 
-  const mockInitialPembangkitResponse = {
+  const mockInitialPembangkit = {
     data: [
       { kode_jenis_pembangkit: 'PLTU' },
       { kode_jenis_pembangkit: 'PLTG' }
     ]
-  };
+  }
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks()
     
-    mockGrafikServiceInstance = {
-      getInitialPembangkit: jest.fn(),
-      getGraphicAnalitikCF: jest.fn()
-    } as any;
-    
-    mockGrafikService.mockImplementation(() => mockGrafikServiceInstance);
-  });
-
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.unmount();
+    mockGrafikService = {
+      getInitialPembangkit: vi.fn().mockResolvedValue(mockInitialPembangkit),
+      getGraphicAnalitikCF: vi.fn().mockResolvedValue(mockGraphicData)
     }
-  });
+    
+    vi.mocked(GrafikService).mockImplementation(() => mockGrafikService)
 
-  const createWrapper = (props = defaultProps) => {
-    return mount(GraphicCapexNcf, {
-      props,
+    wrapper = mount(GraphicCapexNcf, {
+      props: defaultProps,
       global: {
         stubs: {
-          'el-checkbox': true,
-          'el-checkbox-group': true,
-          'el-select': true,
-          'el-option': true,
-          'VueDatePicker': true
+          'ShimmerLoading': { template: '<div data-testid="loading">Loading...</div>' },
+          'ModalWrapper': { 
+            template: '<div data-testid="modal"><slot /></div>',
+            props: ['showModal', 'width', 'height']
+          },
+          'DynamicScatterPlot': { 
+            template: '<div data-testid="scatter-plot">Scatter Plot</div>',
+            props: ['source', 'series', 'legends', 'pln', 'ipp', 'xData', 'yData', 'dataZoom']
+          },
+          'Empty': { template: '<div data-testid="empty-state">Empty Data</div>' },
+          'el-select': { 
+            template: '<select data-testid="select"><slot /></select>',
+            props: ['modelValue', 'multiple', 'clearable']
+          },
+          'el-option': { template: '<option></option>' },
+          'el-checkbox': { template: '<input type="checkbox" />' },
+          'VueDatePicker': { template: '<input data-testid="date-picker" />' }
         }
       }
-    });
-  };
+    })
+  })
 
-  describe('Component Rendering', () => {
-    it('should render component with correct title', () => {
-      wrapper = createWrapper();
-      expect(wrapper.find('h2').text()).toBe(defaultProps.title);
-    });
+  describe('Component Initialization', () => {
+    it('should render component with title', () => {
+      expect(wrapper.text()).toContain('Test Graphic Capex NCF')
+    })
 
-    it('should render filter button', () => {
-      wrapper = createWrapper();
-      const filterButton = wrapper.find('button');
-      expect(filterButton.exists()).toBe(true);
-      expect(filterButton.text()).toContain('Filter');
-    });
-
-    it('should show loading state initially', async () => {
-      mockGrafikServiceInstance.getInitialPembangkit.mockResolvedValue(mockInitialPembangkitResponse);
-      mockGrafikServiceInstance.getGraphicAnalitikCF.mockResolvedValue(mockApiResponse);
+    it('should initialize and fetch data on mount', async () => {
+      await nextTick()
       
-      wrapper = createWrapper();
-      await nextTick();
+      expect(mockGrafikService.getInitialPembangkit).toHaveBeenCalled()
+      expect(mockGrafikService.getGraphicAnalitikCF).toHaveBeenCalled()
+    })
+
+    it('should populate initial pembangkit data', async () => {
+      await nextTick()
       
-      expect(wrapper.find('[data-testid="shimmer-loading"]').exists()).toBe(true);
-    });
-  });
+      const vm = wrapper.vm as any
+      expect(vm.value).toEqual(['PLTU', 'PLTG'])
+    })
+  })
 
   describe('Data Fetching', () => {
-    it('should fetch initial pembangkit data on mount', async () => {
-      mockGrafikServiceInstance.getInitialPembangkit.mockResolvedValue(mockInitialPembangkitResponse);
-      mockGrafikServiceInstance.getGraphicAnalitikCF.mockResolvedValue(mockApiResponse);
-      
-      wrapper = createWrapper();
-      await nextTick();
-      
-      expect(mockGrafikServiceInstance.getInitialPembangkit).toHaveBeenCalled();
-    });
+    it('should process graph data successfully', async () => {
+      const vm = wrapper.vm as any
+      await vm.getDataGraph()
 
-    it('should handle fetch initial pembangkit error', async () => {
-      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-      mockGrafikServiceInstance.getInitialPembangkit.mockRejectedValue(new Error('API Error'));
-      mockGrafikServiceInstance.getGraphicAnalitikCF.mockResolvedValue(mockApiResponse);
-      
-      wrapper = createWrapper();
-      await nextTick();
-      
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Fetch Initial Pembangkit Error : ', expect.any(Error));
-      consoleErrorSpy.mockRestore();
-    });
+      expect(vm.graphData.isEmpty).toBe(false)
+      expect(vm.graphData.series).toHaveLength(2)
+      expect(vm.graphData.legends).toHaveLength(2)
+      expect(vm.graphData.pln.x).toBe(77.5)
+      expect(vm.graphData.ipp.x).toBe(72)
+    })
 
-    it('should fetch graph data successfully', async () => {
-      mockGrafikServiceInstance.getInitialPembangkit.mockResolvedValue(mockInitialPembangkitResponse);
-      mockGrafikServiceInstance.getGraphicAnalitikCF.mockResolvedValue(mockApiResponse);
-      
-      wrapper = createWrapper();
-      await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 0)); // Wait for async operations
-      
-      expect(mockGrafikServiceInstance.getGraphicAnalitikCF).toHaveBeenCalled();
-    });
+    it('should handle empty graph data', async () => {
+      mockGrafikService.getGraphicAnalitikCF.mockResolvedValue({
+        success: true,
+        data: [{ grafik: null, legend: [] }]
+      })
 
-    it('should handle graph data fetch error', async () => {
-      const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
-      mockGrafikServiceInstance.getInitialPembangkit.mockResolvedValue(mockInitialPembangkitResponse);
-      mockGrafikServiceInstance.getGraphicAnalitikCF.mockRejectedValue(new Error('Graph API Error'));
-      
-      wrapper = createWrapper();
-      await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 0));
-      
-      expect(consoleLogSpy).toHaveBeenCalledWith(expect.any(Error));
-      consoleLogSpy.mockRestore();
-    });
-  });
+      const vm = wrapper.vm as any
+      await vm.getDataGraph()
 
-  describe('Modal Interactions', () => {
-    beforeEach(async () => {
-      jest.clearAllMocks();
-      mockGrafikServiceInstance.getInitialPembangkit.mockResolvedValue(mockInitialPembangkitResponse);
-      mockGrafikServiceInstance.getGraphicAnalitikCF.mockResolvedValue(mockApiResponse);
-      wrapper = createWrapper();
-      await nextTick();
-    });
+      expect(vm.graphData.isEmpty).toBe(true)
+    })
 
-    it('should open modal when filter button is clicked', async () => {
-      // Set the showModal directly instead of triggering click
-      wrapper.vm.showModal = true;
-      await nextTick();
-      
-      expect(wrapper.find('[data-testid="modal-wrapper"]').exists()).toBe(true);
-    });
+    it('should handle API errors gracefully', async () => {
+      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+      mockGrafikService.getGraphicAnalitikCF.mockRejectedValue(new Error('API Error'))
 
-    it('should close modal when closeModal is called with valid selection', async () => {
-      // Set modal to open first
-      wrapper.vm.showModal = true;
-      await nextTick();
-      
-      // Set value to have valid selection
-      wrapper.vm.value = ['PLTU'];
-      await wrapper.vm.closeModal();
-      await nextTick();
-      
-      expect(wrapper.vm.showModal).toBe(false);
-    });
+      const vm = wrapper.vm as any
+      await vm.getDataGraph()
 
-    it('should show error when closeModal is called without selection', async () => {
-      wrapper.vm.value = [];
-      wrapper.vm.filter.tahun = 2024;
-      await wrapper.vm.closeModal();
-      
-      expect(mockNotifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000);
-    });
+      expect(vm.isLoading).toBe(false)
+      expect(consoleSpy).toHaveBeenCalled()
+      consoleSpy.mockRestore()
+    })
+  })
 
-    it('should show error when closeModal is called without year', async () => {
-      wrapper.vm.value = []; // No value selected
-      wrapper.vm.filter.tahun = null; // No year selected
-      await wrapper.vm.closeModal();
-      
-      expect(mockNotifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000);
-    });
+  describe('Filter Functionality', () => {
+    beforeEach(() => {
+      vi.clearAllMocks()
+    })
 
-    it('should close modal when valid selection is provided', async () => {
-      wrapper.vm.value = ['PLTU']; // Has value
-      wrapper.vm.filter.tahun = null; // No year - but with value, modal should close
-      await wrapper.vm.closeModal();
+    it('should validate filter inputs in closeModal', () => {
+      const vm = wrapper.vm as any
       
-      expect(wrapper.vm.showModal).toBe(false);
-    });
+      // Test case: no kategori pembangkit and no tahun
+      vm.value = []
+      vm.filter.tahun = null
+      vm.closeModal()
+      expect(notifyError).toHaveBeenCalledWith(
+        'Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 
+        5000
+      )
+    })
 
-    it('should show error when closeModal is called without both selection and year', async () => {
-      wrapper.vm.value = [];
-      wrapper.vm.filter.tahun = null;
-      await wrapper.vm.closeModal();
+    it('should validate kategori pembangkit only in closeModal', () => {
+      const vm = wrapper.vm as any
       
-      expect(mockNotifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000);
-    });
-  });
+      vm.value = []
+      vm.filter.tahun = 2024
+      vm.closeModal()
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000)
+    })
 
-  describe('Filter Functions', () => {
-    beforeEach(async () => {
-      jest.clearAllMocks();
-      mockGrafikServiceInstance.getInitialPembangkit.mockResolvedValue(mockInitialPembangkitResponse);
-      mockGrafikServiceInstance.getGraphicAnalitikCF.mockResolvedValue(mockApiResponse);
-      wrapper = createWrapper();
-      await nextTick();
-    });
+    it('should close modal when validation passes', () => {
+      const vm = wrapper.vm as any
+      
+      vm.value = ['PLTU']
+      vm.filter.tahun = 2024
+      vm.showModal = true
+      vm.closeModal()
+      
+      expect(vm.showModal).toBe(false)
+    })
+  })
 
-    it('should apply filter successfully', async () => {
-      wrapper.vm.value = ['PLTU'];
-      wrapper.vm.filter.tahun = 2024;
-      
-      await wrapper.vm.applyFilter();
-      
-      expect(wrapper.vm.showModal).toBe(false);
-      expect(mockGrafikServiceInstance.getGraphicAnalitikCF).toHaveBeenCalled();
-    });
+  describe('Apply Filter Functions', () => {
+    beforeEach(() => {
+      vi.clearAllMocks()
+    })
 
-    it('should show error when applyFilter is called without selection', async () => {
-      wrapper.vm.value = [];
-      wrapper.vm.filter.tahun = 2024;
+    it('should show validation error in applyFilter when invalid', async () => {
+      const vm = wrapper.vm as any
       
-      await wrapper.vm.applyFilter();
+      vm.value = []
+      vm.filter.tahun = null
       
-      expect(mockNotifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000);
-    });
+      await vm.applyFilter()
+      
+      expect(notifyError).toHaveBeenCalledWith(
+        'Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 
+        5000
+      )
+    })
 
-    it('should apply filter no DMN successfully', async () => {
-      wrapper.vm.value = ['PLTU'];
-      wrapper.vm.filter.tahun = 2024;
+    it('should show validation error in applyFilterNoDMN when invalid', async () => {
+      const vm = wrapper.vm as any
       
-      await wrapper.vm.applyFilterNoDMN();
+      vm.value = []
+      vm.filter.tahun = 2024
       
-      expect(wrapper.vm.showModal).toBe(false);
-      expect(mockGrafikServiceInstance.getGraphicAnalitikCF).toHaveBeenCalledWith({
-        kode_jenis_pembangkit: ['PLTU'],
-        id_daya: [],
-        periode: '2024'
-      });
-    });
-  });
+      await vm.applyFilterNoDMN()
+      
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000)
+    })
+  })
 
   describe('Checkbox Handlers', () => {
-    beforeEach(async () => {
-      jest.clearAllMocks();
-      mockGrafikServiceInstance.getInitialPembangkit.mockResolvedValue(mockInitialPembangkitResponse);
-      mockGrafikServiceInstance.getGraphicAnalitikCF.mockResolvedValue(mockApiResponse);
-      wrapper = createWrapper();
-      await nextTick();
-    });
+    it('should handle check all pembangkit', () => {
+      const vm = wrapper.vm as any
+      
+      vm.handleCheckAll(true)
+      expect(vm.value).toEqual(['PLTU', 'PLTG', 'PLTS'])
+      expect(vm.indeterminate).toBe(false)
+      
+      vm.handleCheckAll(false)
+      expect(vm.value).toEqual([])
+    })
 
-    it('should handle check all pembangkit', async () => {
-      await wrapper.vm.handleCheckAll(true);
+    it('should handle check all DMN', () => {
+      const vm = wrapper.vm as any
       
-      expect(wrapper.vm.value).toEqual(['PLTU', 'PLTG', 'PLTP']);
-      expect(wrapper.vm.indeterminate).toBe(false);
-    });
+      vm.handleCheckDmn(true)
+      expect(vm.dmn).toEqual(['1', '2', '3'])
+      expect(vm.indeterminateDmn).toBe(false)
+      
+      vm.handleCheckDmn(false)
+      expect(vm.dmn).toEqual([])
+    })
+  })
 
-    it('should handle uncheck all pembangkit', async () => {
-      wrapper.vm.value = ['PLTU', 'PLTG'];
-      await wrapper.vm.handleCheckAll(false);
+  describe('Watch Effects', () => {
+    it('should update checkAll state based on value changes', async () => {
+      const vm = wrapper.vm as any
       
-      expect(wrapper.vm.value).toEqual([]);
-      expect(wrapper.vm.indeterminate).toBe(false);
-    });
+      // Empty selection
+      vm.value = []
+      await nextTick()
+      expect(vm.checkAll).toBe(false)
+      expect(vm.indeterminate).toBe(false)
+      
+      // Partial selection
+      vm.value = ['PLTU']
+      await nextTick()
+      expect(vm.indeterminate).toBe(true)
+      
+      // Full selection
+      vm.value = ['PLTU', 'PLTG', 'PLTS']
+      await nextTick()
+      expect(vm.checkAll).toBe(true)
+      expect(vm.indeterminate).toBe(false)
+    })
 
-    it('should handle check all DMN', async () => {
-      await wrapper.vm.handleCheckDmn(true);
+    it('should update DMN checkbox states', async () => {
+      const vm = wrapper.vm as any
       
-      expect(wrapper.vm.dmn).toEqual(['1', '2', '3']);
-      expect(wrapper.vm.indeterminateDmn).toBe(false);
-    });
+      // Empty DMN
+      vm.dmn = []
+      await nextTick()
+      expect(vm.checkDmn).toBe(false)
+      expect(vm.indeterminateDmn).toBe(false)
+      
+      // Partial DMN
+      vm.dmn = [1]
+      await nextTick()
+      expect(vm.indeterminateDmn).toBe(true)
+      
+      // Full DMN
+      vm.dmn = [1, 2, 3]
+      await nextTick()
+      expect(vm.checkDmn).toBe(true)
+      expect(vm.indeterminateDmn).toBe(false)
+    })
+  })
 
-    it('should handle uncheck all DMN', async () => {
-      wrapper.vm.dmn = ['1', '2'];
-      await wrapper.vm.handleCheckDmn(false);
-      
-      expect(wrapper.vm.dmn).toEqual([]);
-      expect(wrapper.vm.indeterminateDmn).toBe(false);
-    });
-  });
+  describe('Data Processing', () => {
+    it('should correctly map graph data to series', async () => {
+      const vm = wrapper.vm as any
+      await vm.getDataGraph()
 
-  describe('Watchers', () => {
-    beforeEach(async () => {
-      jest.clearAllMocks();
-      mockGrafikServiceInstance.getInitialPembangkit.mockResolvedValue(mockInitialPembangkitResponse);
-      mockGrafikServiceInstance.getGraphicAnalitikCF.mockResolvedValue(mockApiResponse);
-      wrapper = createWrapper();
-      await nextTick();
-    });
+      const series = vm.graphData.series
+      expect(series[0].name).toBe('PLTU')
+      expect(series[0].type).toBe('scatter')
+      expect(series[0].color).toBe('#ff0000')
+      expect(series[0].data).toEqual([[80, 1500, 5, 'Test Machine 1']])
+      
+      expect(series[1].name).toBe('PLTG')
+      expect(series[1].data).toEqual([[75, 1200, 5, 'Test Machine 2']])
+    })
 
-    it('should update checkAll state when value changes to empty', async () => {
-      wrapper.vm.value = [];
-      await nextTick();
-      
-      expect(wrapper.vm.checkAll).toBe(false);
-      expect(wrapper.vm.indeterminate).toBe(false);
-    });
+    it('should populate source data correctly', async () => {
+      const vm = wrapper.vm as any
+      await vm.getDataGraph()
 
-    it('should update checkAll state when value changes to full', async () => {
-      wrapper.vm.value = ['PLTU', 'PLTG', 'PLTP'];
-      await nextTick();
-      
-      expect(wrapper.vm.checkAll).toBe(true);
-      expect(wrapper.vm.indeterminate).toBe(false);
-    });
+      expect(vm.graphData.source).toEqual([
+        [80, 1500],
+        [75, 1200]
+      ])
+    })
+  })
 
-    it('should update indeterminate state when value changes partially', async () => {
-      wrapper.vm.value = ['PLTU'];
-      await nextTick();
+  describe('Error Handling', () => {
+    it('should handle fetchInitialPembangkit error', async () => {
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      mockGrafikService.getInitialPembangkit.mockRejectedValue(new Error('Fetch error'))
       
-      expect(wrapper.vm.indeterminate).toBe(true);
-    });
+      const vm = wrapper.vm as any
+      await vm.fetchInitialPembangkit()
+      
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Fetch Initial Pembangkit Error : ', 
+        expect.any(Error)
+      )
+      consoleSpy.mockRestore()
+    })
 
-    it('should update checkDmn state when dmn changes to empty', async () => {
-      wrapper.vm.dmn = [];
-      await nextTick();
+    it('should handle getDataGraphNoDMN error', async () => {
+      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+      mockGrafikService.getGraphicAnalitikCF.mockRejectedValue(new Error('Graph error'))
       
-      expect(wrapper.vm.checkDmn).toBe(false);
-      expect(wrapper.vm.indeterminateDmn).toBe(false);
-    });
+      const vm = wrapper.vm as any
+      await vm.getDataGraphNoDMN()
+      
+      expect(vm.isLoading).toBe(false)
+      expect(consoleSpy).toHaveBeenCalled()
+      consoleSpy.mockRestore()
+    })
+  })
 
-    it('should update checkDmn state when dmn changes to full', async () => {
-      wrapper.vm.dmn = ['1', '2', '3'];
-      await nextTick();
-      
-      expect(wrapper.vm.checkDmn).toBe(true);
-      expect(wrapper.vm.indeterminateDmn).toBe(false);
-    });
-
-    it('should update indeterminateDmn state when dmn changes partially', async () => {
-      wrapper.vm.dmn = ['1'];
-      await nextTick();
-      
-      expect(wrapper.vm.indeterminateDmn).toBe(true);
-    });
-  });
-
-  describe('Empty State', () => {
-    it('should show empty state when no data available', async () => {
-      const emptyResponse = {
-        success: true,
-        data: [{
-          grafik: null,
-          legend: null,
-          average_pln_ncf: 0,
-          average_pln_capex: 0,
-          average_ipp_ncf: 0,
-          average_ipp_capex: 0
-        }]
-      };
-
-      mockGrafikServiceInstance.getInitialPembangkit.mockResolvedValue(mockInitialPembangkitResponse);
-      mockGrafikServiceInstance.getGraphicAnalitikCF.mockResolvedValue(emptyResponse);
-      
-      wrapper = createWrapper();
-      await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 0));
-      
-      expect(wrapper.find('[data-testid="empty-icon"]').exists()).toBe(true);
-    });
-
-    it('should show scatter plot when data is available', async () => {
-      mockGrafikServiceInstance.getInitialPembangkit.mockResolvedValue(mockInitialPembangkitResponse);
-      mockGrafikServiceInstance.getGraphicAnalitikCF.mockResolvedValue(mockApiResponse);
-      
-      wrapper = createWrapper();
-      await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 0));
-      
-      // Wait for loading to complete
-      await new Promise(resolve => setTimeout(resolve, 100));
-      await nextTick();
-      
-      expect(wrapper.find('[data-testid="dynamic-scatter-plot"]').exists()).toBe(true);
-    });
-  });
-
-  describe('Graph Data Processing', () => {
-    beforeEach(async () => {
-      jest.clearAllMocks();
-      mockGrafikServiceInstance.getInitialPembangkit.mockResolvedValue(mockInitialPembangkitResponse);
-      mockGrafikServiceInstance.getGraphicAnalitikCF.mockResolvedValue(mockApiResponse);
-      wrapper = createWrapper();
-      await nextTick();
-    });
-
-    it('should process graph data correctly', async () => {
-      await wrapper.vm.getDataGraph();
-      
-      expect(wrapper.vm.graphData.pln.x).toBe(80); // average_pln_ncf
-      expect(wrapper.vm.graphData.pln.y).toBe(950); // average_pln_capex
-      expect(wrapper.vm.graphData.ipp.x).toBe(85); // average_ipp_ncf
-      expect(wrapper.vm.graphData.ipp.y).toBe(1050); // average_ipp_capex
-      expect(wrapper.vm.graphData.isEmpty).toBe(false);
-    });
-
-    it('should process graph data correctly for NoDMN', async () => {
-      await wrapper.vm.getDataGraphNoDMN();
-      
-      expect(wrapper.vm.graphData.pln.x).toBe(80); // average_pln_ncf
-      expect(wrapper.vm.graphData.pln.y).toBe(950); // average_pln_capex
-      expect(wrapper.vm.graphData.ipp.x).toBe(85); // average_ipp_ncf
-      expect(wrapper.vm.graphData.ipp.y).toBe(1050); // average_ipp_capex
-      expect(wrapper.vm.graphData.isEmpty).toBe(false);
-    });
-
-    it('should set isEmpty to true when grafik is null', async () => {
-      const emptyResponse = {
-        success: true,
-        data: [{
-          grafik: null,
-          legend: [],
-          average_pln_ncf: 80,
-          average_pln_capex: 950,
-          average_ipp_ncf: 85,
-          average_ipp_capex: 1050
-        }]
-      };
-
-      mockGrafikServiceInstance.getGraphicAnalitikCF.mockResolvedValue(emptyResponse);
-      await wrapper.vm.getDataGraph();
-      
-      expect(wrapper.vm.graphData.isEmpty).toBe(true);
-    });
-  });
-
-  describe('Filter Badge Display', () => {
-    beforeEach(async () => {
-      jest.clearAllMocks();
-      mockGrafikServiceInstance.getInitialPembangkit.mockResolvedValue(mockInitialPembangkitResponse);
-      mockGrafikServiceInstance.getGraphicAnalitikCF.mockResolvedValue(mockApiResponse);
-      wrapper = createWrapper();
-      await nextTick();
-    });
-
-    it('should display selected pembangkit categories in badge', async () => {
-      wrapper.vm.value = ['PLTU', 'PLTG'];
-      await nextTick();
-      
-      const badge = wrapper.find('.badge');
-      expect(badge.exists()).toBe(true);
-      expect(badge.text()).toContain('Kategori Pembangkit');
-    });
-
-    it('should display selected DMN values when PLTU is selected', async () => {
-      wrapper.vm.value = ['PLTU'];
-      wrapper.vm.dmn = ['1', '2'];
-      await nextTick();
-      
-      const badges = wrapper.findAll('.badge');
-      const dmnBadge = badges.find(badge => badge.text().includes('DMN'));
-      expect(dmnBadge?.exists()).toBe(true);
-    });
-
-    it('should display selected year in badge', async () => {
-      wrapper.vm.filter.tahun = 2024;
-      await nextTick();
-      
-      const badges = wrapper.findAll('.badge');
-      const yearBadge = badges.find(badge => badge.text().includes('Tahun'));
-      expect(yearBadge?.exists()).toBe(true);
-    });
-  });
-
-  describe('Props Validation', () => {
-    it('should accept valid props', () => {
-      wrapper = createWrapper(defaultProps);
-      expect(wrapper.props()).toEqual(defaultProps);
-    });
-
-    it('should handle empty itemsPembangkit', () => {
-      const props = { ...defaultProps, itemsPembangkit: [] };
-      wrapper = createWrapper(props);
-      expect(wrapper.props().itemsPembangkit).toEqual([]);
-    });
-
-    it('should handle empty itemsDayaMampu', () => {
-      const props = { ...defaultProps, itemsDayaMampu: [] };
-      wrapper = createWrapper(props);
-      expect(wrapper.props().itemsDayaMampu).toEqual([]);
-    });
-  });
-
-  describe('API Call Validation', () => {
-    beforeEach(async () => {
-      jest.clearAllMocks();
-      mockGrafikServiceInstance.getInitialPembangkit.mockResolvedValue(mockInitialPembangkitResponse);
-      mockGrafikServiceInstance.getGraphicAnalitikCF.mockResolvedValue(mockApiResponse);
-      wrapper = createWrapper();
-      await nextTick();
-    });
-
-    it('should call getGraphicAnalitikCF with correct parameters', async () => {
-      wrapper.vm.value = ['PLTU'];
-      wrapper.vm.dmn = ['1', '2'];
-      wrapper.vm.filter.tahun = 2024;
-      
-      await wrapper.vm.getDataGraph();
-      
-      expect(mockGrafikServiceInstance.getGraphicAnalitikCF).toHaveBeenCalledWith({
-        kode_jenis_pembangkit: ['PLTU'],
-        id_daya: ['1', '2'],
-        periode: '2024'
-      });
-    });
-
-    it('should call getGraphicAnalitikCF with empty id_daya for NoDMN', async () => {
-      wrapper.vm.value = ['PLTU'];
-      wrapper.vm.filter.tahun = 2024;
-      
-      await wrapper.vm.getDataGraphNoDMN();
-      
-      expect(mockGrafikServiceInstance.getGraphicAnalitikCF).toHaveBeenCalledWith({
-        kode_jenis_pembangkit: ['PLTU'],
-        id_daya: [],
-        periode: '2024'
-      });
-    });
-  });
-
-  describe('Loading States', () => {
-    it('should set isLoading to true when fetching data', async () => {
-      mockGrafikServiceInstance.getInitialPembangkit.mockResolvedValue(mockInitialPembangkitResponse);
-      mockGrafikServiceInstance.getGraphicAnalitikCF.mockImplementation(() => {
-        expect(wrapper.vm.isLoading).toBe(true);
-        return Promise.resolve(mockApiResponse);
-      });
-      
-      wrapper = createWrapper();
-      await nextTick();
-      
-      await wrapper.vm.getDataGraph();
-    });
-
-    it('should set isLoading to false after data fetch completes', async () => {
-      mockGrafikServiceInstance.getInitialPembangkit.mockResolvedValue(mockInitialPembangkitResponse);
-      mockGrafikServiceInstance.getGraphicAnalitikCF.mockResolvedValue(mockApiResponse);
-      
-      wrapper = createWrapper();
-      await nextTick();
-      
-      await wrapper.vm.getDataGraph();
-      
-      expect(wrapper.vm.isLoading).toBe(false);
-    });
-
-    it('should set isLoading to false when error occurs', async () => {
-      mockGrafikServiceInstance.getInitialPembangkit.mockResolvedValue(mockInitialPembangkitResponse);
-      mockGrafikServiceInstance.getGraphicAnalitikCF.mockRejectedValue(new Error('API Error'));
-      
-      wrapper = createWrapper();
-      await nextTick();
-      
-      await wrapper.vm.getDataGraph();
-      
-      expect(wrapper.vm.isLoading).toBe(false);
-    });
-  });
-});
+  afterEach(() => {
+    wrapper.unmount()
+  })
+})

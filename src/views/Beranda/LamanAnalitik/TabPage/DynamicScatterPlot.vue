@@ -190,18 +190,6 @@ const option = computed({
     emits('update:series', val)
   }
 })
-
-// onMounted(() => {
-//   const chart = echarts.init(chartRef.value);
-//   chart.setOption(option.value);
-
-//   // Mendapatkan opsi yang dihitung setelah grafik di-render
-//   setTimeout(() => {
-//     const computedOption = chart.getOption();
-//     // const yAxisMin = computedOption.yAxis[0].min;
-//     console.log('yAxis min:', computedOption);
-//   }, 100);
-// });
 </script>
 
 <template>

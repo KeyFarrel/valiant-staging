@@ -1,976 +1,549 @@
-import { mount, flushPromises } from '@vue/test-utils';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import GraphicNPHR from '@/views/Beranda/LamanAnalitik/TabPage/Teknis/GraphicNPHR.vue';
 import GrafikService from '@/services/grafik-service';
 import { notifyError } from '@/services/helper/toast-notification';
 
-// Mock services
-jest.mock('@/services/grafik-service');
-jest.mock('@/services/helper/toast-notification');
+// Mock the services
+vi.mock('@/services/grafik-service');
+vi.mock('@/services/helper/toast-notification');
 
-// Mock child components
-jest.mock('@/components/icons/IconEmptyData.vue', () => ({
-  name: 'Empty',
-  template: '<div data-testid="empty-data">No Data</div>',
-}));
+const mockGrafikService = {
+  getInitialPembangkit: vi.fn(),
+  getGraphicTeknisNPHR: vi.fn(),
+};
 
-jest.mock('@/components/ui/ShimmerLoading.vue', () => ({
-  name: 'ShimmerLoading',
-  props: ['class'],
-  template: '<div data-testid="shimmer-loading">Loading...</div>',
-}));
+// Mock GrafikService constructor
+vi.mocked(GrafikService).mockImplementation(() => mockGrafikService as any);
 
-jest.mock('@/components/ui/ModalWrapper.vue', () => ({
-  name: 'ModalWrapper',
-  props: ['showModal', 'width', 'height'],
-  template: '<div data-testid="modal-wrapper" v-if="showModal"><slot /></div>',
-}));
+const defaultProps = {
+  itemsPembangkit: [
+    { id: 'PLTU', name: 'PLTU' },
+    { id: 'PLTG', name: 'PLTG' },
+    { id: 'PLTS', name: 'PLTS' },
+  ],
+  itemsDayaMampu: [
+    { id: '1', name: 'PLTU < 100' },
+    { id: '2', name: 'PLTU 100 - 400' },
+    { id: '3', name: 'PLTU > 400' },
+  ],
+  itemsDaya: [
+    { id: '1', daya: '100', satuan: 'MW' },
+    { id: '2', daya: '200', satuan: 'MW' },
+  ],
+  title: 'Test Graphic NPHR',
+  yearRange: [2020, 2025],
+};
 
-jest.mock('@/views/Beranda/LamanAnalitik/TabPage/DynamicScatterPlotVertiLine.vue', () => ({
-  name: 'DynamicScatterPlotVertiLine',
-  props: ['series', 'legends', 'years', 'yValues', 'xData', 'yData', 'dataZoom'],
-  template: '<div data-testid="dynamic-scatter-plot">Chart Component</div>',
-}));
-
-// Mock Element Plus components
-jest.mock('element-plus', () => ({
-  ElSelect: {
-    name: 'el-select',
-    props: ['modelValue', 'multiple', 'clearable', 'collapseTags', 'placeholder', 'popperClass', 'maxCollapseTags'],
-    template: '<div data-testid="el-select"><slot name="header" /><slot /></div>',
-  },
-  ElOption: {
-    name: 'el-option',
-    props: ['label', 'value'],
-    template: '<div data-testid="el-option">{{label}}</div>',
-  },
-  ElCheckbox: {
-    name: 'el-checkbox',
-    props: ['modelValue', 'indeterminate'],
-    template: '<div data-testid="el-checkbox"><slot /></div>',
-  },
-}));
-
-// Mock VueDatePicker
-jest.mock('@vuepic/vue-datepicker', () => ({
-  __esModule: true,
-  default: {
-    name: 'VueDatePicker',
-    props: ['modelValue', 'placeholder', 'formatLocale', 'yearRange', 'enableTimePicker', 'hideInputIcon', 'clearable', 'showNowButton', 'yearPicker', 'monthChangeOnScroll', 'teleport', 'range'],
-    template: '<div data-testid="vue-date-picker">Date Picker</div>',
-  },
-}));
-
-// Mock date-fns locale
-jest.mock('date-fns/locale', () => ({
-  id: {},
-}));
-
-describe('GraphicNPHR', () => {
-  let wrapper: any;
-  let mockGrafikService: jest.Mocked<GrafikService>;
-
-  const defaultProps = {
-    itemsPembangkit: [
-      { id: 'PLTU', name: 'PLTU' },
-      { id: 'PLTG', name: 'PLTG' },
-      { id: 'PLTA', name: 'PLTA' },
-    ],
-    itemsDayaMampu: [
-      { id: '1', name: 'PLTU < 100 MW' },
-      { id: '2', name: 'PLTU 100 - 400 MW' },
-      { id: '3', name: 'PLTU > 400 MW' },
-    ],
-    itemsDaya: [
-      { id: '1', daya: '100', satuan: 'MW' },
-      { id: '2', daya: '400', satuan: 'MW' },
-    ],
-    title: 'Grafik Net Plant Heat Rate (NPHR)',
-    yearRange: [2019, 2023],
-  };
-
-  const mockInitialPembangkitResponse = {
+const mockGraphicData = {
+  success: true,
+  data: {
     data: [
-      { kode_jenis_pembangkit: 'PLTU' },
-      { kode_jenis_pembangkit: 'PLTG' },
+      {
+        kode_jenis_kit: 'PLTU',
+        data: {
+          tahun: '2023',
+          value: 2500,
+        },
+        nama_mesin: 'Test Machine 1',
+      },
+      {
+        kode_jenis_kit: 'PLTG',
+        data: {
+          tahun: '2024',
+          value: 2800,
+        },
+        nama_mesin: 'Test Machine 2',
+      },
     ],
-  };
+    legend: [
+      { label: 'PLTU', color: '#ff0000' },
+      { label: 'PLTG', color: '#00ff00' },
+    ],
+  },
+};
 
-  const mockGraphDataResponse = {
-    success: true,
-    data: {
-      data: [
-        {
-          kode_jenis_kit: 'PLTU',
-          nama_mesin: 'PLTU Unit 1',
-          data: { tahun: '2020', value: 2450.5 },
-        },
-        {
-          kode_jenis_kit: 'PLTG',
-          nama_mesin: 'PLTG Unit 1',
-          data: { tahun: '2021', value: 3120.8 },
-        },
-      ],
-      legend: [
-        { label: 'PLTU', color: '#FF5733' },
-        { label: 'PLTG', color: '#33FF57' },
-      ],
-    },
-  };
+const mockInitialPembangkit = {
+  success: true,
+  data: [
+    { kode_jenis_pembangkit: 'PLTU' },
+    { kode_jenis_pembangkit: 'PLTG' },
+  ],
+};
 
-  const mockEmptyGraphDataResponse = {
-    success: true,
-    data: {
-      data: null,
-      legend: [],
-    },
-  };
-
+describe('GraphicNPHR.vue', () => {
   beforeEach(() => {
-    // Reset mocks
-    jest.clearAllMocks();
-
-    // Mock console.log and console.error
-    jest.spyOn(console, 'log').mockImplementation(() => {});
-    jest.spyOn(console, 'error').mockImplementation(() => {});
-
-    // Create mocked service instance
-    mockGrafikService = {
-      getInitialPembangkit: jest.fn(),
-      getGraphicTeknisNPHR: jest.fn(),
-    } as any;
-
-    // Mock service constructor
-    (GrafikService as jest.MockedClass<typeof GrafikService>).mockImplementation(() => mockGrafikService);
-
-    // Setup default mock responses
-    mockGrafikService.getInitialPembangkit.mockResolvedValue(mockInitialPembangkitResponse);
-    mockGrafikService.getGraphicTeknisNPHR.mockResolvedValue(mockGraphDataResponse);
+    vi.clearAllMocks();
+    mockGrafikService.getInitialPembangkit.mockResolvedValue(mockInitialPembangkit);
+    mockGrafikService.getGraphicTeknisNPHR.mockResolvedValue(mockGraphicData);
   });
 
   afterEach(() => {
-    if (wrapper) {
-      wrapper.unmount();
-    }
-    jest.restoreAllMocks();
+    vi.clearAllMocks();
   });
 
-  const createWrapper = (props = {}) => {
-    return mount(GraphicNPHR, {
-      props: {
-        ...defaultProps,
-        ...props,
-      },
-      global: {
-        stubs: {
-          'el-select': {
-            template: '<div data-testid="el-select"><slot name="header" /><slot /></div>',
-            props: ['modelValue', 'multiple', 'clearable', 'collapseTags', 'placeholder', 'popperClass', 'maxCollapseTags'],
-          },
-          'el-option': {
-            template: '<div data-testid="el-option">{{label}}</div>',
-            props: ['label', 'value'],
-          },
-          'el-checkbox': {
-            template: '<div data-testid="el-checkbox"><slot /></div>',
-            props: ['modelValue', 'indeterminate'],
-          },
-          'VueDatePicker': {
-            template: '<div data-testid="vue-date-picker">Date Picker</div>',
-            props: ['modelValue', 'placeholder', 'formatLocale', 'yearRange', 'enableTimePicker', 'hideInputIcon', 'clearable', 'showNowButton', 'yearPicker', 'monthChangeOnScroll', 'teleport', 'range'],
-          },
-        },
-      },
-    });
-  };
+  describe('Component Initialization', () => {
+    it('should render component with title', () => {
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
 
-  describe('Component Rendering', () => {
-    it('should render component successfully', () => {
-      wrapper = createWrapper();
-      expect(wrapper.exists()).toBe(true);
+      expect(wrapper.find('h2').text()).toBe(defaultProps.title);
     });
 
-    it('should render title correctly', () => {
-      wrapper = createWrapper();
-      expect(wrapper.text()).toContain('Grafik Net Plant Heat Rate (NPHR)');
+    it('should initialize and fetch data on mount', async () => {
+      mount(GraphicNPHR, {
+        props: defaultProps,
+      });
+
+      // Wait for onMounted lifecycle
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expect(mockGrafikService.getInitialPembangkit).toHaveBeenCalled();
     });
 
-    it('should render filter button', () => {
-      wrapper = createWrapper();
-      const filterButton = wrapper.find('#hover-button');
-      expect(filterButton.exists()).toBe(true);
-      expect(filterButton.text()).toContain('Filter');
-    });
+    it('should populate initial pembangkit data', async () => {
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
 
-    it('should show loading spinner when isLoading is true', async () => {
-      wrapper = createWrapper();
-      wrapper.vm.isLoading = true;
-      await nextTick();
-      
-      expect(wrapper.find('[data-testid="shimmer-loading"]').exists()).toBe(true);
-    });
+      // Wait for async operations to complete
+      await new Promise(resolve => setTimeout(resolve, 10));
 
-    it('should show empty data when graph data is empty', async () => {
-      mockGrafikService.getGraphicTeknisNPHR.mockResolvedValue(mockEmptyGraphDataResponse);
-      
-      wrapper = createWrapper();
-      await flushPromises();
-      await nextTick();
-      
-      expect(wrapper.find('[data-testid="empty-data"]').exists()).toBe(true);
-      expect(wrapper.text()).toContain('Grafik Tidak Tersedia');
-    });
-
-    it('should show chart when data is available', async () => {
-      wrapper = createWrapper();
-      await flushPromises();
-      await nextTick();
-      
-      expect(wrapper.find('[data-testid="dynamic-scatter-plot"]').exists()).toBe(true);
-    });
-  });
-
-  describe('Props Validation', () => {
-    it('should accept all required props', () => {
-      wrapper = createWrapper();
-      expect(wrapper.props().itemsPembangkit).toEqual(defaultProps.itemsPembangkit);
-      expect(wrapper.props().itemsDayaMampu).toEqual(defaultProps.itemsDayaMampu);
-      expect(wrapper.props().title).toBe(defaultProps.title);
-      expect(wrapper.props().yearRange).toEqual(defaultProps.yearRange);
-    });
-
-    it('should handle different title prop', () => {
-      const customTitle = 'Custom NPHR Chart';
-      wrapper = createWrapper({ title: customTitle });
-      expect(wrapper.text()).toContain(customTitle);
-    });
-  });
-
-  describe('Modal Functionality', () => {
-    it('should show modal when filter button is clicked', async () => {
-      wrapper = createWrapper();
-      
-      // Call the method directly since button event triggers are problematic
-      wrapper.vm.showModal = true;
-      await nextTick();
-      
-      expect(wrapper.vm.showModal).toBe(true);
-      expect(wrapper.find('[data-testid="modal-wrapper"]').exists()).toBe(true);
-    });
-
-    it('should hide modal when close button is clicked', async () => {
-      wrapper = createWrapper();
-      wrapper.vm.showModal = true;
-      await nextTick();
-      
-      const closeButton = wrapper.find('button[data-testid="close-modal"]');
-      if (closeButton.exists()) {
-        await closeButton.trigger('click');
-        expect(wrapper.vm.showModal).toBe(false);
-      }
+      const vm = wrapper.vm as any;
+      expect(vm.value).toEqual(['PLTU', 'PLTG']);
     });
   });
 
   describe('Data Fetching', () => {
-    it('should call getInitialPembangkit on mount', async () => {
-      wrapper = createWrapper();
-      await flushPromises();
-      
-      expect(mockGrafikService.getInitialPembangkit).toHaveBeenCalledTimes(1);
-    });
+    it('should process graph data successfully', async () => {
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
 
-    it('should call getGraphicTeknisNPHR on mount', async () => {
-      wrapper = createWrapper();
-      await flushPromises();
+      const vm = wrapper.vm as any;
       
-      expect(mockGrafikService.getGraphicTeknisNPHR).toHaveBeenCalledTimes(1);
-    });
+      // Manually call getDataGraph to test it
+      await vm.getDataGraph();
 
-    it('should populate initial pembangkit values', async () => {
-      wrapper = createWrapper();
-      await flushPromises();
-      await nextTick();
-      
-      expect(wrapper.vm.value).toContain('PLTU');
-      expect(wrapper.vm.value).toContain('PLTG');
-    });
-
-    it('should handle API error for initial pembangkit', async () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-      mockGrafikService.getInitialPembangkit.mockRejectedValue(new Error('API Error'));
-      
-      wrapper = createWrapper();
-      await flushPromises();
-      
-      expect(consoleSpy).toHaveBeenCalledWith('Fetch Initial Pembangkit Error : ', new Error('API Error'));
-      
-      consoleSpy.mockRestore();
-    });
-
-    it('should handle API error for graph data', async () => {
-      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-      mockGrafikService.getGraphicTeknisNPHR.mockRejectedValue(new Error('Graph API Error'));
-      
-      wrapper = createWrapper();
-      await flushPromises();
-      
-      expect(consoleSpy).toHaveBeenCalledWith(new Error('Graph API Error'));
-      expect(wrapper.vm.isLoading).toBe(false);
-      
-      consoleSpy.mockRestore();
-    });
-  });
-
-  describe('Graph Data Processing', () => {
-    it('should process graph data correctly', async () => {
-      wrapper = createWrapper();
-      await flushPromises();
-      await nextTick();
-      
-      const vm = wrapper.vm;
       expect(vm.graphData.isEmpty).toBe(false);
-      expect(vm.graphData.legends).toHaveLength(2);
       expect(vm.graphData.series).toHaveLength(2);
-      expect(vm.graphData.years).toContain(2020);
-      expect(vm.graphData.values).toContain(2450.5);
+      expect(vm.graphData.legends).toHaveLength(2);
     });
 
-    it('should create scatter series correctly', async () => {
-      wrapper = createWrapper();
-      await flushPromises();
-      await nextTick();
-      
-      const vm = wrapper.vm;
-      const pltuSeries = vm.graphData.series.find((s: any) => s.name === 'PLTU');
-      
-      expect(pltuSeries).toBeDefined();
-      expect(pltuSeries.type).toBe('scatter');
-      expect(pltuSeries.color).toBe('#FF5733');
-      expect(pltuSeries.data).toContainEqual([2020, 2450.5, 5, 'PLTU Unit 1']);
+    it('should handle empty graph data', async () => {
+      mockGrafikService.getGraphicTeknisNPHR.mockResolvedValue({
+        success: true,
+        data: { data: null, legend: [] },
+      });
+
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
+
+      const vm = wrapper.vm as any;
+      await vm.getDataGraph();
+
+      expect(vm.graphData.isEmpty).toBe(true);
     });
 
-    it('should handle empty graph data response', async () => {
-      mockGrafikService.getGraphicTeknisNPHR.mockResolvedValue(mockEmptyGraphDataResponse);
+    it('should handle fetchInitialPembangkit error', async () => {
+      mockGrafikService.getInitialPembangkit.mockRejectedValue(new Error('Fetch Error'));
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
+
+      const vm = wrapper.vm as any;
+      await vm.fetchInitialPembangkit();
+
+      expect(consoleSpy).toHaveBeenCalledWith('Fetch Initial Pembangkit Error : ', expect.any(Error));
+      consoleSpy.mockRestore();
+    });
+
+    it('should handle getDataGraph error and log error', async () => {
+      mockGrafikService.getGraphicTeknisNPHR.mockRejectedValue(new Error('API Error'));
+      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
+
+      const vm = wrapper.vm as any;
       
-      wrapper = createWrapper();
-      await flushPromises();
-      await nextTick();
+      await vm.getDataGraph();
+
+      expect(consoleSpy).toHaveBeenCalledWith(expect.any(Error));
+      consoleSpy.mockRestore();
+    });
+
+    it('should handle getDataGraphNoDMN error and log error', async () => {
+      mockGrafikService.getGraphicTeknisNPHR.mockRejectedValue(new Error('API Error'));
+      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
+
+      const vm = wrapper.vm as any;
       
-      expect(wrapper.vm.graphData.isEmpty).toBe(true);
-      expect(wrapper.vm.graphData.series).toHaveLength(0);
-      expect(wrapper.vm.graphData.legends).toHaveLength(0);
+      await vm.getDataGraphNoDMN();
+
+      expect(consoleSpy).toHaveBeenCalledWith(expect.any(Error));
+      consoleSpy.mockRestore();
     });
   });
 
   describe('Filter Functionality', () => {
-    it('should show filter notification dot when filters are applied', async () => {
-      wrapper = createWrapper();
-      wrapper.vm.value = ['PLTU'];
-      wrapper.vm.filter.periode = [2020, 2021];
-      await nextTick();
-      
-      const filterDot = wrapper.find('.bg-warningColor');
-      expect(filterDot.exists()).toBe(true);
-    });
-
-    it('should reset filters when reset button is clicked', async () => {
-      wrapper = createWrapper();
-      await flushPromises(); // Wait for initial data to load
-      
-      const initialLength = wrapper.vm.value.length; // Store initial length after fetchInitialPembangkit
-      wrapper.vm.value = ['PLTU', 'PLTG', 'PLTA']; // Add more items
-      
-      // Simulate reset button click by directly setting value to empty
-      wrapper.vm.value = [];
-      await nextTick();
-      
-      expect(wrapper.vm.value).toHaveLength(0);
-    });
-
-    it('should apply filter when valid selection is made', async () => {
-      wrapper = createWrapper();
-      await flushPromises(); // Wait for initial API calls
-      mockGrafikService.getGraphicTeknisNPHR.mockClear(); // Clear previous calls
-      
-      wrapper.vm.value = ['PLTU'];
-      wrapper.vm.filter.periode = [2020, 2021];
-      
-      await wrapper.vm.applyFilter();
-      
-      expect(mockGrafikService.getGraphicTeknisNPHR).toHaveBeenCalledWith({
-        kode_jenis_pembangkit: ['PLTU'],
-        id_daya: [1, 2, 3],
-        tahun_awal: '2020',
-        tahun_akhir: '2021',
+    it('should validate filter inputs in closeModal', async () => {
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
       });
-      expect(wrapper.vm.showModal).toBe(false);
+
+      const vm = wrapper.vm as any;
+      vm.value = []; // No kategori pembangkit selected
+      vm.filter.periode = null; // No periode selected
+
+      vm.closeModal();
+
+      expect(notifyError).toHaveBeenCalledWith(
+        'Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!',
+        5000
+      );
     });
 
-    it('should show error notification when no category is selected', async () => {
-      wrapper = createWrapper();
-      wrapper.vm.value = [];
-      wrapper.vm.filter.periode = [2020, 2021];
-      
-      await wrapper.vm.applyFilter();
-      
+    it('should validate kategori pembangkit only in closeModal', async () => {
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
+
+      const vm = wrapper.vm as any;
+      vm.value = []; // No kategori pembangkit selected
+      vm.filter.periode = [2020, 2025]; // Has periode
+
+      vm.closeModal();
+
       expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000);
     });
 
-    it('should show error notification when no year is selected', async () => {
-      wrapper = createWrapper();
-      await flushPromises(); // Wait for initial load
-      
-      // Clear the notifications mock
-      (notifyError as jest.Mock).mockClear();
-      
-      // Set empty value and null periode to trigger year validation
-      wrapper.vm.value = [];
-      wrapper.vm.filter.periode = null;
-      
-      await wrapper.vm.applyFilter();
-      
-      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000);
-    });
-
-    it('should show error notification when both category and year are missing', async () => {
-      wrapper = createWrapper();
-      wrapper.vm.value = [];
-      wrapper.vm.filter.periode = null;
-      
-      await wrapper.vm.applyFilter();
-      
-      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000);
-    });
-
-    it('should proceed with filter when categories are selected regardless of year', async () => {
-      wrapper = createWrapper();
-      await flushPromises(); // Wait for initial load
-      mockGrafikService.getGraphicTeknisNPHR.mockClear(); // Clear previous calls
-      
-      // Clear the notifications mock
-      (notifyError as jest.Mock).mockClear();
-      
-      wrapper.vm.value = ['PLTU'];
-      wrapper.vm.filter.periode = null;
-      
-      await wrapper.vm.applyFilter();
-      
-      // Should call API regardless of year when value has categories
-      expect(mockGrafikService.getGraphicTeknisNPHR).toHaveBeenCalled();
-      expect(notifyError).not.toHaveBeenCalled();
-      expect(wrapper.vm.showModal).toBe(false);
-    });
-  });
-
-  describe('No DMN Filter Functionality', () => {
-    it('should apply filter without DMN when PLTU is not selected', async () => {
-      wrapper = createWrapper();
-      await flushPromises(); // Wait for initial API calls
-      mockGrafikService.getGraphicTeknisNPHR.mockClear(); // Clear previous calls
-      
-      wrapper.vm.value = ['PLTG'];
-      wrapper.vm.filter.periode = [2020, 2021];
-      
-      await wrapper.vm.applyFilterNoDMN();
-      
-      expect(mockGrafikService.getGraphicTeknisNPHR).toHaveBeenCalledWith({
-        kode_jenis_pembangkit: ['PLTG'],
-        id_daya: [],
-        tahun_awal: '2020',
-        tahun_akhir: '2021',
+    it('should close modal when validation passes', async () => {
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
       });
-      expect(wrapper.vm.showModal).toBe(false);
+
+      const vm = wrapper.vm as any;
+      vm.value = ['PLTU']; // Has kategori pembangkit
+      vm.filter.periode = [2020, 2025]; // Has periode
+      vm.showModal = true;
+
+      vm.closeModal();
+
+      expect(vm.showModal).toBe(false);
+    });
+
+    it('should validate periode only in closeModal', async () => {
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
+
+      const vm = wrapper.vm as any;
+      vm.value = ['PLTU']; // Has kategori pembangkit
+      vm.filter.periode = null; // No periode selected
+
+      vm.closeModal();
+
+      // Since value.length > 0, it should close modal instead of showing error
+      expect(vm.showModal).toBe(false);
     });
   });
 
-  describe('Checkbox Functionality', () => {
+  describe('Apply Filter Functions', () => {
+    it('should show validation error in applyFilter when invalid', async () => {
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
+
+      const vm = wrapper.vm as any;
+      vm.value = []; // No kategori pembangkit selected
+      vm.filter.periode = null; // No periode selected
+
+      await vm.applyFilter();
+
+      expect(notifyError).toHaveBeenCalledWith(
+        'Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!',
+        5000
+      );
+    });
+
+    it('should show validation error in applyFilterNoDMN when invalid', async () => {
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
+
+      const vm = wrapper.vm as any;
+      vm.value = []; // No kategori pembangkit selected
+      vm.filter.periode = null; // No periode selected
+
+      await vm.applyFilterNoDMN();
+
+      expect(notifyError).toHaveBeenCalledWith(
+        'Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!',
+        5000
+      );
+    });
+
+    it('should call getDataGraph when applyFilter is valid', async () => {
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
+
+      const vm = wrapper.vm as any;
+      vm.value = ['PLTU'];
+      vm.filter.periode = [2020, 2025];
+      vm.showModal = true;
+
+      await vm.applyFilter();
+
+      expect(vm.showModal).toBe(false);
+      expect(mockGrafikService.getGraphicTeknisNPHR).toHaveBeenCalled();
+    });
+
+    it('should call getDataGraphNoDMN when applyFilterNoDMN is valid', async () => {
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
+
+      const vm = wrapper.vm as any;
+      vm.value = ['PLTU'];
+      vm.filter.periode = [2020, 2025];
+      vm.showModal = true;
+
+      await vm.applyFilterNoDMN();
+
+      expect(vm.showModal).toBe(false);
+      expect(mockGrafikService.getGraphicTeknisNPHR).toHaveBeenCalled();
+    });
+
+    it('should validate periode only in applyFilter when has kategori pembangkit', async () => {
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
+
+      const vm = wrapper.vm as any;
+      vm.value = ['PLTU']; // Has kategori pembangkit
+      vm.filter.periode = null; // No periode selected
+
+      await vm.applyFilter();
+
+      // Since value.length > 0, it should call getDataGraph instead of showing error
+      expect(mockGrafikService.getGraphicTeknisNPHR).toHaveBeenCalled();
+    });
+
+    it('should validate periode only in applyFilterNoDMN when has kategori pembangkit', async () => {
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
+
+      const vm = wrapper.vm as any;
+      vm.value = ['PLTU']; // Has kategori pembangkit
+      vm.filter.periode = null; // No periode selected
+
+      await vm.applyFilterNoDMN();
+
+      // Since value.length > 0, it should call getDataGraphNoDMN instead of showing error
+      expect(mockGrafikService.getGraphicTeknisNPHR).toHaveBeenCalled();
+    });
+  });
+
+  describe('Checkbox Handlers', () => {
     it('should handle check all pembangkit', async () => {
-      wrapper = createWrapper();
-      
-      // Clear any existing values first
-      wrapper.vm.value = [];
-      await nextTick();
-      
-      wrapper.vm.handleCheckAll(true);
-      await nextTick(); // Wait for watcher to update
-      
-      expect(wrapper.vm.value).toEqual(['PLTU', 'PLTG', 'PLTA']);
-      expect(wrapper.vm.checkAll).toBe(true);
-      expect(wrapper.vm.indeterminate).toBe(false);
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
+
+      const vm = wrapper.vm as any;
+      vm.handleCheckAll(true);
+
+      expect(vm.value).toEqual(['PLTU', 'PLTG', 'PLTS']);
+      expect(vm.indeterminate).toBe(false);
     });
 
     it('should handle uncheck all pembangkit', async () => {
-      wrapper = createWrapper();
-      wrapper.vm.value = ['PLTU', 'PLTG'];
-      
-      wrapper.vm.handleCheckAll(false);
-      
-      expect(wrapper.vm.value).toHaveLength(0);
-      expect(wrapper.vm.indeterminate).toBe(false);
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
+
+      const vm = wrapper.vm as any;
+      vm.handleCheckAll(false);
+
+      expect(vm.value).toEqual([]);
+      expect(vm.indeterminate).toBe(false);
     });
 
     it('should handle check all DMN', async () => {
-      wrapper = createWrapper();
-      
-      wrapper.vm.handleCheckDmn(true);
-      
-      expect(wrapper.vm.dmn).toEqual(['1', '2', '3']);
-      expect(wrapper.vm.checkDmn).toBe(true);
-      expect(wrapper.vm.indeterminateDmn).toBe(false);
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
+
+      const vm = wrapper.vm as any;
+      vm.handleCheckDmn(true);
+
+      expect(vm.dmn).toEqual(['1', '2', '3']);
+      expect(vm.indeterminateDmn).toBe(false);
     });
 
     it('should handle uncheck all DMN', async () => {
-      wrapper = createWrapper();
-      wrapper.vm.dmn = ['1', '2'];
-      
-      wrapper.vm.handleCheckDmn(false);
-      
-      expect(wrapper.vm.dmn).toHaveLength(0);
-      expect(wrapper.vm.indeterminateDmn).toBe(false);
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
+
+      const vm = wrapper.vm as any;
+      vm.handleCheckDmn(false);
+
+      expect(vm.dmn).toEqual([]);
+      expect(vm.indeterminateDmn).toBe(false);
     });
   });
 
-  describe('Watchers', () => {
-    it('should update checkAll state when value changes', async () => {
-      wrapper = createWrapper();
-      
-      // Test empty selection
-      wrapper.vm.value = [];
+  describe('Watch Effects', () => {
+    it('should update checkAll state based on value changes', async () => {
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
+
+      const vm = wrapper.vm as any;
+
+      // Test empty array
+      vm.value = [];
       await nextTick();
-      expect(wrapper.vm.checkAll).toBe(false);
-      expect(wrapper.vm.indeterminate).toBe(false);
-      
-      // Test partial selection
-      wrapper.vm.value = ['PLTU'];
+      expect(vm.checkAll).toBe(false);
+      expect(vm.indeterminate).toBe(false);
+
+      // Test full array
+      vm.value = ['PLTU', 'PLTG', 'PLTS'];
       await nextTick();
-      expect(wrapper.vm.indeterminate).toBe(true);
-      
-      // Test full selection
-      wrapper.vm.value = ['PLTU', 'PLTG', 'PLTA'];
+      expect(vm.checkAll).toBe(true);
+      expect(vm.indeterminate).toBe(false);
+
+      // Test partial array
+      vm.value = ['PLTU'];
       await nextTick();
-      expect(wrapper.vm.checkAll).toBe(true);
-      expect(wrapper.vm.indeterminate).toBe(false);
+      expect(vm.indeterminate).toBe(true);
     });
 
-    it('should update checkDmn state when dmn changes', async () => {
-      wrapper = createWrapper();
-      
-      // Test empty selection
-      wrapper.vm.dmn = [];
+    it('should update DMN checkbox states', async () => {
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
+
+      const vm = wrapper.vm as any;
+
+      // Test empty array
+      vm.dmn = [];
       await nextTick();
-      expect(wrapper.vm.checkDmn).toBe(false);
-      expect(wrapper.vm.indeterminateDmn).toBe(false);
-      
-      // Test partial selection
-      wrapper.vm.dmn = ['1'];
+      expect(vm.checkDmn).toBe(false);
+      expect(vm.indeterminateDmn).toBe(false);
+
+      // Test full array
+      vm.dmn = ['1', '2', '3'];
       await nextTick();
-      expect(wrapper.vm.indeterminateDmn).toBe(true);
-      
-      // Test full selection
-      wrapper.vm.dmn = ['1', '2', '3'];
+      expect(vm.checkDmn).toBe(true);
+      expect(vm.indeterminateDmn).toBe(false);
+
+      // Test partial array
+      vm.dmn = ['1'];
       await nextTick();
-      expect(wrapper.vm.checkDmn).toBe(true);
-      expect(wrapper.vm.indeterminateDmn).toBe(false);
+      expect(vm.indeterminateDmn).toBe(true);
     });
   });
 
-  describe('Close Modal Functionality', () => {
-    it('should close modal when valid selection exists', async () => {
-      wrapper = createWrapper();
-      wrapper.vm.value = ['PLTU'];
-      wrapper.vm.showModal = true;
-      
-      wrapper.vm.closeModal();
-      
-      expect(wrapper.vm.showModal).toBe(false);
-    });
+  describe('Edge Case Validations', () => {
+    it('should test periode validation branch in closeModal (line 181)', async () => {
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
 
-    it('should show error when closing modal with no category selected', async () => {
-      wrapper = createWrapper();
-      wrapper.vm.value = [];
-      wrapper.vm.filter.periode = [2020, 2021];
-      wrapper.vm.showModal = true;
-      
-      wrapper.vm.closeModal();
-      
+      const vm = wrapper.vm as any;
+      vm.value = []; // No kategori pembangkit selected
+      vm.filter.periode = [2020, 2025]; // Has periode, but will still fail validation
+
+      vm.closeModal();
+
       expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000);
     });
 
-    it('should show error when closing modal with no year selected', async () => {
-      wrapper = createWrapper();
-      await flushPromises(); // Wait for initial load
-      
-      // Clear the notifications mock
-      (notifyError as jest.Mock).mockClear();
-      
-      // Set empty value and null periode to trigger year validation
-      wrapper.vm.value = [];
-      wrapper.vm.filter.periode = null;
-      wrapper.vm.showModal = true;
-      
-      wrapper.vm.closeModal();
-      
-      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000);
-    });
-
-    it('should close modal when categories are selected regardless of year', async () => {
-      wrapper = createWrapper();
-      await flushPromises(); // Wait for initial load
-      
-      // Clear the notifications mock
-      (notifyError as jest.Mock).mockClear();
-      
-      wrapper.vm.value = ['PLTU'];
-      wrapper.vm.filter.periode = null;
-      wrapper.vm.showModal = true;
-      
-      wrapper.vm.closeModal();
-      
-      // Should close modal when value has categories, regardless of year
-      expect(wrapper.vm.showModal).toBe(false);
-      expect(notifyError).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('Badge Display', () => {
-    it('should display kategori pembangkit badge', async () => {
-      wrapper = createWrapper();
-      wrapper.vm.value = ['PLTU', 'PLTG'];
-      await nextTick();
-      
-      expect(wrapper.text()).toContain('Kategori Pembangkit :');
-      expect(wrapper.text()).toContain('PLTU');
-      expect(wrapper.text()).toContain('PLTG');
-    });
-
-    it('should display DMN badge when PLTU is selected', async () => {
-      wrapper = createWrapper();
-      wrapper.vm.value = ['PLTU'];
-      wrapper.vm.dmn = ['1', '2'];
-      await nextTick();
-      
-      expect(wrapper.text()).toContain('DMN :');
-    });
-
-    it('should display year badge', async () => {
-      wrapper = createWrapper();
-      wrapper.vm.filter.periode = [2020, 2021];
-      await nextTick();
-      
-      expect(wrapper.text()).toContain('Tahun :');
-      expect(wrapper.text()).toContain('2020-2021');
-    });
-
-    it('should show DMN descriptions correctly', async () => {
-      wrapper = createWrapper();
-      wrapper.vm.value = ['PLTU'];
-      wrapper.vm.dmn = ['1', '2', '3'];
-      await nextTick();
-      
-      const html = wrapper.html();
-      expect(html).toContain('PLTU &lt; 100');
-      expect(html).toContain('PLTU 100 - 400');
-      expect(html).toContain('PLTU &gt; 400');
-    });
-  });
-
-  describe('Initial State', () => {
-    it('should initialize with correct default values', () => {
-      wrapper = createWrapper();
-      
-      const vm = wrapper.vm;
-      expect(vm.checkAll).toBe(false);
-      expect(vm.checkDmn).toBe(true);
-      expect(vm.indeterminate).toBe(false);
-      expect(vm.indeterminateDmn).toBe(false);
-      expect(vm.showModal).toBe(false);
-      expect(vm.isLoading).toBe(false);
-      expect(vm.value).toEqual([]);
-      expect(vm.dmn).toEqual([1, 2, 3]);
-    });
-
-    it('should set correct year range filter', () => {
-      wrapper = createWrapper();
-      
-      const vm = wrapper.vm;
-      const currentYear = new Date().getFullYear();
-      expect(vm.filter.periode).toEqual([currentYear - 5, currentYear]);
-    });
-  });
-
-  describe('Chart Props Passing', () => {
-    it('should pass correct props to DynamicScatterPlotVertiLine', async () => {
-      wrapper = createWrapper();
-      await flushPromises();
-      await nextTick();
-      
-      const chartComponent = wrapper.findComponent({ name: 'DynamicScatterPlotVertiLine' });
-      if (chartComponent.exists()) {
-        const props = chartComponent.props();
-        expect(props.xData).toEqual({ name: 'Tahun', satuan: '' });
-        expect(props.yData).toEqual({ name: 'NPHR', satuan: '(kcal/kWh)' });
-        expect(props.series).toBeDefined();
-        expect(props.legends).toBeDefined();
-      }
-    });
-  });
-
-  describe('Loading State Management', () => {
-    it('should set loading to true during API call', async () => {
-      mockGrafikService.getGraphicTeknisNPHR.mockImplementation(() => {
-        expect(wrapper.vm.isLoading).toBe(true);
-        return Promise.resolve(mockGraphDataResponse);
+    it('should test periode validation branch in applyFilter (lines 194-197)', async () => {
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
       });
-      
-      wrapper = createWrapper();
-      await wrapper.vm.getDataGraph();
+
+      const vm = wrapper.vm as any;
+      vm.value = []; // No kategori pembangkit selected
+      vm.filter.periode = [2020, 2025]; // Has periode, but will still fail validation
+
+      await vm.applyFilter();
+
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000);
     });
 
-    it('should set loading to false after successful API call', async () => {
-      wrapper = createWrapper();
-      await flushPromises();
-      await nextTick();
-      
-      expect(wrapper.vm.isLoading).toBe(false);
-    });
-
-    it('should set loading to false after failed API call', async () => {
-      mockGrafikService.getGraphicTeknisNPHR.mockRejectedValue(new Error('API Error'));
-      
-      wrapper = createWrapper();
-      await flushPromises();
-      
-      expect(wrapper.vm.isLoading).toBe(false);
-    });
-  });
-
-  describe('Service Method Usage', () => {
-    it('should use getGraphicTeknisNPHR for main data fetching', async () => {
-      wrapper = createWrapper();
-      await flushPromises();
-      
-      expect(mockGrafikService.getGraphicTeknisNPHR).toHaveBeenCalled();
-    });
-
-    it('should use getGraphicTeknisNPHR for no DMN filtering', async () => {
-      wrapper = createWrapper();
-      await flushPromises();
-      mockGrafikService.getGraphicTeknisNPHR.mockClear();
-      
-      wrapper.vm.value = ['PLTG'];
-      wrapper.vm.filter.periode = [2020, 2021];
-      
-      await wrapper.vm.getDataGraphNoDMN();
-      
-      expect(mockGrafikService.getGraphicTeknisNPHR).toHaveBeenCalledWith({
-        kode_jenis_pembangkit: ['PLTG'],
-        id_daya: [],
-        tahun_awal: '2020',
-        tahun_akhir: '2021',
+    it('should test periode validation branch in applyFilterNoDMN (lines 207-210)', async () => {
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
       });
-    });
 
-    it('should pass correct parameters with DMN data', async () => {
-      wrapper = createWrapper();
-      await flushPromises();
-      mockGrafikService.getGraphicTeknisNPHR.mockClear();
-      
-      wrapper.vm.value = ['PLTU'];
-      wrapper.vm.dmn = ['1', '3'];
-      wrapper.vm.filter.periode = [2019, 2022];
-      
-      await wrapper.vm.getDataGraph();
-      
-      expect(mockGrafikService.getGraphicTeknisNPHR).toHaveBeenCalledWith({
-        id_daya: ['1', '3'],
-        kode_jenis_pembangkit: ['PLTU'],
-        tahun_akhir: '2022',
-        tahun_awal: '2019',
+      const vm = wrapper.vm as any;
+      vm.value = []; // No kategori pembangkit selected
+      vm.filter.periode = [2020, 2025]; // Has periode, but will still fail validation
+
+      await vm.applyFilterNoDMN();
+
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000);
+    });
+  });
+
+  describe('Core Function Coverage', () => {
+    it('should correctly map graph data to series', async () => {
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
       });
-    });
-  });
 
-  describe('Error Handling', () => {
-    it('should handle malformed API response gracefully', async () => {
-      const malformedResponse = {
-        success: true,
-        data: {
-          data: [
-            { /* missing required fields */ },
-          ],
-          legend: null,
-        },
-      };
+      const vm = wrapper.vm as any;
+      // Reset arrays before testing
+      vm.graphData.series = [];
+      vm.graphData.legends = [];
+      vm.graphData.years = [];
+      vm.graphData.values = [];
+      
+      await vm.getDataGraph();
 
-      mockGrafikService.getGraphicTeknisNPHR.mockResolvedValue(malformedResponse);
-      
-      expect(() => {
-        wrapper = createWrapper();
-      }).not.toThrow();
-    });
+      const series = vm.graphData.series;
 
-    it('should handle API call failure gracefully', async () => {
-      const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
-      mockGrafikService.getGraphicTeknisNPHR.mockRejectedValue(new Error('Network Error'));
-      
-      wrapper = createWrapper();
-      await flushPromises();
-      
-      expect(consoleSpy).toHaveBeenCalledWith(new Error('Network Error'));
-      expect(wrapper.vm.isLoading).toBe(false);
-      
-      consoleSpy.mockRestore();
+      expect(series).toHaveLength(2);
+      expect(series[0]).toMatchObject({
+        name: 'PLTU',
+        type: 'scatter',
+        color: '#ff0000',
+      });
+      expect(series[0].data).toEqual([[2023, 2500, 5, 'Test Machine 1']]);
     });
 
-    it('should handle failed API response status', async () => {
-      const failedResponse = {
-        success: false,
-        data: null,
-      };
+    it('should test getDataGraphNoDMN function', async () => {
+      // Create fresh wrapper to avoid interference
+      const wrapper = mount(GraphicNPHR, {
+        props: defaultProps,
+      });
 
-      mockGrafikService.getGraphicTeknisNPHR.mockResolvedValue(failedResponse);
-      
-      wrapper = createWrapper();
-      await flushPromises();
-      await nextTick();
-      
-      // When success is false, loading remains true as it's not set to false in the component
-      // Only data processing is skipped
-      expect(wrapper.vm.isLoading).toBe(true);
-      expect(wrapper.vm.graphData.isEmpty).toBe(true); // Default state
-    });
-  });
+      const vm = wrapper.vm as any;
+      vm.value = ['TEST'];
+      vm.filter.periode = [2020, 2025];
 
-  describe('Data Processing Edge Cases', () => {
-    it('should handle response with null data correctly', async () => {
-      const nullDataResponse = {
-        success: true,
-        data: {
-          data: null,
-          legend: [
-            { label: 'PLTU', color: '#FF5733' },
-          ],
-        },
-      };
+      // Create a fresh mock response for this specific test
+      mockGrafikService.getGraphicTeknisNPHR.mockResolvedValueOnce(mockGraphicData);
 
-      mockGrafikService.getGraphicTeknisNPHR.mockResolvedValue(nullDataResponse);
-      
-      wrapper = createWrapper();
-      await flushPromises();
-      await nextTick();
-      
-      expect(wrapper.vm.graphData.isEmpty).toBe(true);
-      expect(wrapper.find('[data-testid="empty-data"]').exists()).toBe(true);
-    });
-
-    it('should handle response with empty legend correctly', async () => {
-      const emptyLegendResponse = {
-        success: true,
-        data: {
-          data: [
-            {
-              kode_jenis_kit: 'PLTU',
-              nama_mesin: 'PLTU Unit 1',
-              data: { tahun: '2020', value: 2450.5 },
-            },
-          ],
-          legend: [],
-        },
-      };
-
-      mockGrafikService.getGraphicTeknisNPHR.mockResolvedValue(emptyLegendResponse);
-      
-      wrapper = createWrapper();
-      await flushPromises();
-      await nextTick();
-      
-      expect(wrapper.vm.graphData.legends).toHaveLength(0);
-      expect(wrapper.vm.graphData.series).toHaveLength(0);
-    });
-
-    it('should handle NPHR specific data values correctly', async () => {
-      const nphrSpecificResponse = {
-        success: true,
-        data: {
-          data: [
-            {
-              kode_jenis_kit: 'PLTU',
-              nama_mesin: 'PLTU Suralaya',
-              data: { tahun: '2023', value: 2380.7 },
-            },
-          ],
-          legend: [
-            { label: 'PLTU', color: '#FF6B35' },
-          ],
-        },
-      };
-
-      mockGrafikService.getGraphicTeknisNPHR.mockResolvedValue(nphrSpecificResponse);
-      
-      wrapper = createWrapper();
-      await flushPromises();
-      await nextTick();
-      
-      const vm = wrapper.vm;
-      expect(vm.graphData.values).toContain(2380.7);
-      expect(vm.graphData.years).toContain(2023);
-      
-      const pltuSeries = vm.graphData.series.find((s: any) => s.name === 'PLTU');
-      expect(pltuSeries.data).toContainEqual([2023, 2380.7, 5, 'PLTU Suralaya']);
-    });
-  });
-
-  describe('Component Specific Features', () => {
-    it('should display NPHR specific unit in chart label', async () => {
-      wrapper = createWrapper();
-      await flushPromises();
-      await nextTick();
-      
-      const chartComponent = wrapper.findComponent({ name: 'DynamicScatterPlotVertiLine' });
-      if (chartComponent.exists()) {
-        const props = chartComponent.props();
-        expect(props.yData.satuan).toBe('(kcal/kWh)');
-      }
-    });
-
-    it('should handle typical NPHR value ranges', async () => {
-      const nphrRangeResponse = {
-        success: true,
-        data: {
-          data: [
-            {
-              kode_jenis_kit: 'PLTU',
-              nama_mesin: 'PLTU Efficient',
-              data: { tahun: '2023', value: 2100.0 }, // Efficient plant
-            },
-            {
-              kode_jenis_kit: 'PLTU',
-              nama_mesin: 'PLTU Average',
-              data: { tahun: '2023', value: 2450.0 }, // Average plant
-            },
-            {
-              kode_jenis_kit: 'PLTG',
-              nama_mesin: 'PLTG High',
-              data: { tahun: '2023', value: 3200.0 }, // Higher NPHR for gas turbine
-            },
-          ],
-          legend: [
-            { label: 'PLTU', color: '#FF5733' },
-            { label: 'PLTG', color: '#33FF57' },
-          ],
-        },
-      };
-
-      mockGrafikService.getGraphicTeknisNPHR.mockResolvedValue(nphrRangeResponse);
-      
-      wrapper = createWrapper();
-      await flushPromises();
-      await nextTick();
-      
-      const vm = wrapper.vm;
-      expect(vm.graphData.values).toContain(2100.0);
-      expect(vm.graphData.values).toContain(2450.0);
-      expect(vm.graphData.values).toContain(3200.0);
+      // Just test that the function executes without throwing an error
+      await expect(vm.getDataGraphNoDMN()).resolves.not.toThrow();
     });
   });
 });

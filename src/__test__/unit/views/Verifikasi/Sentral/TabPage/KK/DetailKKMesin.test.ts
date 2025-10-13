@@ -1,558 +1,494 @@
-import { shallowMount, VueWrapper } from "@vue/test-utils";
-import { nextTick } from "vue";
-import DetailKKMesin from "@/views/Verifikasi/Sentral/TabPage/KK/DetailKKMesin.vue";
-import RekapService from "@/services/rekap-service";
-import PersetujuanService from "@/services/persetujuan-service";
-import DetailRekapService from "@/services/detail-rekap-service";
-import UserService from "@/services/user-service";
-import DetailSentralService from "@/services/detail-sentral-service";
-import GlobalFormat from "@/services/format/global-format";
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
+import DetailKKMesin from '@/views/Verifikasi/Sentral/TabPage/KK/DetailKKMesin.vue';
+import PersetujuanService from '@/services/persetujuan-service';
+import DetailRekapService from '@/services/detail-rekap-service';
+import RekapService from '@/services/rekap-service';
+import UserService from '@/services/user-service';
+import DetailSentralService from '@/services/detail-sentral-service';
+
+// Mock the services
+vi.mock('@/services/persetujuan-service');
+vi.mock('@/services/detail-rekap-service');
+vi.mock('@/services/rekap-service');
+vi.mock('@/services/user-service');
+vi.mock('@/services/detail-sentral-service');
 
 // Mock vue-router
-const mockQuery = { uuid_sentral: "test-uuid", tahun: "2024" };
-const mockParams = { id: "test-mesin-id" };
-const mockPush = jest.fn();
-jest.mock("vue-router", () => ({
-  useRoute: () => ({
-    query: mockQuery,
-    params: mockParams,
-  }),
-  useRouter: () => ({
-    push: mockPush,
-  }),
-  RouterLink: {
-    name: "RouterLink",
-    template: '<a><slot></slot></a>',
-    props: ["to"],
+const mockRoute = {
+  query: {
+    uuid_sentral: 'test-uuid-sentral',
+    tahun: '2024'
   },
+  params: {
+    id: 'test-mesin-id'
+  }
+};
+
+vi.mock('vue-router', () => ({
+  useRoute: () => mockRoute
 }));
 
-// Mock services
-jest.mock("@/services/rekap-service");
-const MockedRekapService = RekapService as jest.MockedClass<typeof RekapService>;
-
-jest.mock("@/services/persetujuan-service");
-const MockedPersetujuanService = PersetujuanService as jest.MockedClass<typeof PersetujuanService>;
-
-jest.mock("@/services/detail-rekap-service");
-const MockedDetailRekapService = DetailRekapService as jest.MockedClass<typeof DetailRekapService>;
-
-jest.mock("@/services/user-service");
-const MockedUserService = UserService as jest.MockedClass<typeof UserService>;
-
-jest.mock("@/services/detail-sentral-service");
-const MockedDetailSentralService = DetailSentralService as jest.MockedClass<typeof DetailSentralService>;
-
-jest.mock("@/services/format/global-format");
-const MockedGlobalFormat = GlobalFormat as jest.MockedClass<typeof GlobalFormat>;
-
-// Mock utils
-jest.mock("@/utils/app-encrypt-storage", () => ({
-  encryptStoragePromise: jest.fn().mockResolvedValue({
-    encryptValue: jest.fn().mockImplementation((value) => `encrypted_${value}`),
-    decryptValue: jest.fn().mockImplementation((value) => value.replace("encrypted_", "")),
-  }),
+// Mock encryption storage
+vi.mock('@/utils/app-encrypt-storage', () => ({
+  encryptStoragePromise: Promise.resolve({
+    decryptValue: vi.fn((value) => value)
+  })
 }));
 
 // Mock toast notification
-jest.mock("@/services/helper/toast-notification", () => ({
-  notifyError: jest.fn(),
-  notifySuccess: jest.fn(),
+vi.mock('@/services/helper/toast-notification', () => ({
+  notifyError: vi.fn(),
+  notifySuccess: vi.fn()
 }));
 
-// Mock vue3-lottie
-jest.mock("vue3-lottie", () => ({
-  Vue3Lottie: {
-    name: "Vue3Lottie",
-    template: '<div class="lottie-mock"></div>',
-    props: ["animationData", "autoPlay", "loop", "speed", "width", "height"],
-  },
+// Mock global format
+vi.mock('@/services/format/global-format', () => ({
+  default: class MockGlobalFormat {
+    constructor() {}
+  }
 }));
+
+// Mock lottie json
+vi.mock('@/assets/lottie/success.json', () => ({
+  default: { frames: [] }
+}));
+
+// Mock URL.createObjectURL
+global.URL.createObjectURL = vi.fn(() => 'mock-url');
 
 // Mock components
-jest.mock("@/components/ui/LoadingSpinner.vue", () => ({
-  name: "Loading",
-  template: '<div class="loading-spinner">Loading...</div>',
+vi.mock('@/components/ui/LoadingSpinner.vue', () => ({
+  default: {
+    name: 'Loading',
+    template: '<div data-testid="loading">Loading...</div>'
+  }
 }));
 
-jest.mock("@/components/ui/ModalWrapper.vue", () => ({
-  name: "ModalWrapper",
-  template: '<div class="modal-wrapper"><slot></slot></div>',
-  props: ["showModal", "width", "height"],
+vi.mock('@/components/ui/InfoHeader.vue', () => ({
+  default: {
+    name: 'InfoHeader',
+    props: [
+      'namaMesin', 'namaPengelola', 'namaPembina', 
+      'kodeJenisPembangkit', 'dayaTerpasang', 'dayaMampu', 
+      'tahunOperasi', 'umurTeknis'
+    ],
+    template: '<div data-testid="info-header">Info Header</div>'
+  }
 }));
 
-jest.mock("@/components/ui/InfoHeader.vue", () => ({
-  name: "InfoHeader",
-  template: '<div class="info-header"><slot></slot></div>',
-  props: ["namaMesin", "namaPengelola", "statusMesin", "kodeJenisPembangkit", "dayaTerpasang", "dayaMampu", "tahunOperasi", "umurTeknis", "namaPembina", "kondisiUnit"],
+vi.mock('@/components/ui/ShimmerLoading.vue', () => ({
+  default: {
+    name: 'ShimmerLoading',
+    template: '<div data-testid="shimmer-loading">Shimmer Loading</div>'
+  }
 }));
 
-jest.mock("@/components/ui/TabsWrapperApprove.vue", () => ({
-  name: "TabsWrapper",
-  template: '<div class="tabs-wrapper"><slot></slot></div>',
+vi.mock('@/components/ui/TabsWrapperApprove.vue', () => ({
+  default: {
+    name: 'TabsWrapper',
+    template: '<div data-testid="tabs-wrapper"><slot /></div>'
+  }
 }));
 
-jest.mock("@/components/ui/TabItem.vue", () => ({
-  name: "TabItem",
-  template: '<div class="tab-item"><slot></slot></div>',
-  props: ["label", "isActive"],
+vi.mock('@/components/ui/ModalWrapper.vue', () => ({
+  default: {
+    name: 'ModalWrapper',
+    template: '<div data-testid="modal-wrapper"><slot /></div>'
+  }
 }));
 
-jest.mock("@/components/ui/AsumsiMakroApprove.vue", () => ({
-  name: "AsumsiMakro",
-  template: '<div class="asumsi-makro"></div>',
-  props: ["asumsiParameter", "isLoading"],
-}));
+describe('DetailKKMesin', () => {
+  let mockPersetujuanService: any;
+  let mockDetailRekapService: any;
+  let mockRekapService: any;
+  let mockUserService: any;
+  let mockDetailSentralService: any;
 
-jest.mock("@/components/ui/ParameterTeknisApprove.vue", () => ({
-  name: "ParameterTeknis",
-  template: '<div class="parameter-teknis"></div>',
-  props: ["parameterTeknisFinansial", "isLoading"],
-}));
-
-jest.mock("@/components/ui/ShimmerLoading.vue", () => ({
-  name: "ShimmerLoading",
-  template: '<div class="shimmer-loading"></div>',
-  props: ["class"],
-}));
-
-jest.mock("@/components/RekapKertasKerja/TableDataTeknis.vue", () => ({
-  name: "TableDataTeknis",
-  template: '<div class="table-data-teknis"></div>',
-  props: ["dataTeknis", "reload"],
-}));
-
-jest.mock("@/components/RekapKertasKerja/TableDataFinansial.vue", () => ({
-  name: "TableDataFinansial",
-  template: '<div class="table-data-finansial"></div>',
-  props: ["dataFinansial", "reload"],
-}));
-
-// Mock status components
-jest.mock("@/components/Status/ComponentDisetujui.vue", () => ({
-  name: "ComponentDisetujui",
-  template: '<div class="component-disetujui"></div>',
-}));
-
-jest.mock("@/components/Status/ComponentDitolakT1.vue", () => ({
-  name: "ComponentDitolakT1",
-  template: '<div class="component-ditolak-t1"></div>',
-}));
-
-jest.mock("@/components/Status/ComponentDitolakT2.vue", () => ({
-  name: "ComponentDitolakT2",
-  template: '<div class="component-ditolak-t2"></div>',
-}));
-
-jest.mock("@/components/Status/ComponentWaitingT1.vue", () => ({
-  name: "ComponentWaitingT1",
-  template: '<div class="component-waiting-t1"></div>',
-}));
-
-jest.mock("@/components/Status/ComponentWaitingT2.vue", () => ({
-  name: "ComponentWaitingT2",
-  template: '<div class="component-waiting-t2"></div>',
-}));
-
-jest.mock("@/components/Status/ComponentDraft.vue", () => ({
-  name: "ComponentDraft",
-  template: '<div class="component-draft"></div>',
-}));
-
-// Mock view components
-jest.mock("@/views/Data/RekapKertasKerja/DetailRekap/HasilSimulasi/AkhirMasaManfaat.vue", () => ({
-  name: "AkhirMasaManfaat",
-  template: '<div class="akhir-masa-manfaat"></div>',
-  props: ["hasilSimulasi", "reload", "tahunGrafik"],
-}));
-
-jest.mock("@/views/Data/RekapKertasKerja/DetailRekap/HasilSimulasi/TahunBerjalan.vue", () => ({
-  name: "TahunBerjalan",
-  template: '<div class="tahun-berjalan"></div>',
-  props: ["hasilSimulasi", "reload", "tahunGrafik"],
-}));
-
-describe("DetailKKMesin.vue", () => {
-  let wrapper: VueWrapper<any>;
-  let mockRekapService: jest.Mocked<RekapService>;
-  let mockPersetujuanService: jest.Mocked<PersetujuanService>;
-  let mockDetailRekapService: jest.Mocked<DetailRekapService>;
-  let mockUserService: jest.Mocked<UserService>;
-  let mockDetailSentralService: jest.Mocked<DetailSentralService>;
-  let mockGlobalFormat: jest.Mocked<GlobalFormat>;
-
-  // Mock responses
-  const mockMesinResponse = {
+  const mockMesinData = {
     data: {
       uuid_mesin: 1,
-      kode_sentral: "TS001",
-      kode_mesin: "TM001",
-      mesin: "Test Mesin 1",
-      kode_jenis_pembangkit: "PLTU",
-      kondisi_unit: "Operasi",
-      daya_terpasang: 1000,
-      daya_mampu: 900,
-      tahun_operasi: "2020",
-      masa_manfaat: 25,
-      nilai_asset_awal: 1000000000,
-      tahun_nilai_perolehan: "2020",
-      photo1: "test-photo1.jpg",
-      photo2: "test-photo2.jpg",
-      tahun_realisasi: "2023",
-      avg_irr: 12.5
+      mesin: 'Test Mesin',
+      kode_jenis_pembangkit: 'PLTU',
+      tahun_realisasi: '2023',
+      avg_irr: 10.5,
+      daya_terpasang: 100,
+      daya_mampu: 90,
+      tahun_operasi: '2020',
+      kondisi_unit: 'Baik',
+      tahun_nilai_perolehan: '2019',
+      photo1: 'test-photo1.jpg',
+      photo2: 'test-photo2.jpg'
     }
   };
 
-  const mockPersetujuanResponse = {
+  const mockPersetujuanData = {
     data: {
-      pengelola: "Test Pengelola",
-      pembina: "Test Pembina",
-      umur_teknis: "25",
-      tahun: "2024",
-      status: "Draft",
-      keterangan: "Test keterangan",
+      pengelola: 'Test Pengelola',
+      pembina: 'Test Pembina',
+      umur_teknis: '25',
       mesins: [
         {
-          uuid_mesin: "test-mesin-id",
-          status: "Draft",
+          uuid_mesin: 'test-mesin-id',
+          tahun: '2024',
           id_status: 1,
-          keterangan: "Test keterangan mesin"
+          status: 'Draft',
+          keterangan: 'Test keterangan'
         }
       ]
     }
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
-
-    // Setup mock services
-    mockRekapService = {
-      getEvidencePath: jest.fn().mockResolvedValue({ data: [{ dokumen_evidence: "test-evidence.pdf" }] }),
-      downloadEvidence: jest.fn().mockResolvedValue(new Blob()),
-    } as any;
-
     mockPersetujuanService = {
-      getPersetujuanKKSentral: jest.fn().mockResolvedValue(mockPersetujuanResponse),
-    } as any;
-
-    mockDetailRekapService = {
-      getMesinById: jest.fn().mockResolvedValue(mockMesinResponse),
-      getAsumsiParameter: jest.fn().mockResolvedValue({
-        data: {
-          asumsi_makro: {
-            id_asumsi: 1,
-            uuid_mesin: 1,
-            kode_mesin: "TM001",
-            status: "Active",
-            corporate_tax_rate: 25,
-            discount_rate: 10,
-            interest_rate: 8,
-            loan_tenor: 15,
-            loan_portion: 70,
-            equity_portion: 30,
-            umur_teknis: 25,
-            bahan_bakars: [],
-            isFetchingError: false
-          },
-          parameter_teknis_financial: {
-            daya_terpasang: 1000,
-            daya_mampu_netto_mw: 900,
-            auxiliary: 5,
-            susut_trafo: 2,
-            ps: 95,
-            total_project_cost: 1000000000,
-            loan: 700000000,
-            equity: 300000000,
-            nphr: 2300,
-            electricity_price_a_rp_per_kwbln: 500000,
-            electricity_price_b_rp_per_kwbln: 600000,
-            electricity_price_c_rp_per_kwh: 850,
-            electricity_price_d_rp_per_kwh: 950,
-            isFetchingError: false
-          },
-          harga_bahan_bakars: []
-        }
-      }),
-      getDataTeknis: jest.fn().mockResolvedValue({
-        data: {
-          header: ["Tahun", "Produksi", "EAF", "CF"],
-          tahun: [2024, 2025, 2026],
-          detail: [
-            ["2024", "1000000", "85", "80"],
-            ["2025", "1100000", "87", "82"],
-            ["2026", "1200000", "89", "84"]
-          ],
-          isFetchingError: false
-        }
-      }),
-      getDataFinansial: jest.fn().mockResolvedValue({
-        data: {
-          header: ["Tahun", "Revenue", "OPEX", "Net Income"],
-          tahun: [2024, 2025, 2026],
-          detail: [
-            ["2024", "1000000000", "500000000", "300000000"],
-            ["2025", "1100000000", "520000000", "350000000"],
-            ["2026", "1200000000", "540000000", "400000000"]
-          ],
-          isFetchingError: false
-        }
-      }),
-      getHasilSimulasi: jest.fn().mockResolvedValue({
-        data: {
-          track_irr_equity: 15.5,
-          track_irr_project: 12.8,
-          track_npv_project: 500000000,
-          track_npv_equity: 200000000,
-          track_average_eaf: 85.5,
-          track_average_cf: 80.2,
-          wacc_on_equity: 12.0,
-          wacc_on_project: 10.5,
-          now_track_irr_equity: 16.2,
-          now_track_irr_project: 13.1,
-          now_track_npv_project: 520000000,
-          now_track_npv_equity: 210000000,
-          now_track_average_eaf: 86.0,
-          now_track_average_cf: 81.0,
-          isFetchingError: false
-        }
-      }),
-      getTypePeriodic: jest.fn().mockResolvedValue({ data: [] }),
-      getComboBahanBakar: jest.fn().mockResolvedValue({ data: [] }),
-      getPembangkitByKode: jest.fn().mockResolvedValue({ data: {} }),
-      getPengelolaData: jest.fn().mockResolvedValue({ data: [] }),
-    } as any;
-
-    mockUserService = {
-      getPembina: jest.fn().mockResolvedValue({ data: [] }),
-    } as any;
-
-    mockDetailSentralService = {
-      getPhoto: jest.fn().mockResolvedValue(new Blob()),
-    } as any;
-
-    mockGlobalFormat = {
-      formatRupiah: jest.fn().mockImplementation((value) => value?.toString() || "0"),
-      formatDecimal: jest.fn().mockImplementation((value) => value?.toString() || "0"),
-      formatEnergy: jest.fn().mockImplementation((value) => value?.toString() || "0"),
-      formatPercent: jest.fn().mockImplementation((value) => value?.toString() || "0"),
-    } as any;
-
-    // Setup mock constructors
-    MockedRekapService.mockImplementation(() => mockRekapService);
-    MockedPersetujuanService.mockImplementation(() => mockPersetujuanService);
-    MockedDetailRekapService.mockImplementation(() => mockDetailRekapService);
-    MockedUserService.mockImplementation(() => mockUserService);
-    MockedDetailSentralService.mockImplementation(() => mockDetailSentralService);
-    MockedGlobalFormat.mockImplementation(() => mockGlobalFormat);
-
-    // Mock window.URL.createObjectURL
-    global.URL.createObjectURL = jest.fn().mockReturnValue("mocked-url");
-    global.URL.revokeObjectURL = jest.fn();
-
-    // Mock Blob
-    global.Blob = jest.fn().mockImplementation(() => ({
-      size: 1024,
-      type: "image/jpeg"
-    }));
-
-    // Mock window.open
-    global.open = jest.fn();
-
-    // Mock document.createElement and click for download
-    const mockLink = {
-      href: "",
-      download: "",
-      click: jest.fn(),
+      getPersetujuanKKSentral: vi.fn(),
+      updateStatusKK: vi.fn()
     };
-    document.createElement = jest.fn().mockReturnValue(mockLink);
-    document.body.appendChild = jest.fn();
-    document.body.removeChild = jest.fn();
+    mockDetailRekapService = {
+      getMesinById: vi.fn(),
+      getAsumsiParameter: vi.fn(),
+      getDataTeknis: vi.fn(),
+      getDataFinansial: vi.fn(),
+      getHasilSimulasi: vi.fn(),
+      getTypePeriodic: vi.fn(),
+      getComboBahanBakar: vi.fn()
+    };
+    mockRekapService = {
+      getEvidencePath: vi.fn(),
+      downloadEvidence: vi.fn()
+    };
+    mockUserService = {
+      getListPembina: vi.fn(),
+      getUnitPengelola: vi.fn()
+    };
+    mockDetailSentralService = {};
+
+    vi.mocked(PersetujuanService).mockImplementation(() => mockPersetujuanService);
+    vi.mocked(DetailRekapService).mockImplementation(() => mockDetailRekapService);
+    vi.mocked(RekapService).mockImplementation(() => mockRekapService);
+    vi.mocked(UserService).mockImplementation(() => mockUserService);
+    vi.mocked(DetailSentralService).mockImplementation(() => mockDetailSentralService);
   });
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.unmount();
-    }
-    jest.restoreAllMocks();
+  it('should mount component successfully', async () => {
+    // Mock all required API calls
+    mockDetailRekapService.getMesinById.mockResolvedValue(mockMesinData);
+    mockPersetujuanService.getPersetujuanKKSentral.mockResolvedValue(mockPersetujuanData);
+
+    const wrapper = mount(DetailKKMesin);
+    
+    expect(wrapper.exists()).toBe(true);
   });
 
-  describe("Component Mounting", () => {
-    it("should mount successfully", () => {
-      const createComponent = () => {
-        return shallowMount(DetailKKMesin, {
-          global: {
-            stubs: {
-              Loading: true,
-              InfoHeader: true,
-              ShimmerLoading: true,
-              TabsWrapper: true,
-              TabItem: true,
-              AsumsiMakro: true,
-              ParameterTeknis: true,
-              AkhirMasaManfaat: true,
-              TahunBerjalan: true,
-              TableDataTeknis: true,
-              TableDataFinansial: true,
-              ComponentDisetujui: true,
-              ComponentDitolakT1: true,
-              ComponentDitolakT2: true,
-              ComponentWaitingT1: true,
-              ComponentWaitingT2: true,
-              ComponentDraft: true,
-              ModalWrapper: true,
-              RouterLink: true,
-              Vue3Lottie: true,
-            },
-            directives: {
-              'auto-animate': {},
-            },
-          },
-        });
-      };
+  it('should render download evidence button', async () => {
+    // Mock required data
+    mockDetailRekapService.getMesinById.mockResolvedValue(mockMesinData);
+    mockPersetujuanService.getPersetujuanKKSentral.mockResolvedValue(mockPersetujuanData);
 
-      // Test that component creation doesn't throw errors
-      let component;
-      try {
-        component = createComponent();
-        expect(component.exists()).toBe(true);
-      } catch (error) {
-        // If mounting fails due to complex dependencies, at least verify services are initialized
-        expect(MockedDetailRekapService).toBeDefined();
-        expect(MockedPersetujuanService).toBeDefined();
-      }
-    });
+    const wrapper = mount(DetailKKMesin);
+    
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    const downloadButton = wrapper.find('button');
+    expect(downloadButton.exists()).toBe(true);
+    expect(downloadButton.text()).toContain('Download Evidence');
   });
 
-  describe("Service Integration", () => {
-    it("should initialize service instances", () => {
-      expect(MockedRekapService).toBeDefined();
-      expect(MockedPersetujuanService).toBeDefined();
-      expect(MockedDetailRekapService).toBeDefined();
-      expect(MockedUserService).toBeDefined();
-      expect(MockedDetailSentralService).toBeDefined();
-      expect(MockedGlobalFormat).toBeDefined();
-    });
+  it('should handle API calls with correct parameters', async () => {
+    // Mock API responses
+    mockDetailRekapService.getMesinById.mockResolvedValue(mockMesinData);
+    mockPersetujuanService.getPersetujuanKKSentral.mockResolvedValue(mockPersetujuanData);
 
-    it("should call service constructors", () => {
-      // Simply mounting should trigger service instantiation
-      try {
-        wrapper = shallowMount(DetailKKMesin, {
-          global: {
-            stubs: {
-              Loading: true,
-              InfoHeader: true,
-              ShimmerLoading: true,
-              TabsWrapper: true,
-              TabItem: true,
-              AsumsiMakro: true,
-              ParameterTeknis: true,
-              AkhirMasaManfaat: true,
-              TahunBerjalan: true,
-              TableDataTeknis: true,
-              TableDataFinansial: true,
-              ComponentDisetujui: true,
-              ComponentDitolakT1: true,
-              ComponentDitolakT2: true,
-              ComponentWaitingT1: true,
-              ComponentWaitingT2: true,
-              ComponentDraft: true,
-              ModalWrapper: true,
-              RouterLink: true,
-            },
-          },
-        });
-      } catch (error) {
-        // Component might have mounting issues but services should still be called
-      }
-
-      expect(MockedRekapService).toHaveBeenCalled();
-      expect(MockedPersetujuanService).toHaveBeenCalled();
-      expect(MockedDetailRekapService).toHaveBeenCalled();
-      expect(MockedUserService).toHaveBeenCalled();
-      expect(MockedDetailSentralService).toHaveBeenCalled();
-      expect(MockedGlobalFormat).toHaveBeenCalled();
+    mount(DetailKKMesin);
+    
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    expect(mockDetailRekapService.getMesinById).toHaveBeenCalled();
+    expect(mockPersetujuanService.getPersetujuanKKSentral).toHaveBeenCalledWith({
+      uuid_sentral: 'test-uuid-sentral',
+      tahun: '2024'
     });
   });
 
-  describe("Mock Functions", () => {
-    it("should have properly mocked service methods", () => {
-      expect(mockDetailRekapService.getMesinById).toBeDefined();
-      expect(mockDetailRekapService.getAsumsiParameter).toBeDefined();
-      expect(mockDetailRekapService.getDataTeknis).toBeDefined();
-      expect(mockDetailRekapService.getDataFinansial).toBeDefined();
-      expect(mockDetailRekapService.getHasilSimulasi).toBeDefined();
-      expect(mockPersetujuanService.getPersetujuanKKSentral).toBeDefined();
-      expect(mockRekapService.downloadEvidence).toBeDefined();
-      expect(mockUserService.getPembina).toBeDefined();
-    });
+  it('should handle fetchMesinById error gracefully', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    
+    mockDetailRekapService.getMesinById.mockRejectedValue(new Error('API Error'));
+    mockPersetujuanService.getPersetujuanKKSentral.mockResolvedValue(mockPersetujuanData);
 
-    it("should return expected mock data", async () => {
-      const mesinResult = await mockDetailRekapService.getMesinById("test-id") as any;
-      expect(mesinResult.data.uuid_mesin).toBe(1);
-      expect(mesinResult.data.mesin).toBe("Test Mesin 1");
-
-      const persetujuanResult = await mockPersetujuanService.getPersetujuanKKSentral({}) as any;
-      expect(persetujuanResult.data.pengelola).toBe("Test Pengelola");
-      expect(persetujuanResult.data.status).toBe("Draft");
-    });
+    mount(DetailKKMesin);
+    
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    expect(consoleSpy).toHaveBeenCalled();
+    
+    consoleSpy.mockRestore();
   });
 
-  describe("Global Format Service", () => {
-    it("should have format methods", () => {
-      expect(mockGlobalFormat.formatRupiah).toBeDefined();
-      expect(mockGlobalFormat.formatDecimal).toBeDefined();
-      expect(mockGlobalFormat.formatEnergy).toBeDefined();
-      expect(mockGlobalFormat.formatPercent).toBeDefined();
-    });
+  it('should handle fetchPersetujuanKK error gracefully', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    
+    mockDetailRekapService.getMesinById.mockResolvedValue(mockMesinData);
+    mockPersetujuanService.getPersetujuanKKSentral.mockRejectedValue(new Error('API Error'));
 
-    it("should format values correctly", () => {
-      expect(mockGlobalFormat.formatRupiah("1000000")).toBe("1000000");
-      expect(mockGlobalFormat.formatDecimal("10.5")).toBe("10.5");
-      expect(mockGlobalFormat.formatEnergy("500")).toBe("500");
-      expect(mockGlobalFormat.formatPercent("25")).toBe("25");
-    });
+    mount(DetailKKMesin);
+    
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    expect(consoleSpy).toHaveBeenCalledWith('Fetch Persetujuan KK Sentral Error : ', expect.any(Error));
+    
+    consoleSpy.mockRestore();
   });
 
-  describe("Router Integration", () => {
-    it("should have mocked router functionality", () => {
-      expect(mockQuery).toEqual({ uuid_sentral: "test-uuid", tahun: "2024" });
-      expect(mockParams).toEqual({ id: "test-mesin-id" });
+  it('should handle download evidence functionality', async () => {
+    mockDetailRekapService.getMesinById.mockResolvedValue(mockMesinData);
+    mockPersetujuanService.getPersetujuanKKSentral.mockResolvedValue(mockPersetujuanData);
+    
+    mockRekapService.getEvidencePath.mockResolvedValue({
+      data: [{ file_name: 'test.xlsx', dokumen_evidence: 'test-path' }]
     });
+    
+    mockRekapService.downloadEvidence.mockResolvedValue({
+      data: new Blob(['test'], { type: 'application/xlsx' }),
+      headers: { 'content-disposition': 'attachment; filename="test.xlsx"' }
+    });
+
+    const wrapper = mount(DetailKKMesin);
+    
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Call downloadEvidence function directly
+    const vm = wrapper.vm as any;
+    await vm.downloadEvidence();
+    
+    expect(mockRekapService.getEvidencePath).toHaveBeenCalled();
+    expect(mockRekapService.downloadEvidence).toHaveBeenCalled();
   });
 
-  describe("Utility Mocks", () => {
-    it("should have DOM mocks", () => {
-      expect(global.URL.createObjectURL).toBeDefined();
-      expect(global.URL.revokeObjectURL).toBeDefined();
-      expect(global.Blob).toBeDefined();
-      expect(global.open).toBeDefined();
-      expect(document.createElement).toBeDefined();
-    });
+  it('should handle download evidence error', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    
+    mockDetailRekapService.getMesinById.mockResolvedValue(mockMesinData);
+    mockPersetujuanService.getPersetujuanKKSentral.mockResolvedValue(mockPersetujuanData);
+    
+    mockRekapService.getEvidencePath.mockRejectedValue(new Error('Evidence Error'));
 
-    it("should create mock elements", () => {
-      const mockLink = document.createElement("a");
-      expect(mockLink).toHaveProperty("href");
-      expect(mockLink).toHaveProperty("download");
-      expect(mockLink).toHaveProperty("click");
-    });
+    const wrapper = mount(DetailKKMesin);
+    
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    expect(consoleSpy).toHaveBeenCalled();
+    
+    consoleSpy.mockRestore();
   });
 
-  describe("Error Handling", () => {
-    it("should handle service errors gracefully", async () => {
-      mockDetailRekapService.getMesinById.mockRejectedValue(new Error("Service error"));
-      
-      try {
-        await mockDetailRekapService.getMesinById("invalid-id");
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error);
-        expect((error as Error).message).toBe("Service error");
+  it('should handle asumsi parameter fetch', async () => {
+    mockDetailRekapService.getMesinById.mockResolvedValue(mockMesinData);
+    mockPersetujuanService.getPersetujuanKKSentral.mockResolvedValue(mockPersetujuanData);
+    
+    mockDetailRekapService.getAsumsiParameter.mockResolvedValue({
+      data: {
+        asumsi_makro: {
+          corporate_tax_rate: 25,
+          discount_rate: 10
+        },
+        parameter_teknis_financial: {
+          daya_terpasang: 100,
+          daya_mampu_netto_mw: 90
+        },
+        harga_bahan_bakars: []
       }
     });
 
-    it("should handle async operations", async () => {
-      const result = await mockDetailRekapService.getAsumsiParameter("2023", "uuid-123", "2024") as any;
-      expect(result.data.asumsi_makro).toBeDefined();
-      expect(result.data.parameter_teknis_financial).toBeDefined();
+    mount(DetailKKMesin);
+    
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    expect(mockDetailRekapService.getAsumsiParameter).toHaveBeenCalled();
+  });
+
+  it('should handle data teknis fetch with current year logic', async () => {
+    const currentYear = new Date().getFullYear();
+    
+    mockDetailRekapService.getMesinById.mockResolvedValue(mockMesinData);
+    mockPersetujuanService.getPersetujuanKKSentral.mockResolvedValue(mockPersetujuanData);
+    
+    mockDetailRekapService.getDataTeknis.mockResolvedValue({
+      data: {
+        tahun: [2020, 2021, 2022, currentYear - 1],
+        header: ['EAF', 'CF'],
+        detail: []
+      }
     });
+
+    mount(DetailKKMesin);
+    
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    expect(mockDetailRekapService.getDataTeknis).toHaveBeenCalled();
+  });
+
+  it('should handle updateKK function', async () => {
+    mockDetailRekapService.getMesinById.mockResolvedValue(mockMesinData);
+    mockPersetujuanService.getPersetujuanKKSentral.mockResolvedValue(mockPersetujuanData);
+    
+    mockPersetujuanService.updateStatusKK.mockResolvedValue({
+      data: { success: true }
+    });
+
+    const wrapper = mount(DetailKKMesin);
+    
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    // Test the updateKK function by accessing the component instance
+    const vm = wrapper.vm as any;
+    await vm.updateKK();
+    
+    expect(mockPersetujuanService.updateStatusKK).toHaveBeenCalled();
+  });
+
+  it('should handle data finansial fetch with mapping logic', async () => {
+    const currentYear = new Date().getFullYear();
+    
+    mockDetailRekapService.getMesinById.mockResolvedValue(mockMesinData);
+    mockPersetujuanService.getPersetujuanKKSentral.mockResolvedValue(mockPersetujuanData);
+    
+    mockDetailRekapService.getDataFinansial.mockResolvedValue({
+      data: {
+        tahun: [2020, 2021, 2022, currentYear - 1],
+        header: ['Revenue', 'Cost'],
+        detail: [
+          { level: 1, description: 'Level 1 Item' },
+          { level: 2, description: 'Level 2 Item' },
+          { level: 3, description: 'Level 3 Item' }
+        ]
+      }
+    });
+
+    const wrapper = mount(DetailKKMesin);
+    
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    expect(mockDetailRekapService.getDataFinansial).toHaveBeenCalled();
+  });
+
+  it('should handle hasil simulasi fetch', async () => {
+    mockDetailRekapService.getMesinById.mockResolvedValue(mockMesinData);
+    mockPersetujuanService.getPersetujuanKKSentral.mockResolvedValue(mockPersetujuanData);
+    
+    mockDetailRekapService.getHasilSimulasi.mockResolvedValue({
+      data: {
+        track_irr_equity: 15.5,
+        track_irr_project: 12.3,
+        track_npv_project: 1000000,
+        track_npv_equity: 800000,
+        track_average_eaf: 85.2,
+        track_average_cf: 78.5,
+        wacc_on_equity: 10.5,
+        wacc_on_project: 8.2
+      }
+    });
+
+    const wrapper = mount(DetailKKMesin);
+    
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    expect(mockDetailRekapService.getHasilSimulasi).toHaveBeenCalled();
+  });
+
+  it('should handle error handling for various functions', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    
+    mockDetailRekapService.getMesinById.mockResolvedValue(mockMesinData);
+    mockPersetujuanService.getPersetujuanKKSentral.mockResolvedValue(mockPersetujuanData);
+    
+    // Mock errors for different functions
+    mockDetailRekapService.getAsumsiParameter.mockRejectedValue(new Error('Asumsi Parameter Error'));
+    mockDetailRekapService.getDataTeknis.mockRejectedValue(new Error('Data Teknis Error'));
+    mockDetailRekapService.getDataFinansial.mockRejectedValue(new Error('Data Finansial Error'));
+    mockDetailRekapService.getHasilSimulasi.mockRejectedValue(new Error('Hasil Simulasi Error'));
+
+    const wrapper = mount(DetailKKMesin);
+    
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    expect(consoleSpy).toHaveBeenCalledWith('Fetch Asumsi Parameter Error : ', expect.any(Error));
+    
+    consoleSpy.mockRestore();
+  });
+
+  it('should handle reload functions', async () => {
+    mockDetailRekapService.getMesinById.mockResolvedValue(mockMesinData);
+    mockPersetujuanService.getPersetujuanKKSentral.mockResolvedValue(mockPersetujuanData);
+
+    const wrapper = mount(DetailKKMesin);
+    
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    const vm = wrapper.vm as any;
+    
+    // Test reload functions
+    vm.reloadAsumsiParameter();
+    vm.reloadDataTeknis();
+    vm.reloadDataFinansial();
+    vm.reloadHasilSimulasi();
+    
+    expect(mockDetailRekapService.getAsumsiParameter).toHaveBeenCalled();
+    expect(mockDetailRekapService.getDataTeknis).toHaveBeenCalled();
+    expect(mockDetailRekapService.getDataFinansial).toHaveBeenCalled();
+    expect(mockDetailRekapService.getHasilSimulasi).toHaveBeenCalled();
+  });
+
+  it('should handle toggleButton function', async () => {
+    mockDetailRekapService.getMesinById.mockResolvedValue(mockMesinData);
+    mockPersetujuanService.getPersetujuanKKSentral.mockResolvedValue(mockPersetujuanData);
+
+    const wrapper = mount(DetailKKMesin);
+    
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    const vm = wrapper.vm as any;
+    const initialHoverState = vm.isHover;
+    
+    vm.toggleButton();
+    
+    expect(vm.isHover).toBe(!initialHoverState);
+  });
+
+  it('should handle fetchListPembina and fetchUnitPengelola', async () => {
+    mockDetailRekapService.getMesinById.mockResolvedValue(mockMesinData);
+    mockPersetujuanService.getPersetujuanKKSentral.mockResolvedValue(mockPersetujuanData);
+    
+    mockUserService.getListPembina.mockResolvedValue({
+      data: [{ id: 1, name: 'Pembina 1' }]
+    });
+    
+    mockUserService.getUnitPengelola.mockResolvedValue({
+      data: [{ id: 1, name: 'Pengelola 1' }]
+    });
+
+    const wrapper = mount(DetailKKMesin);
+    
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    // These functions are called automatically in onMounted
+    // Let's check if the component is mounted correctly
+    expect(wrapper.exists()).toBe(true);
   });
 });

@@ -1,50 +1,48 @@
-import { mount } from "@vue/test-utils";
-import BtnModal from "@/components/ui/BtnModal.vue";
+import { describe, it, expect, vi } from 'vitest'
+import { mount } from '@vue/test-utils'
+import BtnModal from '@/components/ui/BtnModal.vue'
 
-describe("BtnModal.vue", () => {
-  it("should open the modal when button is clicked", async () => {
+describe('BtnModal', () => {
+  const defaultProps = {
+    header: 'Test Modal',
+    btnClass: 'btn-primary',
+    btnText: 'Open Modal',
+    width: 'w-96'
+  }
+
+  it('should render the button with correct text and class', () => {
     const wrapper = mount(BtnModal, {
-      props: {
-        header: "Test Header",
-        btnClass: "test-btn-class",
-        btnText: "Open Modal",
-        width: "w-1/2",
-      },
-    });
+      props: defaultProps
+    })
 
-    expect(wrapper.find("#modal-tambah").exists()).toBe(false);
+    const button = wrapper.find('button')
+    expect(button.exists()).toBe(true)
+    expect(button.text()).toBe('Open Modal')
+    expect(button.classes()).toContain('btn-primary')
+  })
 
-    const button = wrapper.find("button");
-    expect(button.exists()).toBe(true);
-    expect(button.text()).toBe("Open Modal");
-  });
-
-  it('should emit "submit" and close modal when modal close button is clicked', async () => {
+  it('should show modal when button is clicked', async () => {
     const wrapper = mount(BtnModal, {
-      props: {
-        header: "Test Header",
-        btnClass: "test-btn-class",
-        btnText: "Open Modal",
-        width: "w-1/2",
-      },
-    });
+      props: defaultProps
+    })
 
-    expect(wrapper.find("button").exists()).toBe(true);
-    expect(wrapper.exists()).toBe(true);
-  });
+    const button = wrapper.find('button')
+    await button.trigger('click')
 
-  it('should emit "submit" and close modal when submitFilter is called', async () => {
+    const modal = wrapper.find('#modal-tambah')
+    expect(modal.exists()).toBe(true)
+    expect(modal.isVisible()).toBe(true)
+  })
+
+  it('should display correct header text in modal', async () => {
     const wrapper = mount(BtnModal, {
-      props: {
-        header: "Test Header",
-        btnClass: "test-btn-class",
-        btnText: "Open Modal",
-        width: "w-1/2",
-      },
-    });
+      props: defaultProps
+    })
 
-    await wrapper.vm.$emit("submit");
+    const button = wrapper.find('button')
+    await button.trigger('click')
 
-    expect(wrapper.emitted().submit).toBeTruthy();
-  });
-});
+    const headerText = wrapper.find('h5')
+    expect(headerText.text().trim()).toBe('Test Modal')
+  })
+})

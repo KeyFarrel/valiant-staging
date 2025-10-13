@@ -1,51 +1,82 @@
-import { setActivePinia, createPinia } from 'pinia';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+
+// Remove Pinia mock for this specific test file
+vi.unmock('pinia');
+
+// Import Pinia and stores after unmocking
+import { createPinia, setActivePinia } from 'pinia';
 import { useTagSentral, useTagMesin, useLamanDataPeriodeStore } from '@/store/storeTagGrafik';
 
 describe('storeTagGrafik', () => {
   beforeEach(() => {
+    // Create a fresh pinia instance for each test
     setActivePinia(createPinia());
   });
 
-  it('should initialize currentTabSentral with default value', () => {
-    const tagSentralStore = useTagSentral();
+  describe('useTagSentral', () => {
+    it('should initialize with default currentTabSentral value', () => {
+      const store = useTagSentral();
+      
+      expect(store.currentTabSentral).toBe("WLC (Realisasi & Proyeksi)");
+      expect(typeof store.currentTabSentral).toBe('string');
+    });
 
-    expect(tagSentralStore.currentTabSentral).toBe("WLC (Realisasi & Proyeksi)");
+    it('should be able to update currentTabSentral value', () => {
+      const store = useTagSentral();
+      
+      // Test reactivity by changing the value
+      store.currentTabSentral = "New Tab Value";
+      expect(store.currentTabSentral).toBe("New Tab Value");
+    });
   });
 
-  it('should update currentTabSentral', () => {
-    const tagSentralStore = useTagSentral();
+  describe('useTagMesin', () => {
+    it('should initialize with default currentTabMesin value', () => {
+      const store = useTagMesin();
+      
+      expect(store.currentTabMesin).toBe("WLC (Realisasi & Proyeksi)");
+      expect(typeof store.currentTabMesin).toBe('string');
+    });
 
-    tagSentralStore.currentTabSentral = "New Tab Sentral";
-    expect(tagSentralStore.currentTabSentral).toBe("New Tab Sentral");
+    it('should be able to update currentTabMesin value', () => {
+      const store = useTagMesin();
+      
+      // Test reactivity by changing the value
+      store.currentTabMesin = "Updated Tab";
+      expect(store.currentTabMesin).toBe("Updated Tab");
+    });
   });
 
-  it('should initialize currentTabMesin with default value', () => {
-    const tagMesinStore = useTagMesin();
+  describe('useLamanDataPeriodeStore', () => {
+    it('should initialize with default periode values', () => {
+      const store = useLamanDataPeriodeStore();
+      
+      expect(store.periodeInitial).toBeUndefined();
+      expect(store.periodeTahun).toEqual([2020, 2023]);
+      expect(Array.isArray(store.periodeTahun)).toBe(true);
+      expect(store.periodeTahun).toHaveLength(2);
+    });
 
-    expect(tagMesinStore.currentTabMesin).toBe("WLC (Realisasi & Proyeksi)");
-  });
+    it('should be able to update periode values', () => {
+      const store = useLamanDataPeriodeStore();
+      
+      // Test updating periodeInitial
+      store.periodeInitial = 2022;
+      expect(store.periodeInitial).toBe(2022);
+      
+      // Test updating periodeTahun
+      store.periodeTahun = [2024, 2025];
+      expect(store.periodeTahun).toEqual([2024, 2025]);
+      expect(store.periodeTahun).toHaveLength(2);
+    });
 
-  it('should update currentTabMesin', () => {
-    const tagMesinStore = useTagMesin();
-
-    tagMesinStore.currentTabMesin = "New Tab Mesin";
-    expect(tagMesinStore.currentTabMesin).toBe("New Tab Mesin");
-  });
-
-  it('should initialize periodeTahun with default values', () => {
-    const lamanDataPeriodeStore = useLamanDataPeriodeStore();
-
-    expect(lamanDataPeriodeStore.periodeTahun).toEqual([2020, 2023]);
-    expect(lamanDataPeriodeStore.periodeInitial).toBeUndefined();
-  });
-
-  it('should update periodeTahun and periodeInitial', () => {
-    const lamanDataPeriodeStore = useLamanDataPeriodeStore();
-
-    lamanDataPeriodeStore.periodeTahun = [2021, 2024];
-    lamanDataPeriodeStore.periodeInitial = 2021;
-
-    expect(lamanDataPeriodeStore.periodeTahun).toEqual([2021, 2024]);
-    expect(lamanDataPeriodeStore.periodeInitial).toBe(2021);
+    it('should handle different array lengths for periodeTahun', () => {
+      const store = useLamanDataPeriodeStore();
+      
+      // Test with different array length
+      store.periodeTahun = [2020, 2021, 2022];
+      expect(store.periodeTahun).toHaveLength(3);
+      expect(store.periodeTahun).toEqual([2020, 2021, 2022]);
+    });
   });
 });

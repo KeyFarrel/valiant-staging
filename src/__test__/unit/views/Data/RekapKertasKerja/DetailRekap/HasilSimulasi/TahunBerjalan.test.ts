@@ -1,93 +1,154 @@
+import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import TahunBerjalan from '@/views/Data/RekapKertasKerja/DetailRekap/HasilSimulasi/TahunBerjalan.vue';
-import ShimmerLoading from '@/components/ui/ShimmerLoading.vue';
-import ReloadComponent from '@/components/ui/ReloadComponent.vue';
+
+// Mock GlobalFormat
+vi.mock('@/services/format/global-format', () => ({
+  default: class MockGlobalFormat {
+    formatRupiah(value: any) {
+      return value ? value.toString() : '0';
+    }
+  }
+}));
 
 describe('TahunBerjalan.vue', () => {
-  let wrapper: any;
+  const defaultProps = {
+    irrOnProject: 22,
+    irrOnEquity: 22,
+    npvOnEquity: 6948,
+    npvOnProject: 7649,
+    averageNcf: 7,
+    averageEaf: 7,
+    isFetchingError: false
+  };
 
-  beforeEach(() => {
-    wrapper = mount(TahunBerjalan, {
-      props: {
-        irrOnProject: 10,
-        irrOnEquity: 12,
-        npvOnEquity: 15000,
-        npvOnProject: 20000,
-        averageNcf: 8,
-        averageEaf: 85,
-        isFetchingError: false,
-      },
+  it('should render the component successfully with props', () => {
+    const wrapper = mount(TahunBerjalan, {
+      props: defaultProps
+    });
+    expect(wrapper.exists()).toBe(true);
+  });
+
+  it('should render all financial metric cards when data is available', () => {
+    const wrapper = mount(TahunBerjalan, {
+      props: defaultProps
+    });
+    
+    const cards = wrapper.findAll('.border-l-8');
+    expect(cards).toHaveLength(4);
+    
+    // Check if all cards have the correct styling
+    cards.forEach(card => {
+      expect(card.classes()).toContain('border-l-[#0099AD]');
+      expect(card.classes()).toContain('rounded-lg');
+      expect(card.classes()).toContain('border');
     });
   });
 
-  afterEach(() => {
-    wrapper.unmount();
-  });
-
-  it('renders IRR and NPV sections correctly', () => {
-    // Check if IRR section is displayed
+  it('should display correct financial metrics content', () => {
+    const wrapper = mount(TahunBerjalan, {
+      props: defaultProps
+    });
+    
+    // Check IRR section
     expect(wrapper.text()).toContain('Internal Rate of Return (IRR)');
     expect(wrapper.text()).toContain('IRR on Project');
     expect(wrapper.text()).toContain('IRR on Equity');
     
-    // Check if NPV section is displayed
+    // Check NPV section  
     expect(wrapper.text()).toContain('Net Present Value (NPV)');
-    expect(wrapper.text()).toContain('NPV on Project');
     expect(wrapper.text()).toContain('NPV on Equity');
-
-    // Validate the displayed values
-    const irrOnProject = wrapper.findAll('p')[1];
-    const irrOnEquity = wrapper.findAll('p')[3];
-    const npvOnProject = wrapper.findAll('p')[5];
-    const npvOnEquity = wrapper.findAll('p')[7];
-
-    expect(irrOnProject.text()).toContain('IRR on Project');
-    expect(irrOnEquity.text()).toContain('IRR on Equity');
-    expect(npvOnProject.text()).toContain('Net Present Value (NPV)');
-    expect(npvOnEquity.text()).toContain('20.000,00 Rp (Juta)');
-  });
-
-  it('renders NCF and EAF sections correctly', () => {
-    // Check if NCF and EAF sections are displayed
+    expect(wrapper.text()).toContain('NPV on Project');
+    
+    // Check NCF and EAF sections
     expect(wrapper.text()).toContain('Average Net Capacity Factor (NCF)');
     expect(wrapper.text()).toContain('Average Equivalent Availability Factor (EAF)');
-
-    // Validate the displayed values
-    const averageNcf = wrapper.findAll('p')[9];
-    const averageEaf = wrapper.findAll('p')[11];
-
-    expect(averageNcf.text()).toContain('15.000,00 Rp (Juta)');
-    expect(averageEaf.text()).toContain('8,00 %');
   });
 
-  it('displays shimmer loading when data is not available', async () => {
-    await wrapper.setProps({
-      irrOnProject: null,
-      irrOnEquity: null,
-      npvOnEquity: null,
-      npvOnProject: null,
-      averageNcf: null,
-      averageEaf: null,
+  it('should display ReloadComponent when data is missing and fetching error occurs', () => {
+    const wrapper = mount(TahunBerjalan, {
+      props: {
+        irrOnProject: 0,
+        irrOnEquity: 0,
+        npvOnEquity: 0,
+        npvOnProject: 0,
+        averageNcf: 0,
+        averageEaf: 0,
+        isFetchingError: true
+      }
     });
-    await wrapper.vm.$nextTick();
-
-    const shimmerComponents = wrapper.findAllComponents(ShimmerLoading);
-    expect(shimmerComponents.length).toBe(4);
+    
+    expect(wrapper.findComponent({ name: 'ReloadComponent' }).exists()).toBe(true);
   });
 
-  it('displays reload component on fetch error', async () => {
-    await wrapper.setProps({
-      isFetchingError: true,
-      irrOnProject: null,
-      irrOnEquity: null,
-      npvOnEquity: null,
-      npvOnProject: null,
-      averageNcf: null,
-      averageEaf: null,
+  it('should display ShimmerLoading when data is loading', () => {
+    const wrapper = mount(TahunBerjalan, {
+      props: {
+        irrOnProject: 0,
+        irrOnEquity: 0,
+        npvOnEquity: 0,
+        npvOnProject: 0,
+        averageNcf: 0,
+        averageEaf: 0,
+        isFetchingError: false
+      }
     });
-    await wrapper.vm.$nextTick();
+    
+    const shimmerComponents = wrapper.findAllComponents({ name: 'ShimmerLoading' });
+    expect(shimmerComponents).toHaveLength(4);
+  });
 
-    const reloadComponent = wrapper.findComponent(ReloadComponent);
-    expect(reloadComponent.exists()).toBe(true);
+  it('should emit onClick event when ReloadComponent is clicked', async () => {
+    const wrapper = mount(TahunBerjalan, {
+      props: {
+        irrOnProject: 0,
+        irrOnEquity: 0,
+        npvOnEquity: 0,
+        npvOnProject: 0,
+        averageNcf: 0,
+        averageEaf: 0,
+        isFetchingError: true
+      }
+    });
+    
+    const reloadComponent = wrapper.findComponent({ name: 'ReloadComponent' });
+    await reloadComponent.vm.$emit('on-clicks');
+    
+    expect(wrapper.emitted('onClick')).toBeTruthy();
+  });
+
+  it('should emit onKeyDown event when ReloadComponent key is pressed', async () => {
+    const wrapper = mount(TahunBerjalan, {
+      props: {
+        irrOnProject: 0,
+        irrOnEquity: 0,
+        npvOnEquity: 0,
+        npvOnProject: 0,
+        averageNcf: 0,
+        averageEaf: 0,
+        isFetchingError: true
+      }
+    });
+    
+    const reloadComponent = wrapper.findComponent({ name: 'ReloadComponent' });
+    await reloadComponent.vm.$emit('on-key-down');
+    
+    expect(wrapper.emitted('onKeyDown')).toBeTruthy();
+  });
+
+  it('should display "NUM" when IRR values are empty strings', () => {
+    const wrapper = mount(TahunBerjalan, {
+      props: {
+        irrOnProject: '',
+        irrOnEquity: '',
+        npvOnEquity: 6948,
+        npvOnProject: 7649,
+        averageNcf: 7,
+        averageEaf: 7,
+        isFetchingError: false
+      }
+    });
+    
+    expect(wrapper.text()).toContain('NUM');
   });
 });

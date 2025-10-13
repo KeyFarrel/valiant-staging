@@ -113,10 +113,10 @@
               <span class="font-semibold">Cari berkas</span>
             </label>
             <input ref="fileInputEvidence" id="fileInputEvidence" type="file" class="hidden"
-              @change="handleFileChangeEvidence" accept=".xlsx, .zip" />
+              @change="handleFileChangeEvidence" accept=".xlsx" />
           </div>
           <div class="flex flex-row items-center justify-between">
-            <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx, .zip</p>
+            <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx</p>
             <p class="text-xs text-textDisabledColor">Ukuran maksimal dokumen : 5 MB</p>
           </div>
         </div>

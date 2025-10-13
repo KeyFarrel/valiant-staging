@@ -1,321 +1,254 @@
-import { shallowMount } from "@vue/test-utils";
-import PageTeknis from "@/views/Beranda/LamanData/TabPage/PageTeknis.vue";
-import { createPinia, setActivePinia } from "pinia";
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { mount } from '@vue/test-utils';
+import PageTeknis from '@/views/Beranda/LamanData/TabPage/PageTeknis.vue';
+import { reactive } from 'vue';
 
-// Mock LamanService
-jest.mock("@/services/laman-service", () => {
-  return jest.fn().mockImplementation(() => ({
-    getPeriodeTahun: jest.fn().mockResolvedValue({
-      data: [{ tahun: 2018 }, { tahun: 2022 }]
-    }),
-    getDataTeknis: jest.fn().mockResolvedValue({
-      data: [{
-        id_pengelola: 1,
-        pengelola: "Unit Test",
-        pembangkits: []
-      }]
-    }),
-    downloadExcelTeknis: jest.fn().mockResolvedValue({
-      data: new Blob(),
-      headers: { "content-disposition": "attachment; filename=\"test.xlsx\"" }
-    })
-  }));
+// Mock the store with reactive properties
+const mockStore = reactive({
+  currentTab: 'Teknis',
 });
 
-// Mock AOS
-jest.mock("aos", () => ({ init: jest.fn() }));
-
-// Mock Pinia store
-jest.mock("@/store/storeLamanDataTab", () => ({
-  useLamanDataTabStore: jest.fn(() => ({
-    periodeTahun: [2020, 2021, 2022, 2023, 2024],
-    periodeInitial: 2022,
-    isLoading: false,
-    setLoading: jest.fn(),
-    setPeriodeTahun: jest.fn(),
-    currentTab: "Teknis"
-  }))
+vi.mock('@/store/storeLamanDataTab', () => ({
+  useLamanDataTabStore: () => mockStore,
 }));
 
-describe("PageTeknis.vue", () => {
+// Mock LamanService
+const mockLamanService = {
+  getDataTeknis: vi.fn(),
+  getPeriodeTahun: vi.fn(),
+  getInfoSFC: vi.fn(),
+  getListTahun: vi.fn(),
+  downloadExcelTeknis: vi.fn(),
+};
+
+vi.mock('@/services/laman-service', () => ({
+  default: class MockLamanService {
+    getDataTeknis = mockLamanService.getDataTeknis;
+    getPeriodeTahun = mockLamanService.getPeriodeTahun;
+    getInfoSFC = mockLamanService.getInfoSFC;
+    getListTahun = mockLamanService.getListTahun;
+    downloadExcelTeknis = mockLamanService.downloadExcelTeknis;
+  },
+}));
+
+describe('PageTeknis', () => {
   beforeEach(() => {
-    const pinia = createPinia();
-    setActivePinia(pinia);
-    jest.clearAllMocks();
-  });
-
-  describe("Component Mounting", () => {
-    it("should mount component successfully", () => {
-      const wrapper = shallowMount(PageTeknis, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            VueDatePicker: true,
-            Loading: true,
-            InfoHeader: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
-
-      expect(wrapper.vm).toBeTruthy();
-      expect(wrapper.exists()).toBe(true);
-      
-      wrapper.unmount();
+    vi.clearAllMocks();
+    
+    // Setup default mock responses
+    mockLamanService.getDataTeknis.mockResolvedValue({
+      data: [],
+      meta: {
+        totalPages: 1,
+        totalRecords: 0,
+        limit: 10,
+      },
     });
-
-    it("should create component instance without errors", () => {
-      expect(() => {
-        const wrapper = shallowMount(PageTeknis, {
-          global: {
-            plugins: [createPinia()],
-            stubs: {
-              VueDatePicker: true,
-              Loading: true,
-              InfoHeader: true,
-              SortingIcon: true,
-              RouterLink: true
-            }
-          },
-        });
-        wrapper.unmount();
-      }).not.toThrow();
+    
+    mockLamanService.getPeriodeTahun.mockResolvedValue({
+      data: [
+        { tahun: 2020 },
+        { tahun: 2025 },
+      ],
+    });
+    
+    mockLamanService.getInfoSFC.mockResolvedValue({
+      data: [],
+    });
+    
+    mockLamanService.getListTahun.mockResolvedValue({
+      data: [
+        { tahun: 2020 },
+        { tahun: 2025 },
+      ],
     });
   });
 
-  describe("Component Structure", () => {
-    it("should render with proper structure", () => {
-      const wrapper = shallowMount(PageTeknis, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            VueDatePicker: true,
-            Loading: true,
-            InfoHeader: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
-
-      // Component should exist and be a Vue component
-      expect(wrapper.exists()).toBe(true);
-      expect(wrapper.vm).toBeDefined();
-      
-      wrapper.unmount();
-    });
-
-    it("should have proper stubbed components setup", () => {
-      const wrapper = shallowMount(PageTeknis, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            VueDatePicker: true,
-            Loading: true,
-            InfoHeader: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
-
-      // Wrapper should be created successfully with stubs
-      expect(wrapper.vm).toBeTruthy();
-      
-      wrapper.unmount();
-    });
+  it('should render component correctly', async () => {
+    const wrapper = mount(PageTeknis);
+    
+    expect(wrapper.exists()).toBe(true);
+    expect(wrapper.find('input[placeholder="Cari sentral..."]').exists()).toBe(true);
   });
 
-  describe("Template Rendering", () => {
-    it("should handle template rendering without errors", () => {
-      const wrapper = shallowMount(PageTeknis, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            VueDatePicker: true,
-            Loading: true,
-            InfoHeader: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
-
-      // Template should render without throwing errors
-      expect(wrapper.html()).toBeDefined();
-      
-      wrapper.unmount();
-    });
+  it('should trigger store watcher when currentTab is Teknis', async () => {
+    const wrapper = mount(PageTeknis);
+    
+    // Simulate store change
+    mockStore.currentTab = 'Other';
+    await wrapper.vm.$nextTick();
+    
+    mockStore.currentTab = 'Teknis';
+    await wrapper.vm.$nextTick();
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    expect(mockLamanService.getInfoSFC).toHaveBeenCalled();
+    expect(mockLamanService.getPeriodeTahun).toHaveBeenCalled();
   });
 
-  describe("Pinia Integration", () => {
-    it("should integrate with Pinia store correctly", () => {
-      const pinia = createPinia();
-      const wrapper = shallowMount(PageTeknis, {
-        global: {
-          plugins: [pinia],
-          stubs: {
-            VueDatePicker: true,
-            Loading: true,
-            InfoHeader: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
-
-      // Component should mount with Pinia without errors
-      expect(wrapper.vm).toBeTruthy();
-      
-      wrapper.unmount();
-    });
+  it('should handle search input correctly', async () => {
+    const wrapper = mount(PageTeknis);
+    
+    const searchInput = wrapper.find('input[placeholder="Cari sentral..."]');
+    await searchInput.setValue('test search');
+    
+    expect((searchInput.element as HTMLInputElement).value).toBe('test search');
   });
 
-  describe("Service Mocking", () => {
-    it("should handle service mocks correctly", () => {
-      const wrapper = shallowMount(PageTeknis, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            VueDatePicker: true,
-            Loading: true,
-            InfoHeader: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
-
-      // Component should work with mocked services
-      expect(wrapper.vm).toBeTruthy();
-      
-      wrapper.unmount();
-    });
+  it('should handle year range picker correctly', async () => {
+    const wrapper = mount(PageTeknis);
+    
+    // Access component instance to call the method
+    const vm = wrapper.vm as any;
+    await vm.handleYearRangePicked([2020, 2023]);
+    
+    expect(vm.tahunDari).toBe(2020);
+    expect(vm.tahunSampai).toBe(2023);
+    expect(vm.yearRangePicked).toEqual([2020, 2023]);
   });
 
-  describe("Component Lifecycle", () => {
-    it("should handle component mounting lifecycle", () => {
-      const wrapper = shallowMount(PageTeknis, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            VueDatePicker: true,
-            Loading: true,
-            InfoHeader: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
-
-      // Component should complete mounting process
-      expect(wrapper.vm.$el).toBeDefined();
-      
-      wrapper.unmount();
-    });
-
-    it("should handle component unmounting correctly", () => {
-      const wrapper = shallowMount(PageTeknis, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            VueDatePicker: true,
-            Loading: true,
-            InfoHeader: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
-
-      // Component should unmount without errors
-      expect(() => wrapper.unmount()).not.toThrow();
-    });
+  it('should toggle up section correctly', async () => {
+    const wrapper = mount(PageTeknis);
+    const vm = wrapper.vm as any;
+    
+    // Test opening a section
+    vm.toggleUp('test-code');
+    expect(vm.isUpOpen('test-code')).toBe(true);
+    
+    // Test closing the same section
+    vm.toggleUp('test-code');
+    expect(vm.isUpOpen('test-code')).toBe(false);
   });
 
-  describe("Error Handling", () => {
-    it("should not throw errors during initialization", () => {
-      expect(() => {
-        const wrapper = shallowMount(PageTeknis, {
-          global: {
-            plugins: [createPinia()],
-            stubs: {
-              VueDatePicker: true,
-              Loading: true,
-              InfoHeader: true,
-              SortingIcon: true,
-              RouterLink: true
-            }
-          },
-        });
-        wrapper.unmount();
-      }).not.toThrow();
-    });
-
-    it("should handle empty props gracefully", () => {
-      const wrapper = shallowMount(PageTeknis, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            VueDatePicker: true,
-            Loading: true,
-            InfoHeader: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-        props: {}
-      });
-
-      expect(wrapper.vm).toBeTruthy();
-      
-      wrapper.unmount();
-    });
+  it('should toggle pembangkit section correctly', async () => {
+    const wrapper = mount(PageTeknis);
+    const vm = wrapper.vm as any;
+    
+    // Test opening a pembangkit section
+    vm.togglePembangkit(123);
+    expect(vm.isPembangkitOpen(123)).toBe(true);
+    
+    // Test closing the same pembangkit section
+    vm.togglePembangkit(123);
+    expect(vm.isPembangkitOpen(123)).toBe(false);
   });
 
-  describe("Component Composition", () => {
-    it("should work with Vue 3 Composition API", () => {
-      const wrapper = shallowMount(PageTeknis, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            VueDatePicker: true,
-            Loading: true,
-            InfoHeader: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
-
-      // Component should be compatible with Composition API
-      expect(wrapper.vm).toBeTruthy();
-      
-      wrapper.unmount();
+  it('should handle export functionality', async () => {
+    // Mock successful export response
+    mockLamanService.downloadExcelTeknis.mockResolvedValue({
+      data: new Blob(['test data'], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
+      headers: {
+        'content-disposition': 'filename="test-export.xlsx"'
+      }
     });
+
+    const wrapper = mount(PageTeknis);
+    const vm = wrapper.vm as any;
+    
+    // Set some default values
+    vm.yearRangePicked = [2020, 2023];
+    vm.searchQ = 'test';
+    
+    await vm.handleExport();
+    
+    expect(mockLamanService.downloadExcelTeknis).toHaveBeenCalledWith(2020, 2023, 'TEST');
+    expect(vm.isLoading).toBe(false);
   });
 
-  describe("Test Environment", () => {
-    it("should work in Jest testing environment", () => {
-      const wrapper = shallowMount(PageTeknis, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            VueDatePicker: true,
-            Loading: true,
-            InfoHeader: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
+  it('should handle export error correctly', async () => {
+    // Mock export error
+    mockLamanService.downloadExcelTeknis.mockRejectedValue(new Error('Export failed'));
 
-      // Component should be testable in Jest
-      expect(wrapper.vm).toBeTruthy();
-      expect(wrapper.html()).toBeTruthy();
-      
-      wrapper.unmount();
-    });
+    const wrapper = mount(PageTeknis);
+    const vm = wrapper.vm as any;
+    
+    vm.yearRangePicked = [2020, 2023];
+    vm.searchQ = 'test';
+    
+    await vm.handleExport();
+    
+    expect(mockLamanService.downloadExcelTeknis).toHaveBeenCalledWith(2020, 2023, 'TEST');
+  });
+
+  it('should handle fetchPeriodeTahun error correctly', async () => {
+    mockLamanService.getPeriodeTahun.mockRejectedValue(new Error('Fetch error'));
+
+    const wrapper = mount(PageTeknis);
+    const vm = wrapper.vm as any;
+    
+    await vm.fetchPeriodeTahun();
+    
+    expect(mockLamanService.getPeriodeTahun).toHaveBeenCalled();
+  });
+
+  it('should handle fetchDataTeknis error correctly', async () => {
+    mockLamanService.getDataTeknis.mockRejectedValue(new Error('Fetch error'));
+
+    const wrapper = mount(PageTeknis);
+    const vm = wrapper.vm as any;
+    
+    await vm.fetchDataTeknis();
+    
+    expect(mockLamanService.getDataTeknis).toHaveBeenCalled();
+  });
+
+  it('should handle fetchListTahun error correctly', async () => {
+    mockLamanService.getListTahun.mockRejectedValue(new Error('Fetch error'));
+
+    const wrapper = mount(PageTeknis);
+    const vm = wrapper.vm as any;
+    
+    await vm.fetchListTahun();
+    
+    expect(mockLamanService.getListTahun).toHaveBeenCalled();
+  });
+
+  it('should early return when data already exists in store watcher', async () => {
+    const wrapper = mount(PageTeknis);
+    const vm = wrapper.vm as any;
+    
+    // Set data to simulate already loaded state with proper structure
+    vm.dataSFC = [{ jenis_kit: 'test', bahan_bakar: 'coal', satuan_sfc: 'kg/MWh' }];
+    vm.teknisData = [{ 
+      kode_pengelola: 'test', 
+      pengelola: 'Test Pengelola',
+      pembangkits: [{ 
+        uuid_sentral: 1, 
+        kode_sentral: 'TEST',
+        sentral: 'Test Sentral',
+        kode_jenis_pembangkit: 'PLTU',
+        mesins: []
+      }]
+    }];
+    
+    mockStore.currentTab = 'Other';
+    await wrapper.vm.$nextTick();
+    
+    mockStore.currentTab = 'Teknis';
+    await wrapper.vm.$nextTick();
+    
+    // Should have early returned and not called the services again after initial setup
+    expect(vm.dataSFC.length).toBeGreaterThan(0);
+    expect(vm.teknisData.length).toBeGreaterThan(0);
+  });
+
+  it('should handle store watcher error correctly', async () => {
+    mockLamanService.getInfoSFC.mockRejectedValue(new Error('SFC error'));
+
+    const wrapper = mount(PageTeknis);
+    const vm = wrapper.vm as any;
+    
+    // Clear existing data to avoid early return
+    vm.dataSFC = [];
+    vm.teknisData = [];
+    
+    mockStore.currentTab = 'Other';
+    await wrapper.vm.$nextTick();
+    
+    mockStore.currentTab = 'Teknis';
+    await wrapper.vm.$nextTick();
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    expect(mockLamanService.getInfoSFC).toHaveBeenCalled();
   });
 });

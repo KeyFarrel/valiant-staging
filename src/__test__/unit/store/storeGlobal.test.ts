@@ -1,36 +1,63 @@
-import { setActivePinia, createPinia } from 'pinia';
-import { useConnectionStatusStore } from '@/store/storeGlobal';
-import { useOnline } from '@vueuse/core';
-import { ref } from 'vue';
+import { describe, it, expect, vi } from 'vitest';
 
-// Mocking the useOnline from @vueuse/core
-jest.mock('@vueuse/core', () => ({
-  useOnline: jest.fn()
+// Mock @vueuse/core
+vi.mock('@vueuse/core', () => ({
+  useOnline: vi.fn()
+}));
+
+// Mock Pinia
+vi.mock('pinia', () => ({
+  defineStore: vi.fn((name, setup) => {
+    return () => setup();
+  })
+}));
+
+// Mock computed from Vue
+vi.mock('vue', () => ({
+  computed: vi.fn((fn) => ({ value: fn() }))
 }));
 
 describe('useConnectionStatusStore', () => {
-  beforeEach(() => {
-    // Set up Pinia for testing
-    setActivePinia(createPinia());
-  });
-
-  it('should return online status as true when online', () => {
-    // Mock useOnline to return true
-    (useOnline as jest.Mock).mockReturnValue(ref(true));
-
+  it('should create store with online status when connected', async () => {
+    const { useOnline } = await import('@vueuse/core');
+    const { computed } = await import('vue');
+    
+    // Mock online status as true
+    (useOnline as any).mockReturnValue({ value: true });
+    (computed as any).mockImplementation((fn: any) => fn());
+    
+    const { useConnectionStatusStore } = await import('@/store/storeGlobal');
     const store = useConnectionStatusStore();
-
-    // Check if isOnline is true
+    
+    expect(store).toBeDefined();
     expect(store.isOnline).toBe(true);
   });
 
-  it('should return online status as false when offline', () => {
-    // Mock useOnline to return false
-    (useOnline as jest.Mock).mockReturnValue(ref(false));
-
+  it('should create store with offline status when disconnected', async () => {
+    const { useOnline } = await import('@vueuse/core');
+    const { computed } = await import('vue');
+    
+    // Mock online status as false
+    (useOnline as any).mockReturnValue({ value: false });
+    (computed as any).mockImplementation((fn: any) => fn());
+    
+    const { useConnectionStatusStore } = await import('@/store/storeGlobal');
     const store = useConnectionStatusStore();
-
-    // Check if isOnline is false
+    
+    expect(store).toBeDefined();
     expect(store.isOnline).toBe(false);
+  });
+
+  it('should call useOnline composable', async () => {
+    const { useOnline } = await import('@vueuse/core');
+    const { computed } = await import('vue');
+    
+    (useOnline as any).mockReturnValue({ value: true });
+    (computed as any).mockImplementation((fn: any) => fn());
+    
+    const { useConnectionStatusStore } = await import('@/store/storeGlobal');
+    useConnectionStatusStore();
+    
+    expect(useOnline).toHaveBeenCalled();
   });
 });

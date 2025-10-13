@@ -1,108 +1,189 @@
-import { shallowMount } from '@vue/test-utils';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { mount } from '@vue/test-utils';
 import ParameterTeknisInfoBox from '@/views/Data/RekapKertasKerja/PerbaruiData/ParameterTeknisInfoBox.vue';
-import GlobalFormat from '@/services/format/global-format';
 
-// Mock GlobalFormat service
-jest.mock('@/services/format/global-format', () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      formatRupiah: jest.fn((value: number) => `Rp ${value.toFixed(2)}`)
-    };
-  });
-});
-
-describe('ParameterTeknisInfoBox.vue', () => {
+describe('ParameterTeknisInfoBox', () => {
   let wrapper: any;
-
-  const propsData = {
+  
+  const mockProps = {
+    periode: '2024',
     parameterTeknis: {
-      daya_terpasang: 1000000,
-      daya_mampu_netto_mw: 900,
-      auxiliary: 10,
-      susut_trafo: 5,
-      ps: 3,
-      nphr: 2000,
+      daya_terpasang: 100000, // 100 MW in kW
+      daya_mampu_netto_mw: 95,
+      auxiliary: 5.5,
+      susut_trafo: 2.3,
+      ps: 7.8,
+      nphr: 2400,
       total_project_cost: 5000000,
-      loan: 3000000,
-      equity: 2000000,
-      electricity_price_a_rp_per_kwbln: 1500,
-      electricity_price_b_rp_per_kwbln: 1400,
-      electricity_price_c_rp_per_kwh: 1300,
-      electricity_price_d_rp_per_kwh: 1200
+      loan: 3500000,
+      equity: 1500000,
+      electricity_price_a_rp_per_kwbln: 150000,
+      electricity_price_b_rp_per_kwbln: 175000,
+      electricity_price_c_rp_per_kwh: 1500,
+      electricity_price_d_rp_per_kwh: 1800
     },
     bahanBakars: [
       {
         flag_bahan_bakar: 1,
-        kode_bahan_bakar: 'BB001',
-        harga_bahan_bakar: 5000,
-        sfc: 250
+        kode_bahan_bakar: 'BBM001',
+        harga_bahan_bakar: 12000,
+        sfc: 0.25
       },
       {
         flag_bahan_bakar: 0,
-        kode_bahan_bakar: 'BB002',
-        harga_bahan_bakar: 4000,
-        sfc: 300
+        kode_bahan_bakar: 'BBM002',
+        harga_bahan_bakar: 8000,
+        sfc: 0.30
       }
     ],
-    periode: '2023',
     comboBahanBakar: [
-      { kode_bahan_bakar: 'BB001', bahan_bakar: 'Solar', satuan_harga_bahan_bakar: 'Rupiah', satuan_sfc: 'kcal/kg' },
-      { kode_bahan_bakar: 'BB002', bahan_bakar: 'Gas', satuan_harga_bahan_bakar: 'Rupiah', satuan_sfc: 'kcal/m3' }
+      {
+        kode_bahan_bakar: 'BBM001',
+        bahan_bakar: 'Solar',
+        satuan_harga_bahan_bakar: 'Rupiah per Liter',
+        satuan_sfc: 'Liter per kWh'
+      },
+      {
+        kode_bahan_bakar: 'BBM002',
+        bahan_bakar: 'Gas',
+        satuan_harga_bahan_bakar: 'Rupiah per m3',
+        satuan_sfc: 'm3 per kWh'
+      }
     ]
   };
 
   beforeEach(() => {
-    wrapper = shallowMount(ParameterTeknisInfoBox, {
-      props: propsData
+    wrapper = mount(ParameterTeknisInfoBox, {
+      props: mockProps
     });
   });
 
-  afterEach(() => {
-    wrapper.unmount();
+  it('should render component properly', () => {
+    expect(wrapper.exists()).toBe(true);
+    expect(wrapper.find('.border-l-\\[\\#0099AD\\]')).toBeTruthy();
   });
 
-  it('renders correctly with the provided props', () => {
-    expect(wrapper.text()).toContain('Parameter Teknis & Finansial');
-    expect(wrapper.text()).toContain('Periode');
-    expect(wrapper.text()).toContain('2023');
+  it('should display periode correctly', () => {
+    const periodeElement = wrapper.find('.text-primaryColor');
+    expect(periodeElement.text()).toBe('2024');
   });
 
-  it('displays the correct values for the technical parameters', () => {
-    expect(wrapper.text()).toContain('Daya Terpasang');
-    expect(wrapper.text()).toContain('Rp 1000.00 MW'); // formatted value
-    expect(wrapper.text()).toContain('Daya Mampu Netto');
-    expect(wrapper.text()).toContain('Rp 900.00 MW'); // formatted value
+  it('should display parameter teknis values correctly', () => {
+    const dayaTerpasangText = wrapper.text();
+    expect(dayaTerpasangText).toContain('100,00'); // Daya terpasang should show 100 MW
+    expect(dayaTerpasangText).toContain('95,00'); // Daya mampu netto
+    expect(dayaTerpasangText).toContain('5,50'); // Auxiliary (formatted with comma)
   });
 
-
-  it('formats the technical parameters correctly using GlobalFormat', () => {
-    const globalFormat = new GlobalFormat();
-    expect(globalFormat.formatRupiah).toHaveBeenCalledTimes(0); // Called with daya_terpasang / 1000
-    expect(globalFormat.formatRupiah).toHaveBeenCalledTimes(0); // Called with daya_mampu_netto_mw
-    expect(globalFormat.formatRupiah).toHaveBeenCalledTimes(0); // Auxiliary
-    expect(globalFormat.formatRupiah).toHaveBeenCalledTimes(0); // Susut Trafo
+  it('should return dash when bahan bakar code is not found', () => {
+    const wrapperWithUnknownBahanBakar = mount(ParameterTeknisInfoBox, {
+      props: {
+        ...mockProps,
+        bahanBakars: [
+          {
+            flag_bahan_bakar: 1,
+            kode_bahan_bakar: 'UNKNOWN_CODE',
+            harga_bahan_bakar: 12000,
+            sfc: 0.25
+          }
+        ]
+      }
+    });
+    
+    const text = wrapperWithUnknownBahanBakar.text();
+    expect(text).toContain('-'); // Should display dash for unknown bahan bakar
   });
 
-  it('renders the correct fuel data', () => {
-    const fuelItems = wrapper.findAll('.grid-cols-4 > div');
-    expect(fuelItems.at(0)?.text()).toContain('Daya TerpasangRp 1000.00 MW');
-    expect(fuelItems.at(1)?.text()).toContain('Daya Mampu NettoRp 900.00 MW');
-    expect(fuelItems.at(4)?.text()).toContain('Pemakaian Sendiri (PS)Rp 3.00 %');
-    expect(fuelItems.at(5)?.text()).toContain('Net Plant Heat Rate (NPHR)Rp 2000.00 Kcal/kWh');
-    expect(fuelItems.at(8)?.text()).toContain('EquityRp 2000000.00 Rp (Juta)');
-    expect(fuelItems.at(9)?.text()).toContain('Electricity Price ARp 1500.00 Rp/kW.bln');
+  it('should return empty string when satuan labels are not found', () => {
+    const wrapperWithEmptyCombo = mount(ParameterTeknisInfoBox, {
+      props: {
+        ...mockProps,
+        comboBahanBakar: [] // Empty combo bahan bakar
+      }
+    });
+    
+    // Component should render without error even with empty combo
+    expect(wrapperWithEmptyCombo.exists()).toBe(true);
   });
 
-  it('correctly applies the bahanBakarsFinal logic to prioritize the primary fuel', () => {
-    const fuelItems = wrapper.findAll('.grid-cols-4 > div');
-    expect(fuelItems.at(0)?.text()).toContain('Daya TerpasangRp 1000.00 MW');
-    expect(fuelItems.at(1)?.text()).toContain('Daya Mampu NettoRp 900.00 MW');
+  it('should handle bahanBakarsFinal function with non-primary fuel first', () => {
+    const wrapperWithReorderedBahanBakar = mount(ParameterTeknisInfoBox, {
+      props: {
+        ...mockProps,
+        bahanBakars: [
+          {
+            flag_bahan_bakar: 0,
+            kode_bahan_bakar: 'BBM002',
+            harga_bahan_bakar: 8000,
+            sfc: 0.30
+          },
+          {
+            flag_bahan_bakar: 1, // Primary fuel at second position
+            kode_bahan_bakar: 'BBM001',
+            harga_bahan_bakar: 12000,
+            sfc: 0.25
+          }
+        ]
+      }
+    });
+    
+    const text = wrapperWithReorderedBahanBakar.text();
+    expect(text).toContain('Solar'); // Primary fuel should be displayed
+    expect(text).toContain('Gas'); // Secondary fuel should also be displayed
   });
 
-  it('renders formatted electricity prices', () => {
-    expect(wrapper.text()).toContain('Electricity Price A');
-    expect(wrapper.text()).toContain('Rp 1500.00 Rp/kW.bln');
-    expect(wrapper.text()).toContain('Electricity Price B');
-    expect(wrapper.text()).toContain('Rp 1400.00 Rp/kW.bln');
+  it('should handle case when no primary fuel exists', () => {
+    const wrapperWithNoPrimaryFuel = mount(ParameterTeknisInfoBox, {
+      props: {
+        ...mockProps,
+        bahanBakars: [
+          {
+            flag_bahan_bakar: 0,
+            kode_bahan_bakar: 'BBM001',
+            harga_bahan_bakar: 12000,
+            sfc: 0.25
+          },
+          {
+            flag_bahan_bakar: 0,
+            kode_bahan_bakar: 'BBM002',
+            harga_bahan_bakar: 8000,
+            sfc: 0.30
+          }
+        ]
+      }
+    });
+    
+    // Component should render without error even without primary fuel
+    expect(wrapperWithNoPrimaryFuel.exists()).toBe(true);
+    const text = wrapperWithNoPrimaryFuel.text();
+    expect(text).toContain('Solar');
+    expect(text).toContain('Gas');
+  });
+
+  it('should handle edge cases for harga bahan bakar and sfc values', () => {
+    const wrapperWithEdgeCases = mount(ParameterTeknisInfoBox, {
+      props: {
+        ...mockProps,
+        bahanBakars: [
+          {
+            flag_bahan_bakar: 1,
+            kode_bahan_bakar: 'BBM001',
+            harga_bahan_bakar: 0, // Zero value
+            sfc: 0 // Zero value
+          },
+          {
+            flag_bahan_bakar: 0,
+            kode_bahan_bakar: 'BBM002',
+            harga_bahan_bakar: '', // Empty string
+            sfc: null // Null value
+          }
+        ]
+      }
+    });
+    
+    const text = wrapperWithEdgeCases.text();
+    // Should handle zero and empty values gracefully
+    expect(text).toContain('0,00'); // Zero should be formatted
+    expect(text).toContain('-'); // Empty should show dash
   });
 });

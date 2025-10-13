@@ -1,111 +1,215 @@
-import { shallowMount } from "@vue/test-utils";
-import ModalSearch from "@/components/ModalSearch.vue";
-import ModalWrapper from "@/components/ui/ModalWrapper.vue";
-import EmptyData from "@/components/ui/EmptyData.vue";
-import { nextTick } from "vue";
-import { notifyError } from "@/services/helper/toast-notification";
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
+import ModalSearch from '@/components/ModalSearch.vue';
+import { notifyError } from '@/services/helper/toast-notification';
 
-jest.mock("@/services/helper/toast-notification", () => ({
-  notifyError: jest.fn(),
+// Mock the dependencies
+vi.mock('@/services/helper/toast-notification', () => ({
+  notifyError: vi.fn(),
 }));
 
-describe("ModalSearch.vue", () => {
-  let wrapper: any;
-  const source = [
-    { sentral: "Pembangkit A" },
-    { sentral: "Pembangkit B" },
-    { sentral: "Pembangkit C" },
+// Mock scrollBy method for testing
+Object.defineProperty(HTMLUListElement.prototype, 'scrollBy', {
+  value: vi.fn(),
+  writable: true,
+});
+
+Object.defineProperty(HTMLElement.prototype, 'getBoundingClientRect', {
+  value: vi.fn(() => ({
+    bottom: 100,
+    top: 50,
+    left: 0,
+    right: 200,
+    width: 200,
+    height: 50,
+  })),
+  writable: true,
+});
+
+describe('ModalSearch', () => {
+  const mockSource = [
+    { sentral: 'PLTU Suralaya' },
+    { sentral: 'PLTU Paiton' },
+    { sentral: 'PLTG Muara Karang' },
   ];
 
+  const defaultProps = {
+    showModal: true,
+    source: mockSource,
+    modelValue: '', // Add modelValue for searchQuery
+  };
+
   beforeEach(() => {
-    wrapper = shallowMount(ModalSearch, {
+    vi.clearAllMocks();
+  });
+
+  it('should render component with search input', () => {
+    const wrapper = mount(ModalSearch, {
+      props: defaultProps,
+    });
+
+    expect(wrapper.find('input[type="search"]').exists()).toBe(true);
+    expect(wrapper.find('input').attributes('placeholder')).toBe('Cari...');
+  });
+
+  it('should display all source items when search query is empty', async () => {
+    const wrapper = mount(ModalSearch, {
+      props: defaultProps,
+    });
+
+    await nextTick();
+    
+    const listItems = wrapper.findAll('li');
+    expect(listItems).toHaveLength(3);
+    expect(listItems[0].text()).toBe('PLTU Suralaya');
+    expect(listItems[1].text()).toBe('PLTU Paiton');
+    expect(listItems[2].text()).toBe('PLTG Muara Karang');
+  });
+
+  it('should emit onClickSentral when a list item is clicked', async () => {
+    const wrapper = mount(ModalSearch, {
+      props: defaultProps,
+    });
+
+    await nextTick();
+    
+    const listItems = wrapper.findAll('li');
+    await listItems[0].trigger('click');
+
+    expect(wrapper.emitted('onClickSentral')).toBeTruthy();
+  });
+
+  it('should filter search results based on search query', async () => {
+    const wrapper = mount(ModalSearch, {
       props: {
-        showModal: true,
-        source,
+        ...defaultProps,
+        modelValue: 'PLTU',
       },
     });
+
+    await nextTick();
+    
+    const listItems = wrapper.findAll('li');
+    expect(listItems).toHaveLength(2);
+    expect(listItems[0].text()).toBe('PLTU Suralaya');
+    expect(listItems[1].text()).toBe('PLTU Paiton');
   });
 
-  it("renders correctly and displays the search input", () => {
-    expect(wrapper.findComponent(ModalWrapper).exists()).toBe(true);
-    expect(wrapper.find('input[type="search"]').exists()).toBe(false);
-    expect(wrapper.findComponent(EmptyData).exists()).toBe(false);
+  it('should handle keyboard navigation - arrow down', async () => {
+    const wrapper = mount(ModalSearch, {
+      props: defaultProps,
+    });
+
+    await nextTick();
+    
+    const input = wrapper.find('input');
+    await input.trigger('keydown.down');
+    
+    // Check if selected item changes
+    const selectedItem = wrapper.find('.selected-item');
+    expect(selectedItem.exists()).toBe(true);
   });
 
-  it("displays EmptyData when searchResults is empty", async () => {
-    wrapper.vm.searchQuery = "XYZ"; // Akses langsung ke vm
+  it('should handle keyboard navigation - arrow up', async () => {
+    const wrapper = mount(ModalSearch, {
+      props: defaultProps,
+    });
+
     await nextTick();
-    expect(wrapper.findComponent(EmptyData).exists()).toBe(false);
+    
+    const input = wrapper.find('input');
+    // First go down to select second item, then go up
+    await input.trigger('keydown.down');
+    await input.trigger('keydown.up');
+    
+    const selectedItem = wrapper.find('.selected-item');
+    expect(selectedItem.exists()).toBe(true);
   });
 
-  it("filters search results correctly", async () => {
-    wrapper.vm.searchQuery = "Pembangkit A"; // Akses langsung ke vm
+  it('should handle enter key when search results exist', async () => {
+    const wrapper = mount(ModalSearch, {
+      props: defaultProps,
+    });
+
     await nextTick();
-    const listItems = wrapper.findAll("li");
-    expect(listItems.length).toBe(0);
+    
+    const input = wrapper.find('input');
+    await input.trigger('keyup.enter');
+    
+    expect(wrapper.emitted('onKeyEnter')).toBeTruthy();
   });
 
-  it("sets selected item and handles item selection", async () => {
-    wrapper.vm.searchQuery = "Pembangkit B"; // Gunakan akses langsung ke vm
-    await nextTick();
-    wrapper.vm.setSelected("Pembangkit B", 1);
-    await nextTick();
-    expect(wrapper.vm.selectedSentral).toBe("Pembangkit B");
-  });
+  it('should show error notification when no search results and enter is pressed', async () => {
+    const wrapper = mount(ModalSearch, {
+      props: {
+        ...defaultProps,
+        modelValue: 'NonExistentSentral',
+      },
+    });
 
-  it("selects the next item correctly", async () => {
-    wrapper.vm.searchQuery = ""; // Gunakan akses langsung ke vm
     await nextTick();
-    wrapper.vm.setSelected("Pembangkit A", 0);
-    await nextTick();
-    wrapper.vm.selectNextItem();
-    await nextTick();
-    expect(wrapper.vm.selectedSentral).toBe("Pembangkit B");
-  });
-
-  it("selects the previous item correctly", async () => {
-    wrapper.vm.searchQuery = ""; // Gunakan akses langsung ke vm
-    await nextTick();
-    wrapper.vm.setSelected("Pembangkit B", 1);
-    await nextTick();
-    wrapper.vm.selectPreviousItem();
-    await nextTick();
-    expect(wrapper.vm.selectedSentral).toBe("Pembangkit A");
-  });
-
-  it("handles enter key press correctly with no results", async () => {
-    wrapper.vm.searchQuery = "Nonexistent"; // Gunakan akses langsung ke vm
-    await nextTick();
-    wrapper.vm.handleKeyEnter();
+    
+    const input = wrapper.find('input');
+    await input.trigger('keyup.enter');
+    
     expect(notifyError).toHaveBeenCalledWith(
-      "Data tidak ditemukan, silahkan cari sentral yang lain",
+      'Data tidak ditemukan, silahkan cari sentral yang lain',
       5000
     );
   });
 
-  it('emits the correct event when close button is clicked', async () => {
-    const modalWrapper = wrapper.findComponent(ModalWrapper); // Temukan ModalWrapper
-    const closeButton = modalWrapper.find('button'); // Cari tombol dalam ModalWrapper
-    expect(closeButton.exists()).toBe(false); // Pastikan tombol ada
-  });
-  
+  it('should display EmptyData component when no search results', async () => {
+    const wrapper = mount(ModalSearch, {
+      props: {
+        ...defaultProps,
+        modelValue: 'NonExistentSentral',
+      },
+    });
 
-  it("sets autofocus on mounted", async () => {
-    wrapper.vm.searchInput = { focus: jest.fn() }; // Mock element searchInput
-    const focusSpy = jest.spyOn(wrapper.vm.searchInput, "focus");
-    wrapper.vm.setAutofocus();
-    expect(focusSpy).toHaveBeenCalled();
-  });
-
-  it('tests scroll behavior when selecting an item', async () => {
-    wrapper.vm.listContainer = {
-      getBoundingClientRect: jest.fn(), // Mock getBoundingClientRect
-      scrollBy: jest.fn(), // Mock scrollBy
-    };
-    const scrollBySpy = jest.spyOn(wrapper.vm.listContainer, 'scrollBy'); // Spy on scrollBy
-    wrapper.vm.setSelected('Pembangkit B', 1); // Pilih item
     await nextTick();
-    expect(scrollBySpy).toHaveBeenCalled(); // Pastikan scrollBy dipanggil
+    
+    expect(wrapper.findComponent({ name: 'EmptyData' }).exists()).toBe(true);
+    expect(wrapper.findAll('li')).toHaveLength(0);
   });
-  
+
+  it('should emit onClickClose when close button is clicked', async () => {
+    const wrapper = mount(ModalSearch, {
+      props: defaultProps,
+    });
+
+    const closeButton = wrapper.find('button');
+    await closeButton.trigger('click');
+    
+    expect(wrapper.emitted('onClickClose')).toBeTruthy();
+  });
+
+  it('should focus on input when component is mounted', async () => {
+    const wrapper = mount(ModalSearch, {
+      props: defaultProps,
+      attachTo: document.body, // Required for focus testing
+    });
+
+    await nextTick();
+    
+    const input = wrapper.find('input').element as HTMLInputElement;
+    expect(document.activeElement).toBe(input);
+    
+    wrapper.unmount();
+  });
+
+  it('should handle setSelected function with null item', async () => {
+    const wrapper = mount(ModalSearch, {
+      props: defaultProps,
+    });
+
+    await nextTick();
+    
+    const input = wrapper.find('input');
+    // This will trigger setSelected with null due to empty search
+    await input.setValue('');
+    
+    // Component should still work
+    expect(wrapper.find('input').element.value).toBe('');
+  });
 });

@@ -1,132 +1,93 @@
-import { shallowMount } from '@vue/test-utils';
-import DetailFS from '@/views/Verifikasi/Approver/TabPage/FS/DetailFS.vue';
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { mount } from '@vue/test-utils'
+import { nextTick } from 'vue'
+import DetailFS from '@/views/Verifikasi/Approver/TabPage/FS/DetailFS.vue'
+import PersetujuanService from '@/services/persetujuan-service'
 
-// Mock all dependencies
-jest.mock('vue-router', () => ({
-  useRoute: jest.fn()
-}));
+// Mock PersetujuanService
+vi.mock('@/services/persetujuan-service')
 
-jest.mock('@/services/persetujuan-service', () => {
-  return jest.fn().mockImplementation(() => ({
-    getPersetujuanFSSentral: jest.fn(),
-  }));
-});
+// Mock vue-router
+const mockRoute = {
+  query: {
+    uuid_sentral: 'test-uuid-123'
+  }
+}
 
-jest.mock('@/services/helper/encryption', () => ({
-  encryptAES: jest.fn().mockResolvedValue('encrypted'),
-}));
+vi.mock('vue-router', () => ({
+  useRoute: () => mockRoute
+}))
 
-jest.mock('@/utils/app-encrypt-storage', () => ({
-  encryptStoragePromise: {
-    getItem: jest.fn().mockResolvedValue('mockToken'),
-  },
-}));
+// Mock components
+vi.mock('@/components/ui/LoadingSpinner.vue', () => ({
+  default: {
+    name: 'Loading',
+    template: '<div data-testid="loading">Loading...</div>'
+  }
+}))
 
-jest.mock('@fingerprintjs/fingerprintjs', () => ({
-  load: jest.fn().mockResolvedValue({
-    get: jest.fn().mockResolvedValue({
-      components: {
-        hardwareConcurrency: { value: 4 },
-        deviceMemory: { value: 8 },
-        platform: { value: "MacIntel" },
-        architecture: { value: 64 },
-        screenResolution: { value: [1920, 1080] },
-        vendor: { value: "Google Inc." },
-        vendorFlavors: { value: ["chrome"] },
-        colorDepth: { value: 24 },
-        canvas: { value: "canvas" },
-        webGlBasics: { value: "webgl" },
-        timezone: { value: "Asia/Jakarta" },
-        touchSupport: { value: { maxTouchPoints: 0 } },
-        cookiesEnabled: { value: true },
-        localStorage: { value: true },
-        sessionStorage: { value: true },
-        colorGamut: { value: "srgb" },
-        hdr: { value: false },
-      },
-    }),
-  }),
-  hashComponents: jest.fn().mockReturnValue("mockFingerprint"),
-}));
-
-// Mock UI components
-jest.mock('@/components/ui/LoadingSpinner.vue', () => ({
-  name: 'Loading',
-  template: '<div class="loading">Loading...</div>',
-}));
-
-jest.mock('@/components/ui/InfoHeader.vue', () => ({
-  name: 'InfoHeader',
-  props: {
-    namaMesin: String,
-    namaPengelola: String,
-    namaPembina: String,
-    kodeJenisPembangkit: String,
-    dayaTerpasang: String,
-    dayaMampu: String,
-    tahunOperasi: String,
-    umurTeknis: String,
-    kondisiUnit: String,
-  },
-  template: '<div class="info-header">InfoHeader</div>',
-}));
-
-import { useRoute } from 'vue-router';
-import { nextTick } from 'vue';
-import PersetujuanService from '@/services/persetujuan-service';
+vi.mock('@/components/ui/InfoHeader.vue', () => ({
+  default: {
+    name: 'InfoHeader',
+    props: [
+      'namaMesin', 'namaPengelola', 'namaPembina', 'kodeJenisPembangkit',
+      'dayaTerpasang', 'dayaMampu', 'tahunOperasi', 'umurTeknis', 'kondisiUnit'
+    ],
+    template: '<div data-testid="info-header">Info Header</div>'
+  }
+}))
 
 describe('DetailFS.vue', () => {
-  let mockPersetujuanService: any;
+  let persetujuanServiceMock: any
 
   beforeEach(() => {
-    // Mock route with query parameter
-    (useRoute as jest.Mock).mockReturnValue({
-      query: { uuid_sentral: '123' }
-    });
+    persetujuanServiceMock = {
+      getPersetujuanFSSentral: vi.fn()
+    }
+    vi.mocked(PersetujuanService).mockImplementation(() => persetujuanServiceMock)
+  })
 
-    // Create a mock instance of PersetujuanService
-    mockPersetujuanService = new PersetujuanService();
-  });
+  it('should render component successfully', () => {
+    const wrapper = mount(DetailFS)
+    expect(wrapper.exists()).toBe(true)
+  })
 
-  it('should render component successfully', async () => {
-    // Mock a successful response with full data
-    mockPersetujuanService.getPersetujuanFSSentral = jest.fn().mockResolvedValue({
+  it('should call fetchPersetujuanFS on mount', async () => {
+    persetujuanServiceMock.getPersetujuanFSSentral.mockResolvedValue({
       data: {
-        sentral: 'Sentral 1',
-        pengelola: 'Pengelola 1',
-        pembina: 'Pembina 1',
-        jenis_kit: 'Jenis 1',
-        daya_terpasang: '1000',
-        daya_mampu: '900',
+        sentral: 'Test Sentral'
+      }
+    })
+
+    mount(DetailFS)
+    await nextTick()
+    
+    expect(persetujuanServiceMock.getPersetujuanFSSentral).toHaveBeenCalledWith({
+      uuid_sentral: 'test-uuid-123'
+    })
+  })
+
+  it('should have download evidence button', async () => {
+    persetujuanServiceMock.getPersetujuanFSSentral.mockResolvedValue({
+      data: {
+        sentral: 'Test Sentral',
+        pengelola: 'Test Pengelola',
+        pembina: 'Test Pembina',
+        jenis_kit: 'PLTU',
+        daya_terpasang: '100',
+        daya_mampu: '90',
         tahun_operasi: '2020',
-        umur_teknis: '15',
+        umur_teknis: '25',
         kondisi_unit: 'Baik'
       }
-    });
+    })
 
-    const wrapper = shallowMount(DetailFS, {
-      global: {
-        stubs: {
-          Loading: true,
-          InfoHeader: true,
-        },
-      },
-    });
-
-    expect(wrapper.exists()).toBe(true);
-  });
-
-  it('should have required reactive properties', async () => {
-    const wrapper = shallowMount(DetailFS, {
-      global: {
-        stubs: {
-          Loading: true,
-          InfoHeader: true,
-        },
-      },
-    });
-
-    expect(wrapper.vm).toHaveProperty('isLoading');
-    expect(wrapper.vm).toHaveProperty('approveSentralFS');
-  });
-});
+    const wrapper = mount(DetailFS)
+    await nextTick()
+    await wrapper.vm.$nextTick()
+    
+    const downloadButton = wrapper.find('button')
+    expect(downloadButton.exists()).toBe(true)
+    expect(downloadButton.text()).toContain('Download Evidence')
+  })
+})

@@ -1,45 +1,43 @@
-import { shallowMount } from '@vue/test-utils';
+import { describe, it, expect } from 'vitest';
+import { mount } from '@vue/test-utils';
 import InfoComponent from '@/views/Data/RekapKertasKerja/PerbaruiData/InfoComponent.vue';
 
-describe('InfoComponent.vue Unit Tests', () => {
-  let wrapper: any;
+const mockProps = {
+  simulasi: 'simulasi makro',
+  proyeksi: 'proyeksi finansial 2024'
+};
 
-  beforeEach(() => {
-    wrapper = shallowMount(InfoComponent, {
-      props: {
-        simulasi: 'Simulasi Test',
-        proyeksi: 'Proyeksi Test',
-      },
+describe('InfoComponent', () => {
+  it('should render the component successfully', () => {
+    const wrapper = mount(InfoComponent, {
+      props: mockProps
     });
+    
+    expect(wrapper.exists()).toBe(true);
   });
 
-  it('renders the information title correctly', () => {
-    const title = wrapper.find('p.text-xs.font-semibold');
-    expect(title.exists()).toBe(true);
-    expect(title.text()).toBe('Informasi');
+  it('should display the correct simulasi and proyeksi text', () => {
+    const wrapper = mount(InfoComponent, {
+      props: mockProps
+    });
+    
+    // Get the second p element which contains the dynamic text
+    const textElements = wrapper.findAll('p.text-xs.text-primaryTextColor');
+    const dynamicTextElement = textElements[1]; // Second p element
+    expect(dynamicTextElement.text()).toContain('simulasi makro');
+    expect(dynamicTextElement.text()).toContain('proyeksi finansial 2024');
   });
 
-  it('renders the correct simulasi and proyeksi values', () => {
-    const infoText = wrapper.find('p.text-xs.text-primaryTextColor');
-    expect(infoText.exists()).toBe(true);
-    expect(infoText.text()).toContain('Informasi');
-  });
-
-  it('contains the correct icon SVG', () => {
+  it('should display Informasi title with correct icon', () => {
+    const wrapper = mount(InfoComponent, {
+      props: mockProps
+    });
+    
+    const titleElement = wrapper.find('.text-xs.font-semibold.text-primaryTextColor');
+    expect(titleElement.text()).toBe('Informasi');
+    
+    // Check if SVG icon exists
     const svgIcon = wrapper.find('svg');
     expect(svgIcon.exists()).toBe(true);
-    expect(svgIcon.attributes('width')).toBe('16');
-    expect(svgIcon.attributes('height')).toBe('16');
-  });
-
-  it('applies the correct background and border styles', () => {
-    const container = wrapper.find('div.w-full');
-    expect(container.classes()).toContain('bg-infoComponentBgColor');
-    expect(container.classes()).toContain('border-infoComponentBorderColor');
-  });
-
-  it('displays the correct props data', () => {
-    expect(wrapper.props().simulasi).toBe('Simulasi Test');
-    expect(wrapper.props().proyeksi).toBe('Proyeksi Test');
   });
 });

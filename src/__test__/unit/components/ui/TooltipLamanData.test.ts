@@ -1,50 +1,84 @@
-import { mount } from "@vue/test-utils";
-import TooltipLamanData from "@/components/ui/TooltipLamanData.vue";
-import IconView from "@/components/icons/IconView.vue";
-import { setActivePinia, createPinia } from "pinia";
-import { useLamanDataPeriodeStore } from "@/store/storeLamanDataTab";
+import { describe, it, expect, beforeEach } from 'vitest';
+import { mount } from '@vue/test-utils';
+import { createPinia, setActivePinia } from 'pinia';
+import TooltipLamanData from '@/components/ui/TooltipLamanData.vue';
 
-describe("TooltipLamanData.vue", () => {
-  let wrapper: any;
-  let store: any;
+describe('TooltipLamanData.vue', () => {
+  let pinia: any;
 
   beforeEach(() => {
-    setActivePinia(createPinia());
-    store = useLamanDataPeriodeStore();
-    store.periodeInitial = 2022;
+    pinia = createPinia();
+    setActivePinia(pinia);
+  });
 
-    wrapper = mount(TooltipLamanData, {
+  it('should render the component correctly', () => {
+    const wrapper = mount(TooltipLamanData, {
       props: {
         idMesin: 1,
-        tahun: 2023,
+        tahun: 2024
       },
       global: {
-        components: {
-          IconView,
-        },
+        plugins: [pinia],
         stubs: {
           RouterLink: true,
-        },
-      },
+          IconView: true
+        }
+      }
     });
-  });
-
-  it("should toggle tooltip visibility when button is clicked", async () => {
-    expect(wrapper.find("#tooltipContent").exists()).toBe(false);
-
-    const button = wrapper.find("button");
-    expect(button.exists()).toBe(true);
 
     expect(wrapper.exists()).toBe(true);
+    expect(wrapper.find('button').exists()).toBe(true);
+    expect(wrapper.find('svg').exists()).toBe(true);
   });
 
-  it("should update store when handleChangePage is called", async () => {
-    wrapper.vm.handleChangePage(2023);
+  it('should toggle tooltip visibility when button is clicked', async () => {
+    const wrapper = mount(TooltipLamanData, {
+      props: {
+        idMesin: 1,
+        tahun: 2024
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: true,
+          IconView: true
+        }
+      }
+    });
 
-    expect(store.periodeInitial).toBe(2023);
+    // Initially tooltip should be hidden
+    expect(wrapper.find('#tooltipContent').exists()).toBe(false);
+
+    // Click button to show tooltip
+    await wrapper.find('button').trigger('click');
+    await wrapper.vm.$nextTick();
+    expect(wrapper.find('#tooltipContent').exists()).toBe(true);
+
+    // Click again to hide tooltip
+    await wrapper.find('button').trigger('click');
+    await wrapper.vm.$nextTick();
+    expect(wrapper.find('#tooltipContent').exists()).toBe(false);
   });
 
-  it("should render IconView component", () => {
-    expect(wrapper.findComponent(IconView).exists()).toBe(false);
+  it('should pass correct props to component', () => {
+    const testIdMesin = 123;
+    const testTahun = 2025;
+    
+    const wrapper = mount(TooltipLamanData, {
+      props: {
+        idMesin: testIdMesin,
+        tahun: testTahun
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: true,
+          IconView: true
+        }
+      }
+    });
+
+    expect(wrapper.props('idMesin')).toBe(testIdMesin);
+    expect(wrapper.props('tahun')).toBe(testTahun);
   });
 });

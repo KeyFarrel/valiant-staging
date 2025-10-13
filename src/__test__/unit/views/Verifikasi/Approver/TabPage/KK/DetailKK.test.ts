@@ -1,80 +1,92 @@
-import { shallowMount } from "@vue/test-utils";
-import DetailKK from "@/views/Verifikasi/Approver/TabPage/KK/DetailKK.vue";
-import PersetujuanService from "@/services/persetujuan-service";
-import { useRoute } from "vue-router";
-import { nextTick } from "vue";
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { mount, VueWrapper } from '@vue/test-utils';
+import DetailKK from '@/views/Verifikasi/Approver/TabPage/KK/DetailKK.vue';
 
-jest.mock("vue-router", () => ({
-  useRoute: jest.fn(),
+// Mock services
+vi.mock('@/services/persetujuan-service', () => ({
+  default: vi.fn(() => ({
+    getPersetujuanKKSentral: vi.fn().mockResolvedValue({
+      data: {
+        sentral: 'Test Sentral',
+        pengelola: 'Test Pengelola',
+        pembina: 'Test Pembina',
+        jenis_kit: 'PLTU',
+        daya_terpasang: '100',
+        daya_mampu: '90',
+        tahun_operasi: '2020',
+        umur_teknis: '25'
+      }
+    })
+  }))
 }));
-jest.mock('@/services/persetujuan-service')
 
-describe("DetailKK.vue", () => {
-  let mockPersetujuanService: any;
-  let wrapper: any;
+// Mock vue-router
+vi.mock('vue-router', () => ({
+  useRoute: vi.fn(() => ({
+    query: {
+      uuid_sentral: 'test-uuid',
+      tahun: '2023'
+    }
+  }))
+}));
+
+describe('DetailKK.vue', () => {
+  let wrapper: VueWrapper<any>;
 
   beforeEach(() => {
-    (useRoute as jest.Mock).mockReturnValue({
-      query: { id_sentral: "123" },
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    if (wrapper) {
+      wrapper.unmount();
+    }
+  });
+
+  it('should render component successfully', async () => {
+    wrapper = mount(DetailKK, {
+      global: {
+        stubs: {
+          Loading: true,
+          InfoHeader: true
+        }
+      }
     });
 
-    mockPersetujuanService = {
-      getPersetujuanFSSentral: jest.fn(),
-    };
-    PersetujuanService.prototype.getPersetujuanFSSentral =
-      mockPersetujuanService.getPersetujuanFSSentral;
-
-    wrapper = shallowMount(DetailKK);
+    expect(wrapper.exists()).toBe(true);
+    expect(wrapper.find('.flex.justify-between').exists()).toBe(true);
   });
 
-  it("should call fetchPersetujuanFS on mounted and set approveSentralFS on success", async () => {
-    mockPersetujuanService.getPersetujuanFSSentral.mockResolvedValue({
-      data: {
-        sentral: "Sentral 1",
-        pengelola: "Pengelola 1",
-        pembina: "Pembina 1",
-        jenis_kit: "Jenis 1",
-        daya_terpasang: "1000",
-        daya_mampu: "900",
-        tahun_operasi: "2020",
-        umur_teknis: "15",
-      },
+  it('should display download evidence button', async () => {
+    wrapper = mount(DetailKK, {
+      global: {
+        stubs: {
+          Loading: true,
+          InfoHeader: true
+        }
+      }
     });
 
-    expect((wrapper.vm as any).isLoading).toBe(false);
-
-    await nextTick();
-
-    expect(
-      mockPersetujuanService.getPersetujuanFSSentral
-    ).toHaveBeenCalledTimes(0);
-
-    expect((wrapper.vm as any).approveSentralFS).toEqual(undefined);
-
-    expect((wrapper.vm as any).isLoading).toBe(false);
+    const downloadButton = wrapper.find('button');
+    expect(downloadButton.exists()).toBe(true);
+    expect(downloadButton.text()).toContain('Download Evidence');
   });
 
-  it("should handle fetch error and not set approveSentralFS", async () => {
-    mockPersetujuanService.getPersetujuanFSSentral.mockRejectedValue(
-      new Error("Fetch error")
-    );
+  it('should have correct initial reactive data', async () => {
+    wrapper = mount(DetailKK, {
+      global: {
+        stubs: {
+          Loading: true,
+          InfoHeader: true
+        }
+      }
+    });
 
-    expect((wrapper.vm as any).isLoading).toBe(false);
-
-    await nextTick();
-
-    expect(
-      mockPersetujuanService.getPersetujuanFSSentral
-    ).toHaveBeenCalledTimes(0);
-
-    expect((wrapper.vm as any).approveSentralFS).toEqual(undefined);
-
-    expect((wrapper.vm as any).isLoading).toBe(false);
-  });
-
-  it("is fetching fetchPersetujuanKK", async () => {
-    const fetchPersetujuanKKSpy = jest.spyOn(wrapper.vm, "fetchPersetujuanKK");
-    await (wrapper.vm).fetchPersetujuanKK();
-    expect(fetchPersetujuanKKSpy).toHaveBeenCalled();
+    const vm = wrapper.vm;
+    
+    // Check reactive properties are initialized
+    expect(typeof vm.isLoading).toBe('boolean');
+    expect(vm.approveSentralKK).toBeDefined();
+    expect(typeof vm.approveSentralKK).toBe('object');
   });
 });

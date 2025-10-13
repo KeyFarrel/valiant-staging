@@ -1,91 +1,79 @@
-import { mount } from '@vue/test-utils';
-import ParameterTeknisApprove from '@/components/ui/ParameterTeknisApprove.vue';
-import GlobalFormat from '@/services/format/global-format';
-import ComponentDisetujui from '@/components/Status/ComponentDisetujui.vue';
-import ComponentDitolakT1 from '@/components/Status/ComponentDitolakT1.vue';
-import ComponentDitolakT2 from '@/components/Status/ComponentDitolakT2.vue';
-import ComponentWaitingT1 from '@/components/Status/ComponentWaitingT1.vue';
-import ComponentWaitingT2 from '@/components/Status/ComponentWaitingT2.vue';
-import ComponentDraft from '@/components/Status/ComponentDraft.vue';
-import ReloadComponent from '@/components/ui/ReloadComponent.vue';
-import ShimmerLoading from '@/components/ui/ShimmerLoading.vue';
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { mount } from '@vue/test-utils'
+import ParameterTeknisApprove from '@/components/ui/ParameterTeknisApprove.vue'
 
-describe('ParameterTeknisApprove.vue', () => {
-  const globalFormat = new GlobalFormat();
-
-  const defaultProps = {
-    data: 'Sample Data',
+describe('ParameterTeknisApprove', () => {
+  let wrapper: any
+  
+  const mockProps = {
+    data: 'Test Data',
     status: 'Disetujui',
     tahun: 2024,
-    dayaTerpasang: 1000,
-    dayaMampuNetto: 2000,
-    auxiliary: 5,
-    susutTrafo: 2,
-    pemakaianSendiri: 10,
-    netPlantHeatRate: 3000,
-    totalProjectCost: 50000000,
-    loan: 10000000,
-    equity: 40000000,
-    electricityPriceA: 1000,
-    electricityPriceB: 2000,
-    electricityPriceC: 3000,
-    electricityPriceD: 4000,
+    dayaTerpasang: 1000000,
+    dayaMampuNetto: 950,
+    auxiliary: 5.5,
+    susutTrafo: 2.0,
+    pemakaianSendiri: 7.5,
+    netPlantHeatRate: 8500,
+    totalProjectCost: 5000000,
+    loan: 3000000,
+    equity: 2000000,
+    electricityPriceA: 850,
+    electricityPriceB: 900,
+    electricityPriceC: 1200,
+    electricityPriceD: 1250,
     comboBahanBakar: [
-      { kode_bahan_bakar: 1, bahan_bakar: 'Solar', satuan_harga_bahan_bakar: 'Rupiah/Liter', satuan_sfc: 'Liter/kWh' }
+      {
+        kode_bahan_bakar: 'BB001',
+        bahan_bakar: 'Batubara',
+        satuan_harga_bahan_bakar: 'Rupiah/ton',
+        satuan_sfc: 'kg/kWh'
+      }
     ],
     isFetchingError: false,
     bahanBakars: [
-      { flag_bahan_bakar: 1, kode_bahan_bakar: 1, harga_bahan_bakar: 1000, sfc: 1.5 }
+      {
+        kode_bahan_bakar: 'BB001',
+        harga_bahan_bakar: 800000,
+        sfc: 0.45,
+        flag_bahan_bakar: 1
+      }
     ]
-  };
+  }
 
-  it('renders the component with props', () => {
-    const wrapper = mount(ParameterTeknisApprove, {
-      props: defaultProps,
+  beforeEach(() => {
+    wrapper = mount(ParameterTeknisApprove, {
+      props: mockProps,
       global: {
-        components: {
-          ComponentDisetujui,
-          ComponentDitolakT1,
-          ComponentDitolakT2,
-          ComponentWaitingT1,
-          ComponentWaitingT2,
-          ComponentDraft,
-          ReloadComponent,
-          ShimmerLoading,
-        },
-      },
-    });
+        stubs: {
+          ComponentDisetujui: true,
+          ComponentDitolakT1: true,
+          ComponentDitolakT2: true,
+          ComponentWaitingT1: true,
+          ComponentWaitingT2: true,
+          ComponentDraft: true,
+          ShimmerLoading: true,
+          ReloadComponent: true
+        }
+      }
+    })
+  })
 
-    // Check if the props are rendered correctly
-    expect(wrapper.text()).toContain('Parameter Teknis & Finansial');
-    expect(wrapper.text()).toContain('Periode');
-    expect(wrapper.text()).toContain('Sample Data');
-    expect(wrapper.text()).toContain('Disetujui');
-    expect(wrapper.text()).toContain(globalFormat.formatRupiah(defaultProps.dayaTerpasang / 1000));
-    expect(wrapper.text()).toContain(globalFormat.formatRupiah(defaultProps.dayaMampuNetto));
-  });
+  it('should render component with correct title and periode data', () => {
+    expect(wrapper.find('p').text()).toContain('Parameter Teknis & Finansial')
+    expect(wrapper.text()).toContain('2024')
+    expect(wrapper.text()).toContain('Test Data')
+  })
 
-  it('shows the correct status component based on the status prop', () => {
-    const wrapper = mount(ParameterTeknisApprove, {
-      props: { ...defaultProps, status: 'Ditolak T1' },
-    });
+  it('should display formatted technical data correctly', () => {
+    expect(wrapper.text()).toContain('1.000,00 MW') // Daya Terpasang formatted
+    expect(wrapper.text()).toContain('950,00 MW') // Daya Mampu Netto
+    expect(wrapper.text()).toContain('5,50 %') // Auxiliary
+  })
 
-    expect(wrapper.findComponent(ComponentDitolakT1).exists()).toBe(true);
-  });
-
-  it('shows shimmer loading when data is loading', () => {
-    const wrapper = mount(ParameterTeknisApprove, {
-      props: { ...defaultProps, dayaTerpasang: null, dayaMampuNetto: null },
-    });
-
-    expect(wrapper.findComponent(ShimmerLoading).exists()).toBe(true);
-  });
-
-  it('handles the fetch error and displays reload component', () => {
-    const wrapper = mount(ParameterTeknisApprove, {
-      props: { ...defaultProps, isFetchingError: true, dayaTerpasang: null, dayaMampuNetto: null },
-    });
-
-    expect(wrapper.findComponent(ReloadComponent).exists()).toBe(true);
-  });
-});
+  it('should show fuel data when bahanBakars prop is provided', () => {
+    expect(wrapper.text()).toContain('Bahan Bakar')
+    expect(wrapper.text()).toContain('Batubara')
+    expect(wrapper.text()).toContain('800.000')
+  })
+})

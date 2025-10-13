@@ -52,7 +52,7 @@
                 <span class="font-semibold">Ganti berkas</span>
               </label>
               <input ref="fileInputEvidence" id="fileInputEvidence" type="file" class="hidden"
-                @change="handleFileChangeEvidence" accept=".xlsx, .zip" />
+                @change="handleFileChangeEvidence" accept=".xlsx" />
               <button
                 class="px-3 py-2 font-semibold duration-300 rounded-lg text-warningColor hover:bg-warningColor hover:text-white active:ring active:ring-red-500"
                 @click="selectedFileEvidence = null">Hapus</button>
@@ -73,10 +73,10 @@
               <span class="font-semibold">Cari berkas</span>
             </label>
             <input ref="fileInputEvidence" id="fileInputEvidence" type="file" class="hidden"
-              @change="handleFileChangeEvidence" accept=".xlsx, .zip" />
+              @change="handleFileChangeEvidence" accept=".xlsx" />
           </div>
           <div class="flex flex-row items-center justify-between">
-            <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx, .zip</p>
+            <p class="text-xs text-textDisabledColor">Tipe File yang dapat diunggah .xlsx</p>
             <p class="text-xs text-textDisabledColor">Ukuran maksimal dokumen : 5 MB</p>
           </div>
         </div>
@@ -304,7 +304,7 @@
             </div>
           </div>
           <p v-if="isShowRejected && approveMesinKK" class="mt-2 ml-6 text-sm capitalize">{{ approveMesinKK.keterangan
-          }}</p>
+            }}</p>
         </div>
       </div>
       <TabsWrapper :laman-data="false" class="w-full">

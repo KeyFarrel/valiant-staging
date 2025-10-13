@@ -24,7 +24,7 @@
         <p class="text-gray-500">Corporate Tax Rate</p>
         <p class="font-bold">{{ props.corporateTaxRate !== '-' ? globalFormat.formatEnergy(props.corporateTaxRate) :
           '-'
-          }}
+        }}
           <span class="text-gray-400">%</span>
         </p>
       </div>

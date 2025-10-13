@@ -1,130 +1,163 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
-import { nextTick } from 'vue';
-import { describe, it, expect, beforeEach } from '@jest/globals';
+import { h } from 'vue';
 import TabsWrapper from '@/components/ui/TabsWrapper.vue';
-import { useLamanDataTabStore } from '@/store/storeLamanDataTab';
+import { createPinia, setActivePinia } from 'pinia';
 
-// Mock store
-const mockStore = {
-  currentTab: ''
-};
-
-jest.mock('@/store/storeLamanDataTab', () => ({
-  useLamanDataTabStore: jest.fn(() => mockStore)
+// Mock Vue Router
+vi.mock('vue-router', () => ({
+  RouterLink: {
+    name: 'RouterLink',
+    props: ['to'],
+    template: '<button><slot /></button>',
+  },
 }));
 
-jest.mock('@/store/storeRekapKertasKerja', () => ({
-  usePerbaruiTabStore: jest.fn(() => ({
-    currentTab: ''
-  }))
-}));
-
-// Mock encryptStoragePromise  
-jest.mock("@/utils/app-encrypt-storage", () => ({
+// Mock encrypt storage
+vi.mock('@/utils/app-encrypt-storage', () => ({
   encryptStoragePromise: Promise.resolve({
-    encryptValue: jest.fn((value) => `encrypted_${value}`)
-  })
+    encryptValue: vi.fn((value) => `encrypted-${value}`),
+  }),
 }));
 
-const mockRouterLink = {
-  template: '<div><slot></slot></div>',
+// Mock stores
+const mockLamanDataStore = {
+  currentTab: 'Tab 1',
 };
 
-describe('TabsWrapper.vue', () => {
-  let wrapper: any;
+const mockPerbaruiTabStore = {
+  currentTab: 'Tab 1',
+};
 
-  beforeEach(async () => {
-    // Reset store
-    mockStore.currentTab = '';
-    
-    wrapper = mount(TabsWrapper, {
-      props: {
-        isLihatGrafik: true,
-        kodeSentral: '12345',
-        lamanData: true
-      },
-      global: {
-        components: {
-          RouterLink: mockRouterLink
-        },
-        stubs: {
-          'el-option': true,
-          'el-select': true,
-          'el-checkbox': true,
-          'VueDatePicker': true,
-          'Loading': true,
-          'InfoHeader': true,
-          'SortingIcon': true,
-          'RouterLink': true
-        }
-      },
-      slots: {
-        default: '<div title="Tab 1"></div><div title="Tab 2"></div>'
-      }
-    });
-    
-    // Wait for async operations
-    await wrapper.vm.$nextTick();
+vi.mock('@/store/storeLamanDataTab', () => ({
+  useLamanDataTabStore: () => mockLamanDataStore,
+}));
+
+vi.mock('@/store/storeRekapKertasKerja', () => ({
+  usePerbaruiTabStore: () => mockPerbaruiTabStore,
+}));
+
+describe('TabsWrapper', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia());
+    // Reset mock stores
+    mockLamanDataStore.currentTab = 'Tab 1';
+    mockPerbaruiTabStore.currentTab = 'Tab 1';
   });
 
-  it('renders tab titles correctly from slots', () => {
-    const tabItems = wrapper.findAll('li');
-    // Expect at least 1 li element (tabs + potential "Lihat Grafik")
-    expect(tabItems.length).toBeGreaterThan(0);
-  });
-
-  it('sets the selected tab when clicked', async () => {
-    const tabItems = wrapper.findAll('li');
-    
-    // Test the handleClick method directly instead of triggering click
-    const firstTab = tabItems[0];
-    if (firstTab.exists()) {
-      const tabTitle = firstTab.text();
-      wrapper.vm.handleClick(tabTitle);
-      await wrapper.vm.$nextTick();
-      
-      // Check that the store was updated
-      expect(mockStore.currentTab).toBeDefined();
-    }
-  });
-
-  it('renders "Lihat Grafik" button with correct link', async () => {
+  it('should render tabs from slot content', () => {
     const wrapper = mount(TabsWrapper, {
       props: {
-        isLihatGrafik: true,
-        kodeSentral: '12345',
-        lamanData: true
+        lamanData: false,
       },
       slots: {
-        default: '<div title="Tab 1">Content 1</div><div title="Tab 2">Content 2</div>'
+        default: () => [
+          h('div', { title: 'Tab 1' }, 'Content 1'),
+          h('div', { title: 'Tab 2' }, 'Content 2'),
+        ],
       },
-      global: {
-        components: { RouterLink: mockRouterLink },
-        mocks: { $store: mockStore }
-      }
     });
 
-    // Wait for component to mount and encryptStorageRef to be set
-    await new Promise(resolve => setTimeout(resolve, 100));
+    expect(wrapper.text()).toContain('Tab 1');
+    expect(wrapper.text()).toContain('Tab 2');
+  });
+
+  it('should select first tab by default', () => {
+    const wrapper = mount(TabsWrapper, {
+      props: {
+        lamanData: false,
+      },
+      slots: {
+        default: () => [
+          h('div', { title: 'Tab 1' }, 'Content 1'),
+          h('div', { title: 'Tab 2' }, 'Content 2'),
+        ],
+      },
+    });
+
+    const firstTab = wrapper.find('li.selected');
+    expect(firstTab.text()).toBe('Tab 1');
+  });
+
+  it('should change selected tab when clicked', async () => {
+    const wrapper = mount(TabsWrapper, {
+      props: {
+        lamanData: false,
+      },
+      slots: {
+        default: () => [
+          h('div', { title: 'Tab 1' }, 'Content 1'),
+          h('div', { title: 'Tab 2' }, 'Content 2'),
+        ],
+      },
+    });
+
+    const tabs = wrapper.findAll('li').filter(li => li.text() === 'Tab 2');
+    await tabs[0].trigger('click');
+
+    expect(wrapper.find('li.selected').text()).toBe('Tab 2');
+  });
+
+  it('should update laman data store when lamanData prop is true', async () => {
+    const wrapper = mount(TabsWrapper, {
+      props: {
+        lamanData: true,
+      },
+      slots: {
+        default: () => [
+          h('div', { title: 'Tab 1' }, 'Content 1'),
+          h('div', { title: 'Tab 2' }, 'Content 2'),
+        ],
+      },
+    });
+
+    const tabs = wrapper.findAll('li').filter(li => li.text() === 'Tab 2');
+    await tabs[0].trigger('click');
+
+    expect(wrapper.find('li.selected').text()).toBe('Tab 2');
+    expect(mockLamanDataStore.currentTab).toBe('Tab 2');
+  });
+
+  it('should render Lihat Grafik section when isLihatGrafik is true', () => {
+    const wrapper = mount(TabsWrapper, {
+      props: {
+        lamanData: false,
+        isLihatGrafik: true,
+        kodeSentral: 'TEST123',
+      },
+      slots: {
+        default: () => [
+          h('div', { title: 'Tab 1' }, 'Content 1'),
+          h('div', { title: 'Tab 2' }, 'Content 2'),
+        ],
+      },
+    });
+
+    // Check if the li with v-if="isLihatGrafik" exists
+    const lihatGrafikLi = wrapper.find('li.items-end');
+    expect(lihatGrafikLi.exists()).toBe(true);
+  });
+
+  it('should handle onMounted lifecycle correctly', async () => {
+    const wrapper = mount(TabsWrapper, {
+      props: {
+        lamanData: false,
+        isLihatGrafik: true,
+        kodeSentral: 'TEST123',
+      },
+      slots: {
+        default: () => [
+          h('div', { title: 'Tab 1' }, 'Content 1'),
+          h('div', { title: 'Tab 2' }, 'Content 2'),
+        ],
+      },
+    });
+
+    // Wait for onMounted to complete
     await wrapper.vm.$nextTick();
-    
-    // Force set encryptStorageRef in component
-    const vm = wrapper.vm as any;
-    vm.encryptStorageRef = {
-      encryptValue: jest.fn((value) => `encrypted_${value}`)
-    };
-    
-    // Force re-render 
-    await wrapper.vm.$nextTick();
-    await wrapper.vm.$forceUpdate();
-    await wrapper.vm.$nextTick();
-    
-    // Check if RouterLink exists when isLihatGrafik is true
-    const routerLink = wrapper.findComponent(mockRouterLink);
-    expect(routerLink.exists()).toBe(true);
-    
-    // Check for button or any clickable element
-    const clickableElements = wrapper.findAll('button, [role="button"], a');
-    expect(clickableElements.length).toBeGreaterThanOrEqual(1);
+    await new Promise(resolve => setTimeout(resolve, 1));
+
+    // The component should be properly mounted
+    expect(wrapper.exists()).toBe(true);
   });
 });

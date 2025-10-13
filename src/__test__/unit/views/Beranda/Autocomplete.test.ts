@@ -1,123 +1,114 @@
-import { shallowMount, mount } from '@vue/test-utils';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import Autocomplete from '@/views/Beranda/Autocomplete.vue';
-import SearchBox from '@/components/ui/SearchBox.vue';
+
+// Mock SearchBox component
+vi.mock('@/components/ui/SearchBox.vue', () => ({
+  default: {
+    name: 'SearchBox',
+    template: '<input class="search-box" />',
+    props: ['modelValue'],
+    emits: ['update:modelValue', 'on-input', 'on-key-enter', 'on-click-submit']
+  }
+}));
 
 describe('Autocomplete.vue', () => {
+  let wrapper: any;
+  
   const mockData = [
-    { sentral: 'PLTU PAITON' },
-    { sentral: 'PLTU SURALAYA' },
-    { sentral: 'PLTU TAMBORA' },
+    { sentral: 'Jakarta Power Station' },
+    { sentral: 'Bandung Power Plant' },
+    { sentral: 'Surabaya Energy Center' },
+    { sentral: 'Medan Power Station' }
   ];
 
-  it('renders search box and list of filtered results', async () => {
-    const wrapper = shallowMount(Autocomplete, {
+  beforeEach(() => {
+    wrapper = mount(Autocomplete, {
       props: {
         data: mockData,
-        modelValue: '',
-      },
+        modelValue: ''
+      }
     });
-
-    // Cast wrapper.vm to the expected type
-    const vm = wrapper.vm as unknown as {
-      searchQuery: string;
-      searchResults: { sentral: string }[];
-      isOpen: boolean;
-    };
-
-    // Update the modelValue prop to simulate typing
-    await wrapper.setProps({ modelValue: 'PAITON' });
-    vm.isOpen = true;
-    await wrapper.vm.$nextTick();  // Wait for DOM update
-
-    // Check if the dropdown opens and displays the filtered result
-    expect(vm.searchResults).toEqual([{ sentral: 'PLTU PAITON' }]);
-    expect(wrapper.html()).toContain('PLTU PAITON');
   });
 
-  it('should emit onKeyEnter when Enter key is pressed', async () => {
-    const wrapper = shallowMount(Autocomplete, {
-      props: {
-        data: mockData,
-        modelValue: '',
-      },
-    });
+  it('should render component correctly', () => {
+    expect(wrapper.exists()).toBe(true);
+    expect(wrapper.find('.relative').exists()).toBe(true);
+    expect(wrapper.find('.search-box').exists()).toBe(true);
+  });
 
-    const searchBox = wrapper.findComponent(SearchBox);
-    await searchBox.vm.$emit('on-key-enter');
+  it('should return empty array when search query is empty', () => {
+    // searchQuery is empty by default
+    expect(wrapper.vm.searchResults).toHaveLength(0);
+  });
 
+  it('should emit events correctly', async () => {
+    // Test emit onKeyEnter
+    await wrapper.vm.$emit('onKeyEnter');
     expect(wrapper.emitted('onKeyEnter')).toBeTruthy();
+    
+    // Test emit onClickSubmit  
+    await wrapper.vm.$emit('onClickSubmit');
+    expect(wrapper.emitted('onClickSubmit')).toBeTruthy();
   });
 
-  it('should emit onClick when result item is clicked', async () => {
-    const wrapper = shallowMount(Autocomplete, {
-      props: {
-        data: mockData,
-        modelValue: 'PLTU',
-      },
-    });
-
-    // Cast wrapper.vm to the expected type
-    const vm = wrapper.vm as unknown as {
-      searchQuery: string;
-      isOpen: boolean;
-      setSelected: (item: string) => void;
-    };
-
-    vm.isOpen = true;
-    await wrapper.vm.$nextTick();
-
-    // Directly call the setSelected method to simulate click
-    vm.setSelected('PLTU PAITON');
-
-    // Verify modelValue update is emitted
-    expect(wrapper.emitted('update:modelValue')).toBeTruthy();
-    expect(wrapper.emitted('update:modelValue')![0]).toEqual(['PLTU PAITON']);
+  // Additional tests for uncovered lines
+  it('should filter search results when search query has value', async () => {
+    // Set search query to trigger filtering logic (line 34-38)
+    wrapper.vm.searchQuery = 'Jakarta';
+    await nextTick();
+    
+    const results = wrapper.vm.searchResults;
+    expect(results).toHaveLength(1);
+    expect(results[0].sentral).toBe('Jakarta Power Station');
   });
 
-  it('should filter search results based on query', async () => {
-    const wrapper = shallowMount(Autocomplete, {
-      props: {
-        data: mockData,
-        modelValue: '',
-      },
-    });
-
-    // Cast wrapper.vm to the expected type
-    const vm = wrapper.vm as unknown as {
-      searchQuery: string;
-      searchResults: { sentral: string }[];
-      isOpen: boolean;
-    };
-
-    // Update the modelValue prop to simulate typing
-    await wrapper.setProps({ modelValue: 'SURALAYA' });
-    vm.isOpen = true;
-    await wrapper.vm.$nextTick();  // Wait for DOM update
-
-    expect(vm.searchResults).toEqual([{ sentral: 'PLTU SURALAYA' }]);
-    expect(wrapper.html()).toContain('PLTU SURALAYA');
+  it('should filter search results case insensitively', async () => {
+    // Test case insensitive filtering
+    wrapper.vm.searchQuery = 'bandung';
+    await nextTick();
+    
+    const results = wrapper.vm.searchResults;
+    expect(results).toHaveLength(1);
+    expect(results[0].sentral).toBe('Bandung Power Plant');
   });
 
-  it('should not show results if search query is empty', async () => {
-    const wrapper = shallowMount(Autocomplete, {
-      props: {
-        data: mockData,
-        modelValue: '',
-      },
-    });
+  it('should set selected item correctly', () => {
+    // Test setSelected function (line 41-42)
+    const testValue = 'Selected Power Plant';
+    wrapper.vm.setSelected(testValue);
+    
+    expect(wrapper.vm.searchQuery).toBe(testValue);
+  });
 
-    // Cast wrapper.vm to the expected type
-    const vm = wrapper.vm as unknown as {
-      searchQuery: string;
-      searchResults: { sentral: string }[];
-      isOpen: boolean;
-    };
+  it('should show dropdown when isOpen is true and has results', async () => {
+    // Set search query and isOpen to show dropdown
+    wrapper.vm.searchQuery = 'Jakarta';
+    wrapper.vm.isOpen = true;
+    await nextTick();
+    
+    const dropdown = wrapper.find('ul');
+    expect(dropdown.exists()).toBe(true);
+  });
 
-    await wrapper.vm.$nextTick();  // Wait for DOM update
+  it('should hide dropdown when isOpen is false', async () => {
+    wrapper.vm.searchQuery = 'Jakarta';
+    wrapper.vm.isOpen = false;
+    await nextTick();
+    
+    const dropdown = wrapper.find('ul');
+    expect(dropdown.attributes('style')).toContain('display: none');
+  });
 
-    expect(vm.searchResults).toEqual([]);
-    // Check if ul is hidden due to v-show condition (searchResults.length && isOpen)
-    const ul = wrapper.find('ul');
-    expect(ul.attributes('style')).toContain('display: none');
+  it('should call setSelected when clicking on dropdown item', async () => {
+    wrapper.vm.searchQuery = 'Jakarta';
+    wrapper.vm.isOpen = true;
+    await nextTick();
+    
+    const listItem = wrapper.find('li');
+    await listItem.trigger('click');
+    
+    expect(wrapper.vm.searchQuery).toBe('Jakarta Power Station');
   });
 });

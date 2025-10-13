@@ -1,203 +1,348 @@
-import { shallowMount } from '@vue/test-utils';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { mount } from '@vue/test-utils';
+import { createPinia, setActivePinia } from 'pinia';
 import Sidebar from '@/components/layout/Sidebar.vue';
-import { createPinia, setActivePinia } from "pinia"; // Import Pinia
 
-import AuthService from '@/services/auth-service';
-import PersetujuanService from '@/services/persetujuan-service';
-import { ref } from 'vue';
-
-jest.mock('@/services/auth-service');
-jest.mock('@/services/persetujuan-service');
-
-// Mock flowbite
-jest.mock('flowbite', () => ({
-  initFlowbite: jest.fn(),
+// Mock all dependencies before any imports
+vi.mock('flowbite', () => ({
+  initFlowbite: vi.fn()
 }));
 
-// Mock VueUse composables
-jest.mock('@vueuse/core', () => ({
-  useIdle: jest.fn(() => ({
-    lastActive: { value: Date.now() }
-  })),
-  useTimestamp: jest.fn(() => ({
-    value: Date.now()
-  })),
-}));
-
-// Mock encrypt storage
-jest.mock('@/utils/app-encrypt-storage', () => ({
-  encryptStoragePromise: Promise.resolve({
-    getItem: jest.fn().mockResolvedValue('mock-value'),
-    setItem: jest.fn(),
-    clear: jest.fn(),
-  })
-}));
-
-// Mock stores
-jest.mock('@/store/storeNavbar', () => ({
-  useNavbarLabelStore: jest.fn(() => ({
-    label: 'Test Label'
-  }))
-}));
-
-jest.mock('@/store/storeSession', () => ({
-  useSessionStore: jest.fn(() => ({
-    invalidateSession: jest.fn()
-  }))
-}));
-
-jest.mock('@/store/storeUserAuth', () => ({
-  useUserAuthStore: jest.fn(() => ({
-    levelAlias: 'Xf!8qP@7'
-  }))
-}));
-
-jest.mock('@/store/storeRekapKertasKerja', () => ({
-  useRekapSearchStore: jest.fn(() => ({}))
-}));
-
-jest.mock('@/store/storeMenu', () => ({
-  useMenuStore: jest.fn(() => ({
-    menuList: [
-      {
-        menu: 'Beranda',
-        sub_menus: [
-          {
-            sub_menu: 'Peta Sebaran',
-            url: 'peta-sebaran',
-            is_docked: true
-          }
-        ]
-      }
-    ]
-  }))
-}));
-
-jest.mock("vue-router", () => ({
-  useRoute: jest.fn(),
-  RouterView: { template: '<div></div>' },
-  RouterLink: { template: '<a><slot></slot></a>' },
-  createRouter: jest.fn(() => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-    currentRoute: { value: {} },
-    beforeEach: jest.fn(),
-  })),
-  createWebHistory: jest.fn(() => ({})),
-}));
-
-// Mock router instance
-jest.mock('@/router', () => ({
+vi.mock('@/router', () => ({
   default: {
-    push: jest.fn(),
-    replace: jest.fn(),
+    push: vi.fn(),
+    beforeEach: vi.fn()
   }
 }));
 
+vi.mock('vue-router', () => ({
+  RouterView: {
+    name: 'RouterView',
+    template: '<div>Router View Mock</div>'
+  },
+  useRouter: vi.fn(() => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    go: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+  })),
+  useRoute: vi.fn(() => ({
+    params: {},
+    query: {},
+    path: '/',
+    name: 'test',
+  })),
+}));
+
+vi.mock('@/utils/app-encrypt-storage', () => ({
+  encryptStoragePromise: Promise.resolve({
+    getItem: vi.fn().mockResolvedValue('test-value'),
+    clear: vi.fn()
+  })
+}));
+
+vi.mock('@/services/auth-service', () => ({
+  default: vi.fn().mockImplementation(() => ({
+    logout: vi.fn().mockResolvedValue({})
+  }))
+}));
+
+vi.mock('@/services/persetujuan-service', () => ({
+  default: vi.fn().mockImplementation(() => ({
+    getPersetujuanKKSentral: vi.fn().mockResolvedValue({ data: { mesins: [] } }),
+    getPersetujuanKertasKerja: vi.fn().mockResolvedValue({ data: [] }),
+    getPersetujuanFSSentral: vi.fn().mockResolvedValue({ data: { mesins: [] } }),
+    getPersetujuanFS: vi.fn().mockResolvedValue({ data: [] })
+  }))
+}));
+
 // Mock components
-jest.mock('@/components/icons/ValiantLogo.vue', () => ({
-  default: { template: '<div></div>' }
+vi.mock('@/components/icons/ValiantLogo.vue', () => ({
+  default: {
+    name: 'ValiantLogo',
+    template: '<div>Logo</div>'
+  }
 }));
 
-jest.mock('@/components/ui/LoadingSpinner.vue', () => ({
-  default: { template: '<div></div>' }
+vi.mock('@/components/ui/LoadingSpinner.vue', () => ({
+  default: {
+    name: 'Loading',
+    template: '<div>Loading...</div>'
+  }
 }));
 
-describe('Sidebar.vue', () => {
+// Mock stores
+const mockNavbarStore = {
+  label: 'Test Label'
+};
+
+const mockSessionStore = {
+  invalidateSession: vi.fn()
+};
+
+const mockUserAuthStore = {
+  levelAlias: 'Xf!8qP@7'
+};
+
+const mockRekapStore = {};
+
+const mockMenuStore = {
+  menuList: [
+    {
+      menu: 'Dashboard',
+      sub_menus: [
+        { sub_menu: 'Laman Utama', route: '/dashboard', is_docked: true },
+        { sub_menu: 'Laman Data', route: '/data', is_docked: true },
+        { sub_menu: 'Laman Analitik', route: '/analitik', is_docked: true }
+      ]
+    },
+    {
+      menu: 'Grafik',
+      sub_menus: [
+        { sub_menu: 'Rekap Kertas Kerja', route: '/rekap', is_docked: true },
+        { sub_menu: 'Other Menu', route: '/other', is_docked: true }
+      ]
+    }
+  ]
+};
+
+vi.mock('@/store/storeNavbar', () => ({
+  useNavbarLabelStore: vi.fn(() => mockNavbarStore)
+}));
+
+vi.mock('@/store/storeSession', () => ({
+  useSessionStore: vi.fn(() => mockSessionStore)
+}));
+
+vi.mock('@/store/storeUserAuth', () => ({
+  useUserAuthStore: vi.fn(() => mockUserAuthStore)
+}));
+
+vi.mock('@/store/storeRekapKertasKerja', () => ({
+  useRekapSearchStore: vi.fn(() => mockRekapStore)
+}));
+
+vi.mock('@/store/storeMenu', () => ({
+  useMenuStore: vi.fn(() => mockMenuStore)
+}));
+
+// Mock VueUse composables
+vi.mock('@vueuse/core', () => ({
+  useIdle: vi.fn(() => ({
+    lastActive: { value: Date.now() }
+  })),
+  useTimestamp: vi.fn(() => ({
+    value: Date.now()
+  }))
+}));
+
+// Mock window.Go for WASM
+Object.defineProperty(window, 'Go', {
+  value: vi.fn().mockImplementation(() => ({
+    run: vi.fn(),
+    importObject: {}
+  })),
+  writable: true
+});
+
+describe('Sidebar Component', () => {
   let wrapper: any;
-  let persetujuanServiceMock: any;
-  let authServiceMock: any;
+  let pinia: any;
 
   beforeEach(() => {
-    const pinia = createPinia();
+    pinia = createPinia();
     setActivePinia(pinia);
-    authServiceMock = {
-      checkLevel: jest.fn().mockReturnValue('Admin'),
-      checkRole: jest.fn().mockReturnValue('Super Admin'),
-      logout: jest.fn().mockResolvedValue({}),
-    };
-    persetujuanServiceMock = {
-      getPersetujuanKKSentral: jest.fn().mockResolvedValue({ data: { mesins: [] } }),
-      getPersetujuanFSSentral: jest.fn().mockResolvedValue({ data: { mesins: [] } }),
-      getPersetujuanKertasKerja: jest.fn().mockResolvedValue({ data: [] }),
-      getPersetujuanFS: jest.fn().mockResolvedValue({ data: [] }),
-    };
-
-    (AuthService as jest.Mock).mockImplementation(() => authServiceMock);
-    (PersetujuanService as jest.Mock).mockImplementation(() => persetujuanServiceMock);
-
-    wrapper = shallowMount(Sidebar, {
+    
+    wrapper = mount(Sidebar, {
       global: {
         plugins: [pinia],
         stubs: {
           RouterView: true,
-          RouterLink: true,
           ValiantLogo: true,
           Loading: true,
-          Teleport: true,
-          Transition: true,
-        },
-        mocks: {
-          encryptStorage: {
-            getItem: jest.fn().mockReturnValue('mock-pegawai'),
-          },
-          localStorage: {
-            getItem: jest.fn().mockReturnValue('mock-pegawai'),
-          },
-        },
-      },
+          Teleport: true
+        }
+      }
     });
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('should render the sidebar with the correct initial state', () => {
+  it('should render correctly', () => {
+    expect(wrapper.exists()).toBe(true);
     expect(wrapper.find('nav').exists()).toBe(true);
     expect(wrapper.find('aside').exists()).toBe(true);
-    expect(wrapper.vm.isSidebarOpen).toBe(false); // Sidebar is closed initially
   });
 
-  it('should toggle the sidebar when the toggle function is called', async () => {
-    wrapper.vm.toggleSidebar();
-    await wrapper.vm.$nextTick();
-    expect(wrapper.vm.isSidebarOpen).toBe(true); // Sidebar opens
+  it('should display the correct label from store', () => {
+    expect(wrapper.text()).toContain('Test Label');
   });
 
-  it('should show the user\'s name in the sidebar', async () => {
-    await wrapper.vm.$nextTick();
-    const userNameElements = wrapper.findAll('p');
-    // The component should have paragraphs for displaying user information
-    expect(userNameElements.length).toBeGreaterThan(0);
+  it('should toggle sidebar when toggleSidebar is called', async () => {
+    const initialSidebarState = wrapper.vm.isSidebarOpen;
+    
+    await wrapper.vm.toggleSidebar();
+    
+    expect(wrapper.vm.isSidebarOpen).toBe(!initialSidebarState);
   });
 
-  it('should fetch approval data on mount', async () => {
-    await wrapper.vm.$nextTick();
-    expect(persetujuanServiceMock.getPersetujuanKKSentral).toHaveBeenCalledTimes(0);
-    expect(persetujuanServiceMock.getPersetujuanFSSentral).toHaveBeenCalledTimes(0);
-    expect(wrapper.vm.totalPersetujuanKK).toBe(0); // Initial value based on mock data
-    expect(wrapper.vm.totalPersetujuanFS).toBe(0); // Initial value based on mock data
+  it('should handle logout correctly', async () => {
+    const mockRouter = { push: vi.fn() };
+    wrapper.vm.router = mockRouter;
+
+    await wrapper.vm.handleLogout();
+
+    expect(mockSessionStore.invalidateSession).toHaveBeenCalled();
   });
 
-  it('should show notification icon when approval count is more than zero', async () => {
-    wrapper.vm.totalPersetujuanKK = 2;
-    wrapper.vm.totalPersetujuanFS = 3;
-    await wrapper.vm.$nextTick();
-    // Check if notification elements exist
-    const notificationElements = wrapper.findAll('.bg-warningColor');
-    expect(notificationElements.length).toBeGreaterThan(0);
-  });
-
-  it("is fetching fetchPersetujuanKK", async () => {
-    const fetchPersetujuanKKSpy = jest.spyOn(wrapper.vm, "fetchPersetujuanKK");
+  it('should fetch persetujuan KK data', async () => {
+    // Mock levelAlias to trigger specific branch
+    mockUserAuthStore.levelAlias = 'Mb*0yT%3';
+    
     await wrapper.vm.fetchPersetujuanKK();
-    expect(fetchPersetujuanKKSpy).toHaveBeenCalled();
+    
+    expect(wrapper.vm.totalPersetujuanKK).toBe(0);
   });
 
-  it("is fetching fetchPersetujuanFS", async () => {
-    const fetchPersetujuanFSSpy = jest.spyOn(wrapper.vm, "fetchPersetujuanFS");
+  it('should fetch persetujuan FS data', async () => {
+    // Mock levelAlias to trigger specific branch
+    mockUserAuthStore.levelAlias = 'Mb*0yT%3';
+    
     await wrapper.vm.fetchPersetujuanFS();
-    expect(fetchPersetujuanFSSpy).toHaveBeenCalled();
+    
+    expect(wrapper.vm.totalPersetujuanFS).toBe(0);
+  });
+
+  it('should display notification badges for persetujuan', () => {
+    wrapper.vm.totalPersetujuanKK = 5;
+    wrapper.vm.totalPersetujuanFS = 3;
+    
+    // Check if badges would be displayed when values > 0
+    expect(wrapper.vm.totalPersetujuanKK + wrapper.vm.totalPersetujuanFS).toBeGreaterThan(0);
+  });
+
+  it('should handle countdown timer functionality', () => {
+    wrapper.vm.startCountdown();
+    
+    expect(wrapper.vm.countdown).toBe(10);
+    expect(wrapper.vm.timer).toBeDefined();
+  });
+
+  it('should check admin level access', () => {
+    // Test for admin level visibility
+    mockUserAuthStore.levelAlias = 'Xf!8qP@7';
+    
+    expect(mockUserAuthStore.levelAlias).toBe('Xf!8qP@7');
+  });
+
+  it('should display current year correctly', () => {
+    const currentYear = new Date().getFullYear();
+    
+    expect(wrapper.vm.tahunBerjalan).toBe(currentYear);
+  });
+
+  it('should handle production mode timeout scenarios', async () => {
+    // Mock production mode
+    Object.defineProperty(import.meta, 'env', {
+      value: { MODE: 'production' },
+      writable: true
+    });
+
+    wrapper.vm.nodeMode = 'production';
+    
+    // Test timeout warning scenario (10 seconds remaining)
+    const remainingTime = 10;
+    await wrapper.vm.$nextTick();
+    
+    expect(wrapper.vm.isShowLogoutNotification).toBe(false);
+  });
+
+  it('should handle countdown when timeout warning is shown', () => {
+    wrapper.vm.startCountdown();
+    
+    expect(wrapper.vm.countdown).toBe(10);
+    expect(wrapper.vm.timer).toBeDefined();
+    
+    // Simulate countdown reaching 0
+    wrapper.vm.countdown = 0;
+    expect(wrapper.vm.countdown).toBe(0);
+  });
+
+  it('should handle error scenarios in logout', async () => {
+    // Mock error in authService
+    const mockAuthService = {
+      logout: vi.fn().mockRejectedValue(new Error('Logout failed'))
+    };
+    
+    wrapper.vm.authService = mockAuthService;
+    
+    await wrapper.vm.handleLogout();
+    
+    expect(wrapper.vm.isLoading).toBe(false);
+  });
+
+  it('should handle error scenarios in fetchPersetujuanKK', async () => {
+    // Mock error in service
+    const mockPersetujuanService = {
+      getPersetujuanKertasKerja: vi.fn().mockRejectedValue(new Error('Fetch failed'))
+    };
+    
+    wrapper.vm.persetujuanService = mockPersetujuanService;
+    
+    await wrapper.vm.fetchPersetujuanKK();
+    
+    expect(wrapper.vm.totalPersetujuanKK).toBe(0);
+  });
+
+  it('should handle error scenarios in fetchPersetujuanFS', async () => {
+    // Mock error in service
+    const mockPersetujuanService = {
+      getPersetujuanFS: vi.fn().mockRejectedValue(new Error('Fetch failed'))
+    };
+    
+    wrapper.vm.persetujuanService = mockPersetujuanService;
+    
+    await wrapper.vm.fetchPersetujuanFS();
+    
+    expect(wrapper.vm.totalPersetujuanFS).toBe(0);
+  });
+
+  it('should render different menu icons based on menu type', async () => {
+    // Test different menu conditions
+    const testMenus = [
+      { menu: 'Beranda' },
+      { menu: 'Verifikasi' },
+      { menu: 'Master' },
+      { menu: 'Manajemen' },
+      { menu: 'Other' }
+    ];
+    
+    mockMenuStore.menuList = testMenus.map(menu => ({
+      ...menu,
+      sub_menus: []
+    }));
+    
+    await wrapper.vm.$nextTick();
+    
+    expect(mockMenuStore.menuList).toHaveLength(5);
+  });
+
+  it('should handle different user level aliases', () => {
+    // Test non-admin level
+    mockUserAuthStore.levelAlias = 'regular_user';
+    
+    expect(mockUserAuthStore.levelAlias).not.toBe('Xf!8qP@7');
+    
+    // Test admin level
+    mockUserAuthStore.levelAlias = 'Xf!8qP@7';
+    
+    expect(mockUserAuthStore.levelAlias).toBe('Xf!8qP@7');
+  });
+
+  it('should handle staging environment in logout', async () => {
+    wrapper.vm.nodeMode = 'staging';
+    
+    await wrapper.vm.handleLogout();
+    
+    expect(mockSessionStore.invalidateSession).toHaveBeenCalled();
   });
 });

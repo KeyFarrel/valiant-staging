@@ -1,210 +1,330 @@
-import { shallowMount } from "@vue/test-utils";
-import { nextTick } from "vue";
-import GrafikPage from "@/views/Data/GrafikPage.vue";
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { mount } from '@vue/test-utils';
+import { createPinia, setActivePinia } from 'pinia';
+import GrafikPage from '@/views/Data/GrafikPage.vue';
 
-// Mock all external dependencies
-jest.mock("@/services/peta-service", () => ({
-  __esModule: true,
-  default: jest.fn().mockImplementation(() => ({
-    getSentralByKode: jest.fn().mockResolvedValue({ 
-      data: { 
-        mesins: [],
-        uuid_sentral: "test",
-        sentral: "Test",
-        pengelola: "Test",
-        pembina: "Test",
-        jumlah_mesin: 0,
-        length: 0
-      } 
+// Mock window.Go for WASM
+Object.defineProperty(window, 'Go', {
+  value: vi.fn().mockImplementation(() => ({
+    run: vi.fn(),
+    importObject: {}
+  })),
+  writable: true
+});
+
+// Mock WebAssembly
+global.WebAssembly = {
+  instantiateStreaming: vi.fn().mockResolvedValue({
+    instance: {}
+  })
+} as any;
+
+// Mock fetch for WASM
+global.fetch = vi.fn().mockResolvedValue({
+  ok: true,
+  status: 200
+});
+
+// Mock vue-router
+vi.mock('vue-router', async () => {
+  const actual = await vi.importActual('vue-router');
+  return {
+    ...actual,
+    useRoute: () => ({
+      params: { id: 'test-id' }
     }),
-    getPetaSentral: jest.fn().mockResolvedValue({ data: [] }),
-  })),
+    useRouter: () => ({
+      push: vi.fn()
+    }),
+    createRouter: vi.fn(() => ({
+      push: vi.fn(),
+      beforeEach: vi.fn()
+    })),
+    createWebHistory: vi.fn()
+  };
+});
+
+// Mock the router import specifically
+vi.mock('@/router', () => ({
+  default: {
+    push: vi.fn(),
+    beforeEach: vi.fn()
+  }
 }));
 
-jest.mock("@/services/grafik-service", () => ({
-  __esModule: true,
-  default: jest.fn().mockImplementation(() => ({
-    getYearSentral: jest.fn().mockResolvedValue({ data: [] }),
-    getYearMesin: jest.fn().mockResolvedValue({ data: [] }),
-  })),
+// Mock the services
+vi.mock('@/services/peta-service', () => ({
+  default: vi.fn().mockImplementation(() => ({
+    getSentralByKode: vi.fn().mockResolvedValue({
+      data: {
+        uuid_sentral: 'test-sentral-id',
+        tahun_data: '2024',
+        jumlah_mesin: 2,
+        mesins: [
+          {
+            mesin: 'Mesin 1',
+            uuid_mesin: 'mesin-1',
+            tahun_data: '2024',
+            photo1: 'photo1.jpg'
+          },
+          {
+            mesin: 'Mesin 2', 
+            uuid_mesin: 'mesin-2',
+            tahun_data: '2024',
+            photo1: 'photo2.jpg'
+          }
+        ]
+      }
+    }),
+    getPetaSentral: vi.fn().mockResolvedValue({
+      data: [
+        {
+          kode_sentral: 'test-kode',
+          sentral: 'Test Sentral'
+        }
+      ]
+    })
+  }))
 }));
 
-jest.mock("@/services/detail-sentral-service", () => ({
-  __esModule: true,
-  default: jest.fn().mockImplementation(() => ({
-    getPhoto: jest.fn().mockResolvedValue({ data: new ArrayBuffer(8) }),
-  })),
+vi.mock('@/services/grafik-service', () => ({
+  default: vi.fn().mockImplementation(() => ({
+    getYearSentral: vi.fn().mockResolvedValue({
+      data: [
+        { tahun: 2022 },
+        { tahun: 2023 },
+        { tahun: 2024 }
+      ]
+    }),
+    getYearMesin: vi.fn().mockResolvedValue({
+      data: [
+        { tahun: 2022 },
+        { tahun: 2023 },
+        { tahun: 2024 }
+      ]
+    })
+  }))
 }));
 
-jest.mock("@/services/helper/year-picker-service", () => ({
-  __esModule: true,
-  default: jest.fn().mockImplementation(() => ({
-    filterYears: jest.fn().mockReturnValue([]),
-  })),
+vi.mock('@/services/detail-sentral-service', () => ({
+  default: vi.fn().mockImplementation(() => ({
+    getPhoto: vi.fn().mockResolvedValue({
+      data: new ArrayBuffer(8)
+    })
+  }))
 }));
 
-jest.mock("@/services/format/global-format", () => ({
-  __esModule: true,
-  default: jest.fn().mockImplementation(() => ({
-    formatRupiah: jest.fn().mockReturnValue("Rp 1.000.000"),
-    formatDecimal: jest.fn().mockReturnValue("1,000.00"),
-  })),
+vi.mock('@/services/auth-service', () => ({
+  default: vi.fn().mockImplementation(() => ({}))
 }));
 
-jest.mock("@/services/auth-service", () => ({
-  __esModule: true,
-  default: jest.fn().mockImplementation(() => ({})),
+vi.mock('@/services/helper/year-picker-service', () => ({
+  default: vi.fn().mockImplementation(() => ({
+    filterYears: vi.fn().mockReturnValue([])
+  }))
+}));
+
+// Mock app-encrypt-storage
+vi.mock('@/utils/app-encrypt-storage', () => ({
+  encryptStoragePromise: Promise.resolve({
+    encryptValue: vi.fn((value) => value),
+    decryptValue: vi.fn((value) => value)
+  })
 }));
 
 // Mock stores
-jest.mock("@/store/storeUserAuth", () => ({
-  useUserAuthStore: jest.fn(() => ({
-    levelAlias: "admin",
-  })),
-}));
-
-jest.mock("@/store/storeTagGrafik", () => ({
-  useTagSentral: jest.fn(() => ({
-    currentTabSentral: "WLC (Realisasi & Proyeksi)",
-  })),
-  useTagMesin: jest.fn(() => ({
-    currentTabMesin: "WLC (Realisasi & Proyeksi)",
-  })),
-}));
-
-// Mock vue-router
-jest.mock("vue-router", () => ({
-  useRoute: jest.fn(() => ({
-    params: { id: "test-sentral-id" },
-  })),
-}));
-
-jest.mock("@/router", () => ({
-  default: { push: jest.fn() },
-}));
-
-// Mock utils
-jest.mock("@/utils/app-encrypt-storage", () => ({
-  encryptStoragePromise: Promise.resolve({
-    encryptValue: jest.fn((value) => `encrypted_${value}`),
-    decryptValue: jest.fn((value) => value.replace("encrypted_", "")),
+vi.mock('@/store/storeTagGrafik', () => ({
+  useTagSentral: () => ({
+    currentTabSentral: 'WLC (Realisasi & Proyeksi)'
   }),
+  useTagMesin: () => ({
+    currentTabMesin: 'WLC (Realisasi & Proyeksi)'
+  })
 }));
 
-jest.mock("@/utils/os-detector", () => ({
+vi.mock('@/store/storeUserAuth', () => ({
+  useUserAuthStore: () => ({
+    levelAlias: 'test-level'
+  })
+}));
+
+vi.mock('@/store/storeNavbar', () => ({
+  useNavbarLabelStore: () => ({})
+}));
+
+vi.mock('@/store/storeMenu', () => ({
+  useMenuStore: () => ({})
+}));
+
+// Mock other utilities
+vi.mock('@/utils/os-detector', () => ({
   osDetector: {
-    getOS: jest.fn(() => "macOS"),
-  },
+    getOS: () => 'macOS'
+  }
 }));
 
-jest.mock("@/services/helper/toast-notification", () => ({
-  notifyError: jest.fn(),
+vi.mock('@/services/helper/toast-notification', () => ({
+  notifyError: vi.fn()
 }));
 
-// Mock URL for browser APIs
-Object.defineProperty(global, 'URL', {
-  value: {
-    createObjectURL: jest.fn(() => 'mocked-object-url'),
-    revokeObjectURL: jest.fn(),
-  },
-  writable: true,
-});
+vi.mock('@/services/format/global-format', () => ({
+  default: vi.fn().mockImplementation(() => ({
+    formatRupiah: vi.fn((value) => `Rp ${value}`)
+  }))
+}));
 
-describe("GrafikPage.vue", () => {
+describe('GrafikPage', () => {
   let wrapper: any;
+  
+  const mockRoute = {
+    params: { id: 'test-id' }
+  };
 
-  const createWrapper = (props = {}) => {
-    return shallowMount(GrafikPage, {
-      props: {
-        tabsTitle: [],
-        ...props,
-      },
+  const mockRouter = {
+    push: vi.fn()
+  };
+
+  beforeEach(() => {
+    const pinia = createPinia();
+    setActivePinia(pinia);
+    
+    wrapper = mount(GrafikPage, {
       global: {
+        plugins: [pinia],
+        mocks: {
+          $route: mockRoute,
+          $router: mockRouter
+        },
         stubs: {
+          Loading: true,
+          SearchBox: true,
+          ModalSearch: true,
           TagSentral: true,
           TagMesin: true,
           GrafikSentral: true,
           GrafikMesin: true,
           InfoSentral: true,
           InfoMesin: true,
+          Chips: true,
+          VueDatePicker: true
+        }
+      }
+    });
+  });
+
+  it('should render component successfully', () => {
+    expect(wrapper.exists()).toBe(true);
+    expect(wrapper.find('.w-full.p-4.space-y-3.bg-white.border.rounded-md').exists()).toBe(true);
+  });
+
+  it('should toggle button when toggleButton is called', async () => {
+    const initialHoverState = wrapper.vm.isHover;
+    await wrapper.vm.toggleButton();
+    expect(wrapper.vm.isHover).toBe(!initialHoverState);
+  });
+
+  it('should change selected title when changeTabMesin is called', async () => {
+    const testMesin = 'Test Mesin';
+    await wrapper.vm.changeTabMesin(testMesin);
+    expect(wrapper.vm.selectedTitle).toBe(testMesin);
+  });
+
+  it('should toggle detail when toggleDetail is called', async () => {
+    const initialState = wrapper.vm.isOver;
+    await wrapper.vm.toggleDetail();
+    expect(wrapper.vm.isOver).toBe(!initialState);
+  });
+
+  it('should toggle pembina hover when detailPembina is called', async () => {
+    const initialState = wrapper.vm.pembinaHover;
+    await wrapper.vm.detailPembina();
+    expect(wrapper.vm.pembinaHover).toBe(!initialState);
+  });
+
+  it('should toggle message when showElement is called', async () => {
+    const initialState = wrapper.vm.message;
+    await wrapper.vm.showElement();
+    expect(wrapper.vm.message).toBe(!initialState);
+  });
+
+  it('should open search modal when handleFocus is called', async () => {
+    await wrapper.vm.handleFocus();
+    expect(wrapper.vm.isSearchModalOpen).toBe(true);
+  });
+
+  it('should change tab when changeTab is called with different values', async () => {
+    // Test tab 1
+    await wrapper.vm.changeTab(1);
+    expect(wrapper.vm.tabs).toBe('WLC (Realisasi & Proyeksi)');
+
+    // Test tab 2
+    await wrapper.vm.changeTab(2);
+    expect(wrapper.vm.tabs).toBe('Planning / Feasibility Study');
+
+    // Test tab 3
+    await wrapper.vm.changeTab(3);
+    expect(wrapper.vm.tabs).toBe('Planning & Realisasi + Proyeksi');
+
+    // Test tab 4
+    await wrapper.vm.changeTab(4);
+    expect(wrapper.vm.tabs).toBe('Planning vs Realisasi s/d Tahun Berjalan');
+  });
+
+  it('should call handleChangeSentral function', async () => {
+    const spy = vi.spyOn(wrapper.vm, 'handleChangeSentral');
+    await wrapper.vm.handleChangeSentral();
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should handle component lifecycle with props', async () => {
+    const wrapperWithProps = mount(GrafikPage, {
+      props: {
+        tabsTitle: [
+          { 
+            mesin: 'Test Unit 1',
+            kode_sentral: 'TST01',
+            uuid_mesin: 1,
+            sentral: 'Test Sentral',
+            pengelola: 'Test Pengelola',
+            pembina: 'Test Pembina',
+            jenis_pembangkit: 'PLTU',
+            data_terpasang: '100',
+            data_mampu: '90',
+            asset_awal: '1000000',
+            sisa_masa_manfaat: 15,
+            masa_manfaat: 25,
+            tahun_data: '2024',
+            tahun_nilai_perolehan: '2020',
+            tahun: 2024,
+            photo: 'photo1.jpg',
+            photo1: 'photo1.jpg',
+            photo2: 'photo2.jpg',
+            length: 1
+          }
+        ]
+      },
+      global: {
+        plugins: [createPinia()],
+        mocks: {
+          $route: mockRoute,
+          $router: mockRouter
+        },
+        stubs: {
+          Loading: true,
           SearchBox: true,
           ModalSearch: true,
+          TagSentral: true,
+          TagMesin: true,
+          GrafikSentral: true,
+          GrafikMesin: true,
+          InfoSentral: true,
+          InfoMesin: true,
           Chips: true,
-          Loading: true,
-          VueDatePicker: true,
-          "router-link": true,
-        },
-        directives: {
-          'auto-animate': () => {},
-        },
-      },
+          VueDatePicker: true
+        }
+      }
     });
-  };
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-    // Suppress console output
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
-    jest.spyOn(console, 'log').mockImplementation(() => {});
-    jest.spyOn(console, 'error').mockImplementation(() => {});
-  });
-
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.unmount();
-    }
-    jest.restoreAllMocks();
-  });
-
-  describe("Basic Component Tests", () => {
-    it("should mount successfully", async () => {
-      wrapper = createWrapper();
-      expect(wrapper.exists()).toBe(true);
-    });
-
-    it("should handle props", () => {
-      const props = [];
-      wrapper = createWrapper({ tabsTitle: props });
-      expect(wrapper.props('tabsTitle')).toEqual(props);
-    });
-
-    it("should render without throwing errors", async () => {
-      expect(() => {
-        wrapper = createWrapper();
-      }).not.toThrow();
-    });
-
-    it("should have correct component name", () => {
-      wrapper = createWrapper();
-      expect(wrapper.vm.$options.name || 'GrafikPage').toBeTruthy();
-    });
-
-    it("should initialize with default state", async () => {
-      wrapper = createWrapper();
-      await nextTick();
-      
-      expect(wrapper.vm.isLoading).toBeDefined();
-      expect(wrapper.vm.isHover).toBeDefined();
-      expect(wrapper.vm.tabs).toBeDefined();
-    });
-
-    it("should handle toggle functions", async () => {
-      wrapper = createWrapper();
-      await nextTick();
-      
-      const initialHover = wrapper.vm.isHover;
-      wrapper.vm.toggleButton();
-      expect(wrapper.vm.isHover).toBe(!initialHover);
-    });
-
-    it("should handle different props variations", () => {
-      // Test with undefined props
-      wrapper = createWrapper({ tabsTitle: undefined });
-      expect(wrapper.exists()).toBe(true);
-      
-      // Test with empty array
-      wrapper = createWrapper({ tabsTitle: [] });
-      expect(wrapper.exists()).toBe(true);
-    });
+    
+    expect(wrapperWithProps.exists()).toBe(true);
   });
 });

@@ -1,370 +1,453 @@
-import { shallowMount } from "@vue/test-utils";
-import LihatCAPEX from "@/views/Beranda/LamanData/LihatCAPEX.vue";
-import { createPinia, setActivePinia } from "pinia";
-
-// Mock vue-router
-const mockRoute = {
-  params: { id: "1" },
-  query: { tahun: "2023" },
-};
-
-jest.mock("vue-router", () => ({
-  useRoute: jest.fn(() => mockRoute),
-}));
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { mount } from '@vue/test-utils';
+import { createPinia, setActivePinia } from 'pinia';
+import LihatCAPEX from '@/views/Beranda/LamanData/LihatCAPEX.vue';
 
 // Mock Pinia store
-jest.mock("@/store/storeLamanDataTab", () => ({
-  useLamanDataPeriodeStore: jest.fn(() => ({
-    periodeTahun: [2020, 2021, 2022, 2023, 2024],
-    periodeInitial: 2022
-  }))
+const mockStore = {
+  periodeTahun: [2020, 2025],
+  periodeInitial: 2023
+};
+
+vi.mock('@/store/storeLamanDataTab', () => ({
+  useLamanDataPeriodeStore: () => mockStore
 }));
 
-// Mock GlobalFormat service
-jest.mock("@/services/format/global-format", () => {
-  return jest.fn().mockImplementation(() => ({
-    formatRupiah: jest.fn().mockReturnValue("Rp 100.000"),
-    formatDecimal: jest.fn().mockReturnValue("100.00"),
-    formatNumber: jest.fn().mockReturnValue("100")
-  }));
-});
+// Mock dependencies
+vi.mock('vue-router', () => ({
+  useRoute: () => ({
+    params: { id: 'test-id-123' }
+  })
+}));
 
-// Mock LihatCAPEXService
-jest.mock("@/services/lihat-capex-service", () => {
-  return jest.fn().mockImplementation(() => ({
-    getMesinById: jest.fn().mockResolvedValue({
-      data: { 
-        mesin: "Test Mesin", 
-        kode_sentral: "123",
-        kode_jenis_pembangkit: "PLTU",
-        kondisi_unit: "Baik",
-        daya_terpasang: 1000,
-        daya_mampu: 900,
-        tahun_operasi: 2000
-      }
-    }),
-    getPembangkitByKode: jest.fn().mockResolvedValue({
-      data: { kode_pengelola: "001", pembina: "Test Pembina" }
-    }),
-    getPengelolaData: jest.fn().mockResolvedValue({
-      data: [{ kode_pengelola: "001", pengelola: "Test Pengelola" }]
-    }),
-    getAsumsiParameterData: jest.fn().mockResolvedValue({
-      data: { asumsi_makro: { umur_teknis: 5 } }
-    }),
-    getAnggaranDetailCAPEX: jest.fn().mockResolvedValue({
-      data: [
-        { judul_program: "Program A", ai: 100000000, realisasi_aki: 90000000 },
-        { judul_program: "Program B", ai: 200000000, realisasi_aki: 180000000 }
-      ]
-    }),
-    getTotalReplacement: jest.fn().mockResolvedValue({
-      data: { total_replacement: 1000000000 }
-    }),
-  }));
-});
+vi.mock('@/services/lihat-capex-service', () => ({
+  default: class MockLihatCAPEXService {
+    async getMesinById() {
+      return {
+        data: {
+          mesin: 'Test Machine',
+          kondisi_unit: 'Operasi',
+          kode_jenis_pembangkit: 'PLTU',
+          daya_terpasang: 100,
+          daya_mampu: 95,
+          tahun_operasi: 2020,
+          kode_sentral: 'TEST001'
+        }
+      };
+    }
+    
+    async getPembangkitByKode() {
+      return {
+        data: {
+          kode_pengelola: 'PEN001',
+          pembina: 'Test Pembina'
+        }
+      };
+    }
+    
+    async getPengelolaData() {
+      return {
+        data: [
+          {
+            kode_pengelola: 'PEN001',
+            pengelola: 'Test Pengelola'
+          }
+        ]
+      };
+    }
+    
+    async getAsumsiParameterData() {
+      return {
+        data: {
+          asumsi_makro: {
+            umur_teknis: 25
+          }
+        }
+      };
+    }
+    
+    async getAnggaranDetailCAPEX() {
+      return {
+        data: [
+          {
+            judul_program: 'Test Program 1',
+            ai: 1000000,
+            realisasi_aki: 800000
+          },
+          {
+            judul_program: 'Test Program 2',
+            ai: 2000000,
+            realisasi_aki: 1500000
+          }
+        ]
+      };
+    }
+    
+    async getTotalReplacement() {
+      return {
+        data: {
+          total_replacement: 5000000
+        }
+      };
+    }
+  }
+}));
 
-describe("LihatCAPEX.vue", () => {
+vi.mock('@/services/format/global-format', () => ({
+  default: class MockGlobalFormat {
+    formatRupiah(value: number) {
+      return value.toLocaleString('id-ID');
+    }
+  }
+}));
+
+describe('LihatCAPEX.vue', () => {
+  let pinia: any;
+
   beforeEach(() => {
-    const pinia = createPinia();
+    pinia = createPinia();
     setActivePinia(pinia);
-    jest.clearAllMocks();
   });
 
-  describe("Component Mounting", () => {
-    it("should mount component successfully", () => {
-      const wrapper = shallowMount(LihatCAPEX, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            InfoHeader: true,
-            Loading: true,
-            VueDatePicker: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
 
-      expect(wrapper.vm).toBeTruthy();
-      expect(wrapper.exists()).toBe(true);
-      
-      wrapper.unmount();
+  it('should render component with loading state initially', async () => {
+    const wrapper = mount(LihatCAPEX, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          'VueDatePicker': {
+            template: '<div class="date-picker-mock"></div>',
+            props: ['modelValue', 'yearRange', 'clearable', 'yearPicker'],
+            emits: ['update:modelValue']
+          },
+          'InfoHeader': {
+            template: '<div class="info-header-mock"><slot /></div>',
+            props: ['namaMesin', 'namaPengelola', 'kondisiUnit', 'kodeJenisPembangkit', 'dayaTerpasang', 'dayaMampu', 'tahunOperasi', 'umurTeknis', 'namaPembina']
+          },
+          'SortingIcon': {
+            template: '<div class="sorting-icon-mock"></div>'
+          },
+          'Loading': {
+            template: '<div class="loading-mock">Loading...</div>'
+          }
+        }
+      }
     });
 
-    it("should create component instance without errors", () => {
-      expect(() => {
-        const wrapper = shallowMount(LihatCAPEX, {
-          global: {
-            plugins: [createPinia()],
-            stubs: {
-              InfoHeader: true,
-              Loading: true,
-              VueDatePicker: true,
-              SortingIcon: true,
-              RouterLink: true
+    // Check if component mounts successfully
+    expect(wrapper.exists()).toBe(true);
+    
+    // Wait for async operations
+    await wrapper.vm.$nextTick();
+    await new Promise(resolve => setTimeout(resolve, 100));
+  });
+
+  it('should display CAPEX table headers correctly', async () => {
+    const wrapper = mount(LihatCAPEX, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          'VueDatePicker': {
+            template: '<div class="date-picker-mock"></div>',
+            props: ['modelValue', 'yearRange', 'clearable', 'yearPicker'],
+            emits: ['update:modelValue']
+          },
+          'InfoHeader': {
+            template: '<div class="info-header-mock"><slot /></div>',
+            props: ['namaMesin', 'namaPengelola', 'kondisiUnit', 'kodeJenisPembangkit', 'dayaTerpasang', 'dayaMampu', 'tahunOperasi', 'umurTeknis', 'namaPembina']
+          },
+          'SortingIcon': {
+            template: '<div class="sorting-icon-mock"></div>'
+          },
+          'Loading': {
+            template: '<div class="loading-mock">Loading...</div>'
+          }
+        }
+      }
+    });
+
+    // Wait for component to load
+    await wrapper.vm.$nextTick();
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    const tableHeaders = wrapper.findAll('th');
+    expect(tableHeaders.some(header => header.text().includes('No'))).toBe(true);
+    expect(tableHeaders.some(header => header.text().includes('Judul Program'))).toBe(true);
+    expect(tableHeaders.some(header => header.text().includes('AI'))).toBe(true);
+    expect(tableHeaders.some(header => header.text().includes('Realisasi AKI'))).toBe(true);
+  });
+
+  it('should display correct title and export button', async () => {
+    const wrapper = mount(LihatCAPEX, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          'VueDatePicker': {
+            template: '<div class="date-picker-mock"></div>',
+            props: ['modelValue', 'yearRange', 'clearable', 'yearPicker'],
+            emits: ['update:modelValue']
+          },
+          'InfoHeader': {
+            template: '<div class="info-header-mock"><slot /></div>',
+            props: ['namaMesin', 'namaPengelola', 'kondisiUnit', 'kodeJenisPembangkit', 'dayaTerpasang', 'dayaMampu', 'tahunOperasi', 'umurTeknis', 'namaPembina']
+          },
+          'SortingIcon': {
+            template: '<div class="sorting-icon-mock"></div>'
+          },
+          'Loading': {
+            template: '<div class="loading-mock">Loading...</div>'
+          }
+        }
+      }
+    });
+
+    // Wait for component to load
+    await wrapper.vm.$nextTick();
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    expect(wrapper.text()).toContain('Capital Expenditure (CAPEX)');
+    expect(wrapper.find('button').text()).toContain('Export');
+  });
+
+  it('should handle year picker change event', async () => {
+    const wrapper = mount(LihatCAPEX, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          'VueDatePicker': {
+            template: '<div class="date-picker-mock" @click="$emit(\'update:modelValue\', 2024)"></div>',
+            props: ['modelValue', 'yearRange', 'clearable', 'yearPicker'],
+            emits: ['update:modelValue']
+          },
+          'InfoHeader': {
+            template: '<div class="info-header-mock"><slot /></div>',
+            props: ['namaMesin', 'namaPengelola', 'kondisiUnit', 'kodeJenisPembangkit', 'dayaTerpasang', 'dayaMampu', 'tahunOperasi', 'umurTeknis', 'namaPembina']
+          },
+          'SortingIcon': {
+            template: '<div class="sorting-icon-mock"></div>'
+          },
+          'Loading': {
+            template: '<div class="loading-mock">Loading...</div>'
+          }
+        }
+      }
+    });
+
+    // Wait for component to load
+    await wrapper.vm.$nextTick();
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // Trigger year picker change
+    const datePicker = wrapper.find('.date-picker-mock');
+    await datePicker.trigger('click');
+    
+    await wrapper.vm.$nextTick();
+    expect(wrapper.exists()).toBe(true);
+  });
+
+  it('should handle service errors gracefully', async () => {
+    // Mock service with error
+    vi.doMock('@/services/lihat-capex-service', () => ({
+      default: class MockLihatCAPEXServiceWithError {
+        async getMesinById() {
+          throw new Error('Service error');
+        }
+        
+        async getPembangkitByKode() {
+          throw new Error('Service error');
+        }
+        
+        async getPengelolaData() {
+          throw new Error('Service error');
+        }
+        
+        async getAsumsiParameterData() {
+          throw new Error('Service error');
+        }
+        
+        async getAnggaranDetailCAPEX() {
+          throw new Error('Service error');
+        }
+        
+        async getTotalReplacement() {
+          throw new Error('Service error');
+        }
+      }
+    }));
+
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const wrapper = mount(LihatCAPEX, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          'VueDatePicker': {
+            template: '<div class="date-picker-mock"></div>',
+            props: ['modelValue', 'yearRange', 'clearable', 'yearPicker'],
+            emits: ['update:modelValue']
+          },
+          'InfoHeader': {
+            template: '<div class="info-header-mock"><slot /></div>',
+            props: ['namaMesin', 'namaPengelola', 'kondisiUnit', 'kodeJenisPembangkit', 'dayaTerpasang', 'dayaMampu', 'tahunOperasi', 'umurTeknis', 'namaPembina']
+          },
+          'SortingIcon': {
+            template: '<div class="sorting-icon-mock"></div>'
+          },
+          'Loading': {
+            template: '<div class="loading-mock">Loading...</div>'
+          }
+        }
+      }
+    });
+
+    // Wait for error handling
+    await wrapper.vm.$nextTick();
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    expect(wrapper.exists()).toBe(true);
+    
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('should display table with data when available', async () => {
+    const wrapper = mount(LihatCAPEX, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          'VueDatePicker': {
+            template: '<div class="date-picker-mock"></div>',
+            props: ['modelValue', 'yearRange', 'clearable', 'yearPicker'],
+            emits: ['update:modelValue']
+          },
+          'InfoHeader': {
+            template: '<div class="info-header-mock"><slot /></div>',
+            props: ['namaMesin', 'namaPengelola', 'kondisiUnit', 'kodeJenisPembangkit', 'dayaTerpasang', 'dayaMampu', 'tahunOperasi', 'umurTeknis', 'namaPembina']
+          },
+          'SortingIcon': {
+            template: '<div class="sorting-icon-mock"></div>'
+          },
+          'Loading': {
+            template: '<div class="loading-mock">Loading...</div>'
+          }
+        }
+      }
+    });
+
+    // Wait for component to load and populate data
+    await wrapper.vm.$nextTick();
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // Check if table structure is present
+    expect(wrapper.find('table').exists()).toBe(true);
+    expect(wrapper.find('thead').exists()).toBe(true);
+    expect(wrapper.find('tbody').exists()).toBe(true);
+  });
+
+  it('should display total replacement cost when data is available', async () => {
+    const wrapper = mount(LihatCAPEX, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          'VueDatePicker': {
+            template: '<div class="date-picker-mock"></div>',
+            props: ['modelValue', 'yearRange', 'clearable', 'yearPicker'],
+            emits: ['update:modelValue']
+          },
+          'InfoHeader': {
+            template: '<div class="info-header-mock"><slot /></div>',
+            props: ['namaMesin', 'namaPengelola', 'kondisiUnit', 'kodeJenisPembangkit', 'dayaTerpasang', 'dayaMampu', 'tahunOperasi', 'umurTeknis', 'namaPembina']
+          },
+          'SortingIcon': {
+            template: '<div class="sorting-icon-mock"></div>'
+          },
+          'Loading': {
+            template: '<div class="loading-mock">Loading...</div>'
+          }
+        }
+      }
+    });
+
+    // Wait for component to load and populate data
+    await wrapper.vm.$nextTick();
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // Check if total replacement cost section is present
+    expect(wrapper.text()).toContain('Total Replacement Cost');
+  });
+
+  it('should handle all API error scenarios separately', async () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    // Create a service that throws errors for specific methods
+    const errorService = {
+      async getMesinById() {
+        throw new Error('getMesinById error');
+      },
+      async getPembangkitByKode() {
+        throw new Error('getPembangkitByKode error');
+      },
+      async getPengelolaData() {
+        throw new Error('getPengelolaData error');
+      },
+      async getAsumsiParameterData() {
+        throw new Error('getAsumsiParameterData error');
+      },
+      async getAnggaranDetailCAPEX() {
+        throw new Error('getAnggaranDetailCAPEX error');
+      },
+      async getTotalReplacement() {
+        throw new Error('getTotalReplacement error');
+      }
+    };
+
+    // Mock the service temporarily
+    const originalMock = vi.doMock('@/services/lihat-capex-service', () => ({
+      default: class { constructor() { return errorService; } }
+    }));
+
+    const wrapper = mount(LihatCAPEX, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          'VueDatePicker': {
+            template: '<div class="date-picker-mock" @click="handleYearChange"></div>',
+            props: ['modelValue', 'yearRange', 'clearable', 'yearPicker'],
+            emits: ['update:modelValue'],
+            methods: {
+              handleYearChange() {
+                this.$emit('update:modelValue', 2024);
+              }
             }
           },
-        });
-        wrapper.unmount();
-      }).not.toThrow();
-    });
-  });
-
-  describe("Component Structure", () => {
-    it("should render with proper structure", () => {
-      const wrapper = shallowMount(LihatCAPEX, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            InfoHeader: true,
-            Loading: true,
-            VueDatePicker: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
-
-      // Component should exist and be a Vue component
-      expect(wrapper.exists()).toBe(true);
-      expect(wrapper.vm).toBeDefined();
-      
-      wrapper.unmount();
-    });
-
-    it("should have proper stubbed components setup", () => {
-      const wrapper = shallowMount(LihatCAPEX, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            InfoHeader: true,
-            Loading: true,
-            VueDatePicker: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
-
-      // Wrapper should be created successfully with stubs
-      expect(wrapper.vm).toBeTruthy();
-      
-      wrapper.unmount();
-    });
-  });
-
-  describe("Template Rendering", () => {
-    it("should handle template rendering without errors", () => {
-      const wrapper = shallowMount(LihatCAPEX, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            InfoHeader: true,
-            Loading: true,
-            VueDatePicker: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
-
-      // Template should render without throwing errors
-      expect(wrapper.html()).toBeDefined();
-      
-      wrapper.unmount();
-    });
-  });
-
-  describe("Pinia Integration", () => {
-    it("should integrate with Pinia store correctly", () => {
-      const pinia = createPinia();
-      const wrapper = shallowMount(LihatCAPEX, {
-        global: {
-          plugins: [pinia],
-          stubs: {
-            InfoHeader: true,
-            Loading: true,
-            VueDatePicker: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
-
-      // Component should mount with Pinia without errors
-      expect(wrapper.vm).toBeTruthy();
-      
-      wrapper.unmount();
-    });
-  });
-
-  describe("Router Integration", () => {
-    it("should integrate with Vue Router correctly", () => {
-      const wrapper = shallowMount(LihatCAPEX, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            InfoHeader: true,
-            Loading: true,
-            VueDatePicker: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
-
-      // Component should mount with router mocks without errors
-      expect(wrapper.vm).toBeTruthy();
-      
-      wrapper.unmount();
-    });
-  });
-
-  describe("Service Mocking", () => {
-    it("should handle service mocks correctly", () => {
-      const wrapper = shallowMount(LihatCAPEX, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            InfoHeader: true,
-            Loading: true,
-            VueDatePicker: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
-
-      // Component should work with mocked services
-      expect(wrapper.vm).toBeTruthy();
-      
-      wrapper.unmount();
-    });
-  });
-
-  describe("Component Lifecycle", () => {
-    it("should handle component mounting lifecycle", () => {
-      const wrapper = shallowMount(LihatCAPEX, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            InfoHeader: true,
-            Loading: true,
-            VueDatePicker: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
-
-      // Component should complete mounting process
-      expect(wrapper.vm.$el).toBeDefined();
-      
-      wrapper.unmount();
-    });
-
-    it("should handle component unmounting correctly", () => {
-      const wrapper = shallowMount(LihatCAPEX, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            InfoHeader: true,
-            Loading: true,
-            VueDatePicker: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
-
-      // Component should unmount without errors
-      expect(() => wrapper.unmount()).not.toThrow();
-    });
-  });
-
-  describe("Error Handling", () => {
-    it("should not throw errors during initialization", () => {
-      expect(() => {
-        const wrapper = shallowMount(LihatCAPEX, {
-          global: {
-            plugins: [createPinia()],
-            stubs: {
-              InfoHeader: true,
-              Loading: true,
-              VueDatePicker: true,
-              SortingIcon: true,
-              RouterLink: true
-            }
+          'InfoHeader': {
+            template: '<div class="info-header-mock"><slot /></div>',
+            props: ['namaMesin', 'namaPengelola', 'kondisiUnit', 'kodeJenisPembangkit', 'dayaTerpasang', 'dayaMampu', 'tahunOperasi', 'umurTeknis', 'namaPembina']
           },
-        });
-        wrapper.unmount();
-      }).not.toThrow();
-    });
-
-    it("should handle empty props gracefully", () => {
-      const wrapper = shallowMount(LihatCAPEX, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            InfoHeader: true,
-            Loading: true,
-            VueDatePicker: true,
-            SortingIcon: true,
-            RouterLink: true
+          'SortingIcon': {
+            template: '<div class="sorting-icon-mock"></div>'
+          },
+          'Loading': {
+            template: '<div class="loading-mock">Loading...</div>'
           }
-        },
-        props: {}
-      });
-
-      expect(wrapper.vm).toBeTruthy();
-      
-      wrapper.unmount();
+        }
+      }
     });
-  });
 
-  describe("Component Composition", () => {
-    it("should work with Vue 3 Composition API", () => {
-      const wrapper = shallowMount(LihatCAPEX, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            InfoHeader: true,
-            Loading: true,
-            VueDatePicker: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
+    // Wait for all async operations including errors
+    await wrapper.vm.$nextTick();
+    await new Promise(resolve => setTimeout(resolve, 300));
 
-      // Component should be compatible with Composition API
-      expect(wrapper.vm).toBeTruthy();
-      
-      wrapper.unmount();
-    });
-  });
+    // Test year picker change to trigger more error paths
+    const datePicker = wrapper.find('.date-picker-mock');
+    await datePicker.trigger('click');
+    await wrapper.vm.$nextTick();
+    await new Promise(resolve => setTimeout(resolve, 300));
 
-  describe("Test Environment", () => {
-    it("should work in Jest testing environment", () => {
-      const wrapper = shallowMount(LihatCAPEX, {
-        global: {
-          plugins: [createPinia()],
-          stubs: {
-            InfoHeader: true,
-            Loading: true,
-            VueDatePicker: true,
-            SortingIcon: true,
-            RouterLink: true
-          }
-        },
-      });
-
-      // Component should be testable in Jest
-      expect(wrapper.vm).toBeTruthy();
-      expect(wrapper.html()).toBeTruthy();
-      
-      wrapper.unmount();
-    });
+    expect(wrapper.exists()).toBe(true);
+    
+    consoleErrorSpy.mockRestore();
   });
 });

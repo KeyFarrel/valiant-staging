@@ -2,7 +2,6 @@
 import { ref } from "vue";
 import FinansialPage from "@/views/Beranda/LamanAnalitik/TabPage/FinansialTab.vue";
 import TeknisPage from "@/views/Beranda/LamanAnalitik/TabPage/TeknisTab.vue";
-// import TeknisPage from '@/views/Beranda/LamanAnalitik/TeknisPage.vue'
 
 const currentTab = ref("finansial");
 

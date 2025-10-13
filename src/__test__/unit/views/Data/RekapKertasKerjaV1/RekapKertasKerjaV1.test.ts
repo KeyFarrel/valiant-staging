@@ -1,533 +1,563 @@
-import { shallowMount, VueWrapper } from "@vue/test-utils";
-import { nextTick } from "vue";
-import RekapKertasKerja from "@/views/Data/RekapKertasKerjaV1/RekapKertasKerjaV1.vue";
-import RekapService from "@/services/rekap-service";
-import AuthService from "@/services/auth-service";
-import DetailSentralService from "@/services/detail-sentral-service";
-import GlobalFormat from "@/services/format/global-format";
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { mount } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
+import RekapKertasKerjaV1 from '@/views/Data/RekapKertasKerjaV1/RekapKertasKerjaV1.vue'
 
-// Mock vue-router
-const mockPush = jest.fn();
-jest.mock("vue-router", () => ({
-  useRouter: () => ({
-    push: mockPush,
-  }),
-}));
+// Mock the stores
+const mockRekapSearchStore = {
+  searchRekapQuery: '',
+  selectedRekapSearchQuery: ''
+}
 
-// Mock services
-jest.mock("@/services/rekap-service");
-const MockedRekapService = RekapService as jest.MockedClass<typeof RekapService>;
+const mockRekapNavigationStore = {
+  currentPage: 1,
+  pageLimit: 10,
+  scrollPosition: { top: 0 }
+}
 
-jest.mock("@/services/auth-service");
-const MockedAuthService = AuthService as jest.MockedClass<typeof AuthService>;
-
-jest.mock("@/services/detail-sentral-service");
-const MockedDetailSentralService = DetailSentralService as jest.MockedClass<typeof DetailSentralService>;
-
-jest.mock("@/services/format/global-format");
-const MockedGlobalFormat = GlobalFormat as jest.MockedClass<typeof GlobalFormat>;
-
-// Mock stores
-jest.mock("@/store/storeUserAuth", () => ({
+vi.mock('@/store/storeUserAuth', () => ({
   useUserAuthStore: () => ({
-    userInfo: {
-      kode_pengelola: "TEST",
-      nama_pengelola: "Test Pengelola"
-    }
-  }),
-}));
-
-jest.mock("@/store/storeRekapKertasKerja", () => ({
-  useRekapSearchStore: () => ({
-    searchQuery: "",
-    selectedKategoriPembangkit: [],
-    selectedUmurMesin: [],
-    selectedKondisiMesin: [],
-  }),
-  useRekapNavigationStore: () => ({
-    currentPage: 1,
-    pageLimit: 10,
-    scrollPosition: { top: 0 }
-  }),
-}));
-
-// Mock @vueuse/core
-jest.mock("@vueuse/core", () => ({
-  useWindowScroll: () => ({
-    x: { value: 0 },
-    y: { value: 0 }
+    levelAlias: 'Xf!8qP@7'
   })
-}));
+}))
 
-// Mock utils
-jest.mock("@/utils/app-encrypt-storage", () => ({
-  encryptStoragePromise: jest.fn().mockResolvedValue({
-    getItem: jest.fn(),
-    setItem: jest.fn(),
-  }),
-}));
+vi.mock('@/store/storeRekapKertasKerja', () => ({
+  useRekapSearchStore: () => mockRekapSearchStore,
+  useRekapNavigationStore: () => mockRekapNavigationStore
+}))
 
-// Mock toast notification
-jest.mock("@/services/helper/toast-notification", () => ({
-  notifyError: jest.fn(),
-  notifySuccess: jest.fn(),
-}));
-
-// Mock vue3-lottie
-jest.mock("vue3-lottie", () => ({
-  Vue3Lottie: {
-    name: "Vue3Lottie",
-    template: '<div class="lottie-mock"></div>',
-    props: ["animationData", "autoPlay", "loop", "speed"],
-  },
-}));
-
-// Mock components
-jest.mock("@/components/ui/LoadingSpinner.vue", () => ({
-  name: "Loading",
-  template: '<div class="loading-spinner">Loading...</div>',
-}));
-
-jest.mock("@/components/ui/SearchBoxSuggestion.vue", () => ({
-  name: "SearchBoxSuggestion",
-  template: '<div class="search-box-suggestion"></div>',
-  props: ["modelValue", "suggestions"],
-  emits: ["update:modelValue", "on-suggestion-click"],
-}));
-
-jest.mock("@/components/ui/ModalWrapper.vue", () => ({
-  name: "ModalWrapper",
-  template: '<div class="modal-wrapper"><slot></slot></div>',
-  props: ["showModal", "width", "height"],
-}));
-
-jest.mock("@/components/ui/ConfirmationDialog.vue", () => ({
-  name: "ConfirmationDialog",
-  template: '<div class="confirmation-dialog"><slot></slot></div>',
-  props: ["show", "title", "message"],
-  emits: ["confirm", "cancel"],
-}));
-
-jest.mock("@/components/ui/ShimmerLoading.vue", () => ({
-  name: "ShimmerLoading",
-  template: '<div class="shimmer-loading"></div>',
-}));
-
-// Mock other components
-jest.mock("@/components/Status/ComponentDraft.vue", () => ({
-  name: "ComponentDraft",
-  template: '<div class="component-draft"></div>',
-}));
-
-jest.mock("@/components/Status/ComponentDisetujui.vue", () => ({
-  name: "ComponentDisetujui",
-  template: '<div class="component-disetujui"></div>',
-}));
-
-jest.mock("@/components/Status/ComponentDitolakT1.vue", () => ({
-  name: "ComponentDitolakT1",
-  template: '<div class="component-ditolak-t1"></div>',
-}));
-
-jest.mock("@/components/Status/ComponentDitolakT2.vue", () => ({
-  name: "ComponentDitolakT2",
-  template: '<div class="component-ditolak-t2"></div>',
-}));
-
-jest.mock("@/components/Status/ComponentWaitingT1.vue", () => ({
-  name: "ComponentWaitingT1",
-  template: '<div class="component-waiting-t1"></div>',
-}));
-
-jest.mock("@/components/Status/ComponentWaitingT2.vue", () => ({
-  name: "ComponentWaitingT2",
-  template: '<div class="component-waiting-t2"></div>',
-}));
-
-jest.mock("@/components/Status/ComponentNotInput.vue", () => ({
-  name: "ComponentNotInput",
-  template: '<div class="component-not-input"></div>',
-}));
-
-jest.mock("@/components/Status/ComponentNotUpdate.vue", () => ({
-  name: "ComponentNotUpdate",
-  template: '<div class="component-not-update"></div>',
-}));
-
-jest.mock("@/components/MasterUnitSentral/TabWrapperSentral.vue", () => ({
-  name: "TabWrapperSentral",
-  template: '<div class="tab-wrapper-sentral"><slot></slot></div>',
-}));
-
-jest.mock("@/components/ui/TabItem.vue", () => ({
-  name: "TabItem",
-  template: '<div class="tab-item"><slot></slot></div>',
-  props: ["label", "isActive"],
-}));
-
-jest.mock("@/components/RekapKertasKerja/KeteranganAnomali.vue", () => ({
-  name: "KeteranganAnomali",
-  template: '<div class="keterangan-anomali"></div>',
-}));
-
-jest.mock("@/components/icons/IconEmptyData.vue", () => ({
-  name: "IconEmptyData",
-  template: '<div class="icon-empty-data"></div>',
-}));
-
-jest.mock("@/components/icons/IconFolder.vue", () => ({
-  name: "IconFolder",
-  template: '<div class="icon-folder"></div>',
-}));
-
-describe("RekapKertasKerja.vue", () => {
-  let wrapper: VueWrapper<any>;
-  let mockRekapService: jest.Mocked<RekapService>;
-  let mockAuthService: jest.Mocked<AuthService>;
-  let mockDetailSentralService: jest.Mocked<DetailSentralService>;
-  let mockGlobalFormat: jest.Mocked<GlobalFormat>;
-
-  // Mock responses
-  const mockSentralResponse = {
+// Mock services with more detailed responses
+const mockRekapService = {
+  getSentralData: vi.fn(() => Promise.resolve({ 
+    success: true, 
     data: [
       {
-        uuid_sentral: "test-uuid-1",
-        sentral: "Test Sentral 1",
-        kode_sentral: "TS001",
-        jenis_pembangkit: "PLTU",
-        bbm: "Batu Bara",
-        daya_terpasang: 1000,
-        daya_mampu: 900,
-        kode_pengelola: "TEST",
+        uuid_sentral: 'test-uuid-1',
+        sentral: 'Test Sentral 1',
+        kode_sentral: 'TS001',
+        jenis_pembangkit: 'PLTU',
         mesins: []
       }
-    ],
-    meta: {
-      totalRecords: 1,
-      totalPages: 1,
-      limit: 10,
-      currentPage: 1
-    }
-  };
-
-  const mockPengelolaResponse = {
+    ], 
+    meta: { 
+      limit: 10, 
+      totalRecords: 1, 
+      totalPages: 1 
+    } 
+  })),
+  getSuggestionSentral: vi.fn(() => Promise.resolve({ 
+    success: true, 
     data: [
-      {
-        id_pengelola: 1,
-        kode_pengelola: "TEST",
-        pengelola: "Test Pengelola"
-      }
-    ]
-  };
-
-  const mockKategoriPembangkitResponse = {
+      { sentral: 'Test Sentral 1' },
+      { sentral: 'Test Sentral 2' }
+    ] 
+  })),
+  getPengelolaData: vi.fn(() => Promise.resolve({ 
+    success: true, 
     data: [
-      {
-        kode_jenis_pembangkit: "PLTU",
-        nama_jenis_pembangkit: "PLTU"
-      }
-    ]
-  };
+      { id_pengelola: 1, kode_pengelola: 'PG001', pengelola: 'Pengelola 1' }
+    ] 
+  })),
+  getComboKategoriPembangkit: vi.fn(() => Promise.resolve({ 
+    success: true, 
+    data: [
+      { jenis_kit: 'PLTU', dmn: [{ id_daya: 1, daya_mampu: '< 100' }] }
+    ] 
+  })),
+  getComboUmurMesin: vi.fn(() => Promise.resolve({ 
+    success: true, 
+    data: [
+      { umur_mesin: '< 5 tahun' }
+    ] 
+  })),
+  getComboKondisiMesin: vi.fn(() => Promise.resolve({ 
+    success: true, 
+    data: [
+      { kondisi_unit: 'Baik' }
+    ] 
+  })),
+  getComboIRR: vi.fn(() => Promise.resolve({ 
+    success: true, 
+    data: [
+      { nilai_irr: '> 10%' }
+    ] 
+  })),
+  getNilaiSentral: vi.fn(() => Promise.resolve({ 
+    success: true, 
+    data: [] 
+  })),
+  getNilaiMesin: vi.fn(() => Promise.resolve({ 
+    success: true, 
+    data: [] 
+  })),
+  getStatusFSSentral: vi.fn(() => Promise.resolve({ 
+    success: true, 
+    data: [] 
+  })),
+  getStatusFSMesin: vi.fn(() => Promise.resolve({ 
+    success: true, 
+    data: [] 
+  })),
+  getStatusRealisasiSentral: vi.fn(() => Promise.resolve({ 
+    success: true, 
+    data: [] 
+  })),
+  getStatusRealisasiMesin: vi.fn(() => Promise.resolve({ 
+    success: true, 
+    data: [] 
+  })),
+  getCheckInputAsumsiSentral: vi.fn(() => Promise.resolve({ 
+    success: true, 
+    data: [] 
+  })),
+  getCheckInputAsumsiMesin: vi.fn(() => Promise.resolve({ 
+    success: true, 
+    data: [] 
+  })),
+  getMesinByIdSentral: vi.fn(() => Promise.resolve({ 
+    success: true, 
+    data: [
+      { id: 1, nama_mesin: 'Test Mesin', photo1: '' }
+    ] 
+  }))
+}
 
+vi.mock('@/services/rekap-service', () => ({
+  default: class {
+    getSentralData = mockRekapService.getSentralData
+    getSuggestionSentral = mockRekapService.getSuggestionSentral
+    getPengelolaData = mockRekapService.getPengelolaData
+    getComboKategoriPembangkit = mockRekapService.getComboKategoriPembangkit
+    getComboUmurMesin = mockRekapService.getComboUmurMesin
+    getComboKondisiMesin = mockRekapService.getComboKondisiMesin
+    getComboIRR = mockRekapService.getComboIRR
+    getNilaiSentral = mockRekapService.getNilaiSentral
+    getNilaiMesin = mockRekapService.getNilaiMesin
+    getStatusFSSentral = mockRekapService.getStatusFSSentral
+    getStatusFSMesin = mockRekapService.getStatusFSMesin
+    getStatusRealisasiSentral = mockRekapService.getStatusRealisasiSentral
+    getStatusRealisasiMesin = mockRekapService.getStatusRealisasiMesin
+    getCheckInputAsumsiSentral = mockRekapService.getCheckInputAsumsiSentral
+    getCheckInputAsumsiMesin = mockRekapService.getCheckInputAsumsiMesin
+    getMesinByIdSentral = mockRekapService.getMesinByIdSentral
+  }
+}))
+
+vi.mock('@/services/auth-service', () => ({
+  default: class {
+    checkSession() { return Promise.resolve({ success: true }) }
+  }
+}))
+
+vi.mock('@/services/detail-sentral-service', () => ({
+  default: class {
+    getPhoto() { return Promise.resolve({ data: new ArrayBuffer(8) }) }
+  }
+}))
+
+// Mock other dependencies
+vi.mock('@/utils/app-encrypt-storage', () => ({
+  encryptStoragePromise: Promise.resolve({})
+}))
+
+vi.mock('@vueuse/core', () => ({
+  useWindowScroll: () => ({ x: { value: 0 }, y: { value: 0 } })
+}))
+
+describe('RekapKertasKerjaV1', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    setActivePinia(createPinia())
+    vi.clearAllMocks()
+  })
 
-    // Setup mock services
-    mockRekapService = {
-      getSentralData: jest.fn().mockResolvedValue(mockSentralResponse),
-      getPengelolaData: jest.fn().mockResolvedValue(mockPengelolaResponse),
-      getComboKategoriPembangkit: jest.fn().mockResolvedValue(mockKategoriPembangkitResponse),
-      getComboUmurMesin: jest.fn().mockResolvedValue({ data: [] }),
-      getComboKondisiMesin: jest.fn().mockResolvedValue({ data: [] }),
-      getComboIRR: jest.fn().mockResolvedValue({ data: [] }),
-      downloadTemplateRekap: jest.fn().mockResolvedValue(new Blob()),
-      downloadTemplateFS: jest.fn().mockResolvedValue(new Blob()),
-      uploadTemplateAwalKK: jest.fn().mockResolvedValue({ data: { message: "Success" } }),
-      uploadTemplateAwalFS: jest.fn().mockResolvedValue({ data: { message: "Success" } }),
-      getSuggestionSentral: jest.fn().mockResolvedValue({ data: [] }),
-      getMesinByIdSentral: jest.fn().mockResolvedValue({ data: { mesinById: [], sentral: {} } }),
-      getNilaiSentral: jest.fn().mockResolvedValue({ data: [] }),
-      getNilaiMesin: jest.fn().mockResolvedValue({ data: [] }),
-      getStatusFSSentral: jest.fn().mockResolvedValue({ data: [] }),
-      getStatusFSMesin: jest.fn().mockResolvedValue({ data: [] }),
-      getStatusRealisasiSentral: jest.fn().mockResolvedValue({ data: [] }),
-      getStatusRealisasiMesin: jest.fn().mockResolvedValue({ data: [] }),
-      getCheckInputAsumsiSentral: jest.fn().mockResolvedValue({ data: [] }),
-      getCheckInputAsumsiMesin: jest.fn().mockResolvedValue({ data: [] }),
-    } as any;
-
-    mockAuthService = {
-      getUserInfo: jest.fn().mockResolvedValue({
-        data: {
-          kode_pengelola: "TEST",
-          nama_pengelola: "Test Pengelola"
+  const getWrapper = () => {
+    return mount(RekapKertasKerjaV1, {
+      global: {
+        stubs: {
+          Loading: true,
+          SearchBoxSuggestion: true,
+          ShimmerLoading: true,
+          ModalWrapper: true,
+          TabWrapperSentral: true,
+          TabItem: true,
+          ComponentDraft: true,
+          ComponentDisetujui: true,
+          ComponentDitolakT1: true,
+          ComponentDitolakT2: true,
+          ComponentWaitingT1: true,
+          ComponentWaitingT2: true,
+          ComponentNotInput: true,
+          ComponentNotUpdate: true,
+          KeteranganAnomali: true,
+          IconEmptyData: true,
+          ConfirmationDialog: true,
+          IconFolder: true,
+          Vue3Lottie: true,
+          'el-select': true,
+          'el-option': true,
+          'el-checkbox': true
         }
-      }),
-    } as any;
+      }
+    })
+  }
 
-    mockDetailSentralService = {
-      getMesinByIdSentral: jest.fn().mockResolvedValue({
-        data: {
-          mesinById: [],
-          sentral: {}
-        }
-      }),
-      getNilaiSentral: jest.fn().mockResolvedValue({ data: [] }),
-      getNilaiMesin: jest.fn().mockResolvedValue({ data: [] }),
-      getStatusFSSentral: jest.fn().mockResolvedValue({ data: [] }),
-      getStatusFSMesin: jest.fn().mockResolvedValue({ data: [] }),
-      getStatusRealisasiSentral: jest.fn().mockResolvedValue({ data: [] }),
-      getStatusRealisasiMesin: jest.fn().mockResolvedValue({ data: [] }),
-      getCheckInputAsumsiSentral: jest.fn().mockResolvedValue({ data: [] }),
-      getCheckInputAsumsiMesin: jest.fn().mockResolvedValue({ data: [] }),
-    } as any;
+  it('should render component successfully', async () => {
+    const wrapper = getWrapper()
+    expect(wrapper.exists()).toBe(true)
+  })
 
-    mockGlobalFormat = {
-      formatRupiah: jest.fn().mockImplementation((value) => value?.toString() || "0"),
-      formatDecimal: jest.fn().mockImplementation((value) => value?.toString() || "0"),
-      formatEnergy: jest.fn().mockImplementation((value) => value?.toString() || "0"),
-      formatPercent: jest.fn().mockImplementation((value) => value?.toString() || "0"),
-    } as any;
+  it('should initialize with loading state as false after mount', async () => {
+    const wrapper = getWrapper()
+    
+    // Wait for component to be mounted and all async operations to complete
+    await wrapper.vm.$nextTick()
+    await new Promise(resolve => setTimeout(resolve, 100))
 
-    // Setup mock constructors
-    MockedRekapService.mockImplementation(() => mockRekapService);
-    MockedAuthService.mockImplementation(() => mockAuthService);
-    MockedDetailSentralService.mockImplementation(() => mockDetailSentralService);
-    MockedGlobalFormat.mockImplementation(() => mockGlobalFormat);
-  });
+    expect((wrapper.vm as any).isLoading).toBe(false)
+  })
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.unmount();
+  it('should have correct initial data values', () => {
+    const wrapper = getWrapper()
+
+    expect((wrapper.vm as any).sentralData).toEqual([])
+    expect((wrapper.vm as any).pengelolaData).toEqual([])
+    expect((wrapper.vm as any).selectedKategoriPembangkit).toEqual([])
+    expect((wrapper.vm as any).showModal).toBe(false)
+    expect((wrapper.vm as any).tahunBerjalan).toBe(new Date().getFullYear())
+  })
+
+  it('should call fetch functions on mounted', async () => {
+    const wrapper = getWrapper()
+    
+    // Wait for all async operations in onMounted to complete
+    await wrapper.vm.$nextTick()
+    await new Promise(resolve => setTimeout(resolve, 200))
+
+    expect(mockRekapService.getSentralData).toHaveBeenCalled()
+    expect(mockRekapService.getSuggestionSentral).toHaveBeenCalled()
+    expect(mockRekapService.getPengelolaData).toHaveBeenCalled()
+    expect(mockRekapService.getComboKategoriPembangkit).toHaveBeenCalled()
+  })
+
+  it('should handle wait function correctly', async () => {
+    const wrapper = getWrapper()
+    const startTime = Date.now()
+    
+    await (wrapper.vm as any).wait(100)
+    
+    const endTime = Date.now()
+    expect(endTime - startTime).toBeGreaterThanOrEqual(90) // Allow some tolerance
+  })
+
+  it('should fetch suggestion sentral data successfully', async () => {
+    const wrapper = getWrapper()
+    
+    await (wrapper.vm as any).fetchSuggestionSentral()
+    
+    expect(mockRekapService.getSuggestionSentral).toHaveBeenCalled()
+    expect((wrapper.vm as any).listSuggestionSentral).toEqual([
+      { sentral: 'Test Sentral 1' },
+      { sentral: 'Test Sentral 2' }
+    ])
+  })
+
+  it('should fetch sentral data successfully', async () => {
+    const wrapper = getWrapper()
+    
+    await (wrapper.vm as any).fetchSentralData()
+    
+    expect(mockRekapService.getSentralData).toHaveBeenCalled()
+    expect((wrapper.vm as any).sentralData).toHaveLength(1)
+    expect((wrapper.vm as any).totalRecords).toBe(1)
+    expect((wrapper.vm as any).totalPages).toBe(1)
+  })
+
+  it('should fetch pengelola data successfully', async () => {
+    const wrapper = getWrapper()
+    
+    await (wrapper.vm as any).fetchPengelolaData()
+    
+    expect(mockRekapService.getPengelolaData).toHaveBeenCalled()
+    expect((wrapper.vm as any).pengelolaData).toHaveLength(2) // Original data + ALL option
+    expect((wrapper.vm as any).pengelolaData[0].kode_pengelola).toBe('ALL')
+  })
+
+  it('should fetch combo kategori pembangkit data successfully', async () => {
+    const wrapper = getWrapper()
+    
+    await (wrapper.vm as any).fetchComboKategoriPembangkit()
+    
+    expect(mockRekapService.getComboKategoriPembangkit).toHaveBeenCalled()
+    expect((wrapper.vm as any).kategoriPembangkitData).toHaveLength(1)
+    expect((wrapper.vm as any).childDmn).toHaveLength(1)
+  })
+
+  it('should fetch combo umur mesin data successfully', async () => {
+    const wrapper = getWrapper()
+    
+    await (wrapper.vm as any).fetchComboUmurMesin()
+    
+    expect(mockRekapService.getComboUmurMesin).toHaveBeenCalled()
+    expect((wrapper.vm as any).comboUmurMesin).toHaveLength(1)
+  })
+
+  it('should check if pembangkit is open', () => {
+    const wrapper = getWrapper()
+    
+    ;(wrapper.vm as any).isPembangkitTabOpen = ['test-id-1']
+    
+    expect((wrapper.vm as any).isPembangkitOpen('test-id-1')).toBe(true)
+    expect((wrapper.vm as any).isPembangkitOpen('test-id-2')).toBe(false)
+  })
+
+  it('should handle file change correctly', () => {
+    const wrapper = getWrapper()
+    
+    const mockFile = new File(['content'], 'test.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const event = {
+      target: {
+        files: [mockFile]
+      }
     }
-  });
+    
+    ;(wrapper.vm as any).handleFileChange(event)
+    expect((wrapper.vm as any).selectedFile).toEqual(mockFile)
+    
+    // Test with no files
+    const emptyEvent = {
+      target: {
+        files: []
+      }
+    }
+    
+    ;(wrapper.vm as any).handleFileChange(emptyEvent)
+    expect((wrapper.vm as any).selectedFile).toBe(null)
+  })
 
-  describe("Component Mounting", () => {
-    it("should mount successfully", async () => {
-      wrapper = shallowMount(RekapKertasKerja);
-      expect(wrapper.exists()).toBe(true);
-    });
+  it('should handle checkbox functions correctly', () => {
+    const wrapper = getWrapper()
+    
+    // Setup test data
+    ;(wrapper.vm as any).kategoriPembangkitData = [
+      { id: 'PLTU', name: 'PLTU' },
+      { id: 'PLTG', name: 'PLTG' }
+    ]
+    
+    // Test handleCheckPembangkit
+    ;(wrapper.vm as any).handleCheckPembangkit(true)
+    expect((wrapper.vm as any).selectedKategoriPembangkit).toEqual(['PLTU', 'PLTG'])
+    
+    ;(wrapper.vm as any).handleCheckPembangkit(false)
+    expect((wrapper.vm as any).selectedKategoriPembangkit).toEqual([])
+  })
 
-    it("should initialize with loading state", async () => {
-      wrapper = shallowMount(RekapKertasKerja);
-      await nextTick();
+  it('should check input asumsi correctly', () => {
+    const wrapper = getWrapper()
+    
+    ;(wrapper.vm as any).listStatusInputAsumsiMesin = [
+      { uuid_mesin: 'test-mesin-1', status_kk: true },
+      { uuid_mesin: 'test-mesin-2', status_kk: false }
+    ]
+    
+    expect((wrapper.vm as any).checkInputAsumsi('test-mesin-1')).toBe(true)
+    expect((wrapper.vm as any).checkInputAsumsi('test-mesin-2')).toBe(false)
+  })
 
-      expect(wrapper.exists()).toBe(true);
-      // Cek apakah ada loading state
-      expect(wrapper.vm.isLoading).toBeDefined();
-    });
-  });
+  it('should check unggah required props correctly', () => {
+    const wrapper = getWrapper()
+    
+    // Test incomplete data
+    expect((wrapper.vm as any).checkUnggahRequiredProp('-', '', '0')).toBe(true)
+    
+    // Test complete data
+    expect((wrapper.vm as any).checkUnggahRequiredProp('100000', '2023', '25')).toBe(false)
+  })
 
-  describe("Data Fetching on Mount", () => {
-    beforeEach(async () => {
-      wrapper = shallowMount(RekapKertasKerja);
-      await nextTick();
-      // Wait for async operations
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    });
+  it('should generate page list correctly', () => {
+    const wrapper = getWrapper()
+    
+    ;(wrapper.vm as any).totalPages = 3
+    mockRekapNavigationStore.currentPage = 2
+    
+    const pageList = (wrapper.vm as any).generatePageList
+    expect(Array.isArray(pageList)).toBe(true)
+  })
 
-    it("should call required service methods on mount", () => {
-      expect(mockRekapService.getSentralData).toHaveBeenCalled();
-      expect(mockRekapService.getPengelolaData).toHaveBeenCalled();
-      expect(mockRekapService.getComboKategoriPembangkit).toHaveBeenCalled();
-    });
+  it('should handle navigation functions correctly', async () => {
+    const wrapper = getWrapper()
+    
+    // Test goToPrevious
+    mockRekapNavigationStore.currentPage = 3
+    await (wrapper.vm as any).goToPrevious()
+    expect(mockRekapService.getSentralData).toHaveBeenCalled()
+    
+    // Test goToNext
+    await (wrapper.vm as any).goToNext()
+    expect(mockRekapService.getSentralData).toHaveBeenCalled()
+    
+    // Test goToPage
+    await (wrapper.vm as any).goToPage(1)
+    expect(mockRekapService.getSentralData).toHaveBeenCalled()
+  })
 
-    it("should handle getSentralData service call", () => {
-      expect(mockRekapService.getSentralData).toHaveBeenCalledTimes(1);
-    });
+  it('should handle search functionality', async () => {
+    const wrapper = getWrapper()
+    
+    await (wrapper.vm as any).handleSearch()
+    
+    expect(mockRekapService.getSentralData).toHaveBeenCalled()
+    expect(mockRekapNavigationStore.currentPage).toBe(1)
+  })
 
-    it("should handle getPengelolaData service call", () => {
-      expect(mockRekapService.getPengelolaData).toHaveBeenCalledTimes(1);
-    });
+  it('should handle change page limit', async () => {
+    const wrapper = getWrapper()
+    
+    await (wrapper.vm as any).changePageLimit()
+    
+    expect(mockRekapService.getSentralData).toHaveBeenCalled()
+    expect(mockRekapNavigationStore.currentPage).toBe(1)
+  })
 
-    it("should handle getComboKategoriPembangkit service call", () => {
-      expect(mockRekapService.getComboKategoriPembangkit).toHaveBeenCalledTimes(1);
-    });
-  });
+  it('should handle change selected pengelola', async () => {
+    const wrapper = getWrapper()
+    
+    // Test with ALL option
+    ;(wrapper.vm as any).kodePengelola = 'PG001'
+    await (wrapper.vm as any).changeSelectedPengelola('ALL')
+    expect((wrapper.vm as any).kodePengelola).toBe('ALL')
+    
+    // Test with specific pengelola not included
+    ;(wrapper.vm as any).selectedPengelola = []
+    await (wrapper.vm as any).changeSelectedPengelola('PG001')
+    expect((wrapper.vm as any).selectedPengelola).toContain('PG001')
+    
+    // Test with pengelola already selected
+    ;(wrapper.vm as any).selectedPengelola = ['PG001']
+    await (wrapper.vm as any).changeSelectedPengelola('PG001')
+    expect((wrapper.vm as any).selectedPengelola).toEqual([])
+  })
 
-  describe("Component Properties", () => {
-    beforeEach(async () => {
-      wrapper = shallowMount(RekapKertasKerja);
-      await nextTick();
-    });
+  it('should handle toggle pembangkit correctly', async () => {
+    const wrapper = getWrapper()
+    
+    // Setup test data
+    ;(wrapper.vm as any).isPembangkitTabOpen = []
+    ;(wrapper.vm as any).statusFSMesin = [
+      { uuid_mesin: 'mesin-1', status: 'approved' }
+    ]
+    ;(wrapper.vm as any).statusRealisasiMesin = [
+      { uuid_mesin: 'mesin-1', status: 'completed' }
+    ]
+    
+    await (wrapper.vm as any).togglePembangkit('test-uuid-1')
+    
+    expect(mockRekapService.getMesinByIdSentral).toHaveBeenCalledWith('test-uuid-1')
+    expect((wrapper.vm as any).isPembangkitTabOpen).toContain('test-uuid-1')
+  })
 
-    it("should have initial reactive properties", () => {
-      expect(wrapper.vm.isLoading).toBeDefined();
-      expect(wrapper.vm.sentralData).toBeDefined();
-      expect(wrapper.vm.pengelolaData).toBeDefined();
-      expect(wrapper.vm.kategoriPembangkitData).toBeDefined();
-    });
+  it('should handle file change for evidence correctly', () => {
+    const wrapper = getWrapper()
+    
+    const mockFile = new File(['evidence content'], 'evidence.pdf', { type: 'application/pdf' })
+    const event = {
+      target: {
+        files: [mockFile]
+      }
+    }
+    
+    ;(wrapper.vm as any).handleFileChangeEvidence(event)
+    expect((wrapper.vm as any).selectedFileEvidence).toEqual(mockFile)
+    
+    // Test with no files
+    const emptyEvent = {
+      target: {
+        files: []
+      }
+    }
+    
+    ;(wrapper.vm as any).handleFileChangeEvidence(emptyEvent)
+    expect((wrapper.vm as any).selectedFileEvidence).toBe(null)
+  })
 
-    it("should initialize with correct default values", () => {
-      expect(wrapper.vm.tahunBerjalan).toBe(new Date().getFullYear());
-      expect(wrapper.vm.kodePengelola).toBe('ALL');
-      expect(wrapper.vm.checkPembangkit).toBe(false);
-      expect(wrapper.vm.checkDmn).toBe(false);
-    });
-  });
+  it('should handle file change for FS correctly', () => {
+    const wrapper = getWrapper()
+    
+    const mockFile = new File(['fs content'], 'fs.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const event = {
+      target: {
+        files: [mockFile]
+      }
+    }
+    
+    ;(wrapper.vm as any).handleFileFSChange(event)
+    expect((wrapper.vm as any).selectedFileFS).toEqual(mockFile)
+    
+    // Test with no files
+    const emptyEvent = {
+      target: {
+        files: []
+      }
+    }
+    
+    ;(wrapper.vm as any).handleFileFSChange(emptyEvent)
+    expect((wrapper.vm as any).selectedFileFS).toBe(null)
+  })
 
-  describe("Modal Functionality", () => {
-    beforeEach(async () => {
-      wrapper = shallowMount(RekapKertasKerja);
-      await nextTick();
-    });
+  it('should handle other checkbox functions correctly', () => {
+    const wrapper = getWrapper()
+    
+    // Test handleCheckDmn
+    ;(wrapper.vm as any).childDmn = [
+      { id: 'dmn-1', name: 'DMN 1' },
+      { id: 'dmn-2', name: 'DMN 2' }
+    ]
+    
+    ;(wrapper.vm as any).handleCheckDmn(true)
+    expect((wrapper.vm as any).dmn).toEqual(['dmn-1', 'dmn-2'])
+    
+    ;(wrapper.vm as any).handleCheckDmn(false)
+    expect((wrapper.vm as any).dmn).toEqual([])
+    
+    // Test handleCheckUmurMesin
+    ;(wrapper.vm as any).comboUmurMesin = [
+      { id: 'umur-1', name: 'Umur 1' },
+      { id: 'umur-2', name: 'Umur 2' }
+    ]
+    
+    ;(wrapper.vm as any).handleCheckUmurMesin(true)
+    expect((wrapper.vm as any).selectedUmurMesin).toEqual(['umur-1', 'umur-2'])
+    
+    ;(wrapper.vm as any).handleCheckUmurMesin(false)
+    expect((wrapper.vm as any).selectedUmurMesin).toEqual([])
+    
+    // Test handleCheckKondisiMesin
+    ;(wrapper.vm as any).comboKondisiMesin = [
+      { id: 'kondisi-1', name: 'Kondisi 1' },
+      { id: 'kondisi-2', name: 'Kondisi 2' }
+    ]
+    
+    ;(wrapper.vm as any).handleCheckKondisiMesin(true)
+    expect((wrapper.vm as any).selectedKondisiMesin).toEqual(['kondisi-1', 'kondisi-2'])
+    
+    ;(wrapper.vm as any).handleCheckKondisiMesin(false)
+    expect((wrapper.vm as any).selectedKondisiMesin).toEqual([])
+  })
 
-    it("should handle search modal state", async () => {
-      expect(wrapper.vm.isSearchModalOpen).toBe(false);
-      
-      // Test opening modal
-      wrapper.vm.isSearchModalOpen = true;
-      await nextTick();
-      
-      expect(wrapper.vm.isSearchModalOpen).toBe(true);
-    });
+  it('should handle focus correctly', () => {
+    const wrapper = getWrapper()
+    
+    ;(wrapper.vm as any).handleFocus()
+    expect((wrapper.vm as any).isSearchModalOpen).toBe(true)
+  })
 
-    it("should handle upload modal states", async () => {
-      expect(wrapper.vm.isModalUnggahKertasKerjaOpen).toBe(false);
-      expect(wrapper.vm.isModalUnggahFSOpen).toBe(false);
-      
-      // Test opening modals
-      wrapper.vm.isModalUnggahKertasKerjaOpen = true;
-      wrapper.vm.isModalUnggahFSOpen = true;
-      await nextTick();
-      
-      expect(wrapper.vm.isModalUnggahKertasKerjaOpen).toBe(true);
-      expect(wrapper.vm.isModalUnggahFSOpen).toBe(true);
-    });
-  });
-
-  describe("Checkbox Functionality", () => {
-    beforeEach(async () => {
-      wrapper = shallowMount(RekapKertasKerja);
-      await nextTick();
-    });
-
-    it("should handle pembangkit checkbox change", async () => {
-      expect(wrapper.vm.checkPembangkit).toBe(false);
-      
-      wrapper.vm.checkPembangkit = true;
-      await nextTick();
-      
-      expect(wrapper.vm.checkPembangkit).toBe(true);
-    });
-
-    it("should handle DMN checkbox change", async () => {
-      expect(wrapper.vm.checkDmn).toBe(false);
-      
-      wrapper.vm.checkDmn = true;
-      await nextTick();
-      
-      expect(wrapper.vm.checkDmn).toBe(true);
-    });
-
-    it("should handle umur mesin checkbox change", async () => {
-      expect(wrapper.vm.checkAllUmurMesin).toBe(false);
-      
-      wrapper.vm.checkAllUmurMesin = true;
-      await nextTick();
-      
-      expect(wrapper.vm.checkAllUmurMesin).toBe(true);
-    });
-
-    it("should handle kondisi mesin checkbox change", async () => {
-      expect(wrapper.vm.checkAllKondisiMesin).toBe(false);
-      
-      wrapper.vm.checkAllKondisiMesin = true;
-      await nextTick();
-      
-      expect(wrapper.vm.checkAllKondisiMesin).toBe(true);
-    });
-  });
-
-  describe("File Upload Functionality", () => {
-    beforeEach(async () => {
-      wrapper = shallowMount(RekapKertasKerja);
-      await nextTick();
-    });
-
-    it("should handle file change for rekap", () => {
-      const mockFile = new File(["test"], "test.xlsx", { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-      const mockEvent = {
-        target: {
-          files: [mockFile]
-        }
-      };
-
-      wrapper.vm.handleFileChange(mockEvent);
-      
-      expect(wrapper.vm.selectedFile).toBe(mockFile);
-    });
-
-    it("should handle file change for evidence", () => {
-      const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });
-      const mockEvent = {
-        target: {
-          files: [mockFile]
-        }
-      };
-
-      wrapper.vm.handleFileChangeEvidence(mockEvent);
-      
-      expect(wrapper.vm.selectedFileEvidence).toBe(mockFile);
-    });
-
-    it("should handle file change for FS", () => {
-      const mockFile = new File(["test"], "test.xlsx", { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-      const mockEvent = {
-        target: {
-          files: [mockFile]
-        }
-      };
-
-      wrapper.vm.handleFileFSChange(mockEvent);
-      
-      expect(wrapper.vm.selectedFileFS).toBe(mockFile);
-    });
-  });
-
-  describe("Global Format Integration", () => {
-    beforeEach(async () => {
-      wrapper = shallowMount(RekapKertasKerja);
-      await nextTick();
-    });
-
-    it("should use global format for decimal formatting", () => {
-      const testValue = 1000000;
-      wrapper.vm.globalFormat.formatDecimal(testValue);
-      
-      expect(mockGlobalFormat.formatDecimal).toHaveBeenCalledWith(testValue);
-    });
-
-    it("should format rupiah values", () => {
-      const testValue = 1000000;
-      wrapper.vm.globalFormat.formatRupiah(testValue);
-      
-      expect(mockGlobalFormat.formatRupiah).toHaveBeenCalledWith(testValue);
-    });
-
-    it("should format energy values", () => {
-      const testValue = 1000.50;
-      wrapper.vm.globalFormat.formatEnergy(testValue);
-      
-      expect(mockGlobalFormat.formatEnergy).toHaveBeenCalledWith(testValue);
-    });
-  });
-
-  describe("Error Handling", () => {
-    it("should handle service errors gracefully", async () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-      
-      // Mock service to throw error
-      mockRekapService.getSentralData.mockRejectedValue(new Error("Service Error"));
-      
-      wrapper = shallowMount(RekapKertasKerja);
-      await nextTick();
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      // Component should still exist even with errors
-      expect(wrapper.exists()).toBe(true);
-      
-      consoleSpy.mockRestore();
-    });
-  });
-});
+  it('should handle change sentral data correctly', async () => {
+    const wrapper = getWrapper()
+    
+    ;(wrapper.vm as any).selectedKategoriPembangkit = ['PLTU', 'PLTG']
+    
+    await (wrapper.vm as any).changeSentralData()
+    
+    expect(mockRekapService.getSentralData).toHaveBeenCalled()
+    expect((wrapper.vm as any).showModal).toBe(false)
+  })
+})

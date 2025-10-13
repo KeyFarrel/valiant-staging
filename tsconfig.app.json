@@ -1,19 +1,19 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "ESNext", // Vite uses ESNext modules
-    "moduleResolution": "Node", // Vite works with standard Node resolution
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "target": "ESNext",
     "lib": ["DOM", "ESNext"],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "composite": true,
-    "resolveJsonModule": true, // Enable JSON module resolution
+    "resolveJsonModule": true,
     "paths": {
       "@/*": ["src/*"]
     },
     "baseUrl": "."
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/**/*.json"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/**/*.json", "vitest.setup.ts"],
   "exclude": ["node_modules", "tsconfig.node.json"]
 }

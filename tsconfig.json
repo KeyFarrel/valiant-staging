@@ -2,7 +2,7 @@
   "compilerOptions": {
     "types": ["jest", "node", "vite/client"],
     "target": "ES2020",
-    "moduleResolution": "Node", // Standard for Vite apps
+    "moduleResolution": "Node",
     "module": "ESNext",
     "sourceMap": true,
     "baseUrl": ".",
@@ -25,7 +25,7 @@
     "jest.setup.ts",
     "src/**/__tests__/*",
     "src/**/*.json"
-  ],
+, "vitest.setup.ts"  ],
   "exclude": ["node_modules"],
   "references": [
     { "path": "./tsconfig.app.json" },

@@ -85,7 +85,7 @@ unit-test:
     - npm install ts-node --save-dev
     - npm install ts-jest typescript --save-dev
   script:
-    - ./node_modules/.bin/jest --coverage
+    - npm run coverage
   allow_failure: true
   artifacts:
     when: always

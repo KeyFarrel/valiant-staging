@@ -1,177 +1,267 @@
-import { shallowMount, flushPromises } from "@vue/test-utils";
-import MesinBelumTerinput from "@/views/Beranda/LamanUtama/MesinBelumTerinput.vue";
-import LamanService from "@/services/laman-service";
-import TableComponent from "@/components/ui/Table.vue";
-import Empty from "@/components/ui/EmptyData.vue";
-import SearchBox from "@/components/ui/SearchBox.vue";
-import Loading from "@/components/ui/LoadingSpinner.vue";
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { mount } from '@vue/test-utils'
+import MesinBelumTerinput from '@/views/Beranda/LamanUtama/MesinBelumTerinput.vue'
 
-// Mock LamanService to simulate API calls
-jest.mock("@/services/laman-service", () => {
-  return jest.fn().mockImplementation(() => ({
-    getMesinBelumInput: jest.fn().mockResolvedValue({
+// Mock the service
+vi.mock('@/services/laman-service', () => ({
+  default: class MockLamanService {
+    getMesinBelumInput = vi.fn(() => Promise.resolve({
       data: [
         {
-          pengelola: "Unit Pengelola A",
-          sentral: "Unit Sentral A",
-          mesin: "Mesin A",
-          total_daya_terpasang: 100
+          pengelola: 'PLN',
+          sentral: 'PLTU Suralaya',
+          mesin: 'Unit 1',
+          daya_terpasang: 400
         }
       ],
       meta: {
         totalRecords: 1,
         totalPages: 1
       }
-    }),
-    getPengelolaData: jest.fn().mockResolvedValue({
+    }))
+    
+    getPengelolaData = vi.fn(() => Promise.resolve({
       data: [
         {
-          kode_pengelola: "PG001",
-          pengelola: "Pengelola A"
+          id_pengelola: 1,
+          kode_pengelola: 'PLN',
+          pengelola: 'PLN'
         }
       ]
-    })
-  }));
-});
+    }))
+  }
+}))
 
-// Mock GlobalFormat
-jest.mock("@/services/format/global-format", () =>
-  jest.fn().mockImplementation(() => ({
-    formatRupiah: jest.fn().mockReturnValue('100 MW'),
-  }))
-);
+// Mock the global format service
+vi.mock('@/services/format/global-format', () => ({
+  default: class MockGlobalFormat {
+    formatRupiah = vi.fn((value) => `Rp ${value.toLocaleString()}`)
+  }
+}))
 
-describe("MesinBelumTerinput.vue", () => {
-  let wrapper: any;
-  let lamanService: any;
-  let fetchMesinBelumInputSpy: any;
+describe('MesinBelumTerinput', () => {
+  let wrapper: any
 
-  beforeEach(async () => {
-    // Clear all mocks before each test
-    jest.clearAllMocks();
-    
-    lamanService = new LamanService();
-    wrapper = shallowMount(MesinBelumTerinput, {
+  beforeEach(() => {
+    wrapper = mount(MesinBelumTerinput, {
       global: {
-        components: { TableComponent, Empty, SearchBox, Loading },
         stubs: {
           SearchBox: true,
           Loading: true,
           TableComponent: true,
           Empty: true
         }
-      },
-    });
-
-    // Create spy after wrapper is created
-    fetchMesinBelumInputSpy = jest.spyOn(wrapper.vm, 'fetchMesinBelumInput');
-
-    // Wait for onMounted to finish
-    await flushPromises();
-  });
-
-  it("renders the loading spinner when data is being fetched", async () => {
-    // Simulate loading state by directly setting the reactive property
-    wrapper.vm.isLoading = true;
-    await wrapper.vm.$nextTick();
-
-    expect(wrapper.findComponent(Loading).exists()).toBe(true);
-
-    // Reset loading state for further tests
-    wrapper.vm.isLoading = false;
-    await wrapper.vm.$nextTick();
-  });
-
-  it("renders the table with fetched data", async () => {
-    // Mock successful response
-    wrapper.vm.lamanService.getMesinBelumInput.mockResolvedValue({
-      data: [
-        {
-          pengelola: "Unit Pengelola A",
-          sentral: "Unit Sentral A",
-          mesin: "Mesin A",
-          total_daya_terpasang: 100
-        }
-      ],
-      meta: {
-        totalRecords: 1,
-        totalPages: 1
       }
-    });
+    })
+  })
 
-    // Trigger data fetch
-    await wrapper.vm.fetchMesinBelumInput();
-    await flushPromises();
+  it('should render component successfully', () => {
+    expect(wrapper.exists()).toBe(true)
+  })
 
-    // Check if data is loaded
-    expect(wrapper.vm.mesinBelumTerinput).toHaveLength(1);
-    expect(wrapper.vm.mesinBelumTerinput[0].pengelola).toBe("Unit Pengelola A");
-  });
+  it('should initialize with default navigation values', () => {
+    expect(wrapper.vm.navigation.currentPage).toBe(1)
+    expect(wrapper.vm.navigation.limit).toBe(10)
+    expect(wrapper.vm.kodePengelola).toBe('ALL')
+  })
 
-  it('shows "Data tidak tersedia" when no data is returned', async () => {
-    // Mock the service to return empty data
-    wrapper.vm.lamanService.getMesinBelumInput.mockResolvedValue({
-      data: [],
-      meta: { totalRecords: 0, totalPages: 1 },
-    });
-  
-    await wrapper.vm.fetchMesinBelumInput();
-    await flushPromises();
-  
-    // Check if data array is empty
-    expect(wrapper.vm.mesinBelumTerinput).toHaveLength(0);
-  });
-  
-
-  it("handles search input and fetches new data", async () => {
-    const spy = jest.spyOn(wrapper.vm, 'handleSearch');
+  it('should update search query when input changes', async () => {
+    const initialSearchQuery = wrapper.vm.searchQuery
+    expect(initialSearchQuery).toBe('')
     
-    // Simulate search
-    wrapper.vm.searchQuery = "Mesin A";
-    await wrapper.vm.handleSearch();
-    await flushPromises();
-
-    // Check if handleSearch was called
-    expect(spy).toHaveBeenCalled();
-    expect(wrapper.vm.searchQuery).toBe("Mesin A");
-  });
-
-  it("changes page limit and fetches new data", async () => {
-    // Directly change the limit value
-    wrapper.vm.navigation.limit = 20;
+    wrapper.vm.searchQuery = 'test search'
+    await wrapper.vm.$nextTick()
     
-    // Trigger goToPage function to test navigation
-    const spy = jest.spyOn(wrapper.vm, 'goToPage');
-    await wrapper.vm.goToPage(1);
-    await flushPromises();
+    expect(wrapper.vm.searchQuery).toBe('test search')
+  })
 
-    // Check if limit is changed and goToPage was called
-    expect(wrapper.vm.navigation.limit).toBe(20);
-    expect(spy).toHaveBeenCalledWith(1);
-  });
-
-  it("navigates between pages correctly", async () => {
-    // Test that currentPage changes when goToPage is called
-    const initialPage = wrapper.vm.navigation.currentPage;
+  it('should handle search with debounce', async () => {
+    const handleSearchSpy = vi.spyOn(wrapper.vm, 'handleSearch')
     
-    // Call goToPage function
-    await wrapper.vm.goToPage(2);
-    await flushPromises();
+    await wrapper.vm.handleSearch()
+    
+    expect(handleSearchSpy).toHaveBeenCalled()
+  })
 
-    // Check if currentPage changed
-    expect(wrapper.vm.navigation.currentPage).toBe(2);
-    expect(wrapper.vm.navigation.currentPage).not.toBe(initialPage);
-  });
+  it('should change page limit successfully', async () => {
+    wrapper.vm.navigation.limit = 20
+    
+    await wrapper.vm.changePageLimit()
+    
+    expect(wrapper.vm.navigation.currentPage).toBe(1)
+    expect(wrapper.vm.navigation.limit).toBe(20)
+  })
 
-  it("is fetching fetchMesinBelumInput", async () => {
-    const fetchMesinBelumInputSpy = jest.spyOn(wrapper.vm, "fetchMesinBelumInput");
-    await wrapper.vm.fetchMesinBelumInput();
-    expect(fetchMesinBelumInputSpy).toHaveBeenCalled();
-  });
+  it('should handle pengelola selection for ALL', async () => {
+    wrapper.vm.kodePengelola = 'PLN'
+    
+    await wrapper.vm.changeSelectedPengelola('ALL')
+    
+    expect(wrapper.vm.kodePengelola).toBe('ALL')
+    expect(wrapper.vm.selectedPengelola).toEqual([])
+    expect(wrapper.vm.navigation.currentPage).toBe(1)
+  })
 
-  it("is fetching fetchPengelolaData", async () => {
-    const fetchPengelolaDataSpy = jest.spyOn(wrapper.vm, "fetchPengelolaData");
-    await wrapper.vm.fetchPengelolaData();
-    expect(fetchPengelolaDataSpy).toHaveBeenCalled();
-  });
-});
+  it('should add pengelola to selection when not selected', async () => {
+    wrapper.vm.selectedPengelola = []
+    wrapper.vm.kodePengelola = 'ALL'
+    
+    await wrapper.vm.changeSelectedPengelola('PLN')
+    
+    expect(wrapper.vm.selectedPengelola).toContain('PLN')
+    expect(wrapper.vm.kodePengelola).toBe(null)
+    expect(wrapper.vm.navigation.currentPage).toBe(1)
+  })
+
+  it('should remove pengelola from selection when already selected', async () => {
+    wrapper.vm.selectedPengelola = ['PLN', 'INALUM']
+    wrapper.vm.kodePengelola = null
+    
+    await wrapper.vm.changeSelectedPengelola('PLN')
+    
+    expect(wrapper.vm.selectedPengelola).not.toContain('PLN')
+    expect(wrapper.vm.navigation.currentPage).toBe(1)
+  })
+
+  it('should set kodePengelola to ALL when removing last selected pengelola', async () => {
+    wrapper.vm.selectedPengelola = ['PLN']
+    wrapper.vm.kodePengelola = null
+    
+    await wrapper.vm.changeSelectedPengelola('PLN')
+    
+    expect(wrapper.vm.kodePengelola).toBe('ALL')
+    expect(wrapper.vm.selectedPengelola).toEqual([])
+  })
+
+  it('should generate page list correctly for few pages', () => {
+    wrapper.vm.navigation.totalPages = 3
+    wrapper.vm.navigation.currentPage = 2
+    
+    const pageList = wrapper.vm.generatePageList
+    
+    expect(pageList).toEqual([1, 2, 3])
+  })
+
+  it('should generate page list with ellipsis for many pages', () => {
+    wrapper.vm.navigation.totalPages = 10
+    wrapper.vm.navigation.currentPage = 5
+    
+    const pageList = wrapper.vm.generatePageList
+    
+    expect(pageList).toContain('...')
+    expect(pageList).toContain(1)
+    expect(pageList).toContain(10)
+  })
+
+  it('should go to specific page', async () => {
+    const goToPageSpy = vi.spyOn(wrapper.vm, 'goToPage')
+    
+    await wrapper.vm.goToPage(3)
+    
+    expect(goToPageSpy).toHaveBeenCalledWith(3)
+    expect(wrapper.vm.navigation.currentPage).toBe(3)
+  })
+
+  it('should go to previous page', () => {
+    wrapper.vm.navigation.currentPage = 3
+    
+    wrapper.vm.goToPrevious()
+    
+    expect(wrapper.vm.navigation.currentPage).toBe(2)
+  })
+
+  it('should go to next page', () => {
+    wrapper.vm.navigation.currentPage = 1
+    
+    wrapper.vm.goToNext()
+    
+    expect(wrapper.vm.navigation.currentPage).toBe(2)
+  })
+
+  it('should handle fetch error gracefully', async () => {
+    // Mock console.error to avoid noise in test output
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    
+    // Mock service to return rejected promise
+    const originalService = wrapper.vm.lamanService
+    wrapper.vm.lamanService = {
+      ...originalService,
+      getMesinBelumInput: vi.fn(() => Promise.reject(new Error('Network error')))
+    }
+    
+    // Call the function and expect isLoading to be false after error
+    try {
+      await wrapper.vm.fetchMesinBelumInput()
+    } catch (error) {
+      // Error should be thrown
+    }
+    
+    expect(wrapper.vm.isLoading).toBe(false)
+  })
+
+  it('should handle error in fetchPengelolaData', async () => {
+    // Mock console.error to avoid noise in test output
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    
+    const originalService = wrapper.vm.lamanService
+    wrapper.vm.lamanService = {
+      ...originalService,
+      getPengelolaData: vi.fn(() => Promise.reject(new Error('Network error')))
+    }
+    
+    await wrapper.vm.fetchPengelolaData()
+    
+    expect(wrapper.vm.isLoading).toBe(false)
+  })
+
+  it('should handle error in goToPage', async () => {
+    // Mock console.error to avoid noise in test output  
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    
+    const originalService = wrapper.vm.lamanService
+    wrapper.vm.lamanService = {
+      ...originalService,
+      getMesinBelumInput: vi.fn(() => Promise.reject(new Error('Network error')))
+    }
+    
+    await wrapper.vm.goToPage(5)
+    
+    expect(wrapper.vm.navigation.currentPage).toBe(5)
+  })
+
+  it('should not change pengelola when selecting ALL if already ALL', async () => {
+    wrapper.vm.kodePengelola = 'ALL'
+    const initialKodePengelola = wrapper.vm.kodePengelola
+    
+    await wrapper.vm.changeSelectedPengelola('ALL')
+    
+    expect(wrapper.vm.kodePengelola).toBe(initialKodePengelola)
+  })
+
+  it('should generate page list for current page near end', () => {
+    wrapper.vm.navigation.totalPages = 10
+    wrapper.vm.navigation.currentPage = 8
+    
+    const pageList = wrapper.vm.generatePageList
+    
+    expect(pageList).toContain(1)
+    expect(pageList).toContain('...')
+    expect(pageList).toContain(8)
+    expect(pageList).toContain(9)
+    expect(pageList).toContain(10)
+  })
+
+  it('should generate page list for first pages when current page <= 3', () => {
+    wrapper.vm.navigation.totalPages = 10
+    wrapper.vm.navigation.currentPage = 2
+    
+    const pageList = wrapper.vm.generatePageList
+    
+    expect(pageList).toContain(1)
+    expect(pageList).toContain(2)
+    expect(pageList).toContain(3)
+    expect(pageList).toContain(4)
+    expect(pageList).toContain('...')
+    expect(pageList).toContain(10)
+  })
+})
