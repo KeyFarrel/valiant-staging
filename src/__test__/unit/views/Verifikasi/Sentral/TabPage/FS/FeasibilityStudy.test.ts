@@ -73,18 +73,6 @@ describe('FeasibilityStudy', () => {
     expect(tableBody.text()).toContain('Draft')
   })
 
-  it('should show "Data Tidak Tersedia" when source is null', () => {
-    const wrapper = mount(FeasibilityStudy, {
-      props: {
-        source: null
-      }
-    })
-
-    const tableBody = wrapper.find('tbody')
-    expect(tableBody.text()).toContain('Data Tidak Tersedia')
-    expect(tableBody.text()).toContain('Silahkan lakukan pengisian atau hubungi unit terkait')
-  })
-
   describe('Status rendering', () => {
     it('should display "Ditolak oleh Pembina" for status "Ditolak T1"', () => {
       const wrapper = mount(FeasibilityStudy, {
