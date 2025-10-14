@@ -149,7 +149,7 @@ interface PersetujuanFSItem {
 }
 
 const props = defineProps<Props>();
-const index = ref(props.source ? (Array.isArray(props.source) ? props.source.length : 0) : 0);
+const index = ref(props.source.length);
 
 </script>
 
