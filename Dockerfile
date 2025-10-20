@@ -20,6 +20,20 @@ RUN npx vite build --mode $BUILD_MODE
 # Stage 2: Serve the staging build with Nginx
 FROM harbor.pln.co.id/library/nginx:stable-alpine
 
+# Update Alpine packages to fix CVE vulnerabilities
+RUN apk update && apk upgrade --no-cache && \
+  apk add --no-cache \
+  libxml2>=2.12.7-r3 \
+  libexpat>=2.7.2-r0 \
+  libcrypto3>=3.3.5-r0 \
+  libssl3>=3.3.5-r0 \
+  libxslt>=1.1.39-r2 \
+  xz-libs>=5.6.2-r1 \
+  curl>=8.14.1-r2 \
+  libcurl>=8.14.1-r2 \
+  musl>=1.2.5-r1 \
+  musl-utils>=1.2.5-r1
+
 # Copy the built files from the previous stage
 COPY --from=build /app/dist /usr/share/nginx/html
 
