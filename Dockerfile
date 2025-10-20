@@ -1,7 +1,23 @@
 # Stage 1: Build the Vue.js app
-FROM harbor.pln.co.id/library/node:20-alpine AS build
+FROM harbor.pln.co.id/library/node:22-alpine3.22 AS build
 
 WORKDIR /app
+
+# # Update and upgrade all packages to latest versions to patch CVEs
+# RUN apk update && \
+#   apk upgrade --no-cache && \
+#   apk add --no-cache --upgrade \
+#   libexpat \
+#   libcrypto3 \
+#   libssl3 \
+#   libxml2 \
+#   libxslt \
+#   xz-libs \
+#   libcurl \
+#   curl \
+#   musl \
+#   musl-utils && \
+#   rm -rf /var/cache/apk/*
 
 # Copy dependencies reference file
 COPY package.json package-lock.json ./
@@ -18,7 +34,23 @@ ARG BUILD_MODE=development
 RUN npx vite build --mode $BUILD_MODE
 
 # Stage 2: Serve the staging build with Nginx
-FROM harbor.pln.co.id/library/nginx:stable-alpine
+FROM harbor.pln.co.id/library/nginx:stable-alpine3.22
+
+# # Update and upgrade all packages to latest versions to patch CVEs
+# RUN apk update && \
+#   apk upgrade --no-cache && \
+#   apk add --no-cache --upgrade \
+#   libexpat \
+#   libcrypto3 \
+#   libssl3 \
+#   libxml2 \
+#   libxslt \
+#   xz-libs \
+#   libcurl \
+#   curl \
+#   musl \
+#   musl-utils && \
+#   rm -rf /var/cache/apk/*
 
 # Copy the built files from the previous stage
 COPY --from=build /app/dist /usr/share/nginx/html
