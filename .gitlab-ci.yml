@@ -14,8 +14,8 @@ variables:
 
 # Caching Build
 .npm-cache:
-  image: harbor.pln.co.id/library/node:22-alpine
-  cache:  # Cache modules in between jobs
+  image: harbor.pln.co.id/library/node:20-alpine
+  cache:
     key: $CI_COMMIT_REF_SLUG
     paths:
       - .npm/
