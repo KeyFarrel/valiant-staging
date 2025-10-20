@@ -1,16 +1,14 @@
 # Stage 1: Build the Vue.js app
-# Using latest available Node 22 Alpine image from Harbor
-FROM harbor.pln.co.id/library/node:22-alpine AS build
+FROM harbor.pln.co.id/library/node:20-alpine AS build
 
 WORKDIR /app
 
 # Copy dependencies reference file
 COPY package.json package-lock.json ./
 
-# Install dependencies securely with increased memory and retry logic
-RUN npm cache clean --force \
-  && npm ci --prefer-offline --no-audit --loglevel=verbose \
-  && npm audit --production --audit-level=high || true
+# Install dependencies securely
+RUN npm ci \
+  && npm audit --production --audit-level=high
 
 # Copy the rest of the application
 COPY . .
@@ -20,7 +18,6 @@ ARG BUILD_MODE=development
 RUN npx vite build --mode $BUILD_MODE
 
 # Stage 2: Serve the staging build with Nginx
-# Using latest available Nginx Alpine image from Harbor
 FROM harbor.pln.co.id/library/nginx:stable-alpine
 
 # Copy the built files from the previous stage
