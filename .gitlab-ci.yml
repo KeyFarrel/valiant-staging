@@ -80,10 +80,7 @@ unit-test:
   extends: .npm-cache
   stage: unit-test
   before_script:
-    - npm install -g jest
-    - npm install --save-dev jest-junit
-    - npm install ts-node --save-dev
-    - npm install ts-jest typescript --save-dev
+    - npm install typescript --save-dev
   script:
     - npm run coverage
   allow_failure: true
