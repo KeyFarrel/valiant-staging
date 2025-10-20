@@ -12,7 +12,8 @@ variables:
   IMAGE_NAME: "valiant/valiant-frontend"
   STAGING_VERSION: "build-$CI_COMMIT_SHORT_SHA"
 
-# Caching Build
+# === OPTION 1: With Cache (Default - Faster) ===
+# Use this for normal builds
 .npm-cache:
   image: harbor.pln.co.id/library/node:20-alpine
   cache:
@@ -24,14 +25,27 @@ variables:
       - .npm/
       - node_modules/
   before_script:
-    # Clear cache metadata to prevent corruption when package-lock.json changes
-    - rm -rf .npm/_cacache
+    # Clean up only corrupted cache metadata, keep downloaded packages
+    # This is faster than full reinstall while preventing cache issues
+    - rm -rf .npm/_cacache .npm/_locks
     # Configure npm retry mechanism for network stability
     - npm config set fetch-retries 5
     - npm config set fetch-retry-mintimeout 20000
     - npm config set fetch-retry-maxtimeout 120000
-    # Install with fallback mechanism
-    - npm ci --cache .npm || npm install --cache .npm
+    # Use clean install with proper error handling
+    - npm ci --prefer-offline || npm ci --cache .npm || npm install
+
+# === OPTION 2: Without Cache (Fallback - If cache issues persist) ===
+# To use: Change "extends: .npm-cache" to "extends: .npm-no-cache" in jobs
+.npm-no-cache:
+  image: harbor.pln.co.id/library/node:20-alpine
+  before_script:
+    # Configure npm retry mechanism for network stability
+    - npm config set fetch-retries 5
+    - npm config set fetch-retry-mintimeout 20000
+    - npm config set fetch-retry-maxtimeout 120000
+    # Fresh install every time (no cache)
+    - npm ci --prefer-offline || npm install
 
 prepare_env_file_stg:
   stage: create-env
