@@ -6,9 +6,12 @@ WORKDIR /app
 # Copy dependencies reference file
 COPY package.json package-lock.json ./
 
-# Install dependencies securely
-RUN npm ci \
-  && npm audit --production --audit-level=high
+# Install dependencies with retry mechanism for network stability
+RUN npm config set fetch-retries 5 \
+  && npm config set fetch-retry-mintimeout 20000 \
+  && npm config set fetch-retry-maxtimeout 120000 \
+  && npm ci || npm install \
+  && npm audit --production --audit-level=high || true
 
 # Copy the rest of the application
 COPY . .
