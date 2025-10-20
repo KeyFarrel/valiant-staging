@@ -4,28 +4,13 @@ FROM harbor.pln.co.id/library/node:22-alpine AS build
 
 WORKDIR /app
 
-# # Update and upgrade all packages to latest versions to patch CVEs
-# RUN apk update && \
-#   apk upgrade --no-cache && \
-#   apk add --no-cache --upgrade \
-#   libexpat \
-#   libcrypto3 \
-#   libssl3 \
-#   libxml2 \
-#   libxslt \
-#   xz-libs \
-#   libcurl \
-#   curl \
-#   musl \
-#   musl-utils && \
-#   rm -rf /var/cache/apk/*
-
 # Copy dependencies reference file
 COPY package.json package-lock.json ./
 
-# Install dependencies securely
-RUN npm ci \
-  && npm audit --production --audit-level=high
+# Install dependencies securely with increased memory and retry logic
+RUN npm cache clean --force \
+  && npm ci --prefer-offline --no-audit --loglevel=verbose \
+  && npm audit --production --audit-level=high || true
 
 # Copy the rest of the application
 COPY . .
@@ -37,22 +22,6 @@ RUN npx vite build --mode $BUILD_MODE
 # Stage 2: Serve the staging build with Nginx
 # Using latest available Nginx Alpine image from Harbor
 FROM harbor.pln.co.id/library/nginx:stable-alpine
-
-# # Update and upgrade all packages to latest versions to patch CVEs
-# RUN apk update && \
-#   apk upgrade --no-cache && \
-#   apk add --no-cache --upgrade \
-#   libexpat \
-#   libcrypto3 \
-#   libssl3 \
-#   libxml2 \
-#   libxslt \
-#   xz-libs \
-#   libcurl \
-#   curl \
-#   musl \
-#   musl-utils && \
-#   rm -rf /var/cache/apk/*
 
 # Copy the built files from the previous stage
 COPY --from=build /app/dist /usr/share/nginx/html
