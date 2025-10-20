@@ -12,40 +12,16 @@ variables:
   IMAGE_NAME: "valiant/valiant-frontend"
   STAGING_VERSION: "build-$CI_COMMIT_SHORT_SHA"
 
-# === OPTION 1: With Cache (Default - Faster) ===
-# Use this for normal builds
+# Caching Build
 .npm-cache:
   image: harbor.pln.co.id/library/node:20-alpine
-  cache:
-    key: 
-      files:
-        - package-lock.json
-      prefix: npm-cache-v1
+  cache:  # Cache modules in between jobs
+    key: $CI_COMMIT_REF_SLUG
     paths:
       - .npm/
       - node_modules/
   before_script:
-    # Clean up only corrupted cache metadata, keep downloaded packages
-    # This is faster than full reinstall while preventing cache issues
-    - rm -rf .npm/_cacache .npm/_locks
-    # Configure npm retry mechanism for network stability
-    - npm config set fetch-retries 5
-    - npm config set fetch-retry-mintimeout 20000
-    - npm config set fetch-retry-maxtimeout 120000
-    # Use clean install with proper error handling
-    - npm ci --prefer-offline || npm ci --cache .npm || npm install
-
-# === OPTION 2: Without Cache (Fallback - If cache issues persist) ===
-# To use: Change "extends: .npm-cache" to "extends: .npm-no-cache" in jobs
-.npm-no-cache:
-  image: harbor.pln.co.id/library/node:20-alpine
-  before_script:
-    # Configure npm retry mechanism for network stability
-    - npm config set fetch-retries 5
-    - npm config set fetch-retry-mintimeout 20000
-    - npm config set fetch-retry-maxtimeout 120000
-    # Fresh install every time (no cache)
-    - npm ci --prefer-offline || npm install
+    - npm install --cache .npm --prefer-offline
 
 prepare_env_file_stg:
   stage: create-env
@@ -103,6 +79,11 @@ build-app:
 unit-test:
   extends: .npm-cache
   stage: unit-test
+  before_script:
+    - npm install -g jest
+    - npm install --save-dev jest-junit
+    - npm install ts-node --save-dev
+    - npm install ts-jest typescript --save-dev
   script:
     - npm run coverage
   allow_failure: true
