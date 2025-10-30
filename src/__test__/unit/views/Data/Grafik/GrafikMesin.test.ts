@@ -864,6 +864,322 @@ describe('GrafikMesin.vue', () => {
       expect(wrapper.vm.chartPlanningMesin).toBeDefined();
     });
 
+    it('should process Plan Mesin data with multiple years and find BEP', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 500,
+          total_wlcc_annualized: 800,
+          capex_annualized: 200,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: -300
+        },
+        {
+          tahun: 2025,
+          revenue_annualized: 900,
+          total_wlcc_annualized: 850,
+          capex_annualized: 250,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 50
+        },
+        {
+          tahun: 2026,
+          revenue_annualized: 1200,
+          total_wlcc_annualized: 900,
+          capex_annualized: 300,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 300
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      expect(wrapper.vm.dataPlanMesin).toHaveLength(3);
+      expect(wrapper.vm.tahunPlanningMesin).toHaveLength(3);
+      expect(wrapper.vm.capexPlanMesin).toHaveLength(3);
+      expect(wrapper.vm.comBDPlanMesin).toHaveLength(3);
+      expect(wrapper.vm.fuelComPlanMesin).toHaveLength(3);
+      expect(wrapper.vm.revPlanMesin).toHaveLength(3);
+      expect(wrapper.vm.sumLccPlanMesin).toHaveLength(3);
+      expect(wrapper.vm.chartPlanningMesin).toBeDefined();
+      expect(wrapper.vm.chartPlanningMesin.series).toBeDefined();
+      expect(wrapper.vm.chartPlanningMesin.series.length).toBe(5);
+    });
+
+    it('should process Plan Mesin data with BEP found at first positive index', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 500,
+          total_wlcc_annualized: 800,
+          capex_annualized: 200,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: -300
+        },
+        {
+          tahun: 2025,
+          revenue_annualized: 950,
+          total_wlcc_annualized: 850,
+          capex_annualized: 250,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 100
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      expect(wrapper.vm.chartPlanningMesin).toBeDefined();
+      expect(wrapper.vm.chartPlanningMesin.series[0].markPoint).toBeDefined();
+      expect(wrapper.vm.chartPlanningMesin.series[0].markArea).toBeDefined();
+      expect(wrapper.vm.chartPlanningMesin.series[1].markPoint).toBeDefined();
+      expect(wrapper.vm.chartPlanningMesin.series[1].markArea).toBeDefined();
+    });
+
+    it('should find optimum life point with maximum profit_loss', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 900,
+          total_wlcc_annualized: 800,
+          capex_annualized: 200,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 100
+        },
+        {
+          tahun: 2025,
+          revenue_annualized: 1200,
+          total_wlcc_annualized: 850,
+          capex_annualized: 250,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 350
+        },
+        {
+          tahun: 2026,
+          revenue_annualized: 1000,
+          total_wlcc_annualized: 900,
+          capex_annualized: 300,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 100
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      expect(wrapper.vm.chartPlanningMesin.series[1].markPoint.data[0].value).toContain('Optimum life FS');
+      expect(wrapper.vm.chartPlanningMesin.series[1].markPoint.data[0].xAxis).toBe(1);
+    });
+
+    it('should calculate correct max values for chart axis', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 1500,
+          total_wlcc_annualized: 1200,
+          capex_annualized: 400,
+          cost_component_bd: 400,
+          cost_component_c_annualized: 400,
+          profit_loss: 300
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      expect(wrapper.vm.chartPlanningMesin.yAxis[0].max).toBeDefined();
+      expect(wrapper.vm.chartPlanningMesin.yAxis[0].max).toBeGreaterThan(0);
+    });
+
+    it('should handle Plan Mesin with BEP where selisihNow is greater than selisihMinus1', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 800,
+          total_wlcc_annualized: 850,
+          capex_annualized: 250,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: -50
+        },
+        {
+          tahun: 2025,
+          revenue_annualized: 1000,
+          total_wlcc_annualized: 850,
+          capex_annualized: 250,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 150
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      expect(wrapper.vm.chartPlanningMesin).toBeDefined();
+      expect(wrapper.vm.chartPlanningMesin.series[0].markPoint.data[0].value).toContain('BEP FS');
+    });
+
+    it('should create chart without BEP when revenue never exceeds WLCC', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 500,
+          total_wlcc_annualized: 800,
+          capex_annualized: 200,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: -300
+        },
+        {
+          tahun: 2025,
+          revenue_annualized: 600,
+          total_wlcc_annualized: 850,
+          capex_annualized: 250,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: -250
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      expect(wrapper.vm.chartPlanningMesin).toBeDefined();
+      expect(wrapper.vm.chartPlanningMesin.series[0].markPoint).toBeUndefined();
+      expect(wrapper.vm.chartPlanningMesin.series[1].markPoint).toBeDefined();
+      expect(wrapper.vm.chartPlanningMesin.series[1].markPoint.data[0].value).toContain('Optimum life FS');
+    });
+
+    it('should handle chart configuration with all series types', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 1000,
+          total_wlcc_annualized: 900,
+          capex_annualized: 300,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 100
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      const series = wrapper.vm.chartPlanningMesin.series;
+      expect(series[0].type).toBe('bar');
+      expect(series[0].name).toBe('FS: Cost Component A (Capex) Annualized');
+      expect(series[1].type).toBe('bar');
+      expect(series[1].name).toBe('FS: Cost Component B + D Annualized');
+      expect(series[2].type).toBe('bar');
+      expect(series[2].name).toBe('FS: Cost Component C Annualized');
+      expect(series[3].type).toBe('line');
+      expect(series[3].name).toBe('FS: Revenue Annualized');
+      expect(series[4].type).toBe('line');
+      expect(series[4].name).toBe('FS: Total LCC Annualized');
+    });
+
+    it('should configure tooltip formatters correctly', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 1000,
+          total_wlcc_annualized: 900,
+          capex_annualized: 300,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 100
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      const series = wrapper.vm.chartPlanningMesin.series;
+      expect(series[0].tooltip.valueFormatter).toBeDefined();
+      expect(series[1].tooltip.valueFormatter).toBeDefined();
+      expect(series[2].tooltip.valueFormatter).toBeDefined();
+      expect(series[3].tooltip.valueFormatter).toBeDefined();
+      expect(series[4].tooltip.valueFormatter).toBeDefined();
+    });
+
+    it('should set correct chart colors for each series', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 1000,
+          total_wlcc_annualized: 900,
+          capex_annualized: 300,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 100
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      const series = wrapper.vm.chartPlanningMesin.series;
+      expect(series[0].color).toBe('#0D5A71');
+      expect(series[1].color).toBe('#37B1D5');
+      expect(series[2].color).toBe('#CCF2FF');
+      expect(series[3].color).toBe('#0099AD');
+      expect(series[4].color).toBe('#1E1F4E');
+    });
+
+    it('should configure xAxis formatter to show index and year', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 1000,
+          total_wlcc_annualized: 900,
+          capex_annualized: 300,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 100
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      expect(wrapper.vm.chartPlanningMesin.xAxis[0].axisLabel.formatter).toBeDefined();
+      const formatter = wrapper.vm.chartPlanningMesin.xAxis[0].axisLabel.formatter;
+      expect(formatter(2024, 0)).toBe('1\n2024');
+    });
+
+    it('should configure yAxis with Triliun Rupiah label', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 1000,
+          total_wlcc_annualized: 900,
+          capex_annualized: 300,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 100
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      expect(wrapper.vm.chartPlanningMesin.yAxis[0].name).toBe('Triliun Rupiah');
+      expect(wrapper.vm.chartPlanningMesin.yAxis[0].nameLocation).toBe('center');
+      expect(wrapper.vm.chartPlanningMesin.yAxis[0].min).toBe(0);
+      expect(wrapper.vm.chartPlanningMesin.yAxis[0].splitNumber).toBe(20);
+    });
+
     it('should process WLC Kom Mesin data', async () => {
       mockServiceResponses.wlcKom = [
         {
@@ -900,6 +1216,241 @@ describe('GrafikMesin.vue', () => {
       
       expect(wrapper.vm.dataPlanKomMesin).toHaveLength(1);
       expect(wrapper.vm.chartPlanKomMesin).toBeDefined();
+    });
+
+    it('should handle Plan Mesin data with exact BEP match', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 800,
+          total_wlcc_annualized: 900,
+          capex_annualized: 300,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: -100
+        },
+        {
+          tahun: 2025,
+          revenue_annualized: 900,
+          total_wlcc_annualized: 900,
+          capex_annualized: 300,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 0
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      expect(wrapper.vm.chartPlanningMesin).toBeDefined();
+    });
+
+    it('should handle single data point Plan Mesin', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 1000,
+          total_wlcc_annualized: 900,
+          capex_annualized: 300,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 100
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      expect(wrapper.vm.dataPlanMesin).toHaveLength(1);
+      expect(wrapper.vm.tahunPlanningMesin).toEqual([2024]);
+    });
+
+    it('should handle empty array response for Plan Mesin', async () => {
+      mockServiceResponses.plan = [];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      expect(wrapper.vm.dataPlanMesin).toEqual([]);
+      expect(wrapper.vm.tahunPlanningMesin).toEqual([]);
+    });
+
+    it('should configure grid properties correctly', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 1000,
+          total_wlcc_annualized: 900,
+          capex_annualized: 300,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 100
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      expect(wrapper.vm.chartPlanningMesin.grid).toBeDefined();
+      expect(wrapper.vm.chartPlanningMesin.grid.top).toBe('5%');
+      expect(wrapper.vm.chartPlanningMesin.grid.left).toBe('3%');
+      expect(wrapper.vm.chartPlanningMesin.grid.right).toBe('2%');
+      expect(wrapper.vm.chartPlanningMesin.grid.bottom).toBe('8%');
+      expect(wrapper.vm.chartPlanningMesin.grid.containLabel).toBe(true);
+    });
+
+    it('should configure legend at bottom', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 1000,
+          total_wlcc_annualized: 900,
+          capex_annualized: 300,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 100
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      expect(wrapper.vm.chartPlanningMesin.legend).toBeDefined();
+      expect(wrapper.vm.chartPlanningMesin.legend.bottom).toBe('bottom');
+      expect(wrapper.vm.chartPlanningMesin.legend.data).toHaveLength(5);
+    });
+
+    it('should set stack property for bar series', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 1000,
+          total_wlcc_annualized: 900,
+          capex_annualized: 300,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 100
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      expect(wrapper.vm.chartPlanningMesin.series[0].stack).toBe('Ad');
+      expect(wrapper.vm.chartPlanningMesin.series[1].stack).toBe('Ad');
+      expect(wrapper.vm.chartPlanningMesin.series[2].stack).toBe('Ad');
+    });
+
+    it('should set emphasis focus for all series', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 1000,
+          total_wlcc_annualized: 900,
+          capex_annualized: 300,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 100
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      expect(wrapper.vm.chartPlanningMesin.series[0].emphasis.focus).toBe('series');
+      expect(wrapper.vm.chartPlanningMesin.series[1].emphasis.focus).toBe('series');
+      expect(wrapper.vm.chartPlanningMesin.series[2].emphasis.focus).toBe('series');
+    });
+
+    it('should configure line series as smooth without symbols', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 1000,
+          total_wlcc_annualized: 900,
+          capex_annualized: 300,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 100
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      expect(wrapper.vm.chartPlanningMesin.series[3].smooth).toBe(true);
+      expect(wrapper.vm.chartPlanningMesin.series[3].showSymbol).toBe(false);
+      expect(wrapper.vm.chartPlanningMesin.series[4].smooth).toBe(true);
+      expect(wrapper.vm.chartPlanningMesin.series[4].showSymbol).toBe(false);
+    });
+
+    it('should apply border radius to top bar series', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 1000,
+          total_wlcc_annualized: 900,
+          capex_annualized: 300,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 100
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      expect(wrapper.vm.chartPlanningMesin.series[2].itemStyle.borderRadius).toEqual([5, 5, 0, 0]);
+    });
+
+    it('should handle large data values correctly', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 10000000,
+          total_wlcc_annualized: 9000000,
+          capex_annualized: 3000000,
+          cost_component_bd: 3000000,
+          cost_component_c_annualized: 3000000,
+          profit_loss: 1000000
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      expect(wrapper.vm.chartPlanningMesin.yAxis[0].max).toBeGreaterThan(0);
+      expect(wrapper.vm.dataPlanMesin).toHaveLength(1);
+    });
+
+    it('should handle BEP calculation with very close values', async () => {
+      mockServiceResponses.plan = [
+        {
+          tahun: 2024,
+          revenue_annualized: 899.9,
+          total_wlcc_annualized: 900,
+          capex_annualized: 300,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: -0.1
+        },
+        {
+          tahun: 2025,
+          revenue_annualized: 900.1,
+          total_wlcc_annualized: 900,
+          capex_annualized: 300,
+          cost_component_bd: 300,
+          cost_component_c_annualized: 300,
+          profit_loss: 0.1
+        }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      await wrapper.vm.$nextTick();
+      
+      expect(wrapper.vm.chartPlanningMesin).toBeDefined();
+      expect(wrapper.vm.chartPlanningMesin.series[0].markPoint).toBeDefined();
     });
 
     it('should process PRP Mesin data with both realisasi and planning', async () => {
