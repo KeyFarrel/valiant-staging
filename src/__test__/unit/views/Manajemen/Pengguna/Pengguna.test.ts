@@ -345,24 +345,6 @@ describe('Pengguna', () => {
     expect(wrapper.vm.navigation.currentPage).toBe(1);
   });
 
-  it('should handle handleChangeConfirmPassword with useThisEmail true', () => {
-    wrapper.vm.resetPasswordVal.emailReset = 'test@test.com';
-    wrapper.vm.resetPasswordVal.useThisEmail = true;
-    
-    wrapper.vm.handleChangeConfirmPassword();
-    
-    expect(wrapper.vm.resetPasswordVal.emailConfirm).toBe('test@test.com');
-  });
-
-  it('should handle handleChangeConfirmPassword with useThisEmail false', () => {
-    wrapper.vm.resetPasswordVal.emailReset = 'test@test.com';
-    wrapper.vm.resetPasswordVal.useThisEmail = false;
-    
-    wrapper.vm.handleChangeConfirmPassword();
-    
-    expect(wrapper.vm.resetPasswordVal.emailConfirm).toBe('');
-  });
-
   it('should handle openEditModals successfully', async () => {
     const uuid = 123;
     

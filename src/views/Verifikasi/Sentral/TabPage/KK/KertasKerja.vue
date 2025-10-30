@@ -150,7 +150,7 @@ interface PersetujuanKertasKerjaItem {
 }
 
 const props = defineProps<Props>();
-const index = ref(props.source.length);
+const index = ref(props.source?.length || 0);
 
 </script>
 

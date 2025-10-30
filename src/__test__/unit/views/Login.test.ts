@@ -1993,7 +1993,7 @@ describe('Login.vue', () => {
     mockAuthServiceDefault.login = vi.fn().mockRejectedValue({
       response: { 
         data: { 
-          message: 'Invalid credentials',
+          message: 'User / Password tidak sesuai',
           data: { temp_loc: 0, is_locked: false } 
         } 
       }
