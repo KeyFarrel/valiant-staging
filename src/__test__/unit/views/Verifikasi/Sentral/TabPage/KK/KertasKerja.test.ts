@@ -64,4 +64,15 @@ describe('KertasKerja.vue', () => {
     expect(text).toContain('15.5');
     expect(text).toContain('Draft');
   });
+
+  it('should show "Data Tidak Tersedia" when source is null', () => {
+    const wrapper = mount(KertasKerja, {
+      props: {
+        source: null,
+      },
+    });
+
+    expect(wrapper.text()).toContain('Data Tidak Tersedia');
+    expect(wrapper.text()).toContain('Silahkan lakukan pengisian atau hubungi unit terkait');
+  });
 });

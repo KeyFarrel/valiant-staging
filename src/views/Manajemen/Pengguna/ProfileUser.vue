@@ -514,7 +514,6 @@ const verifyEmailOtp = async () => {
       }
     } catch (error) {
       console.error("Error verifying OTP:", error);
-      notifyError(`Gagal verifikasi OTP! ${error.response.data.message}`, 5000);
       return;
     }
 
@@ -540,9 +539,6 @@ const verifyEmailOtp = async () => {
       console.error("Error changing password:", error);
       if (error.response.data.message === 'Password Lama tidak sesuai') {
         isOldPasswordWrong.value = true;
-        notifyError("Password lama anda salah, mohon periksa kembali password lama anda!", 7000);
-      } else {
-        notifyError(`Gagal mengganti password! ${error.response.data.message}`, 5000);
       }
       isModalOtpShow.value = false;
       clearInterval(expiredOtpInterval);
@@ -554,7 +550,6 @@ const verifyEmailOtp = async () => {
     }
   } catch (error) {
     console.error("Unexpected error:", error);
-    notifyError("Unexpected error occurred", 5000);
   } finally {
     isLoading.value = false;
   }

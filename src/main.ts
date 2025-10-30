@@ -82,6 +82,7 @@ axios.interceptors.response.use(
     return response;
   },
   async (error) => {
+    const currentRoute = router.currentRoute.value
     if (
       error.response &&
       error.response.status === 401 &&
@@ -109,7 +110,7 @@ axios.interceptors.response.use(
     } else if (
       error.response &&
       error.response.status !== 401 &&
-      error.code !== "ERR_NETWORK"
+      error.code !== "ERR_NETWORK" && currentRoute.name !== "login"
     ) {
       notifyError(`${error.response.data.message} ${error.response.data.uuid ?? 0}`, 5000);
     } else if (isDevelopment()) {

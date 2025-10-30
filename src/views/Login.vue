@@ -231,31 +231,31 @@
           </div>
           <!-- Item 1 - First carousel image preloaded -->
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
-            <img src="../assets/img/Carousel2.jpg"
+            <img src="../assets/img/carousel-1.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
               alt="Carousel slide 1" fetchpriority="high" />
           </div>
           <!-- Item 2 - Lazy loaded -->
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
-            <img src="../assets/img/carousel4.jpg"
+            <img src="../assets/img/carousel-2.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
               loading="lazy" decoding="async" alt="Carousel slide 2" />
           </div>
           <!-- Item 3 - Lazy loaded -->
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
-            <img src="../assets/img/carousel5.jpg"
+            <img src="../assets/img/carousel-3.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
               loading="lazy" decoding="async" alt="Carousel slide 3" />
           </div>
           <!-- Item 4 - Lazy loaded -->
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
-            <img src="../assets/img/carousel6.jpg"
+            <img src="../assets/img/carousel-4.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
               loading="lazy" decoding="async" alt="Carousel slide 4" />
           </div>
           <!-- Item 5 - Lazy loaded -->
           <div class="hidden duration-700 ease-in-out" data-carousel-item>
-            <img src="../assets/img/Carousel3.jpg"
+            <img src="../assets/img/carousel-5.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
               loading="lazy" decoding="async" alt="Carousel slide 5" />
           </div>
@@ -889,12 +889,15 @@ const onCaptchaVerified = async (tileX: number) => {
       }
     } catch (error: any) {
       console.error("Error: ", error)
-      if (error.response.data.message !== 'Captcha verification failed') {
-        notifyError(error.response.data.message, 5000);
+      if (error.response.data.message === `validation failed: Key: 'RequestAuth.Email' Error:Field validation for 'Email' failed on the 'email' tag`) {
+        notifyError("Format email tidak valid, mohon periksa kembali email anda", 5000);
         isShowCaptchaModal.value = false;
       } else if (error.response.data.message === 'Captcha verification failed') {
         notifyError("Verifikasi captcha gagal, mohon coba lagi", 5000);
         generateCaptcha();
+      } else {
+        notifyError(error.response.data.message, 5000);
+        isShowCaptchaModal.value = false;
       }
       isLoadingButton.value = false;
       if (error.response.data && error.response.data.data && error.response.data.data.temp_loc && error.response.data.data.temp_loc !== 0) {
@@ -903,7 +906,7 @@ const onCaptchaVerified = async (tileX: number) => {
       } else if (error.response.data.message && error.response.data.message === 'Anda belum mengisi privacy policy') {
         isShowPrivacyPolicy.value = true;
       }
-      if (error.response.data.message !== "Anda belum mengisi privacy policy") {
+      if (error.response.data.message === "User / Password tidak sesuai") {
         valEmailErr.value = "Email atau Kata Sandi salah";
         valKataSandiErr.value = "Email atau Kata Sandi salah";
       }

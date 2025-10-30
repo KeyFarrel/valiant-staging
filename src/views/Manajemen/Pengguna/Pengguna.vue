@@ -6,33 +6,9 @@
     :subtitle="'Pengguna telah berhasil diedit'" />
   <ModalNotification :show-modal="isResetPasswordSucces" :animation-data="successJson"
     :title="'Password Berhasil Direset'" :subtitle="'Password pengguna telah berhasil direset'" />
-  <ModalWrapper :z-index="'z-[999]'" :show-modal="isConfirmResetShow" :width="'w-[550px]'" :height="'h-auto'"
-    @on-escape="isConfirmResetShow = false">
-    <div class="flex flex-col space-y-5">
-      <p class="text-xl font-semibold text-primaryTextColor">Reset Password Pengguna?</p>
-      <div class="flex flex-col space-y-3">
-        <div class="flex flex-col space-y-1.5">
-          <label for="confirmPassword" class="text-base text-labelColor">Masukkan Email Konfirmasi <span
-              class="text-sm text-warningColor">*</span></label>
-          <TextField id="confirmPassword" placeholder="Masukkan email tujuan pengiriman password sementara..."
-            v-model="resetPasswordVal.emailConfirm" />
-        </div>
-        <div class="flex items-center space-x-1.5">
-          <input type="checkbox" id="thisEmail" class="rounded-full cursor-pointer"
-            @change="handleChangeConfirmPassword" v-model="resetPasswordVal.useThisEmail">
-          <label for="thisEmail" class="text-base text-labelColor">Gunakan email akun ini</label>
-        </div>
-      </div>
-      <hr>
-      <div class="flex flex-row justify-end space-x-3">
-        <button
-          class="px-3 py-2 duration-300 rounded-lg cursor-pointer text-primaryColor hover:text-white hover:bg-hoverColor"
-          @click="isConfirmResetShow = false">Batal</button>
-        <button
-          class="px-3 py-2 font-semibold text-white duration-300 rounded-lg cursor-pointer bg-primaryColor hover:bg-hoverColor"
-          @click="resetPassword">Reset Password</button>
-      </div>
-    </div>
+  <ModalWrapper :z-index="'z-[999]'" :show-modal="isConfirmResetShow" :width="'w-auto'" :height="'h-auto'">
+    <ConfirmationDialog :title="'Konfirmasi'" :subtitle="'Apakah anda yakin untuk reset password akun ini?'"
+      :button-title="'Reset'" @on-batal-click="isConfirmResetShow = false" @on-accept-click="resetPassword" />
   </ModalWrapper>
   <div class="p-6 space-y-5 bg-white rounded-lg">
     <div class="flex items-center justify-between">
@@ -374,9 +350,9 @@
       </div>
     </div>
     <form class="mt-4 space-y-4">
-      <div v-if="errors.length > 0" class="p-3 text-xs text-red-600 bg-red-400 bg-opacity-50 rounded-lg">
+      <div v-if="errorsEdit.length > 0" class="p-3 text-xs text-red-600 bg-red-400 bg-opacity-50 rounded-lg">
         <ul>
-          <li v-for="error in errors" :key="error" class="ml-2 list-disc">
+          <li v-for="error in errorsEdit" :key="error" class="ml-2 list-disc">
             {{ error }}
           </li>
         </ul>
@@ -529,6 +505,7 @@ import { onMounted, ref, computed } from "vue";
 import TableComponent from "@/components/ui/Table.vue";
 import SearchBox from "@/components/ui/SearchBox.vue";
 import ModalWrapper from "@/components/ui/ModalWrapper.vue";
+import ConfirmationDialog from "@/components/ui/ConfirmationDialog.vue";
 import UserService from "@/services/user-service";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 import ModalNotification from '@/components/ui/ModalNotification.vue';
@@ -560,7 +537,6 @@ const showEditPassword = ref(false);
 const showEditConfirmPassword = ref(false);
 const comboLevel = ref<LevelItem[]>([]);
 const levelMappings = ref<{ [key: string]: string }>({});
-const mesinMappings = ref<{ [key: string]: string }>({});
 const comboRole = ref<RoleItem[]>([]);
 const comboPengelola = ref<PengelolaItem[]>([]);
 const indukMappings = ref<{ [key: number]: number }>({});
@@ -591,8 +567,6 @@ const formData = ref({
   nama_pegawai: "",
   nip: "",
   email: "",
-  // password: "",
-  // konfirmasi_password: "",
   role_id: "",
   level_id: "",
   id_pembina: "",
@@ -606,8 +580,6 @@ const resetFormData = () => {
     nama_pegawai: "",
     nip: "",
     email: "",
-    // password: "",
-    // konfirmasi_password: "",
     role_id: "",
     level_id: "",
     id_pembina: "",
@@ -830,15 +802,6 @@ const isActive = computed({
   set: (value) => (formData.value.status = !!value),
 });
 
-const handleChangeConfirmPassword = () => {
-  if (resetPasswordVal.value.useThisEmail) {
-    resetPasswordVal.value.emailConfirm = resetPasswordVal.value.emailReset;
-  }
-  else {
-    resetPasswordVal.value.emailConfirm = '';
-  }
-};
-
 const openEditModals = async (uuid: number) => {
   try {
     isLoading.value = true;
@@ -852,6 +815,7 @@ const openEditModals = async (uuid: number) => {
     formData.value.id_pengelola = response.data.id_pengelola;
     formData.value.id_sentral = response.data.id_sentral;
     formData.value.isLocked = response.data.is_locked;
+    resetPasswordVal.value.emailConfirm = response.data.email;
     resetPasswordVal.value.emailReset = response.data.email;
     const responseSentral: any = await userService.getSentralByPengelola(
       formData.value.id_pengelola === null ? 0 : parseInt(formData.value.id_pengelola),
@@ -1002,7 +966,14 @@ const editUserDataAndCloseModal = async () => {
       console.error("Error saat mengirim data:", error);
       resetPasswordVal.value.emailConfirm = '';
       isLoading.value = false;
+      if (error.response && error.response.data && error.response.data.message && error.response.data.message === "validation failed: Key: 'RequestUser.Nip' Error:Field validation for 'Nip' failed on the 'min' tag") {
+        errorsEdit.value.push("NIP minimal 10 karakter.");
+      } else if (error.response && error.response.data && error.response.data.message && error.response.data.message === "validation failed: Key: 'RequestUser.Nip' Error:Field validation for 'Nip' failed on the 'max' tag") {
+        errorsEdit.value.push("NIP maksimal 20 karakter.");
+      }
     }
+  } else {
+    isLoading.value = false;
   }
 };
 
@@ -1056,8 +1027,12 @@ const saveUserDataAndCloseModal = async () => {
       }
     } catch (error) {
       isLoading.value = false;
-      notifyError(`Gagal menambahkan akun, ${error.response.data.message}`, 3000)
       console.error("Error saat mengirim data:", error);
+      if (error.response && error.response.data && error.response.data.message && error.response.data.message === "validation failed: Key: 'RequestUser.Nip' Error:Field validation for 'Nip' failed on the 'min' tag") {
+        errors.value.push("NIP minimal 10 karakter.");
+      } else if (error.response && error.response.data && error.response.data.message && error.response.data.message === "validation failed: Key: 'RequestUser.Nip' Error:Field validation for 'Nip' failed on the 'max' tag") {
+        errors.value.push("NIP maksimal 20 karakter.");
+      }
     }
   } else {
     isLoading.value = false;
@@ -1114,7 +1089,6 @@ const resetPassword = async () => {
     }
   } catch (error) {
     console.error("Error saat mereset password:", error);
-    notifyError(`Gagal mereset password, ${error}`, 5000);
     resetPasswordVal.value.emailConfirm = '';
     isLoading.value = false;
     isConfirmResetShow.value = false;

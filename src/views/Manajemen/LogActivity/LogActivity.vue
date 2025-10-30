@@ -3,8 +3,7 @@
   <div class="p-6 space-y-5 bg-white rounded-lg">
     <div class="flex items-center justify-between">
       <div class="flex space-x-4">
-        <SearchBox placeholder="Cari aktivitas..." class="w-72" @on-input="handleSearch"
-          v-model="filterValue.searchValue" />
+        <SearchBox placeholder="Cari uuid..." class="w-72" @on-input="handleSearch" v-model="filterValue.searchValue" />
         <div class="relative flex flex-col" ref="dropdownContainer">
           <button
             class="relative flex items-center h-auto px-3 py-[7px] text-base text-gray-400 duration-300 border border-gray-300 rounded-lg hover:text-white hover:border-primaryColor hover:bg-primaryColor"
@@ -107,7 +106,7 @@
                   <IconDocument />
                 </div>
                 <p class="text-xs text-[#0A448F]">Excel {{ itemData.status_fs == 0 ? 'KK' : 'FS' }} {{ itemData.sentral
-                }}.xlsx</p>
+                  }}.xlsx</p>
               </button>
               <button
                 class="flex items-center space-x-1.5 bg-[#F7FBFC] rounded-md w-fit px-2 py-1 active:ring-1 active:ring-[#E7F1FD]"
@@ -140,6 +139,11 @@
                 <p class="font-medium text-textDisabledColor">Pesan</p>
                 <p class="overflow-hidden break-words whitespace-normal text-textPrimaryColor overflow-wrap-anywhere">{{
                   itemData.message }}</p>
+              </div>
+              <div class="flex flex-col space-y-0.5 text-xs">
+                <p class="font-medium text-textDisabledColor">UUID</p>
+                <p class="overflow-hidden break-words whitespace-normal text-textPrimaryColor overflow-wrap-anywhere">{{
+                  itemData.uuid }}</p>
               </div>
             </div>
           </div>
@@ -257,6 +261,7 @@ const navigation = ref<{
   limit: 10
 });
 const logData = ref<{
+  uuid: string
   user: string
   sentral: string
   keterangan: string
