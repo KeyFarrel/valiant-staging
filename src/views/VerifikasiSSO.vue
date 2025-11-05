@@ -60,7 +60,7 @@ const verifikasiSSO = async () => {
   } catch (error) {
     const encryptStorage = await encryptStoragePromise;
     isError.value = true;
-    await wait(5000);
+    await wait(10000);
     if (nodeMode === "production") {
       encryptStorage.clear();
     } else {
