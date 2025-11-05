@@ -491,7 +491,7 @@ router.beforeEach(async (to, _, next) => {
     return next({ name: "peta" });
   } else if (to.name === "redirect-sso" && !storedHash) {
     next();
-    await new Promise((resolve) => setTimeout(resolve, 10000));
+    await new Promise((resolve) => setTimeout(resolve, 5000));
   }
 
   const isAuthenticated = await sessionStore.validateSession();
