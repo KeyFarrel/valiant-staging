@@ -48,7 +48,7 @@ const verifikasiSSO = async () => {
       router.push('/peta');
     } else {
       isError.value = true;
-      await wait(5000);
+      await wait(10000);
       if (nodeMode === "production") {
         encryptStorage.clear();
       } else {
