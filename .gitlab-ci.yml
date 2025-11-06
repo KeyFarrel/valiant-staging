@@ -149,7 +149,7 @@ fortify-sast-scancentral:
           -H "Content-Type: application/json" \
           "$cekstatusjob")
 
-      # echo "$runstatusjob"
+      echo "$runstatusjob"
 
       # Ambil semua token dan status dengan nama dan versi aplikasi yang sama
       job_tokens=($(echo "$runstatusjob" | grep -oP '"jobToken":"\K[0-9a-fA-F\-]{36}'))
