@@ -2,7 +2,9 @@ stages:
   - create-env
   - build-app
   - unit-test
-  - sast
+  - sast-sonar
+  - sast-fortify
+  - sca-scan
   - build-image
   - update-tag-stag
   - approval
@@ -93,7 +95,7 @@ unit-test:
       when: always
 
 sonarqube-check:
-  stage: sast
+  stage: sast-sonar
   image:
     name: harbor.pln.co.id/library/sonarqube-scanner:latest
     entrypoint: [""]
@@ -123,6 +125,206 @@ sonarqube-check:
     - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^feature\/.*$/ && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev" && $CI_PIPELINE_SOURCE == "merge_request_event"
       when: always
     - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME =~ /^hotfix\/.*$/ && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging" && $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: always
+
+fortify-sast-scancentral:
+  stage: sast-fortify
+  image: harbor.pln.co.id/library/fortify-ci-tools:latest-jdk-21
+  variables:
+    SCANCENTRAL_BUILD_OPTS: "-bt none"
+  script:
+    - |
+      #!/bin/bash
+
+      if [ "$CI_COMMIT_BRANCH" == "dev" ]; then
+        SSC_PV="dev_fe"
+      else
+        SSC_PV="stg_fe"
+      fi
+
+      cekstatusjob="$SSC_URL/api/v1/cloudjobs?projectName=$SSC_APP&pvName=$SSC_PV"
+
+      runstatusjob=$(curl --insecure -s -X GET \
+          -H "Authorization: FortifyToken ${API_KEY}" \
+          -H "Content-Type: application/json" \
+          "$cekstatusjob")
+
+      # echo "$runstatusjob"
+
+      # Ambil semua token dan status dengan nama dan versi aplikasi yang sama
+      job_tokens=($(echo "$runstatusjob" | grep -oP '"jobToken":"\K[0-9a-fA-F\-]{36}'))
+      job_states=($(echo "$runstatusjob" | grep -oP '"jobState":"\K[^"]+'))
+      job_pvnames=($(echo "$runstatusjob" | grep -oP '"pvName":"\K[^"]+'))
+      job_cancellable=($(echo "$runstatusjob" | grep -oP '"jobCancellable":\K(true|false)'))
+
+      # Gabungkan token dan status berdasarkan urutan kemunculan
+      active_tokens=()
+      for i in "${!job_tokens[@]}"; do
+        token="${job_tokens[$i]}"
+        state="${job_states[$i]}"
+        pvname="${job_pvnames[$i]:-}"
+        cancellable="${job_cancellable[$i]:-false}"
+
+        if [[ "$pvname" == "$SSC_PV" ]] && \
+           { [[ "$state" == "PENDING" ]] || [[ "$state" == "QUEUED" ]] || [[ "$state" == "SCAN_RUNNING" ]]; } && \
+           [[ "$cancellable" == "true" ]]; then
+           active_tokens+=("$token")
+        fi
+      done
+
+      if [[ ${#active_tokens[@]} -gt 0 ]]; then
+        echo "Ditemukan job active untuk $SSC_APP/$SSC_PV:"
+        printf '%s\n' "${active_tokens[@]}"
+
+        for token in "${active_tokens[@]}"; do
+          echo "Cancel job token: $token ..."
+          cekdelete="$SSC_URL/api/v1/cloudjobs/action/cancel"
+          payload="{\"jobTokens\": [\"$token\"]}"
+          rundelete=$(curl --insecure -s -X POST \
+            -H "Authorization: FortifyToken ${API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "$payload" \
+            "$cekdelete")
+        done
+
+        echo "Menunggu 15 detik untuk memastikan job dicancel..."
+        sleep 15
+      else
+        echo "Tidak ada job active untuk aplikasi ini."
+      fi
+
+      # Jalankan perintah scancentral dan tangkap outputnya
+      output=$(scancentral -sscurl $SSC_URL -ssctoken $SSC_TOKEN start $SCANCENTRAL_BUILD_OPTS -upload -application $SSC_APP -version $SSC_PV -uptoken $SSC_TOKEN 2>&1)
+
+      # Tampilkan seluruh output untuk debugging
+      echo "Log Output:"
+      echo "$output"
+
+      # Pola regex untuk menangkap token
+      # lama----- pattern='Submitted job and received token:\s*([a-f0-9\-]+)'
+      pattern='Submitted job and received token:\s+([0-9a-fA-F\-]{36})'
+
+      # Gunakan grep untuk ekstraksi jika regex BASH tidak cocok
+      if [[ $output =~ $pattern ]]; then
+          token="${BASH_REMATCH[1]}"
+          echo "Job Token: $token"
+      else
+          token=$(echo "$output" | grep -oP '(?<=Submitted job and received token:\s*)[a-f0-9\-]+')
+          
+          if [[ -n "$token" ]]; then
+              echo "Job Token (grep method): $token"
+          else
+              echo "No match found."
+          fi
+      fi
+      # Next Step: Cek Status Scan via API
+      cek_sast_api="$SSC_URL/api/v1/cloudjobs/$token"
+      jobState="PENDING"
+      echo "$jobState"
+
+      echo "Menunggu hasil scan..."
+      sleep 120
+      # Loop untuk mengecek status scan sampai selesai
+      while [[ "$jobState" == "PENDING" || "$jobState" == "SCAN_RUNNING" ]]; do
+          sleep 30  # Tunggu 30 detik sebelum melakukan pengecekan ulang
+          # Panggil API untuk mendapatkan status scan
+          runstatus=$(curl --insecure -s -X GET \
+            -H "Authorization: FortifyToken $API_KEY" \
+            -H "Content-Type: application/json" \
+            "$cek_sast_api" -v)
+          #echo "Status status: $runstatus"
+          # Ambil status dari response API
+          jobState=$(echo "$runstatus" | grep -oP '"jobState":"\K[^"]+')
+          # Tampilkan status terkini
+          echo "Status Scan: $jobState"
+      done
+      echo "Scan selesai dengan status: $jobState"
+      pvId=$(echo "$runstatus" | grep -oP '"pvId":\K\d+')
+      pvName=$(echo "$runstatus" | grep -oP '"pvName":"\K[^"]+')
+      projectName=$(echo "$runstatus" | grep -oP '"projectName":"\K[^"]+')
+
+      echo "Project Version ID: $pvId"
+      echo "Project Version Name: $pvName"
+      echo "Project Name: $projectName"
+
+      cekssc="$SSC_URL/api/v1/projectVersions/$pvId/issueSummaries?seriestype=ISSUE_FRIORITY&groupaxistype=ISSUE_FRIORITY"
+      runscan=$(curl --insecure -s -X GET \
+            -H "Authorization: FortifyToken ${API_KEY}" \
+            -H "Content-Type: application/json" \
+            "$cekssc")
+      critical=$(echo "$runscan" | grep -oP '"Critical","y":\K[0-9]+' || echo 0)
+      high=$(echo "$runscan" | grep -oP '"High","y":\K[0-9]+' || echo 0)
+      medium=$(echo "$runscan" | grep -oP '"Medium","y":\K[0-9]+' || echo 0)
+      low=$(echo "$runscan" | grep -oP '"Low","y":\K[0-9]+' || echo 0)
+      total_issue=$(echo "$runscan" | grep -oP '"totalIssueCount":\K[0-9]+' || echo 0)
+
+      echo "Critical: $critical"
+      echo "High: $high"
+      echo "Medium: $medium"
+      echo "Low: $low"
+      echo "Total Issue Count: $total_issue"
+
+      echo "Untuk detail vulnerability dapat dilihat pada: $SSC_URL/html/ssc/version/$pvId/audit"
+      
+      if [[ "$critical" -gt 100 ]]; then
+            echo "ERROR: Jumlah isu Critical ($critical) melebihi batas! Pipeline dihentikan."
+            exit 1
+      elif [[ "$high" -gt 100 ]]; then
+            echo "ERROR: Jumlah isu High ($high) melebihi batas! Pipeline dihentikan."
+            exit 1
+      fi
+  allow_failure: true
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev" && $CI_COMMIT_TAG == null'
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "staging" && $CI_COMMIT_TAG == null'
+      when: always
+
+fortify-sca:
+  stage: sca-scan
+  image: harbor.pln.co.id/library/openjdk-21:1.21
+  script:
+    - |
+      echo "=== Jalankan SCA Scan dengan Nexus IQ CLI ==="
+
+      if [ "$CI_COMMIT_BRANCH" == "dev" ]; then
+        ID_APP="valiant_dev_fe"
+      else
+        ID_APP="valiant_stg_fe"
+      fi
+
+      out=$(java -jar ./nexus-iq-cli.jar \
+        -i "$ID_APP" \
+        -s "$SCA_URL" \
+        -a "$SCA_TOKEN" \
+        package-lock.json 2>&1)
+
+      echo "$out"
+
+      critical=$(echo "$out" | grep -Eo 'Number of open policy violations: [0-9]+ critical' | grep -Eo '[0-9]+' | head -n1 || echo 0)
+      severe=$(echo "$out" | grep -Eo "$critical critical, [0-9]+ severe" | grep -Eo '[0-9]+ severe' | grep -Eo '[0-9]+' | head -n1 || echo 0)
+      moderate=$(echo "$out" | grep -Eo "$severe severe, [0-9]+ moderate" | grep -Eo '[0-9]+ moderate' | grep -Eo '[0-9]+' | head -n1 || echo 0)
+
+      echo "High: $critical"
+      echo "Medium: $severe"
+      echo "Low: $moderate"
+
+      url=$(echo "$out" | grep -Eo 'The detailed report can be viewed online at .*' | grep -Eo 'https?://[^[:space:]]+' | head -n1 || echo "")
+
+      echo "Untuk detail vulnerability dapat dilihat pada: $url"
+      
+      if [[ "$critical" -gt 50 ]]; then
+            echo "ERROR: Jumlah isu High ($critical) melebihi batas! Pipeline dihentikan."
+            exit 1
+      elif [[ "$severe" -gt 100 ]]; then
+            echo "ERROR: Jumlah isu Medium ($severe) melebihi batas! Pipeline dihentikan."
+            exit 1
+      fi
+  allow_failure: true
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev" && $CI_COMMIT_TAG == null'
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "staging" && $CI_COMMIT_TAG == null'
       when: always
 
 build-image:
