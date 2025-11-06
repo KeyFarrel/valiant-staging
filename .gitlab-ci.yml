@@ -136,13 +136,11 @@ fortify-sast-scancentral:
     - |
       #!/bin/bash
 
-      #if [ "$CI_COMMIT_BRANCH" == "dev" ]; then
-      #  SSC_PV="dev_fe"
-      #else
-      #  SSC_PV="stg_fe"
-      #fi
-
-      SSC_PV="dev_fe"
+      if [ "$CI_COMMIT_BRANCH" == "dev" ]; then
+        SSC_PV="dev_fe"
+      else
+        SSC_PV="stg_fe"
+      fi
 
       cekstatusjob="$SSC_URL/api/v1/cloudjobs?projectName=$SSC_APP&pvName=$SSC_PV"
 
@@ -276,11 +274,11 @@ fortify-sast-scancentral:
             exit 1
       fi
   allow_failure: true
-  #rules:
-  #  - if: '$CI_COMMIT_BRANCH == "dev" && $CI_COMMIT_TAG == null'
-  #    when: always
-  #  - if: '$CI_COMMIT_BRANCH == "staging" && $CI_COMMIT_TAG == null'
-  #    when: always
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev" && $CI_COMMIT_TAG == null'
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "staging" && $CI_COMMIT_TAG == null'
+      when: always
 
 fortify-sca:
   stage: sca-scan
@@ -289,13 +287,11 @@ fortify-sca:
     - |
       echo "=== Jalankan SCA Scan dengan Nexus IQ CLI ==="
 
-      #if [ "$CI_COMMIT_BRANCH" == "dev" ]; then
-      #  ID_APP="valiant_dev_fe"
-      #else
-      #  ID_APP="valiant_stg_fe"
-      #fi
-
-      ID_APP="valiant_dev_fe"
+      if [ "$CI_COMMIT_BRANCH" == "dev" ]; then
+        ID_APP="valiant_dev_fe"
+      else
+        ID_APP="valiant_stg_fe"
+      fi
 
       out=$(java -jar ./nexus-iq-cli.jar \
         -i "$ID_APP" \
@@ -325,11 +321,11 @@ fortify-sca:
             exit 1
       fi
   allow_failure: true
-  #rules:
-  #  - if: '$CI_COMMIT_BRANCH == "dev" && $CI_COMMIT_TAG == null'
-  #    when: always
-  #  - if: '$CI_COMMIT_BRANCH == "staging" && $CI_COMMIT_TAG == null'
-  #    when: always
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev" && $CI_COMMIT_TAG == null'
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "staging" && $CI_COMMIT_TAG == null'
+      when: always
 
 build-image:
   image: 
