@@ -117,17 +117,6 @@ const option = computed({
           symbolSize: [10, 70]
         }
       },
-      dataset: [
-        {
-          source: props.source,
-        },
-        {
-          transform: {
-            type: "ecStat:regression",
-            config: { method: "polynomial", order: 2 },
-          },
-        },
-      ],
       dataZoom: props.dataZoom,
       series: [
         ...props.series,
