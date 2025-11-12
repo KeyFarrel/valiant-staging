@@ -194,7 +194,7 @@ fortify-sast-scancentral:
       fi
 
       # Jalankan perintah scancentral dan tangkap outputnya
-      output=$(scancentral -sscurl $SSC_URL -ssctoken $SSC_TOKEN start $SCANCENTRAL_BUILD_OPTS -upload -application $SSC_APP -version $SSC_PV -uptoken $SSC_TOKEN 2>&1)
+      output=$(scancentral -sscurl $SSC_URL -ssctoken $SSC_TOKEN start $SCANCENTRAL_BUILD_OPTS -upload -application $SSC_APP -version $SSC_PV -uptoken $SSC_TOKEN $SSC_EXCLUDES 2>&1)
 
       # Tampilkan seluruh output untuk debugging
       echo "Log Output:"
