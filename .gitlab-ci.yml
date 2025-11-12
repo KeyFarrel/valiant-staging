@@ -154,6 +154,7 @@ fortify-sast-scancentral:
       # Ambil semua token dan status dengan nama dan versi aplikasi yang sama
       job_tokens=($(echo "$runstatusjob" | grep -oP '"jobToken":"\K[0-9a-fA-F\-]{36}'))
       job_states=($(echo "$runstatusjob" | grep -oP '"jobState":"\K[^"]+'))
+      job_app=($(echo "$runstatusjob" | grep -oP '"projectName":"\K[^"]+'))
       job_pvnames=($(echo "$runstatusjob" | grep -oP '"pvName":"\K[^"]+'))
       job_cancellable=($(echo "$runstatusjob" | grep -oP '"jobCancellable":\K(true|false)'))
 
@@ -162,10 +163,12 @@ fortify-sast-scancentral:
       for i in "${!job_tokens[@]}"; do
         token="${job_tokens[$i]}"
         state="${job_states[$i]}"
+        app="${job_app[$i]}"
         pvname="${job_pvnames[$i]:-}"
         cancellable="${job_cancellable[$i]:-false}"
 
-        if [[ "$pvname" == "$SSC_PV" ]] && \
+        if [[ "$app" == "$SSC_APP" ]] && \
+           [[ "$pvname" == "$SSC_PV" ]] && \
            { [[ "$state" == "PENDING" ]] || [[ "$state" == "QUEUED" ]] || [[ "$state" == "SCAN_RUNNING" ]]; } && \
            [[ "$cancellable" == "true" ]]; then
            active_tokens+=("$token")
