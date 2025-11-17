@@ -54,9 +54,16 @@ app.provide("secureConfig", appConfig);
 import { decryptAES } from "./services/helper/encryption";
 import { useSessionStore } from "@/store/storeSession";
 import { notifyError } from "./services/helper/toast-notification";
+import { useCsrfTokenStore } from "@/store/storeCsrfToken";
 const sessionStore = useSessionStore(getActivePinia());
 axios.interceptors.response.use(
   async (response: any) => {
+    const csrfToken =
+      response.headers["x-csrf-token"] || response.headers["X-CSRF-Token"];
+    if (csrfToken) {
+      const csrfStore = useCsrfTokenStore(getActivePinia());
+      csrfStore.setCsrfToken(csrfToken);
+    }
     try {
       if (
         nodeMode !== "development" &&
@@ -65,9 +72,9 @@ axios.interceptors.response.use(
       ) {
         const decryptedData = await decryptAES(response.data.response);
         try {
-          response.data.response = JSON.parse(decryptedData);
+          response.data = JSON.parse(decryptedData);
         } catch {
-          response.data.response = decryptedData;
+          response.data = decryptedData;
         }
       }
     } catch (error) {
@@ -83,6 +90,27 @@ axios.interceptors.response.use(
   },
   async (error) => {
     const currentRoute = router.currentRoute.value
+    
+    if (
+      nodeMode !== "development" &&
+      error.response &&
+      error.response.data &&
+      error.response.data.response &&
+      typeof error.response.data.response === "string"
+    ) {
+      try {
+        const decryptedErrorData = await decryptAES(error.response.data.response);
+        console.log('decrypted error response', decryptedErrorData)
+        try {
+          error.response.data = JSON.parse(decryptedErrorData);
+        } catch {
+          error.response.data = decryptedErrorData;
+        }
+      } catch (decryptError) {
+        console.error("Failed to decrypt error response:", decryptError);
+      }
+    }
+    
     if (
       error.response &&
       error.response.status === 401 &&
@@ -103,14 +131,15 @@ axios.interceptors.response.use(
       }
       sessionStore.invalidateSession();
       router.push({ name: "login" });
-    } else if (error.code === "ERR_NETWORK" && error.config.url !== (nodeMode === 'development' ? 'https://stg-be-valiant.pln.co.id/v1/mutasiasset/download/' : 'http://localhost:8000/v1/mutasiasset/download/')) {
+    } else if (error.code === "ERR_NETWORK" && error.config.url !== (nodeMode === 'development' ? 'http://localhost:8000/v1/mutasiasset/download/' : 'http://10.14.152.139:30050/v1/mutasiasset/download/')) {
       sessionStore.setErrNetwork();
       console.log("Network error detected, setting network error state", error);
       router.push({ name: "503" });
     } else if (
       error.response &&
       error.response.status !== 401 &&
-      error.code !== "ERR_NETWORK" && currentRoute.name !== "login"
+      error.code !== "ERR_NETWORK" && 
+      currentRoute.name !== "login"
     ) {
       notifyError(`${error.response.data.message} ${error.response.data.uuid ?? 0}`, 5000);
     } else if (isDevelopment()) {

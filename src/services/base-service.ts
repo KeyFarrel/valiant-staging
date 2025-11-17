@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { encryptAES } from "./helper/encryption";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { useCsrfTokenStore } from "@/store/storeCsrfToken";
 
 const fpPromise = FingerprintJS.load();
 const getFingerprint = async () => {
@@ -67,7 +68,6 @@ export default class BaseService {
   async get<T>(path: string, params?: any, responseType?: any): Promise<T> {
     const fingerprintID = await getFingerprint();
     const headers: any = {
-      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
       "Content-Type": "application/json",
       "X-Fingerprint-ID": fingerprintID,
     };
@@ -83,16 +83,14 @@ export default class BaseService {
         responseType: responseType,
       });
       console.log("Response Method Get:", response);
-      return nodeMode !== 'development' ? response.data.response : response.data;
+      return response.data;
     } catch (error) {
       console.error("Error:", error);
       throw error;
     }
   }
   async getFile<T>(path: string, params?: any, responseType?: any): Promise<T> {
-    const headers: any = {
-      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
-    };
+    const headers: any = {};
 
     try {
       const response: any = await axios({
@@ -104,6 +102,7 @@ export default class BaseService {
         params: params,
         responseType: responseType,
       });
+      console.log(response, "bangsat");
       return response;
     } catch (error) {
       console.error("Error:", error);
@@ -117,22 +116,27 @@ export default class BaseService {
     withCredentials?: boolean,
   ): Promise<T> {
     const fingerprintID = await getFingerprint();
+    const csrfStore = useCsrfTokenStore();
+    const csrfToken = csrfStore.getCsrfToken();
     const headers: any = {
-      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
       "Content-Type": "application/json",
       "X-Fingerprint-ID": fingerprintID,
+      "X-CSRF-Token": csrfToken,
     };
     try {
       const response: AxiosResponse = await axios({
         method: "POST",
         url: path,
         withCredentials: true,
-        data: nodeMode !== 'development' ? encryptAES(JSON.stringify(payload)) : payload,
+        data:
+          nodeMode === "development"
+            ? encryptAES(JSON.stringify(payload))
+            : payload,
         headers,
         timeout: TIME_OUT,
       });
       console.log("Response Method Post:", response);
-      return nodeMode !== 'development' ? response.data.response : response.data;
+      return response.data;
     } catch (error) {
       console.error("Error:", error);
       throw error;
@@ -140,9 +144,11 @@ export default class BaseService {
   }
 
   async put<T>(path: string, payload?: any): Promise<T> {
+    const csrfStore = useCsrfTokenStore();
+    const csrfToken = csrfStore.getCsrfToken();
     const headers: any = {
       "Content-Type": "application/json",
-      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+      "X-CSRF-Token": csrfToken,
     };
 
     try {
@@ -162,9 +168,11 @@ export default class BaseService {
   }
 
   async patch<T>(path: string, payload?: any): Promise<T> {
+    const csrfStore = useCsrfTokenStore();
+    const csrfToken = csrfStore.getCsrfToken();
     const headers: any = {
       "Content-Type": "application/json",
-      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+      "X-CSRF-Token": csrfToken,
     };
 
     try {
@@ -184,9 +192,11 @@ export default class BaseService {
   }
 
   async delete<T>(path: string): Promise<T> {
+    const csrfStore = useCsrfTokenStore();
+    const csrfToken = csrfStore.getCsrfToken();
     const headers: any = {
       "Content-Type": "application/json",
-      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+      "X-CSRF-Token": csrfToken,
     };
 
     try {
@@ -205,9 +215,11 @@ export default class BaseService {
   }
 
   async postFormData<T>(path: string, payload: any): Promise<T> {
+    const csrfStore = useCsrfTokenStore();
+    const csrfToken = csrfStore.getCsrfToken();
     const headers: any = {
       "Content-Type": "multipart/form-data",
-      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+      "X-CSRF-Token": csrfToken,
     };
 
     try {
@@ -227,9 +239,11 @@ export default class BaseService {
   }
 
   async putFormData<T>(path: string, payload: any): Promise<T> {
+    const csrfStore = useCsrfTokenStore();
+    const csrfToken = csrfStore.getCsrfToken();
     const headers: any = {
       "Content-Type": "multipart/form-data",
-      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+      "X-CSRF-Token": csrfToken,
     };
 
     try {
@@ -249,9 +263,11 @@ export default class BaseService {
   }
 
   async postFile<T>(path: string, payload: any): Promise<T> {
+    const csrfStore = useCsrfTokenStore();
+    const csrfToken = csrfStore.getCsrfToken();
     const headers: any = {
       "Content-Type": "application/octet-stream",
-      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+      "X-CSRF-Token": csrfToken,
     };
 
     try {
@@ -271,9 +287,11 @@ export default class BaseService {
   }
 
   async putFile<T>(path: string, payload: any): Promise<T> {
+    const csrfStore = useCsrfTokenStore();
+    const csrfToken = csrfStore.getCsrfToken();
     const headers: any = {
       "Content-Type": "application/octet-stream",
-      // Authorization: `Bearer ${nodeMode === 'production' ? encryptStorage.getItem('token') : localStorage.getItem("token")}`,
+      "X-CSRF-Token": csrfToken,
     };
 
     try {

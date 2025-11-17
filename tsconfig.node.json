@@ -1,19 +1,18 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "target": "ESNext",
     "lib": ["ESNext"],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "composite": true,
-    "skipLibCheck": true,
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     }
   },
-  "include": ["jest.config.ts", "src/**/*.ts", "src/**/__tests__/*",  "src/**/*.json", "vite.config.ts"],
+  "include": ["src/**/*.ts", "src/**/__tests__/*",  "src/**/*.json"],
   "exclude": ["node_modules", "tsconfig.app.json"]
 }
