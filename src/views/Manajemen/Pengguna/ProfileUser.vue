@@ -34,7 +34,7 @@
             </label>
             <TextField id="oldPassword" :type="showOldPassword ? 'text' : 'password'" @on-copy="preventCopyPaste"
               @on-paste="preventCopyPaste" @on-input="sanitizeOldPassword" placeholder="Masukkan password lama anda"
-              class="pr-10 text-sm" v-model="oldPassword" />
+              class="pr-10 text-sm" v-model="formCp.oldP" />
             <button @click="showOldPassword = !showOldPassword"
               class="absolute inset-y-0 right-0 flex items-center pt-5 pr-3">
               <svg v-if="!showOldPassword" width="16" height="12" viewBox="0 0 16 12" fill="none"
@@ -59,7 +59,7 @@
                   class="text-warningColor">*</span></label>
               <TextField @on-input="sanitizeNewPassword(); verifyRequirementPassword()" @on-copy="preventCopyPaste"
                 @on-paste="preventCopyPaste" id="newPassword" :type="showNewPassword ? 'text' : 'password'"
-                placeholder="Masukkan password baru anda" class="pr-10 text-sm" v-model="newPassword" />
+                placeholder="Masukkan password baru anda" class="pr-10 text-sm" v-model="formCp.newP" />
               <button @click="showNewPassword = !showNewPassword"
                 class="absolute inset-y-0 right-0 flex items-center pt-5 pr-3">
                 <svg v-if="!showNewPassword" width="16" height="12" viewBox="0 0 16 12" fill="none"
@@ -83,11 +83,11 @@
           </div>
           <div class="relative flex flex-col space-y-1">
             <label for="confirmNewPassword" class="text-sm font-medium text-labelColor">Konfirmasi Password Baru <span
-                class="text-warningColor">*</span><span v-if="!isPasswordMatched && confirmNewPassword"
+                class="text-warningColor">*</span><span v-if="!isPasswordMatched && formCp.confirmNewP"
                 class="ml-1.5 text-sm text-warningColor">Password Tidak Sesuai</span></label>
             <TextField @on-input="sanitizeConfirmNewPassword(); verifyMatchPassword()" @on-copy="preventCopyPaste"
               @on-paste="preventCopyPaste" id="confirmNewPassword" :type="showConfirmNewPassword ? 'text' : 'password'"
-              placeholder="Masukkan konfirmasi password baru anda" class="pr-10 text-sm" v-model="confirmNewPassword" />
+              placeholder="Masukkan konfirmasi password baru anda" class="pr-10 text-sm" v-model="formCp.confirmNewP" />
             <button @click="showConfirmNewPassword = !showConfirmNewPassword"
               class="absolute inset-y-0 right-0 flex items-center pt-5 pr-3">
               <svg v-if="!showConfirmNewPassword" width="16" height="12" viewBox="0 0 16 12" fill="none"
@@ -274,7 +274,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from "vue";
+import { ref, onMounted, onUnmounted, nextTick, reactive } from "vue";
 import { notifyError } from "@/services/helper/toast-notification";
 import { notifySuccess } from '../../../services/helper/toast-notification';
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
@@ -314,9 +314,11 @@ const otpRefs = ref([]);
 const showOldPassword = ref<boolean>(false);
 const showNewPassword = ref<boolean>(false);
 const showConfirmNewPassword = ref<boolean>(false);
-const oldPassword = ref<string>("");
-const newPassword = ref<string>("");
-const confirmNewPassword = ref<string>("");
+const formCp = reactive({
+  oldP: '',
+  newP: '',
+  confirmNewP: ''
+})
 const hasMinLength = ref<boolean>(false);
 const hasIllegalSpace = ref<boolean>(false);
 const hasNumber = ref<boolean>(false);
@@ -399,19 +401,19 @@ const calculateTimeAgo = (createdAt: any) => {
 };
 
 const sanitizeOldPassword = () => {
-  oldPassword.value = oldPassword.value
+  formCp.oldP = formCp.oldP
     .replace(/['"\\`\0\n\r\t]/g, '')
     .replace(/\s{2,}/g, ' ')
 }
 
 const sanitizeNewPassword = () => {
-  newPassword.value = newPassword.value
+  formCp.newP = formCp.newP
     .replace(/['"\\`\0\n\r\t]/g, '')
     .replace(/\s{2,}/g, ' ')
 }
 
 const sanitizeConfirmNewPassword = () => {
-  confirmNewPassword.value = confirmNewPassword.value
+  formCp.confirmNewP = formCp.confirmNewP
     .replace(/['"\\`\0\n\r\t]/g, '')
     .replace(/\s{2,}/g, ' ')
 }
@@ -518,7 +520,7 @@ const verifyEmailOtp = async () => {
     }
 
     try {
-      const responseChangePassword: any = await authService.changePassword(oldPassword.value, newPassword.value, responseVerifyOtp.data.otp_token);
+      const responseChangePassword: any = await authService.changePassword(formCp.oldP, formCp.newP, responseVerifyOtp.data.otp_token);
       if (responseChangePassword.code !== 200) {
         throw new Error('Failed to change password');
       }
@@ -564,18 +566,18 @@ const closeModalOtp = () => {
 }
 
 const verifyRequirementPassword = () => {
-  const password = newPassword.value;
+  const password = formCp.newP;
   hasMinLength.value = password.length >= 8;
   hasNumber.value = /\d/.test(password);
   hasUppercase.value = /[A-Z]/.test(password);
   hasLowercase.value = /[a-z]/.test(password);
   hasSymbol.value = /[\p{P}\p{S}]/u.test(password);
-  isNewPasswordSameAsOld.value = newPassword.value === oldPassword.value;
+  isNewPasswordSameAsOld.value = formCp.newP === formCp.oldP;
   verifyMatchPassword();
 };
 
 const verifyMatchPassword = () => {
-  if (newPassword.value !== confirmNewPassword.value) {
+  if (formCp.newP !== formCp.confirmNewP) {
     isPasswordMatched.value = false;
     console.log("Password tidak sama");
   } else {
@@ -585,9 +587,9 @@ const verifyMatchPassword = () => {
 }
 
 const resetInputAndAttribute = () => {
-  oldPassword.value = "";
-  newPassword.value = "";
-  confirmNewPassword.value = "";
+  formCp.oldP = "";
+  formCp.newP = "";
+  formCp.confirmNewP = "";
   hasMinLength.value = false;
   hasNumber.value = false;
   hasUppercase.value = false;
@@ -605,7 +607,7 @@ const changePassword = async () => {
     notifyError("Password tidak memenuhi persyaratan, mohon lengkapi persyaratan tersebut!", 7000);
   } else if (isNewPasswordSameAsOld.value) {
     notifyError("Password baru tidak boleh sama dengan password lama yang anda masukkan!", 7000);
-  } else if (/(^\s|\s$)/.test(newPassword.value)) {
+  } else if (/(^\s|\s$)/.test(formCp.newP)) {
     hasIllegalSpace.value = true;
   } else {
     try {
