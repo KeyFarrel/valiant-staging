@@ -131,7 +131,7 @@ axios.interceptors.response.use(
       }
       sessionStore.invalidateSession();
       router.push({ name: "login" });
-    } else if (error.code === "ERR_NETWORK" && error.config.url !== (nodeMode === 'development' ? 'http://localhost:8000/v1/mutasiasset/download/' : 'http://10.14.152.139:30050/v1/mutasiasset/download/')) {
+    } else if (error.code === "ERR_NETWORK" && error.config.url !== (nodeMode === 'development' ? 'https://stg-be-valiant.pln.co.id/v1/mutasiasset/download/' : 'http://localhost:8000/v1/mutasiasset/download/')) {
       sessionStore.setErrNetwork();
       console.log("Network error detected, setting network error state", error);
       router.push({ name: "503" });
