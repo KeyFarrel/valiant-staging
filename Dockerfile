@@ -34,11 +34,26 @@ RUN apk update && apk upgrade --no-cache && \
   musl>=1.2.5-r1 \
   musl-utils>=1.2.5-r1
 
+# Create a non-root user and group for running Nginx
+RUN addgroup -g 1001 -S appgroup && \
+  adduser -u 1001 -S appuser -G appgroup
+
 # Copy the built files from the previous stage
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Copy the custom Nginx configuration file
 COPY Docker-nginx.conf /etc/nginx/conf.d/default.conf
+
+# Set proper permissions for Nginx directories
+RUN chown -R appuser:appgroup /usr/share/nginx/html && \
+  chown -R appuser:appgroup /var/cache/nginx && \
+  chown -R appuser:appgroup /var/log/nginx && \
+  chown -R appuser:appgroup /etc/nginx/conf.d && \
+  touch /var/run/nginx.pid && \
+  chown -R appuser:appgroup /var/run/nginx.pid
+
+# Switch to non-root user
+USER appuser
 
 # Expose port 80
 EXPOSE 80
