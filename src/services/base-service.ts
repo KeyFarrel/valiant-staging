@@ -121,7 +121,7 @@ export default class BaseService {
     const headers: any = {
       "Content-Type": "application/json",
       "X-Fingerprint-ID": fingerprintID,
-      "X-CSRF-Token": csrfToken,
+      "X-XSRF-Token": csrfToken,
     };
     try {
       const response: AxiosResponse = await axios({
@@ -148,7 +148,7 @@ export default class BaseService {
     const csrfToken = csrfStore.getCsrfToken();
     const headers: any = {
       "Content-Type": "application/json",
-      "X-CSRF-Token": csrfToken,
+      "X-XSRF-Token": csrfToken,
     };
 
     try {
@@ -172,7 +172,7 @@ export default class BaseService {
     const csrfToken = csrfStore.getCsrfToken();
     const headers: any = {
       "Content-Type": "application/json",
-      "X-CSRF-Token": csrfToken,
+      "X-XSRF-Token": csrfToken,
     };
 
     try {
@@ -196,7 +196,7 @@ export default class BaseService {
     const csrfToken = csrfStore.getCsrfToken();
     const headers: any = {
       "Content-Type": "application/json",
-      "X-CSRF-Token": csrfToken,
+      "X-XSRF-Token": csrfToken,
     };
 
     try {
@@ -219,7 +219,7 @@ export default class BaseService {
     const csrfToken = csrfStore.getCsrfToken();
     const headers: any = {
       "Content-Type": "multipart/form-data",
-      "X-CSRF-Token": csrfToken,
+      "X-XSRF-Token": csrfToken,
     };
 
     try {
@@ -243,7 +243,7 @@ export default class BaseService {
     const csrfToken = csrfStore.getCsrfToken();
     const headers: any = {
       "Content-Type": "multipart/form-data",
-      "X-CSRF-Token": csrfToken,
+      "X-XSRF-Token": csrfToken,
     };
 
     try {
@@ -267,7 +267,7 @@ export default class BaseService {
     const csrfToken = csrfStore.getCsrfToken();
     const headers: any = {
       "Content-Type": "application/octet-stream",
-      "X-CSRF-Token": csrfToken,
+      "X-XSRF-Token": csrfToken,
     };
 
     try {
@@ -291,7 +291,7 @@ export default class BaseService {
     const csrfToken = csrfStore.getCsrfToken();
     const headers: any = {
       "Content-Type": "application/octet-stream",
-      "X-CSRF-Token": csrfToken,
+      "X-XSRF-Token": csrfToken,
     };
 
     try {
