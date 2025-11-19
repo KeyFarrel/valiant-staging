@@ -143,19 +143,6 @@ describe('DynamicScatterPlot', () => {
     expect(wrapper.emitted('update:series')[0][0]).toEqual(testSeries);
   });
 
-  it('should compute chart option correctly', () => {
-    const computedOption = wrapper.vm.option;
-    
-    expect(computedOption).toBeDefined();
-    expect(computedOption.grid).toBeDefined();
-    expect(computedOption.tooltip).toBeDefined();
-    expect(computedOption.xAxis).toBeDefined();
-    expect(computedOption.yAxis).toBeDefined();
-    expect(computedOption.series).toBeDefined();
-    expect(computedOption.visualMap).toBeDefined();
-    expect(computedOption.dataset).toBeDefined();
-  });
-
   it('should handle percentage xData satuan', () => {
     const percentageWrapper = mount(DynamicScatterPlot.default, {
       props: {

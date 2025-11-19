@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { onMounted, type Ref, ref, watch } from "vue";
+import { onMounted, onUnmounted, type Ref, ref, watch } from "vue";
 import Empty from "@/components/icons/IconEmptyData.vue"
 import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
 import ModalWrapper from "@/components/ui/ModalWrapper.vue"
 import PetaService from "@/services/peta-service";
 import GrafikService from "@/services/grafik-service"
-import type { CheckboxValueType } from 'element-plus';
 import type { BaseResponse, ResCapexEfor } from "@/types/LamanAnalitik/TypeFinansial"
 import { id } from "date-fns/locale";
 import DynamicScatterPlot from "@/views/Beranda/LamanAnalitik/TabPage/DynamicScatterPlot.vue"
@@ -17,9 +16,11 @@ const checkAll = ref(false)
 const checkDmn = ref(true);
 const indeterminate = ref(false)
 const indeterminateDmn = ref(false);
-const value = ref<CheckboxValueType[]>([])
-const dmn = ref<CheckboxValueType[]>([1, 2, 3]);
+const value = ref<any[]>([])
+const dmn = ref<any[]>([1, 2, 3]);
 const showModal = ref<boolean>(false)
+const isPembangkitDropdownOpen = ref(false);
+const isDmnDropdownOpen = ref(false);
 
 const props = defineProps<{
   itemsPembangkit: { id: string; name: string }[]
@@ -211,7 +212,7 @@ watch(value, (val) => {
   }
 });
 
-const handleCheckAll = (val: CheckboxValueType) => {
+const handleCheckAll = (val: any) => {
   indeterminate.value = false;
   if (val) {
     value.value = props.itemsPembangkit.map((_) => _.name);
@@ -232,7 +233,7 @@ watch(dmn, (val) => {
   }
 });
 
-const handleCheckDmn = (val: CheckboxValueType) => {
+const handleCheckDmn = (val: any) => {
   indeterminateDmn.value = false;
   if (val) {
     dmn.value = props.itemsDayaMampu.map((_) => _.id);
@@ -241,11 +242,47 @@ const handleCheckDmn = (val: CheckboxValueType) => {
   };
 };
 
+const togglePembangkitDropdown = () => {
+  isPembangkitDropdownOpen.value = !isPembangkitDropdownOpen.value;
+}
+
+const removeSelectedPembangkit = (id: any) => {
+  value.value = value.value.filter(item => item !== id);
+}
+
+const clearPembangkit = () => {
+  value.value = [];
+}
+
+const toggleDmnDropdown = () => {
+  isDmnDropdownOpen.value = !isDmnDropdownOpen.value;
+}
+
+const removeSelectedDmn = (id: any) => {
+  dmn.value = dmn.value.filter(item => item !== id);
+}
+
+const clearDmn = () => {
+  dmn.value = [];
+}
+
+const handleClickOutside = (event: MouseEvent) => {
+  const target = event.target as HTMLElement;
+  if (!target.closest('.relative')) {
+    isPembangkitDropdownOpen.value = false;
+    isDmnDropdownOpen.value = false;
+  }
+};
 
 onMounted(async () => {
   isLoading.value = true;
   await fetchInitialPembangkit();
   getDataGraph();
+  document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
 });
 </script>
 
@@ -286,28 +323,133 @@ onMounted(async () => {
           </div>
           <div class="flex flex-col space-y-0.5">
             <label for="" class="text-sm font-semibold text-labelColor">Kategori Pembangkit</label>
-            <el-select v-model="value" multiple clearable collapse-tags placeholder="Select Pembangkit"
-              popper-class="custom-header" :max-collapse-tags="15" class="w-full">
-              <template #header>
-                <el-checkbox v-model="checkAll" :indeterminate="indeterminate" @change="handleCheckAll">
-                  Select All Items
-                </el-checkbox>
-              </template>
-              <el-option v-for="item in props.itemsPembangkit" :key="item.id" :label="item.name" :value="item.id" />
-            </el-select>
+            <div class="relative">
+              <div @click="togglePembangkitDropdown"
+                class="flex items-center justify-between w-full min-h-[38px] p-2 transition-colors bg-white border rounded-md cursor-pointer hover:border-gray-300"
+                :class="{ 'border-gray-300': isPembangkitDropdownOpen }">
+                <div class="flex flex-wrap items-center flex-1 gap-1">
+                  <template v-if="value.length > 0">
+                    <span v-for="(id, index) in value.slice(0, 2)" :key="id"
+                      class="inline-flex items-center px-2 py-0.5 text-xs bg-gray-100 rounded">
+                      {{props.itemsPembangkit.find(item => item.id === id)?.name}}
+                      <button @click.stop="removeSelectedPembangkit(id)" class="ml-1 hover:text-red-500">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                    </span>
+                    <span v-if="value.length > 2" class="text-xs text-gray-500">
+                      +{{ value.length - 2 }}
+                    </span>
+                  </template>
+                  <span v-else class="text-sm text-gray-400">
+                    Select Pembangkit
+                  </span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button v-if="value.length > 0" @click.stop="clearPembangkit"
+                    class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <svg class="w-4 h-4 transition-transform duration-200"
+                    :class="{ 'rotate-180': isPembangkitDropdownOpen }" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+              <transition name="dropdown">
+                <div v-if="isPembangkitDropdownOpen"
+                  class="absolute z-50 w-full mt-1 overflow-hidden bg-white border rounded-md shadow-lg">
+                  <div class="p-2 border-b">
+                    <label class="flex items-center p-1 rounded cursor-pointer hover:bg-gray-50 text-primaryTextColor">
+                      <input type="checkbox" v-model="checkAll" @change="handleCheckAll(checkAll)"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2 text-sm">Select All Items</span>
+                    </label>
+                  </div>
+                  <div class="overflow-auto max-h-60">
+                    <label v-for="item in props.itemsPembangkit" :key="item.id"
+                      class="flex items-center px-3 py-2 text-sm transition-colors cursor-pointer hover:bg-gray-50 text-primaryTextColor"
+                      :class="{ 'bg-gray-100': value.includes(item.id) }">
+                      <input type="checkbox" :value="item.id" v-model="value"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2">{{ item.name }}</span>
+                    </label>
+                  </div>
+                </div>
+              </transition>
+            </div>
           </div>
           <div v-show="value.includes('PLTU')" class="flex flex-col space-y-1">
             <span class="font-semibold text-labelColor">DMN</span>
-            <el-select v-model="dmn" multiple clearable collapse-tags placeholder="Pilih DMN"
-              popper-class="custom-header" :max-collapse-tags="15" class="w-full text-primaryTextColor">
-              <template #header>
-                <el-checkbox v-model="checkDmn" :indeterminateDmn="indeterminateDmn" @change="handleCheckDmn">
-                  Select All Items
-                </el-checkbox>
-              </template>
-              <el-option v-for="(dmnItem, dmnIndex) in props.itemsDayaMampu" :key="dmnIndex" :label="dmnItem.name"
-                :value="dmnItem.id" />
-            </el-select>
+            <div class="relative">
+              <div @click="toggleDmnDropdown"
+                class="flex items-center justify-between w-full min-h-[38px] p-2 transition-colors bg-white border rounded-md cursor-pointer hover:border-gray-300"
+                :class="{ 'border-gray-300': isDmnDropdownOpen }">
+                <div class="flex flex-wrap items-center flex-1 gap-1">
+                  <template v-if="dmn.length > 0">
+                    <span v-for="(id, index) in dmn.slice(0, 2)" :key="id"
+                      class="inline-flex items-center px-2 py-0.5 text-xs bg-gray-100 rounded">
+                      {{props.itemsDayaMampu.find(item => item.id === id)?.name}}
+                      <button @click.stop="removeSelectedDmn(id)" class="ml-1 hover:text-red-500">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                    </span>
+                    <span v-if="dmn.length > 2" class="text-xs text-gray-500">
+                      +{{ dmn.length - 2 }}
+                    </span>
+                  </template>
+                  <span v-else class="text-sm text-gray-400">
+                    Pilih DMN
+                  </span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button v-if="dmn.length > 0" @click.stop="clearDmn" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': isDmnDropdownOpen }"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+              <transition name="dropdown">
+                <div v-if="isDmnDropdownOpen"
+                  class="absolute z-50 w-full mt-1 overflow-hidden bg-white border rounded-md shadow-lg">
+                  <div class="p-2 border-b">
+                    <label class="flex items-center p-1 rounded cursor-pointer hover:bg-gray-50 text-primaryTextColor">
+                      <input type="checkbox" v-model="checkDmn" @change="handleCheckDmn(checkDmn)"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2 text-sm">Select All Items</span>
+                    </label>
+                  </div>
+                  <div class="overflow-auto max-h-60">
+                    <label v-for="(dmnItem, dmnIndex) in props.itemsDayaMampu" :key="dmnIndex"
+                      class="flex items-center px-3 py-2 text-sm transition-colors cursor-pointer hover:bg-gray-50 text-primaryTextColor"
+                      :class="{ 'bg-gray-100': dmn.includes(dmnItem.id) }">
+                      <input type="checkbox" :value="dmnItem.id" v-model="dmn"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2">{{ dmnItem.name }}</span>
+                    </label>
+                  </div>
+                </div>
+              </transition>
+            </div>
             <div class="flex -mb-2">
               <p class="text-[#FF5656] text-lg mr-1 -mt-1">*</p>
               <p class="text-[#333333] text-xs ml-1">DMN hanya akan muncul jika Anda memilih PLTU dari Kategori
@@ -392,10 +534,19 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-.custom-header {
-  .el-checkbox {
-    display: flex;
-    height: unset;
-  }
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.2s ease;
+  transform-origin: top;
+}
+
+.dropdown-enter-from {
+  opacity: 0;
+  transform: scaleY(0.95) translateY(-10px);
+}
+
+.dropdown-leave-to {
+  opacity: 0;
+  transform: scaleY(0.95) translateY(-10px);
 }
 </style>

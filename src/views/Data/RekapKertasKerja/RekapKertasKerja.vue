@@ -40,30 +40,133 @@
           </div>
           <div class="flex flex-col space-y-1.5">
             <span class="font-semibold text-labelColor">Kategori Pembangkit</span>
-            <el-select v-model="selectedKategoriPembangkit" multiple clearable collapse-tags
-              placeholder="Pilih Kategori Pembangkit" popper-class="custom-header" :max-collapse-tags="15"
-              class="w-full text-primaryTextColor">
-              <template #header>
-                <el-checkbox v-model="checkPembangkit" :indeterminate="indeterminate" @change="handleCheckPembangkit">
-                  Select All Items
-                </el-checkbox>
-              </template>
-              <el-option v-for="(pembangkitItem, pembangkitIndex) in kategoriPembangkitData" :key="pembangkitIndex"
-                :label="pembangkitItem.name" :value="pembangkitItem.id" />
-            </el-select>
+            <div class="relative">
+              <div @click="togglePembangkitDropdown"
+                class="flex items-center justify-between w-full min-h-[38px] p-2 transition-colors bg-white border rounded-md cursor-pointer hover:border-gray-300"
+                :class="{ 'border-gray-300': isPembangkitDropdownOpen }">
+                <div class="flex flex-wrap items-center flex-1 gap-1">
+                  <template v-if="selectedKategoriPembangkit.length > 0">
+                    <span v-for="(id, index) in selectedKategoriPembangkit.slice(0, 2)" :key="id"
+                      class="inline-flex items-center px-2 py-0.5 text-xs bg-gray-100 rounded">
+                      {{kategoriPembangkitData.find(item => item.id === id)?.name}}
+                      <button @click.stop="removeSelectedPembangkit(id)" class="ml-1 hover:text-red-500">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                    </span>
+                    <span v-if="selectedKategoriPembangkit.length > 2" class="text-xs text-gray-500">
+                      +{{ selectedKategoriPembangkit.length - 2 }}
+                    </span>
+                  </template>
+                  <span v-else class="text-sm text-gray-400">
+                    Pilih Kategori Pembangkit
+                  </span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button v-if="selectedKategoriPembangkit.length > 0" @click.stop="clearPembangkit"
+                    class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <svg class="w-4 h-4 transition-transform duration-200"
+                    :class="{ 'rotate-180': isPembangkitDropdownOpen }" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+              <transition name="dropdown">
+                <div v-if="isPembangkitDropdownOpen"
+                  class="absolute z-50 w-full mt-1 overflow-hidden bg-white border rounded-md shadow-lg">
+                  <div class="p-2 border-b">
+                    <label class="flex items-center p-1 rounded cursor-pointer hover:bg-gray-50 text-primaryTextColor">
+                      <input type="checkbox" v-model="checkPembangkit" @change="handleCheckPembangkit(checkPembangkit)"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2 text-sm">Select All Items</span>
+                    </label>
+                  </div>
+                  <div class="overflow-auto max-h-60">
+                    <label v-for="(pembangkitItem, pembangkitIndex) in kategoriPembangkitData" :key="pembangkitIndex"
+                      class="flex items-center px-3 py-2 text-sm transition-colors cursor-pointer hover:bg-gray-50 text-primaryTextColor"
+                      :class="{ 'bg-gray-100': selectedKategoriPembangkit.includes(pembangkitItem.id) }">
+                      <input type="checkbox" :value="pembangkitItem.id" v-model="selectedKategoriPembangkit"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2">{{ pembangkitItem.name }}</span>
+                    </label>
+                  </div>
+                </div>
+              </transition>
+            </div>
           </div>
           <div v-show="selectedKategoriPembangkit.includes('PLTU')" class="flex flex-col space-y-1">
             <span class="font-semibold text-labelColor">DMN</span>
-            <el-select v-model="dmn" multiple clearable collapse-tags placeholder="Pilih DMN"
-              popper-class="custom-header" :max-collapse-tags="15" class="w-full text-primaryTextColor">
-              <template #header>
-                <el-checkbox v-model="checkDmn" :indeterminate="indeterminateDmn" @change="handleCheckDmn">
-                  Select All Items
-                </el-checkbox>
-              </template>
-              <el-option v-for="(dmnItem, dmnIndex) in childDmn" :key="dmnIndex" :label="dmnItem.name"
-                :value="dmnItem.id" />
-            </el-select>
+            <div class="relative">
+              <div @click="toggleDmnDropdown"
+                class="flex items-center justify-between w-full min-h-[38px] p-2 transition-colors bg-white border rounded-md cursor-pointer hover:border-gray-300"
+                :class="{ 'border-gray-300': isDmnDropdownOpen }">
+                <div class="flex flex-wrap items-center flex-1 gap-1">
+                  <template v-if="dmn.length > 0">
+                    <span v-for="(id, index) in dmn.slice(0, 2)" :key="id"
+                      class="inline-flex items-center px-2 py-0.5 text-xs bg-gray-100 rounded">
+                      {{childDmn.find(item => item.id === id)?.name}}
+                      <button @click.stop="removeSelectedDmn(id)" class="ml-1 hover:text-red-500">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                    </span>
+                    <span v-if="dmn.length > 2" class="text-xs text-gray-500">
+                      +{{ dmn.length - 2 }}
+                    </span>
+                  </template>
+                  <span v-else class="text-sm text-gray-400">
+                    Pilih DMN
+                  </span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button v-if="dmn.length > 0" @click.stop="clearDmn" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': isDmnDropdownOpen }"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+              <transition name="dropdown">
+                <div v-if="isDmnDropdownOpen"
+                  class="absolute z-50 w-full mt-1 overflow-hidden bg-white border rounded-md shadow-lg">
+                  <div class="p-2 border-b">
+                    <label class="flex items-center p-1 rounded cursor-pointer hover:bg-gray-50 text-primaryTextColor">
+                      <input type="checkbox" v-model="checkDmn" @change="handleCheckDmn(checkDmn)"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2 text-sm">Select All Items</span>
+                    </label>
+                  </div>
+                  <div class="overflow-auto max-h-60">
+                    <label v-for="(dmnItem, dmnIndex) in childDmn" :key="dmnIndex"
+                      class="flex items-center px-3 py-2 text-sm transition-colors cursor-pointer hover:bg-gray-50 text-primaryTextColor"
+                      :class="{ 'bg-gray-100': dmn.includes(dmnItem.id) }">
+                      <input type="checkbox" :value="dmnItem.id" v-model="dmn"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2">{{ dmnItem.name }}</span>
+                    </label>
+                  </div>
+                </div>
+              </transition>
+            </div>
             <div class="flex -mb-2">
               <p class="text-[#FF5656] text-lg mr-1 -mt-1">*</p>
               <p class="text-[#333333] text-xs ml-1">DMN hanya akan muncul jika Anda memilih PLTU dari Kategori
@@ -72,30 +175,137 @@
           </div>
           <div class="flex flex-col space-y-2">
             <span class="font-semibold text-labelColor">Umur Mesin</span>
-            <el-select v-model="selectedUmurMesin" multiple clearable collapse-tags placeholder="Pilih Umur Mesin"
-              popper-class="custom-header" :max-collapse-tags="15" class="w-full text-primaryTextColor">
-              <template #header>
-                <el-checkbox v-model="checkAllUmurMesin" :indeterminate="indeterminate" @change="handleCheckUmurMesin">
-                  Select All Items
-                </el-checkbox>
-              </template>
-              <el-option v-for="(umurMesinItem, umurMesinIndex) in comboUmurMesin" :key="umurMesinIndex"
-                :label="umurMesinItem.name" :value="umurMesinItem.id" />
-            </el-select>
+            <div class="relative">
+              <div @click="toggleUmurMesinDropdown"
+                class="flex items-center justify-between w-full min-h-[38px] p-2 transition-colors bg-white border rounded-md cursor-pointer hover:border-gray-300"
+                :class="{ 'border-gray-300': isUmurMesinDropdownOpen }">
+                <div class="flex flex-wrap items-center flex-1 gap-1">
+                  <template v-if="selectedUmurMesin.length > 0">
+                    <span v-for="(id, index) in selectedUmurMesin.slice(0, 2)" :key="id"
+                      class="inline-flex items-center px-2 py-0.5 text-xs bg-gray-100 rounded">
+                      {{comboUmurMesin.find(item => item.id === id)?.name}}
+                      <button @click.stop="removeSelectedUmurMesin(id)" class="ml-1 hover:text-red-500">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                    </span>
+                    <span v-if="selectedUmurMesin.length > 2" class="text-xs text-gray-500">
+                      +{{ selectedUmurMesin.length - 2 }}
+                    </span>
+                  </template>
+                  <span v-else class="text-sm text-gray-400">
+                    Pilih Umur Mesin
+                  </span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button v-if="selectedUmurMesin.length > 0" @click.stop="clearUmurMesin"
+                    class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <svg class="w-4 h-4 transition-transform duration-200"
+                    :class="{ 'rotate-180': isUmurMesinDropdownOpen }" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+              <transition name="dropdown">
+                <div v-if="isUmurMesinDropdownOpen"
+                  class="absolute z-50 w-full mt-1 overflow-hidden bg-white border rounded-md shadow-lg">
+                  <div class="p-2 border-b">
+                    <label class="flex items-center p-1 rounded cursor-pointer hover:bg-gray-50 text-primaryTextColor">
+                      <input type="checkbox" v-model="checkAllUmurMesin"
+                        @change="handleCheckUmurMesin(checkAllUmurMesin)"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2 text-sm">Select All Items</span>
+                    </label>
+                  </div>
+                  <div class="overflow-auto max-h-60">
+                    <label v-for="(umurMesinItem, umurMesinIndex) in comboUmurMesin" :key="umurMesinIndex"
+                      class="flex items-center px-3 py-2 text-sm transition-colors cursor-pointer hover:bg-gray-50 text-primaryTextColor"
+                      :class="{ 'bg-gray-100': selectedUmurMesin.includes(umurMesinItem.id) }">
+                      <input type="checkbox" :value="umurMesinItem.id" v-model="selectedUmurMesin"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2">{{ umurMesinItem.name }}</span>
+                    </label>
+                  </div>
+                </div>
+              </transition>
+            </div>
           </div>
           <div class="flex flex-col space-y-2">
             <span class="font-semibold text-labelColor">Kondisi Mesin</span>
-            <el-select v-model="selectedKondisiMesin" multiple clearable collapse-tags placeholder="Pilih Kondisi Mesin"
-              popper-class="custom-header" :max-collapse-tags="15" class="w-full text-primaryTextColor">
-              <template #header>
-                <el-checkbox v-model="checkAllKondisiMesin" :indeterminate="indeterminate"
-                  @change="handleCheckKondisiMesin">
-                  Select All Items
-                </el-checkbox>
-              </template>
-              <el-option v-for="(kondisiMesinItem, kondisiMesinIndex) in comboKondisiMesin" :key="kondisiMesinIndex"
-                :label="kondisiMesinItem.name" :value="kondisiMesinItem.id" />
-            </el-select>
+            <div class="relative">
+              <div @click="toggleKondisiMesinDropdown"
+                class="flex items-center justify-between w-full min-h-[38px] p-2 transition-colors bg-white border rounded-md cursor-pointer hover:border-gray-300"
+                :class="{ 'border-gray-300': isKondisiMesinDropdownOpen }">
+                <div class="flex flex-wrap items-center flex-1 gap-1">
+                  <template v-if="selectedKondisiMesin.length > 0">
+                    <span v-for="(id, index) in selectedKondisiMesin.slice(0, 2)" :key="id"
+                      class="inline-flex items-center px-2 py-0.5 text-xs bg-gray-100 rounded">
+                      {{comboKondisiMesin.find(item => item.id === id)?.name}}
+                      <button @click.stop="removeSelectedKondisiMesin(id)" class="ml-1 hover:text-red-500">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                    </span>
+                    <span v-if="selectedKondisiMesin.length > 2" class="text-xs text-gray-500">
+                      +{{ selectedKondisiMesin.length - 2 }}
+                    </span>
+                  </template>
+                  <span v-else class="text-sm text-gray-400">
+                    Pilih Kondisi Mesin
+                  </span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button v-if="selectedKondisiMesin.length > 0" @click.stop="clearKondisiMesin"
+                    class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <svg class="w-4 h-4 transition-transform duration-200"
+                    :class="{ 'rotate-180': isKondisiMesinDropdownOpen }" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+              <transition name="dropdown">
+                <div v-if="isKondisiMesinDropdownOpen"
+                  class="absolute z-50 w-full mt-1 overflow-hidden bg-white border rounded-md shadow-lg">
+                  <div class="p-2 border-b">
+                    <label class="flex items-center p-1 rounded cursor-pointer hover:bg-gray-50 text-primaryTextColor">
+                      <input type="checkbox" v-model="checkAllKondisiMesin"
+                        @change="handleCheckKondisiMesin(checkAllKondisiMesin)"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2 text-sm">Select All Items</span>
+                    </label>
+                  </div>
+                  <div class="overflow-auto max-h-60">
+                    <label v-for="(kondisiMesinItem, kondisiMesinIndex) in comboKondisiMesin" :key="kondisiMesinIndex"
+                      class="flex items-center px-3 py-2 text-sm transition-colors cursor-pointer hover:bg-gray-50 text-primaryTextColor"
+                      :class="{ 'bg-gray-100': selectedKondisiMesin.includes(kondisiMesinItem.id) }">
+                      <input type="checkbox" :value="kondisiMesinItem.id" v-model="selectedKondisiMesin"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2">{{ kondisiMesinItem.name }}</span>
+                    </label>
+                  </div>
+                </div>
+              </transition>
+            </div>
           </div>
           <div class="border-b"></div>
           <div class="flex justify-end space-x-2">
@@ -180,7 +390,7 @@
                         <p class="text-sm text-gray-400">
                           <span class="font-semibold text-primaryTextColor">{{ mesinItem.nilai_asset_awal === '-' ?
                             mesinItem.nilai_asset_awal : globalFormat.formatRupiah(mesinItem.nilai_asset_awal / 1000000)
-                          }}</span> Rp (Juta)
+                            }}</span> Rp (Juta)
                         </p>
                       </div>
                       <div>
@@ -718,7 +928,7 @@
         <div class="flex items-center space-x-2 text-sm">
           <span>Menampilkan</span>
           <select v-model.number="navigationStore.pageLimit" name="" id=""
-            class="p-2 text-sm text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
+            class="p-2 text-sm text-gray-500 bg-white border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
             @change="changePageLimit">
             <option value="10">10</option>
             <option value="20">20</option>
@@ -774,7 +984,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
+import { ref, computed, watch, onMounted, onBeforeUnmount, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 const router = useRouter();
 import { Vue3Lottie } from "vue3-lottie";
@@ -795,7 +1005,6 @@ const authService = new AuthService();
 import DetailSentralService from "@/services/detail-sentral-service";
 const detailSentralService = new DetailSentralService();
 import { notifyError } from "@/services/helper/toast-notification";
-import type { CheckboxValueType } from 'element-plus';
 import SearchBoxSuggestion from "@/components/ui/SearchBoxSuggestion.vue";
 import LottieInfo from "@/assets/lottie/info.json";
 import ComponentDraft from "@/components/Status/ComponentDraft.vue";
@@ -832,12 +1041,12 @@ const comboKondisiMesin = ref<any[]>([]);
 const checkAllKondisiMesin = ref(false);
 const checkPembangkit = ref(false)
 const checkDmn = ref(false)
-const pengelola = ref<CheckboxValueType[]>([])
+const pengelola = ref<any[]>([])
 const indeterminate = ref(false);
 const indeterminateDmn = ref(false);
 const listSentralData = ref<any[]>([]);
 const selectedKategoriPembangkit = ref<string[]>([]);
-const dmn = ref<CheckboxValueType[]>([])
+const dmn = ref<any[]>([])
 const childDmn = ref<any[]>([])
 const selectedUmurMesin = ref<string[]>([]);
 const selectedKondisiMesin = ref<any[]>([]);
@@ -852,6 +1061,10 @@ const comboIRR = ref<any[]>([]);
 const isFSUploadSuccess = ref(false);
 const isEvidenceSuccess = ref<boolean>(false);
 const showModal = ref(false);
+const isPembangkitDropdownOpen = ref(false);
+const isDmnDropdownOpen = ref(false);
+const isUmurMesinDropdownOpen = ref(false);
+const isKondisiMesinDropdownOpen = ref(false);
 const selectedPengelola = ref<any[]>([]);
 const isNotAlreadyInput = ref(false);
 const isRekapDialogOpen = ref(false);
@@ -1438,7 +1651,7 @@ const checkUnggahRequiredProp = (nilaiAssetAwal: any, tahunDataAwal: any, masaMa
   const isComplete: boolean = nilaiAssetAwal === '-' || tahunDataAwal === '' || masaManfaat === '0';
   return isComplete;
 }
-const handleCheckPembangkit = (val: CheckboxValueType) => {
+const handleCheckPembangkit = (val: any) => {
   indeterminate.value = false
   if (val) {
     selectedKategoriPembangkit.value = kategoriPembangkitData.value.map((_) => _.id)
@@ -1446,7 +1659,7 @@ const handleCheckPembangkit = (val: CheckboxValueType) => {
     selectedKategoriPembangkit.value = []
   }
 }
-const handleCheckDmn = (val: CheckboxValueType) => {
+const handleCheckDmn = (val: any) => {
   indeterminate.value = false
   if (val) {
     dmn.value = childDmn.value.map((_) => _.id)
@@ -1454,7 +1667,7 @@ const handleCheckDmn = (val: CheckboxValueType) => {
     dmn.value = []
   }
 }
-const handleCheckUmurMesin = (val: CheckboxValueType) => {
+const handleCheckUmurMesin = (val: any) => {
   indeterminate.value = false
   if (val) {
     selectedUmurMesin.value = comboUmurMesin.value.map((_) => _.id)
@@ -1462,7 +1675,7 @@ const handleCheckUmurMesin = (val: CheckboxValueType) => {
     selectedUmurMesin.value = []
   }
 }
-const handleCheckKondisiMesin = (val: CheckboxValueType) => {
+const handleCheckKondisiMesin = (val: any) => {
   indeterminate.value = false
   if (val) {
     selectedKondisiMesin.value = comboKondisiMesin.value.map((_) => _.id)
@@ -1470,6 +1683,64 @@ const handleCheckKondisiMesin = (val: CheckboxValueType) => {
     selectedKondisiMesin.value = []
   }
 }
+
+const togglePembangkitDropdown = () => {
+  isPembangkitDropdownOpen.value = !isPembangkitDropdownOpen.value;
+}
+
+const removeSelectedPembangkit = (id: any) => {
+  selectedKategoriPembangkit.value = selectedKategoriPembangkit.value.filter(item => item !== id);
+}
+
+const clearPembangkit = () => {
+  selectedKategoriPembangkit.value = [];
+}
+
+const toggleDmnDropdown = () => {
+  isDmnDropdownOpen.value = !isDmnDropdownOpen.value;
+}
+
+const removeSelectedDmn = (id: any) => {
+  dmn.value = dmn.value.filter(item => item !== id);
+}
+
+const clearDmn = () => {
+  dmn.value = [];
+}
+
+const toggleUmurMesinDropdown = () => {
+  isUmurMesinDropdownOpen.value = !isUmurMesinDropdownOpen.value;
+}
+
+const removeSelectedUmurMesin = (id: any) => {
+  selectedUmurMesin.value = selectedUmurMesin.value.filter(item => item !== id);
+}
+
+const clearUmurMesin = () => {
+  selectedUmurMesin.value = [];
+}
+
+const toggleKondisiMesinDropdown = () => {
+  isKondisiMesinDropdownOpen.value = !isKondisiMesinDropdownOpen.value;
+}
+
+const removeSelectedKondisiMesin = (id: any) => {
+  selectedKondisiMesin.value = selectedKondisiMesin.value.filter(item => item !== id);
+}
+
+const clearKondisiMesin = () => {
+  selectedKondisiMesin.value = [];
+}
+
+const handleClickOutside = (event: MouseEvent) => {
+  const target = event.target as HTMLElement;
+  if (!target.closest('.relative')) {
+    isPembangkitDropdownOpen.value = false;
+    isDmnDropdownOpen.value = false;
+    isUmurMesinDropdownOpen.value = false;
+    isKondisiMesinDropdownOpen.value = false;
+  }
+};
 
 watch(totalPages, (newTotalPages) => {
   totalPagesRef.value = newTotalPages;
@@ -1517,6 +1788,11 @@ watch(store, async (val) => {
 onBeforeUnmount(() => {
   navigationStore.scrollPosition.top = y.value;
 });
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
+
 onMounted(async () => {
   isLoading.value = true;
   encryptStorageRef = await encryptStoragePromise;
@@ -1528,6 +1804,7 @@ onMounted(async () => {
   await fetchSuggestionSentral();
   await fetchPengelolaData();
   y.value = navigationStore.scrollPosition.top;
+  document.addEventListener('click', handleClickOutside);
   await fetchComboKategoriPembangkit();
   await fetchComboUmurMesin();
   await fetchComboKondisiMesin();
@@ -1564,5 +1841,21 @@ ul li.disabled {
   pointer-events: none;
   cursor: not-allowed;
   color: #D1D1DB;
+}
+
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.2s ease;
+  transform-origin: top;
+}
+
+.dropdown-enter-from {
+  opacity: 0;
+  transform: scaleY(0.95) translateY(-10px);
+}
+
+.dropdown-leave-to {
+  opacity: 0;
+  transform: scaleY(0.95) translateY(-10px);
 }
 </style>

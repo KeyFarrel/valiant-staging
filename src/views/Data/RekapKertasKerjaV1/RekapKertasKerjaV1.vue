@@ -40,30 +40,133 @@
           </div>
           <div class="flex flex-col space-y-1.5">
             <span class="font-semibold text-labelColor">Kategori Pembangkit</span>
-            <el-select v-model="selectedKategoriPembangkit" multiple clearable collapse-tags
-              placeholder="Pilih Kategori Pembangkit" popper-class="custom-header" :max-collapse-tags="15"
-              class="w-full text-primaryTextColor">
-              <template #header>
-                <el-checkbox v-model="checkPembangkit" :indeterminate="indeterminate" @change="handleCheckPembangkit">
-                  Select All Items
-                </el-checkbox>
-              </template>
-              <el-option v-for="(pembangkitItem, pembangkitIndex) in kategoriPembangkitData" :key="pembangkitIndex"
-                :label="pembangkitItem.name" :value="pembangkitItem.id" />
-            </el-select>
+            <div class="relative">
+              <div @click="togglePembangkitDropdown"
+                class="flex items-center justify-between w-full min-h-[38px] p-2 transition-colors bg-white border rounded-md cursor-pointer hover:border-gray-300"
+                :class="{ 'border-gray-300': isPembangkitDropdownOpen }">
+                <div class="flex flex-wrap items-center flex-1 gap-1">
+                  <template v-if="selectedKategoriPembangkit.length > 0">
+                    <span v-for="(id, index) in selectedKategoriPembangkit.slice(0, 2)" :key="id"
+                      class="inline-flex items-center px-2 py-0.5 text-xs bg-gray-100 rounded">
+                      {{kategoriPembangkitData.find(item => item.id === id)?.name}}
+                      <button @click.stop="removeSelectedPembangkit(id)" class="ml-1 hover:text-red-500">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                    </span>
+                    <span v-if="selectedKategoriPembangkit.length > 2" class="text-xs text-gray-500">
+                      +{{ selectedKategoriPembangkit.length - 2 }}
+                    </span>
+                  </template>
+                  <span v-else class="text-sm text-gray-400">
+                    Pilih Kategori Pembangkit
+                  </span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button v-if="selectedKategoriPembangkit.length > 0" @click.stop="clearPembangkit"
+                    class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <svg class="w-4 h-4 transition-transform duration-200"
+                    :class="{ 'rotate-180': isPembangkitDropdownOpen }" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+              <transition name="dropdown">
+                <div v-if="isPembangkitDropdownOpen"
+                  class="absolute z-50 w-full mt-1 overflow-hidden bg-white border rounded-md shadow-lg">
+                  <div class="p-2 border-b">
+                    <label class="flex items-center p-1 rounded cursor-pointer hover:bg-gray-50 text-primaryTextColor">
+                      <input type="checkbox" v-model="checkPembangkit" @change="handleCheckPembangkit(checkPembangkit)"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2 text-sm">Select All Items</span>
+                    </label>
+                  </div>
+                  <div class="overflow-auto max-h-60">
+                    <label v-for="(pembangkitItem, pembangkitIndex) in kategoriPembangkitData" :key="pembangkitIndex"
+                      class="flex items-center px-3 py-2 text-sm transition-colors cursor-pointer hover:bg-gray-50 text-primaryTextColor"
+                      :class="{ 'bg-gray-100': selectedKategoriPembangkit.includes(pembangkitItem.id) }">
+                      <input type="checkbox" :value="pembangkitItem.id" v-model="selectedKategoriPembangkit"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2">{{ pembangkitItem.name }}</span>
+                    </label>
+                  </div>
+                </div>
+              </transition>
+            </div>
           </div>
           <div v-show="selectedKategoriPembangkit.includes('PLTU')" class="flex flex-col space-y-1">
             <span class="font-semibold text-labelColor">DMN</span>
-            <el-select v-model="dmn" multiple clearable collapse-tags placeholder="Pilih DMN"
-              popper-class="custom-header" :max-collapse-tags="15" class="w-full text-primaryTextColor">
-              <template #header>
-                <el-checkbox v-model="checkDmn" :indeterminate="indeterminateDmn" @change="handleCheckDmn">
-                  Select All Items
-                </el-checkbox>
-              </template>
-              <el-option v-for="(dmnItem, dmnIndex) in childDmn" :key="dmnIndex" :label="dmnItem.name"
-                :value="dmnItem.id" />
-            </el-select>
+            <div class="relative">
+              <div @click="toggleDmnDropdown"
+                class="flex items-center justify-between w-full min-h-[38px] p-2 transition-colors bg-white border rounded-md cursor-pointer hover:border-gray-300"
+                :class="{ 'border-gray-300': isDmnDropdownOpen }">
+                <div class="flex flex-wrap items-center flex-1 gap-1">
+                  <template v-if="dmn.length > 0">
+                    <span v-for="(id, index) in dmn.slice(0, 2)" :key="id"
+                      class="inline-flex items-center px-2 py-0.5 text-xs bg-gray-100 rounded">
+                      {{childDmn.find(item => item.id === id)?.name}}
+                      <button @click.stop="removeSelectedDmn(id)" class="ml-1 hover:text-red-500">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                    </span>
+                    <span v-if="dmn.length > 2" class="text-xs text-gray-500">
+                      +{{ dmn.length - 2 }}
+                    </span>
+                  </template>
+                  <span v-else class="text-sm text-gray-400">
+                    Pilih DMN
+                  </span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button v-if="dmn.length > 0" @click.stop="clearDmn" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': isDmnDropdownOpen }"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+              <transition name="dropdown">
+                <div v-if="isDmnDropdownOpen"
+                  class="absolute z-50 w-full mt-1 overflow-hidden bg-white border rounded-md shadow-lg">
+                  <div class="p-2 border-b">
+                    <label class="flex items-center p-1 rounded cursor-pointer hover:bg-gray-50 text-primaryTextColor">
+                      <input type="checkbox" v-model="checkDmn" @change="handleCheckDmn(checkDmn)"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2 text-sm">Select All Items</span>
+                    </label>
+                  </div>
+                  <div class="overflow-auto max-h-60">
+                    <label v-for="(dmnItem, dmnIndex) in childDmn" :key="dmnIndex"
+                      class="flex items-center px-3 py-2 text-sm transition-colors cursor-pointer hover:bg-gray-50 text-primaryTextColor"
+                      :class="{ 'bg-gray-100': dmn.includes(dmnItem.id) }">
+                      <input type="checkbox" :value="dmnItem.id" v-model="dmn"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2">{{ dmnItem.name }}</span>
+                    </label>
+                  </div>
+                </div>
+              </transition>
+            </div>
             <div class="flex -mb-2">
               <p class="text-[#FF5656] text-lg mr-1 -mt-1">*</p>
               <p class="text-[#333333] text-xs ml-1">DMN hanya akan muncul jika Anda memilih PLTU dari Kategori
@@ -72,30 +175,137 @@
           </div>
           <div class="flex flex-col space-y-2">
             <span class="font-semibold text-labelColor">Umur Mesin</span>
-            <el-select v-model="selectedUmurMesin" multiple clearable collapse-tags placeholder="Pilih Umur Mesin"
-              popper-class="custom-header" :max-collapse-tags="15" class="w-full text-primaryTextColor">
-              <template #header>
-                <el-checkbox v-model="checkAllUmurMesin" :indeterminate="indeterminate" @change="handleCheckUmurMesin">
-                  Select All Items
-                </el-checkbox>
-              </template>
-              <el-option v-for="(umurMesinItem, umurMesinIndex) in comboUmurMesin" :key="umurMesinIndex"
-                :label="umurMesinItem.name" :value="umurMesinItem.id" />
-            </el-select>
+            <div class="relative">
+              <div @click="toggleUmurMesinDropdown"
+                class="flex items-center justify-between w-full min-h-[38px] p-2 transition-colors bg-white border rounded-md cursor-pointer hover:border-gray-300"
+                :class="{ 'border-gray-300': isUmurMesinDropdownOpen }">
+                <div class="flex flex-wrap items-center flex-1 gap-1">
+                  <template v-if="selectedUmurMesin.length > 0">
+                    <span v-for="(id, index) in selectedUmurMesin.slice(0, 2)" :key="id"
+                      class="inline-flex items-center px-2 py-0.5 text-xs bg-gray-100 rounded">
+                      {{comboUmurMesin.find(item => item.id === id)?.name}}
+                      <button @click.stop="removeSelectedUmurMesin(id)" class="ml-1 hover:text-red-500">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                    </span>
+                    <span v-if="selectedUmurMesin.length > 2" class="text-xs text-gray-500">
+                      +{{ selectedUmurMesin.length - 2 }}
+                    </span>
+                  </template>
+                  <span v-else class="text-sm text-gray-400">
+                    Pilih Umur Mesin
+                  </span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button v-if="selectedUmurMesin.length > 0" @click.stop="clearUmurMesin"
+                    class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <svg class="w-4 h-4 transition-transform duration-200"
+                    :class="{ 'rotate-180': isUmurMesinDropdownOpen }" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+              <transition name="dropdown">
+                <div v-if="isUmurMesinDropdownOpen"
+                  class="absolute z-50 w-full mt-1 overflow-hidden bg-white border rounded-md shadow-lg">
+                  <div class="p-2 border-b">
+                    <label class="flex items-center p-1 rounded cursor-pointer hover:bg-gray-50 text-primaryTextColor">
+                      <input type="checkbox" v-model="checkAllUmurMesin"
+                        @change="handleCheckUmurMesin(checkAllUmurMesin)"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2 text-sm">Select All Items</span>
+                    </label>
+                  </div>
+                  <div class="overflow-auto max-h-60">
+                    <label v-for="(umurMesinItem, umurMesinIndex) in comboUmurMesin" :key="umurMesinIndex"
+                      class="flex items-center px-3 py-2 text-sm transition-colors cursor-pointer hover:bg-gray-50 text-primaryTextColor"
+                      :class="{ 'bg-gray-100': selectedUmurMesin.includes(umurMesinItem.id) }">
+                      <input type="checkbox" :value="umurMesinItem.id" v-model="selectedUmurMesin"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2">{{ umurMesinItem.name }}</span>
+                    </label>
+                  </div>
+                </div>
+              </transition>
+            </div>
           </div>
           <div class="flex flex-col space-y-2">
             <span class="font-semibold text-labelColor">Kondisi Mesin</span>
-            <el-select v-model="selectedKondisiMesin" multiple clearable collapse-tags placeholder="Pilih Kondisi Mesin"
-              popper-class="custom-header" :max-collapse-tags="15" class="w-full text-primaryTextColor">
-              <template #header>
-                <el-checkbox v-model="checkAllKondisiMesin" :indeterminate="indeterminate"
-                  @change="handleCheckKondisiMesin">
-                  Select All Items
-                </el-checkbox>
-              </template>
-              <el-option v-for="(kondisiMesinItem, kondisiMesinIndex) in comboKondisiMesin" :key="kondisiMesinIndex"
-                :label="kondisiMesinItem.name" :value="kondisiMesinItem.id" />
-            </el-select>
+            <div class="relative">
+              <div @click="toggleKondisiMesinDropdown"
+                class="flex items-center justify-between w-full min-h-[38px] p-2 transition-colors bg-white border rounded-md cursor-pointer hover:border-gray-300"
+                :class="{ 'border-gray-300': isKondisiMesinDropdownOpen }">
+                <div class="flex flex-wrap items-center flex-1 gap-1">
+                  <template v-if="selectedKondisiMesin.length > 0">
+                    <span v-for="(id, index) in selectedKondisiMesin.slice(0, 2)" :key="id"
+                      class="inline-flex items-center px-2 py-0.5 text-xs bg-gray-100 rounded">
+                      {{comboKondisiMesin.find(item => item.id === id)?.name}}
+                      <button @click.stop="removeSelectedKondisiMesin(id)" class="ml-1 hover:text-red-500">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                    </span>
+                    <span v-if="selectedKondisiMesin.length > 2" class="text-xs text-gray-500">
+                      +{{ selectedKondisiMesin.length - 2 }}
+                    </span>
+                  </template>
+                  <span v-else class="text-sm text-gray-400">
+                    Pilih Kondisi Mesin
+                  </span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button v-if="selectedKondisiMesin.length > 0" @click.stop="clearKondisiMesin"
+                    class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <svg class="w-4 h-4 transition-transform duration-200"
+                    :class="{ 'rotate-180': isKondisiMesinDropdownOpen }" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+              <transition name="dropdown">
+                <div v-if="isKondisiMesinDropdownOpen"
+                  class="absolute z-50 w-full mt-1 overflow-hidden bg-white border rounded-md shadow-lg">
+                  <div class="p-2 border-b">
+                    <label class="flex items-center p-1 rounded cursor-pointer hover:bg-gray-50 text-primaryTextColor">
+                      <input type="checkbox" v-model="checkAllKondisiMesin"
+                        @change="handleCheckKondisiMesin(checkAllKondisiMesin)"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2 text-sm">Select All Items</span>
+                    </label>
+                  </div>
+                  <div class="overflow-auto max-h-60">
+                    <label v-for="(kondisiMesinItem, kondisiMesinIndex) in comboKondisiMesin" :key="kondisiMesinIndex"
+                      class="flex items-center px-3 py-2 text-sm transition-colors cursor-pointer hover:bg-gray-50 text-primaryTextColor"
+                      :class="{ 'bg-gray-100': selectedKondisiMesin.includes(kondisiMesinItem.id) }">
+                      <input type="checkbox" :value="kondisiMesinItem.id" v-model="selectedKondisiMesin"
+                        class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                      <span class="ml-2">{{ kondisiMesinItem.name }}</span>
+                    </label>
+                  </div>
+                </div>
+              </transition>
+            </div>
           </div>
           <div class="border-b"></div>
           <div class="flex justify-end space-x-2">
@@ -718,7 +928,7 @@
         <div class="flex items-center space-x-2 text-sm">
           <span>Menampilkan</span>
           <select v-model.number="navigationStore.pageLimit" name="" id=""
-            class="p-2 text-sm text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
+            class="p-2 text-sm text-gray-500 bg-white border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
             @change="changePageLimit">
             <option value="10">10</option>
             <option value="20">20</option>
@@ -774,46 +984,45 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue"
+import { ref, computed, watch, onMounted, onBeforeUnmount, onUnmounted } from "vue";
 import { useRouter } from "vue-router"
-const router = useRouter()
+const router = useRouter();
 import { Vue3Lottie } from "vue3-lottie"
-import { encryptStoragePromise } from "@/utils/app-encrypt-storage"
+import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import { useUserAuthStore } from "@/store/storeUserAuth"
-const userAuthStore = useUserAuthStore()
+const userAuthStore = useUserAuthStore();
 import { useWindowScroll } from '@vueuse/core'
 const { x, y } = useWindowScroll()
 import { useRekapSearchStore, useRekapNavigationStore } from "@/store/storeRekapKertasKerja"
-const store = useRekapSearchStore()
-const navigationStore = useRekapNavigationStore()
+const store = useRekapSearchStore();
+const navigationStore = useRekapNavigationStore();
 import GlobalFormat from "@/services/format/global-format"
-const globalFormat = new GlobalFormat()
+const globalFormat = new GlobalFormat();
 import RekapService from "@/services/rekap-service"
-const rekapService = new RekapService()
+const rekapService = new RekapService();
 import AuthService from "@/services/auth-service"
-const authService = new AuthService()
+const authService = new AuthService();
 import DetailSentralService from "@/services/detail-sentral-service"
-const detailSentralService = new DetailSentralService()
+const detailSentralService = new DetailSentralService();
 import { notifyError } from "@/services/helper/toast-notification"
-import type { CheckboxValueType } from 'element-plus'
-import SearchBoxSuggestion from "@/components/ui/SearchBoxSuggestion.vue"
+import SearchBoxSuggestion from "@/components/ui/SearchBoxSuggestion.vue";
 import LottieInfo from "@/assets/lottie/info.json"
-import ComponentDraft from "@/components/Status/ComponentDraft.vue"
+import ComponentDraft from "@/components/Status/ComponentDraft.vue";
 import ComponentDisetujui from "@/components/Status/ComponentDisetujui.vue"
-import ComponentDitolakT1 from "@/components/Status/ComponentDitolakT1.vue"
+import ComponentDitolakT1 from "@/components/Status/ComponentDitolakT1.vue";
 import ComponentDitolakT2 from "@/components/Status/ComponentDitolakT2.vue"
-import ComponentWaitingT1 from "@/components/Status/ComponentWaitingT1.vue"
+import ComponentWaitingT1 from "@/components/Status/ComponentWaitingT1.vue";
 import ComponentWaitingT2 from "@/components/Status/ComponentWaitingT2.vue"
-import ComponentNotInput from "@/components/Status/ComponentNotInput.vue"
-import ComponentNotUpdate from "@/components/Status/ComponentNotUpdate.vue"
+import ComponentNotInput from "@/components/Status/ComponentNotInput.vue";
+import ComponentNotUpdate from "@/components/Status/ComponentNotUpdate.vue";
 import TabWrapperSentral from "@/components/MasterUnitSentral/TabWrapperSentral.vue"
 import TabItem from "@/components/ui/TabItem.vue"
-import ModalWrapper from "@/components/ui/ModalWrapper.vue"
+import ModalWrapper from "@/components/ui/ModalWrapper.vue";
 import Loading from "@/components/ui/LoadingSpinner.vue"
-import KeteranganAnomali from "@/components/RekapKertasKerja/KeteranganAnomali.vue"
+import KeteranganAnomali from "@/components/RekapKertasKerja/KeteranganAnomali.vue";
 import IconEmptyData from "@/components/icons/IconEmptyData.vue"
 import jsonData from "@/assets/lottie/success.json"
-import ConfirmationDialog from "@/components/ui/ConfirmationDialog.vue"
+import ConfirmationDialog from "@/components/ui/ConfirmationDialog.vue";
 import IconFolder from "@/components/icons/IconFolder.vue"
 import ShimmerLoading from "@/components/ui/ShimmerLoading.vue"
 
@@ -832,12 +1041,11 @@ const comboKondisiMesin = ref<any[]>([])
 const checkAllKondisiMesin = ref(false)
 const checkPembangkit = ref(false)
 const checkDmn = ref(false)
-const pengelola = ref<CheckboxValueType[]>([])
+const pengelola = ref<any[]>([])
 const indeterminate = ref(false)
-const indeterminateDmn = ref(false)
 const listSentralData = ref<any[]>([])
 const selectedKategoriPembangkit = ref<string[]>([])
-const dmn = ref<CheckboxValueType[]>([])
+const dmn = ref<any[]>([])
 const childDmn = ref<any[]>([])
 const selectedUmurMesin = ref<string[]>([])
 const selectedKondisiMesin = ref<any[]>([])
@@ -852,28 +1060,32 @@ const comboIRR = ref<any[]>([])
 const isFSUploadSuccess = ref(false)
 const isEvidenceSuccess = ref<boolean>(false)
 const showModal = ref(false)
+const isPembangkitDropdownOpen = ref(false)
+const isDmnDropdownOpen = ref(false)
+const isUmurMesinDropdownOpen = ref(false)
+const isKondisiMesinDropdownOpen = ref(false)
 const selectedPengelola = ref<any[]>([])
 const isNotAlreadyInput = ref(false)
 const isRekapDialogOpen = ref(false)
 const isFSDialogOpen = ref(false)
 const kodePengelola = ref<any>('ALL')
 const tahunBerjalan = ref<number>(new Date().getFullYear())
-const listStatusInputAsumsiSentral = ref<any[]>([])
-const listStatusInputAsumsiMesin = ref<any[]>([])
-const isModalUnggahKertasKerjaOpen = ref<boolean>(false)
+const listStatusInputAsumsiSentral = ref<any[]>([]);
+const listStatusInputAsumsiMesin = ref<any[]>([]);
+const isModalUnggahKertasKerjaOpen = ref<boolean>(false);
 const isModalUnggahFSOpen = ref<boolean>(false)
 const currentKodePengelola = ref<string>('')
 const listSuggestionSentral = ref()
-const isRequiredPropsComplete = ref<boolean>(false)
+const isRequiredPropsComplete = ref<boolean>(false);
 const currentIdMesin = ref<string>('')
-const currentIdSentral = ref<string>('')
+const currentIdSentral = ref<string>('');
 const currentNamaMesin = ref<string>('')
-const currentKodeJenisPembangkit = ref<string>('')
+const currentKodeJenisPembangkit = ref<string>('');
 const isRekapUploadSuccess = ref(false)
-const totalPagesRef = ref(1)
+const totalPagesRef = ref(1);
 const totalRecords = ref(0)
-const totalPages = ref(0)
-let encryptStorageRef: any = null
+const totalPages = ref(0);
+let encryptStorageRef: any = null;
 
 interface PengelolaItem {
   data: any
@@ -905,42 +1117,42 @@ const fetchSuggestionSentral = async () => {
       index === self.findIndex((t: any) => (
         t.sentral === value.sentral
       ))
-    )
+    );
   } catch (error) {
     console.error('Fetch Suggestion Sentral Error : ', error)
   }
 }
 const fetchSentralData = async () => {
   try {
-    isLoading.value = true
+    isLoading.value = true;
     const response: SentralItem = await rekapService.getSentralData(store.searchRekapQuery, selectedPengelola.value, selectedKategoriPembangkit.value, dmn.value, selectedKondisiMesin.value, selectedUmurMesin.value, navigationStore.currentPage, navigationStore.pageLimit)
     if (response.data !== null) {
       if (listSentralData.value.length === 0) {
-        listSentralData.value = response.data
+        listSentralData.value = response.data;
         sentralData.value = response.data.map((sentral: any) => ({ ...sentral, mesins: [] }))
       } else {
         sentralData.value = response.data.map((sentral: any) => ({ ...sentral, mesins: [] }))
       }
-      await togglePembangkit(response.data[0].uuid_sentral)
+      await togglePembangkit(response.data[0].uuid_sentral);
       console.log(sentralData.value, 'uy')
     } else {
-      sentralData.value = []
+      sentralData.value = [];
     }
-    totalRecords.value = response.meta.totalRecords
+    totalRecords.value = response.meta.totalRecords;
     totalPages.value = response.meta.totalPages
     navigationStore.pageLimit = response.meta.limit
   } catch (error) {
-    isLoading.value = false
+    isLoading.value = false;
     console.error('Fetch Sentral Data Error : ', error)
   }
-}
+};
 const fetchMesinByIdSentral = async (idSentral: any) => {
   try {
-    const mesinById: any | undefined = await rekapService.getMesinByIdSentral(idSentral)
+    const mesinById: any | undefined = await rekapService.getMesinByIdSentral(idSentral);
     for (const item of mesinById.data) {
       if (item.photo1 !== '') {
         try {
-          const response: any = await detailSentralService.getPhoto(item.photo1)
+          const response: any = await detailSentralService.getPhoto(item.photo1);
           const blob = new Blob([response.data])
           item.photo2 = URL.createObjectURL(blob)
         } catch (error) {
@@ -948,86 +1160,86 @@ const fetchMesinByIdSentral = async (idSentral: any) => {
         }
       }
     }
-    const sentral: any | undefined = sentralData.value.filter((sentral) => sentral.uuid_sentral === idSentral)
+    const sentral: any | undefined = sentralData.value.filter((sentral) => sentral.uuid_sentral === idSentral);
     return { mesinById, sentral }
   } catch (error) {
-    console.error('Fetch Mesin By Kode Sentral Error : ', error)
+    console.error('Fetch Mesin By Kode Sentral Error : ', error);
   }
 }
 const fetchPengelolaData = async () => {
   try {
-    const response: PengelolaItem = await rekapService.getPengelolaData()
+    const response: PengelolaItem = await rekapService.getPengelolaData();
     pengelolaData.value = response.data
     pengelolaData.value.push({
       id_pengelola: 0,
       kode_pengelola: "ALL",
       pengelola: "ALL"
-    })
+    });
     pengelolaData.value.reverse()
   } catch (error) {
     console.error(error)
   }
-}
+};
 
 const fetchComboKategoriPembangkit = async () => {
   try {
     const response: any = await rekapService.getComboKategoriPembangkit()
     if (response.success) {
-      kategoriPembangkitData.value = [];
+      kategoriPembangkitData.value = []
       if (response.data.length > 0) {
         response.data.map((item: any) => {
           kategoriPembangkitData.value.push({
             id: item.jenis_kit,
-            name: item.jenis_kit,
+            name: item.jenis_kit
           })
           if (item.dmn) {
             item.dmn.map((child: any) => {
               if (child.daya_mampu != "")
                 childDmn.value.push({
                   id: child.id_daya,
-                  name: 'PLTU ' + child.daya_mampu,
+                  name: 'PLTU ' + child.daya_mampu
                 })
             })
-          };
+          }
         })
-      };
+      }
     }
     kategoriPembangkitData.value.reverse()
-    const comboJenisKitData = response.data
+    const comboJenisKitData = response.data;
     for (const item of comboJenisKitData) {
       comboJenisKit.value.push({
         name: item.jenis_kit,
-        id: item.jenis_kit,
+        id: item.jenis_kit
       })
     }
   } catch (error) {
     console.error("Fetch Filter Kategori Error : ", error)
   }
-}
+};
 const fetchComboUmurMesin = async () => {
   try {
-    const response: any = await rekapService.getComboUmurMesin()
+    const response: any = await rekapService.getComboUmurMesin();
     const comboUmurMesinData = response.data
     kategoriUmurMesinData.value = response.data
     for (const item of comboUmurMesinData) {
       comboUmurMesin.value.push({
         name: item.umur_mesin,
-        id: item.umur_mesin,
+        id: item.umur_mesin
       })
     }
   } catch (error) {
-    console.error("Fetch Umur Mesin Error : ", error)
+    console.error("Fetch Umur Mesin Error : ", error);
   }
 }
 const fetchComboKondisiMesin = async () => {
   try {
-    const response: any = await rekapService.getComboKondisiMesin()
+    const response: any = await rekapService.getComboKondisiMesin();
     const comboKondisiMesinData = response.data
-    kategoriKondisiMesinData.value = response.data
+    kategoriKondisiMesinData.value = response.data;
     for (const item of comboKondisiMesinData) {
       comboKondisiMesin.value.push({
         name: item.kondisi_unit,
-        id: item.kondisi_unit,
+        id: item.kondisi_unit
       })
     }
   } catch (error) {
@@ -1036,45 +1248,45 @@ const fetchComboKondisiMesin = async () => {
 }
 const fetchComboIRR = async () => {
   try {
-    const response: any = await rekapService.getComboIRR()
-    const comboIRRData = response.data
+    const response: any = await rekapService.getComboIRR();
+    const comboIRRData = response.data;
     for (const item of comboIRRData) {
       comboIRR.value.push({
         name: item.nilai_irr,
-        id: item.nilai_irr,
+        id: item.nilai_irr
       })
     }
   } catch (error) {
-    console.error('Fetch Combo IRR Error : ', error)
+    console.error('Fetch Combo IRR Error : ', error);
   }
 }
 const fetchNilaiSentral = async () => {
   try {
     const response: any = await rekapService.getNilaiSentral(tahunBerjalan.value)
     if (response.data !== null) {
-      sentralAssetIRRNPV.value = response.data
+      sentralAssetIRRNPV.value = response.data;
     } else {
-      sentralAssetIRRNPV.value = []
+      sentralAssetIRRNPV.value = [];
     }
   } catch (error) {
-    console.error('Fetch Nilai Sentral Error : ', error)
+    console.error('Fetch Nilai Sentral Error : ', error);
   }
-}
+};
 const fetchNilaiMesin = async () => {
   try {
     const response: any = await rekapService.getNilaiMesin(tahunBerjalan.value)
-    mesinSisaIRRNPV.value = response.data === null ? [] : response.data
+    mesinSisaIRRNPV.value = response.data === null ? [] : response.data;
   } catch (error) {
     console.error('Fetch Nilai Mesin Error : ', error)
   }
 }
 const fetchStatusFSSentral = async () => {
   try {
-    const response: any = await rekapService.getStatusFSSentral()
+    const response: any = await rekapService.getStatusFSSentral();
     if (response.data !== null) {
-      statusFSSentral.value = response.data
+      statusFSSentral.value = response.data;
     } else {
-      statusFSSentral.value = []
+      statusFSSentral.value = [];
     }
   } catch (error) {
     console.error('Fetch Status FS Sentral Error : ', error)
@@ -1082,15 +1294,15 @@ const fetchStatusFSSentral = async () => {
 }
 const fetchStatusFSMesin = async () => {
   try {
-    const response: any = await rekapService.getStatusFSMesin()
-    statusFSMesin.value = response.data
+    const response: any = await rekapService.getStatusFSMesin();
+    statusFSMesin.value = response.data;
   } catch (error) {
-    console.error('Fetch Status FS Mesin Error : ', error)
+    console.error('Fetch Status FS Mesin Error : ', error);
   }
 }
 const fetchStatusRealisasiSentral = async () => {
   try {
-    const response: any = await rekapService.getStatusRealisasiSentral()
+    const response: any = await rekapService.getStatusRealisasiSentral();
     statusRealisasiSentral.value = response.data
   } catch (error) {
     console.error('Fetch Status Realisasi Sentral Error : ', error)
@@ -1098,7 +1310,7 @@ const fetchStatusRealisasiSentral = async () => {
 }
 const fetchStatusRealisasiMesin = async () => {
   try {
-    const response: any = await rekapService.getStatusRealisasiMesin()
+    const response: any = await rekapService.getStatusRealisasiMesin();
     statusRealisasiMesin.value = response.data
   } catch (error) {
     console.error('Fetch Status Realisasi Sentral Error : ', error)
@@ -1106,7 +1318,7 @@ const fetchStatusRealisasiMesin = async () => {
 }
 const fetchCheckInputAsumsiSentral = async () => {
   try {
-    const response: any = await rekapService.getCheckInputAsumsiSentral()
+    const response: any = await rekapService.getCheckInputAsumsiSentral();
     listStatusInputAsumsiSentral.value = response.data
   } catch (error) {
     console.error('Fetch Check Input Asumsi Mesin Error : ', error)
@@ -1114,94 +1326,94 @@ const fetchCheckInputAsumsiSentral = async () => {
 }
 const fetchCheckInputAsumsiMesin = async () => {
   try {
-    const response: any = await rekapService.getCheckInputAsumsiMesin()
-    listStatusInputAsumsiMesin.value = response.data
+    const response: any = await rekapService.getCheckInputAsumsiMesin();
+    listStatusInputAsumsiMesin.value = response.data;
   } catch (error) {
     console.error('Fetch Check Input Asumsi Mesin Error : ', error)
   }
 }
 const handleDownloadTemplateRekap = async () => {
   try {
-    isLoading.value = true
+    isLoading.value = true;
     const response: any = await rekapService.downloadTemplateRekap(tahunBerjalan.value, tahunBerjalan.value - 1, currentIdMesin.value);
     const contentDisposition = response.headers['content-disposition']
     const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
-    const fileName = fileNameMatch ? fileNameMatch[1] : `Kertas Kerja Actual - ${currentNamaMesin.value}_${tahunBerjalan.value}_${globalFormat.formatNumberFiveDigits(parseInt(currentIdMesin.value))}.xlsx`
+    const fileName = fileNameMatch ? fileNameMatch[1] : `Kertas Kerja Actual - ${currentNamaMesin.value}_${tahunBerjalan.value}_${globalFormat.formatNumberFiveDigits(parseInt(currentIdMesin.value))}.xlsx`;
     const blob = new Blob([response.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
     const url = window.URL.createObjectURL(blob)
-    const link = document.createElement("a");
-    link.href = url
+    const link = document.createElement("a")
+    link.href = url;
     link.setAttribute("download", fileName);
-    document.body.appendChild(link)
-    link.click();
+    document.body.appendChild(link);
+    link.click()
     document.body.removeChild(link)
   } catch (error) {
-    notifyError("Download Template Rekap Gagal", 3000);
-    console.error("Handle Download Template Rekap Error : ", error)
+    notifyError("Download Template Rekap Gagal", 3000)
+    console.error("Handle Download Template Rekap Error : ", error);
   } finally {
     isLoading.value = false;
-  }
+  };
 }
 const handleDownloadTemplateFS = async () => {
   try {
-    isLoading.value = true
-    const response: any = await rekapService.downloadTemplateFS(tahunBerjalan.value, currentIdMesin.value, currentKodeJenisPembangkit.value)
-    const contentDisposition = response.headers['content-disposition']
-    const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/)
-    const fileName = fileNameMatch ? fileNameMatch[1] : `Kertas Kerja FS - ${currentNamaMesin.value}_${globalFormat.formatNumberFiveDigits(parseInt(currentIdMesin.value))}.xlsx`
-    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
+    isLoading.value = true;
+    const response: any = await rekapService.downloadTemplateFS(tahunBerjalan.value, currentIdMesin.value, currentKodeJenisPembangkit.value);
+    const contentDisposition = response.headers['content-disposition'];
+    const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.+)"$/);
+    const fileName = fileNameMatch ? fileNameMatch[1] : `Kertas Kerja FS - ${currentNamaMesin.value}_${globalFormat.formatNumberFiveDigits(parseInt(currentIdMesin.value))}.xlsx`;
+    const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
     link.href = url
     link.setAttribute('download', fileName)
     document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    link.click();
+    document.body.removeChild(link);
   } catch (error) {
     notifyError('Download Template FS Gagal', 3000)
     console.error('Handle Download Template Rekap Error : ', error)
   } finally {
-    isLoading.value = false
-  }
-}
-const selectedFile: any = ref(null)
-const selectedFileEvidence: any = ref(null)
-const selectedFileFS: any = ref(null)
+    isLoading.value = false;
+  };
+};
+const selectedFile: any = ref(null);
+const selectedFileEvidence: any = ref(null);
+const selectedFileFS: any = ref(null);
 const handleFileChange = (event: any) => {
   if (event.target.files.length === 1) {
-    selectedFile.value = event.target.files[0]
+    selectedFile.value = event.target.files[0];
   } else {
     selectedFile.value = null
   }
-}
+};
 const handleFileChangeEvidence = (event: any) => {
   if (event.target.files.length === 1) {
     selectedFileEvidence.value = event.target.files[0]
   } else {
-    selectedFileEvidence.value = null
+    selectedFileEvidence.value = null;
   }
-}
+};
 const handleFileFSChange = (event: any) => {
   if (event.target.files.length === 1) {
-    selectedFileFS.value = event.target.files[0]
+    selectedFileFS.value = event.target.files[0];
   } else {
     selectedFileFS.value = null
   }
-}
+};
 const uploadFileEvidence = async (statusFS: any) => {
   try {
     isLoading.value = true
-    const formData = new FormData()
-    formData.append('file', selectedFileEvidence.value)
-    const response: any = await rekapService.uploadEvidence(formData)
-    await rekapService.updateEvidencePath(currentIdMesin.value, tahunBerjalan.value.toString(), response.data, statusFS, selectedFileEvidence.value.name)
+    const formData = new FormData();
+    formData.append('file', selectedFileEvidence.value);
+    const response: any = await rekapService.uploadEvidence(formData);
+    await rekapService.updateEvidencePath(currentIdMesin.value, tahunBerjalan.value.toString(), response.data, statusFS, selectedFileEvidence.value.name);
     isLoading.value = false
     isEvidenceSuccess.value = true
     await wait(1500)
-    isEvidenceSuccess.value = false
-    isModalUnggahKertasKerjaOpen.value = false
+    isEvidenceSuccess.value = false;
+    isModalUnggahKertasKerjaOpen.value = false;
     await fetchStatusRealisasiSentral()
-    await fetchStatusRealisasiMesin()
+    await fetchStatusRealisasiMesin();
   } catch (error) {
     console.error('Error upload file : ', error)
   } finally {
@@ -1213,13 +1425,13 @@ const uploadFile = async () => {
   try {
     isLoading.value = true
     if (!selectedFile.value) {
-      notifyError('Mohon pilih file excel terlebih dahulu', 3000)
+      notifyError('Mohon pilih file excel terlebih dahulu', 3000);
       return
-    }
+    };
     if (selectedFile.value.size > 2000000) {
       notifyError('Ukuran file Kertas Kerja tidak boleh lebih dari 2MB', 5000)
-      return
-    }
+      return;
+    };
     const formData = new FormData()
     formData.append('file', selectedFile.value)
     if (selectedFileEvidence.value) {
@@ -1230,28 +1442,28 @@ const uploadFile = async () => {
         await uploadFileEvidence(0)
       }
     }
-    await rekapService.uploadTemplateAwalKK(formData)
-    isLoading.value = false
-    isRekapUploadSuccess.value = true
-    await wait(1500)
+    await rekapService.uploadTemplateAwalKK(formData);
+    isLoading.value = false;
+    isRekapUploadSuccess.value = true;
+    await wait(1500);
     isRekapUploadSuccess.value = false
-    isModalUnggahKertasKerjaOpen.value = false
-    await fetchStatusRealisasiSentral()
+    isModalUnggahKertasKerjaOpen.value = false;
+    await fetchStatusRealisasiSentral();
     await fetchStatusRealisasiMesin()
-    selectedFileEvidence.value = null
+    selectedFileEvidence.value = null;
     if (userAuthStore.levelAlias === 'Mb*0yT%3' || userAuthStore.levelAlias === 'Xf!8qP@7' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k')) {
-      router.push({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { uuid_sentral: currentIdSentral.value, tahun: tahunBerjalan.value } })
+      router.push({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { uuid_sentral: currentIdSentral.value, tahun: tahunBerjalan.value } });
     }
     else {
       router.push({ name: 'persetujuan-by-approve' })
     }
   } catch (error) {
-    console.error('Error upload file : ', error)
+    console.error('Error upload file : ', error);
     notifyError('Upload File Gagal, mohon coba lagi', 3000)
   } finally {
     isLoading.value = false
   }
-}
+};
 const uploadFileFS = async () => {
   try {
     isLoading.value = true
@@ -1260,282 +1472,348 @@ const uploadFileFS = async () => {
       return
     }
     if (selectedFileFS.value.size > 2000000) {
-      notifyError('Ukuran file Feasibility Study tidak boleh lebih dari 2MB', 5000)
-      return
+      notifyError('Ukuran file Feasibility Study tidak boleh lebih dari 2MB', 5000);
+      return;
     }
-    const formData = new FormData()
-    formData.append('file', selectedFileFS.value)
+    const formData = new FormData();
+    formData.append('file', selectedFileFS.value);
     if (selectedFileEvidence.value) {
       if (selectedFileEvidence.value.size > 5000000) {
         notifyError('Ukuran file Evidence tidak boleh lebih dari 5MB', 5000)
-        return
+        return;
       } else {
         await uploadFileEvidence(1)
       }
     }
-    await rekapService.uploadTemplateAwalFS(formData)
-    isLoading.value = false
+    await rekapService.uploadTemplateAwalFS(formData);
+    isLoading.value = false;
     isFSUploadSuccess.value = true
     await wait(1500)
-    isFSUploadSuccess.value = false
+    isFSUploadSuccess.value = false;
     isModalUnggahFSOpen.value = false
     await fetchStatusFSSentral()
-    await fetchStatusFSMesin()
-    selectedFileEvidence.value = null
+    await fetchStatusFSMesin();
+    selectedFileEvidence.value = null;
     if (userAuthStore.levelAlias === 'Mb*0yT%3') {
-      router.push({ name: 'persetujuan-fs', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { uuid_sentral: currentIdSentral.value } })
+      router.push({ name: 'persetujuan-fs', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { uuid_sentral: currentIdSentral.value } });
     } else {
       router.push({ name: 'persetujuan-by-approve' })
-    }
+    };
   } catch (error) {
     console.error('Error upload file : ', error)
     notifyError('Upload File Gagal, mohon coba lagi', 3000)
   } finally {
     isLoading.value = false
   }
-}
+};
 
 const changeSelectedPengelola = async (pengelola: any) => {
-  isLoading.value = true
+  isLoading.value = true;
   if (pengelola === 'ALL') {
     if (kodePengelola.value !== 'ALL') {
       kodePengelola.value = pengelola
-      selectedPengelola.value = []
-      navigationStore.currentPage = 1
+      selectedPengelola.value = [];
+      navigationStore.currentPage = 1;
       await fetchSentralData()
     }
   } else if (!selectedPengelola.value.includes(pengelola)) {
-    selectedPengelola.value.push(pengelola)
+    selectedPengelola.value.push(pengelola);
     kodePengelola.value = null
-    navigationStore.currentPage = 1
+    navigationStore.currentPage = 1;
     await fetchSentralData()
   } else {
     if (selectedPengelola.value.length === 1) {
       kodePengelola.value = 'ALL'
     }
-    const pengelolaIndex = selectedPengelola.value.indexOf(pengelola)
-    selectedPengelola.value.splice(pengelolaIndex, 1)
+    const pengelolaIndex = selectedPengelola.value.indexOf(pengelola);
+    selectedPengelola.value.splice(pengelolaIndex, 1);
     navigationStore.currentPage = 1
-    await fetchSentralData()
+    await fetchSentralData();
   }
-  isLoading.value = false
+  isLoading.value = false;
 }
 const changePageLimit = async () => {
-  isLoading.value = true
-  navigationStore.currentPage = 1
-  await fetchSentralData()
-  isLoading.value = false
-}
+  isLoading.value = true;
+  navigationStore.currentPage = 1;
+  await fetchSentralData();
+  isLoading.value = false;
+};
 const handleSearch = async () => {
   try {
-    isLoading.value = true
+    isLoading.value = true;
     navigationStore.currentPage = 1
     await fetchSentralData()
   } catch (error) {
-    console.error('Search Error : ', error)
+    console.error('Search Error : ', error);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 const togglePembangkit = async (idSentral: any) => {
-  isLoading.value = true
+  isLoading.value = true;
+  console.log(idSentral, "ID SENTRAL")
   try {
     const { mesinById, sentral }: any = await fetchMesinByIdSentral(idSentral)
     if (isPembangkitOpen(idSentral)) {
       isPembangkitTabOpen.value = isPembangkitTabOpen.value.filter(
         (id) => id !== idSentral
-      )
+      );
       sentral[0].mesins.pop()
     } else {
       isPembangkitTabOpen.value.push(idSentral)
       const finalMesin = mesinById.data.map((mesin: any) => {
         return {
           ...mesin,
-          status_fs: statusFSMesin.value.find((status: any) => status.uuid_mesin === mesin.uuid_mesin)?.status,
-          status_realisasi: statusRealisasiMesin.value.find((status: any) => status.uuid_mesin === mesin.uuid_mesin)?.status,
+          status_fs: statusFSMesin.value.find((status: any) => status.id_mesin === mesin.id_mesin)?.status,
+          status_realisasi: statusRealisasiMesin.value.find((status: any) => status.id_mesin === mesin.id_mesin)?.status,
         }
-      })
+      });
       sentral[0].mesins.push(finalMesin)
     }
   } catch (error) {
-    console.error('Toggle Error : ', error)
+    console.error('Toggle Error : ', error);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 const isPembangkitOpen = (idSentral: string) => {
-  return isPembangkitTabOpen.value.includes(idSentral)
-}
+  return isPembangkitTabOpen.value.includes(idSentral);
+};
 const goToPage = async (page: any) => {
   try {
-    isLoading.value = true
+    isLoading.value = true;
     navigationStore.currentPage = page
-    y.value = 0
+    y.value = 0;
     await fetchSentralData()
 
   } catch (error) {
     console.error('Go To Page Error : ', error)
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 const goToPrevious = () => {
-  goToPage(navigationStore.currentPage - 1)
-}
+  goToPage(navigationStore.currentPage - 1);
+};
 const goToNext = () => {
   goToPage(navigationStore.currentPage + 1)
-}
+};
 const generatePageList = computed(() => {
-  const pageList = []
-  const maxPages = 5
+  const pageList = [];
+  const maxPages = 5;
   if (totalPages.value <= maxPages) {
     for (let i = 1; i <= totalPages.value; i++) {
-      pageList.push(i)
+      pageList.push(i);
     }
   } else if (navigationStore.currentPage <= 3) {
     for (let i = 1; i <= Math.min(totalPages.value, maxPages - 1); i++) {
       pageList.push(i)
     }
     if (totalPages.value > maxPages) {
-      pageList.push('...')
+      pageList.push('...');
       pageList.push(totalPages.value)
     }
   } else if (navigationStore.currentPage >= totalPages.value - 2) {
-    pageList.push(1)
+    pageList.push(1);
     pageList.push('...')
     for (let i = totalPages.value - (maxPages - 2); i <= totalPages.value; i++) {
-      pageList.push(i)
+      pageList.push(i);
     }
   } else {
-    pageList.push(1)
-    pageList.push('...')
+    pageList.push(1);
+    pageList.push('...');
     for (let i = navigationStore.currentPage - 1; i <= navigationStore.currentPage + 1; i++) {
       pageList.push(i)
     }
-    pageList.push('...')
+    pageList.push('...');
     pageList.push(totalPages.value)
   }
-  return pageList
-})
+  return pageList;
+});
 const handleFocus = () => {
   isSearchModalOpen.value = true
-}
+};
 const changeSentralData = async () => {
   isLoading.value = true
   if (!selectedKategoriPembangkit.value.includes('PLTU')) {
     dmn.value = []
   }
-  await fetchSentralData()
-  showModal.value = false
+  await fetchSentralData();
+  showModal.value = false;
   isLoading.value = false
 }
 const checkInputAsumsi = (idMesin: any) => {
-  const isMatched = listStatusInputAsumsiMesin.value.filter((mesin) => mesin.uuid_mesin === idMesin)[0].status_kk === true
+  const isMatched = listStatusInputAsumsiMesin.value.filter((mesin) => mesin.uuid_mesin === idMesin)[0].status_kk === true;
   return isMatched
 }
 const checkUnggahRequiredProp = (nilaiAssetAwal: any, tahunDataAwal: any, masaManfaat: any) => {
-  const isComplete: boolean = nilaiAssetAwal === '-' || tahunDataAwal === '' || masaManfaat === '0'
+  const isComplete: boolean = nilaiAssetAwal === '-' || tahunDataAwal === '' || masaManfaat === '0';
   return isComplete
 }
-const handleCheckPembangkit = (val: CheckboxValueType) => {
+const handleCheckPembangkit = (val: any) => {
   indeterminate.value = false;
   if (val) {
     selectedKategoriPembangkit.value = kategoriPembangkitData.value.map((_) => _.id)
   } else {
     selectedKategoriPembangkit.value = [];
   }
-};
-const handleCheckDmn = (val: CheckboxValueType) => {
-  indeterminate.value = false
-  if (val) {
-    dmn.value = childDmn.value.map((_) => _.id);
-  } else {
-    dmn.value = []
-  };
 }
-const handleCheckUmurMesin = (val: CheckboxValueType) => {
+const handleCheckDmn = (val: any) => {
   indeterminate.value = false;
+  if (val) {
+    dmn.value = childDmn.value.map((_) => _.id)
+  } else {
+    dmn.value = [];
+  }
+}
+const handleCheckUmurMesin = (val: any) => {
+  indeterminate.value = false
   if (val) {
     selectedUmurMesin.value = comboUmurMesin.value.map((_) => _.id)
   } else {
     selectedUmurMesin.value = []
-  };
+  }
 }
-const handleCheckKondisiMesin = (val: CheckboxValueType) => {
+const handleCheckKondisiMesin = (val: any) => {
   indeterminate.value = false;
   if (val) {
     selectedKondisiMesin.value = comboKondisiMesin.value.map((_) => _.id)
   } else {
     selectedKondisiMesin.value = [];
   }
+}
+
+const togglePembangkitDropdown = () => {
+  isPembangkitDropdownOpen.value = !isPembangkitDropdownOpen.value
+}
+
+const removeSelectedPembangkit = (id: any) => {
+  selectedKategoriPembangkit.value = selectedKategoriPembangkit.value.filter(item => item !== id)
+}
+
+const clearPembangkit = () => {
+  selectedKategoriPembangkit.value = [];
+}
+
+const toggleDmnDropdown = () => {
+  isDmnDropdownOpen.value = !isDmnDropdownOpen.value
+}
+
+const removeSelectedDmn = (id: any) => {
+  dmn.value = dmn.value.filter(item => item !== id);
+}
+
+const clearDmn = () => {
+  dmn.value = []
+}
+
+const toggleUmurMesinDropdown = () => {
+  isUmurMesinDropdownOpen.value = !isUmurMesinDropdownOpen.value;
+}
+
+const removeSelectedUmurMesin = (id: any) => {
+  selectedUmurMesin.value = selectedUmurMesin.value.filter(item => item !== id)
+}
+
+const clearUmurMesin = () => {
+  selectedUmurMesin.value = []
+}
+
+const toggleKondisiMesinDropdown = () => {
+  isKondisiMesinDropdownOpen.value = !isKondisiMesinDropdownOpen.value;
+}
+
+const removeSelectedKondisiMesin = (id: any) => {
+  selectedKondisiMesin.value = selectedKondisiMesin.value.filter(item => item !== id);
+}
+
+const clearKondisiMesin = () => {
+  selectedKondisiMesin.value = [];
+}
+
+const handleClickOutside = (event: MouseEvent) => {
+  const target = event.target as HTMLElement;
+  if (!target.closest('.relative')) {
+    isPembangkitDropdownOpen.value = false
+    isDmnDropdownOpen.value = false;
+    isUmurMesinDropdownOpen.value = false
+    isKondisiMesinDropdownOpen.value = false;
+  }
 };
 
 watch(totalPages, (newTotalPages) => {
-  totalPagesRef.value = newTotalPages
-})
+  totalPagesRef.value = newTotalPages;
+});
 
 watch(isLoading, (value) => {
   if (value) {
     document.body.style.overflow = 'hidden'
   } else {
-    document.body.style.overflow = 'auto'
+    document.body.style.overflow = 'auto';
   }
-});
+
+})
 
 watch(pengelola, (val) => {
   if (val.length === 0) {
     checkPembangkit.value = false
-    indeterminate.value = false;
+    indeterminate.value = false
   } else if (val.length === kategoriPembangkitData.value.length) {
     checkPembangkit.value = true
-    indeterminate.value = false;
+    indeterminate.value = false
   } else {
     indeterminate.value = true
   }
-});
+})
 
 watch(dmn, (val) => {
   if (val.length === 0) {
-    checkDmn.value = false;
-    indeterminate.value = false;
+    checkDmn.value = false
+    indeterminate.value = false
   } else if (val.length === childDmn.value.length) {
     checkDmn.value = true
-    indeterminate.value = false;
+    indeterminate.value = false
   } else {
     indeterminate.value = true
   }
-});
+})
 
 watch(store, async (val) => {
   if (val.searchRekapQuery === '') {
     await handleSearch();
   }
-})
+});
 
 onBeforeUnmount(() => {
-  navigationStore.scrollPosition.top = y.value
-})
+  navigationStore.scrollPosition.top = y.value;
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
+
 onMounted(async () => {
-  isLoading.value = true
-  encryptStorageRef = await encryptStoragePromise
-  await fetchStatusFSSentral()
-  await fetchStatusFSMesin()
+  isLoading.value = true;
+  encryptStorageRef = await encryptStoragePromise;
+  await fetchStatusFSSentral();
+  await fetchStatusFSMesin();
   await fetchStatusRealisasiSentral()
   await fetchStatusRealisasiMesin()
-  await fetchSentralData()
+  await fetchSentralData();
   await fetchSuggestionSentral()
-  await fetchPengelolaData()
-  y.value = navigationStore.scrollPosition.top
-  await fetchComboKategoriPembangkit()
+  await fetchPengelolaData();
+  y.value = navigationStore.scrollPosition.top;
+  document.addEventListener('click', handleClickOutside)
+  await fetchComboKategoriPembangkit();
   await fetchComboUmurMesin()
-  await fetchComboKondisiMesin()
+  await fetchComboKondisiMesin();
   await fetchComboIRR()
-  await fetchNilaiSentral()
+  await fetchNilaiSentral();
   await fetchNilaiMesin()
-  await fetchCheckInputAsumsiSentral()
-  await fetchCheckInputAsumsiMesin()
-  isLoading.value = false
-})
+  await fetchCheckInputAsumsiSentral();
+  await fetchCheckInputAsumsiMesin();
+  isLoading.value = false;
+});
 
 </script>
 
@@ -1562,5 +1840,21 @@ ul li.disabled {
   pointer-events: none;
   cursor: not-allowed;
   color: #D1D1DB;
+}
+
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.2s ease;
+  transform-origin: top;
+}
+
+.dropdown-enter-from {
+  opacity: 0;
+  transform: scaleY(0.95) translateY(-10px);
+}
+
+.dropdown-leave-to {
+  opacity: 0;
+  transform: scaleY(0.95) translateY(-10px);
 }
 </style>

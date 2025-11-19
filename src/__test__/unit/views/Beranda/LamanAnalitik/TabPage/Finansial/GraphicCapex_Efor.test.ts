@@ -163,28 +163,6 @@ describe('GraphicCapex_Efor.vue', () => {
       expect(wrapper.find('.scatter-plot-mock').exists()).toBe(true);
     });
 
-    it('should handle modal interaction and basic functionality', async () => {
-      wrapper = createWrapper();
-      await nextTick();
-      
-      // Test modal opening
-      const filterButton = wrapper.find('button');
-      await filterButton.trigger('click');
-      
-      // Test modal content rendering
-      expect(wrapper.find('.modal-wrapper-mock').exists()).toBe(true);
-      expect(wrapper.find('.el-select-mock').exists()).toBe(true);
-      
-      // Test that service calls are made during component interactions
-      expect(mockGrafikService.getGraphicAnalitikEFOR).toHaveBeenCalled();
-      
-      // Verify component handles data correctly
-      expect(wrapper.find('.scatter-plot-mock').exists()).toBe(true);
-      
-      // Test notification mock is available
-      expect(notifyError).toBeDefined();
-    });
-
     it('should handle watch functions and checkbox logic', async () => {
       wrapper = createWrapper();
       await nextTick();

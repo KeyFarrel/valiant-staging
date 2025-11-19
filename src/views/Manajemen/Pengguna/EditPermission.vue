@@ -14,7 +14,7 @@
               Level :
               <span class="text-primaryTextColor">{{
                 levelMappings[roleData.kode_level]
-                }}</span>
+              }}</span>
             </h5>
           </div>
         </div>
@@ -70,7 +70,7 @@
           <div class="flex items-center">
             <span class="inline-block pr-2 text-sm font-normal text-gray-500">Menampilkan</span>
             <select
-              class="p-2 text-sm text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300">
+              class="p-2 text-sm text-gray-500 bg-white border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300">
               <option selected value="-1">All</option>
               <option value="20">20</option>
               <option value="40">40</option>

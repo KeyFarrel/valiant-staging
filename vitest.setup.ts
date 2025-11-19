@@ -128,27 +128,6 @@ vi.mock('date-fns/locale', () => ({
   id: {},
 }));
 
-// Mock Element Plus components globally
-vi.mock('element-plus', () => ({
-  ElSelect: {
-    name: 'ElSelect',
-    template: '<div><slot name="header" /><slot /></div>',
-    props: ['modelValue', 'multiple', 'clearable', 'collapseTagselect', 'placeholder', 'popperClass', 'maxCollapseTags'],
-    emits: ['update:modelValue'],
-  },
-  ElOption: {
-    name: 'ElOption',
-    template: '<div></div>',
-    props: ['label', 'value'],
-  },
-  ElCheckbox: {
-    name: 'ElCheckbox',
-    template: '<div></div>',
-    props: ['modelValue', 'indeterminate'],
-    emits: ['update:modelValue', 'change'],
-  },
-}));
-
 // Mock VueDatePicker
 vi.mock('@vuepic/vue-datepicker', () => ({
   default: {

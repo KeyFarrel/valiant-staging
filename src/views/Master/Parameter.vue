@@ -86,7 +86,7 @@
       <div class="flex items-center space-x-2 text-sm">
         <span>Menampilkan</span>
         <select v-model.number="navigation.pageLimit" name="" id=""
-          class="p-2 text-sm text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
+          class="p-2 text-sm text-gray-500 bg-white border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
           @change="handlePageSizeChange">
           <option value="10">10</option>
           <option value="20">20</option>
@@ -147,7 +147,7 @@
       <div>
         <label for="tahun" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Tahun</label>
         <select id="tahun" v-model="formData.tahun"
-          class="border focus:border-transparent border-gray-300 text-primaryTextColor text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5 border-r-4 border-transparent cursor-pointer outline-1 outline outline-gray-300"
+          class="border focus:border-transparent bg-white border-gray-300 text-primaryTextColor text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5 border-r-4 border-transparent cursor-pointer outline-1 outline outline-gray-300"
           required>
           <option value="" disabled selected hidden>2xxx</option>
           <option v-for="tahun in tahunOptions" :key="tahun" :value="tahun">
@@ -172,7 +172,7 @@
           Discount Rate harus tidak lebih dari 100.
         </div>
         <input type="text" id="discount" v-model="formData.discount_rate" @input="validForm_DT"
-          class="bg-white border border-gray-300 text-primaryTextColor text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
+          class="bg-white border focus:outline-none border-gray-300 text-primaryTextColor text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
           placeholder="Contoh : 10" required />
       </div>
       <div>
@@ -192,7 +192,7 @@
           Corporate Tax Rate harus tidak lebih dari 100.
         </div>
         <input type="text" id="tax" v-model="formData.corporate_tax_rate" @input="validForm_CT"
-          class="bg-white border border-gray-300 text-primaryTextColor text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
+          class="bg-white border focus:outline-none border-gray-300 text-primaryTextColor text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
           placeholder="Contoh : 10" required />
       </div>
       <div class="flex justify-end space-x-2">
@@ -224,7 +224,7 @@
       <div>
         <label for="tahun" class="block mb-2 text-xs font-semibold text-[#4D5E80]">Tahun</label>
         <input type="text" id="tahun" v-model="formData.tahun"
-          class="border border-gray-300 text-primaryTextColor text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
+          class="border bg-white border-gray-300 text-primaryTextColor text-xs rounded-lg focus:ring-gray-400 focus:border-gray-400 block w-full p-2.5"
           placeholder="2xxx" disabled />
       </div>
       <div>

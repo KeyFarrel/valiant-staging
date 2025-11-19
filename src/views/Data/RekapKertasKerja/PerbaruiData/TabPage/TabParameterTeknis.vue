@@ -107,7 +107,8 @@
       <div class="grid grid-cols-3 gap-5">
         <template v-for="(bahanBakarItem, bahanBakarIndex) in bahanBakarsFinal()" :key="bahanBakarIndex">
           <div class="flex flex-row items-center space-x-3">
-            <input type="checkbox" name="" class="rounded-[3.5px] border-primaryColor border cursor-pointer"
+            <input type="checkbox" name=""
+              class="rounded-[3.5px] w-4 h-4 cursor-pointer appearance-none checked:accent-blue-200 checked:appearance-auto bg-white border border-gray-200"
               :id="bahanBakarItem.id" :value="bahanBakarItem.kode_bahan_bakar" v-model="checkedBahanBakar"
               @change="emit('onChecked')"
               v-if="props.isRealisasiUploaded === false && bahanBakarItem.flag_bahan_bakar !== 1">
@@ -116,7 +117,7 @@
                 bahanBakarItem.flag_bahan_bakar === 1 ? 'Utama' : bahanBakarIndex + 1 : '-' }}<span
                   class="text-warningColor">*</span></span>
               <select
-                class="p-2 text-sm text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
+                class="p-2 text-sm text-gray-500 bg-white border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
                 @change="emit('onChange')" v-model="bahanBakarItem.kode_bahan_bakar" required
                 :disabled="props.isRealisasiUploaded === true">
                 <option value="" disabled hidden>Pilih Bahan Bakar</option>

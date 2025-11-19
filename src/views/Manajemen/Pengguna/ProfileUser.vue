@@ -172,8 +172,8 @@
       </div>
       <div class="space-x-3">
         <input v-for="(itemData, itemIndex) in otp" :index="itemIndex" type="text"
-          class="w-10 h-12 border text-center border-[#E0E0E0] rounded-lg p-3 text-sm" maxlength="1" ref="otpRefs"
-          @input="handleInput(itemIndex, $event)" @keydown="handleKeyDown(itemIndex, $event)"
+          class="w-10 h-12 border text-center bg-white border-[#E0E0E0] rounded-lg p-3 text-sm" maxlength="1"
+          ref="otpRefs" @input="handleInput(itemIndex, $event)" @keydown="handleKeyDown(itemIndex, $event)"
           v-model="otp[itemIndex]" />
       </div>
       <div>
@@ -637,7 +637,7 @@ onUnmounted(() => {
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 button:hover svg g path {
   transition-duration: 300ms;
   fill: white

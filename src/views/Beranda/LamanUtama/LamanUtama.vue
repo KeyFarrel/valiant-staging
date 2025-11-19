@@ -370,7 +370,7 @@
         <div class="flex items-center space-x-2 text-sm">
           <span>Menampilkan</span>
           <select v-model="limitMesinBaru" @change="handlePageSizeChange"
-            class="p-2 text-sm text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300">
+            class="p-2 text-sm text-gray-500 bg-white border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300">
             <option value="5">5</option>
             <option value="10">10</option>
             <option value="20">20</option>

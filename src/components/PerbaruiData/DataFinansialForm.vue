@@ -3,7 +3,7 @@
     <div class="flex flex-col space-y-1.5">
       <label class="text-sm font-semibold text-labelColor" for="">Nama Program<span
           class="ml-2 text-xs text-textDisabledColor">2024</span></label>
-      <input type="text" name="" id="" class="h-10 border-gray-300 rounded-lg" />
+      <input type="text" name="" id="" class="h-10 bg-white border-gray-300 rounded-lg " />
     </div>
     <div class="flex flex-col space-y-1.5">
       <label for="" class="text-sm font-semibold text-labelColor">AI</label>

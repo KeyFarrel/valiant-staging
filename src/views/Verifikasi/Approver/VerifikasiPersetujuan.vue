@@ -5,8 +5,8 @@
       <TabItem title="Kertas Kerja">
         <div class="flex flex-row items-center justify-between mb-4">
           <div class="flex flex-row space-x-4">
-            <SearchBox class="w-60" @on-key-enter="changeDataKK" @on-click-submit="changeDataKK"
-              @on-input="changeDataKK" v-model="searchQKK" />
+            <SearchBox class="w-60" @on-key-enter="changeDataKK(true)" @on-click-submit="changeDataKK(true)"
+              @on-input="changeDataKK(true)" v-model="searchQKK" />
             <button type="button" id="hover-button"
               class="text-primaryColor relative bg-white border border-primaryColor hover:bg-primaryColor focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center duration-300 hover:text-white"
               @click="showModalKK = !showModalKK">
@@ -56,17 +56,71 @@
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">
                   Unit Pengelola
                 </h3>
-                <el-select v-model="filterKK.selectedPengelola" multiple clearable collapse-tags
-                  placeholder="Pilih Unit Pengelola" popper-class="custom-header" :max-collapse-tags="5"
-                  class="w-full text-primaryTextColor">
-                  <template #header>
-                    <el-checkbox v-model="checkPengelolaKK" :indeterminate="indeterminatePengelola"
-                      @change="handleCheckPengelolaKK">
-                      Select All Items
-                    </el-checkbox>
-                  </template>
-                  <el-option v-for="item in itemsPengelola" :key="item.id" :label="item.name" :value="item.id" />
-                </el-select>
+                <div class="relative">
+                  <div @click="togglePengelolaKKDropdown"
+                    class="flex items-center justify-between w-full min-h-[38px] p-2 transition-colors bg-white border rounded-md cursor-pointer hover:border-gray-300"
+                    :class="{ 'border-gray-300': isPengelolaKKDropdownOpen }">
+                    <div class="flex flex-wrap items-center flex-1 gap-1">
+                      <template v-if="filterKK.selectedPengelola.length > 0">
+                        <span v-for="(id, index) in filterKK.selectedPengelola.slice(0, 2)" :key="id"
+                          class="inline-flex items-center px-2 py-0.5 text-xs bg-gray-100 rounded">
+                          {{itemsPengelola.find(item => item.id === id)?.name}}
+                          <button @click.stop="removeSelectedPengelolaKK(id)" class="ml-1 hover:text-red-500">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                            </svg>
+                          </button>
+                        </span>
+                        <span v-if="filterKK.selectedPengelola.length > 2" class="text-xs text-gray-500">
+                          +{{ filterKK.selectedPengelola.length - 2 }}
+                        </span>
+                      </template>
+                      <span v-else class="text-sm text-gray-400">
+                        Pilih Unit Pengelola
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <button v-if="filterKK.selectedPengelola.length > 0" @click.stop="clearPengelolaKK"
+                        class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                      <svg class="w-4 h-4 transition-transform duration-200"
+                        :class="{ 'rotate-180': isPengelolaKKDropdownOpen }" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                  <transition name="dropdown">
+                    <div v-if="isPengelolaKKDropdownOpen"
+                      class="absolute z-50 w-full mt-1 overflow-hidden bg-white border rounded-md shadow-lg">
+                      <div class="p-2 border-b">
+                        <label
+                          class="flex items-center p-1 rounded cursor-pointer hover:bg-gray-50 text-primaryTextColor">
+                          <input type="checkbox" v-model="checkPengelolaKK" :indeterminate="indeterminatePengelolaKK"
+                            @change="handleCheckPengelolaKK(checkPengelolaKK)"
+                            class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                          <span class="ml-2 text-sm">Select All Items</span>
+                        </label>
+                      </div>
+                      <div class="overflow-auto max-h-60">
+                        <label v-for="item in itemsPengelola" :key="item.id"
+                          class="flex items-center px-3 py-2 text-sm transition-colors cursor-pointer hover:bg-gray-50 text-primaryTextColor"
+                          :class="{ 'bg-gray-100': filterKK.selectedPengelola.includes(item.id) }">
+                          <input type="checkbox" :value="item.id" v-model="filterKK.selectedPengelola"
+                            class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                          <span class="ml-2">{{ item.name }}</span>
+                        </label>
+                      </div>
+                    </div>
+                  </transition>
+                </div>
               </div>
               <div v-if="
                 userAuthStore.levelAlias === 'Xf!8qP@7' ||
@@ -74,33 +128,141 @@
                 userAuthStore.levelAlias === 'Gk#92lV&'
               " class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pembina</h3>
-                <el-select v-model="filterKK.selectedPembina" multiple clearable collapse-tags
-                  placeholder="Pilih Unit Pembina" popper-class="custom-header" :max-collapse-tags="5"
-                  class="w-full text-primaryTextColor">
-                  <template #header>
-                    <el-checkbox v-model="checkPembinaKK" :indeterminate="indeterminatePembina"
-                      @change="handleCheckPembinaKK">
-                      Select All Items
-                    </el-checkbox>
-                  </template>
-                  <el-option v-for="item in itemsPembina" :key="item.id" :label="item.name" :value="item.id" />
-                </el-select>
+                <div class="relative">
+                  <div @click="togglePembinaKKDropdown"
+                    class="flex items-center justify-between w-full min-h-[38px] p-2 transition-colors bg-white border rounded-md cursor-pointer hover:border-gray-300"
+                    :class="{ 'border-gray-300': isPembinaKKDropdownOpen }">
+                    <div class="flex flex-wrap items-center flex-1 gap-1">
+                      <template v-if="filterKK.selectedPembina.length > 0">
+                        <span v-for="(id, index) in filterKK.selectedPembina.slice(0, 2)" :key="id"
+                          class="inline-flex items-center px-2 py-0.5 text-xs bg-gray-100 rounded">
+                          {{itemsPembina.find(item => item.id === id)?.name}}
+                          <button @click.stop="removeSelectedPembinaKK(id)" class="ml-1 hover:text-red-500">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                            </svg>
+                          </button>
+                        </span>
+                        <span v-if="filterKK.selectedPembina.length > 2" class="text-xs text-gray-500">
+                          +{{ filterKK.selectedPembina.length - 2 }}
+                        </span>
+                      </template>
+                      <span v-else class="text-sm text-gray-400">
+                        Pilih Unit Pembina
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <button v-if="filterKK.selectedPembina.length > 0" @click.stop="clearPembinaKK"
+                        class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                      <svg class="w-4 h-4 transition-transform duration-200"
+                        :class="{ 'rotate-180': isPembinaKKDropdownOpen }" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                  <transition name="dropdown">
+                    <div v-if="isPembinaKKDropdownOpen"
+                      class="absolute z-50 w-full mt-1 overflow-hidden bg-white border rounded-md shadow-lg">
+                      <div class="p-2 border-b">
+                        <label
+                          class="flex items-center p-1 rounded cursor-pointer hover:bg-gray-50 text-primaryTextColor">
+                          <input type="checkbox" v-model="checkPembinaKK" :indeterminate="indeterminatePembinaKK"
+                            @change="handleCheckPembinaKK"
+                            class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                          <span class="ml-2 text-sm">Select All Items</span>
+                        </label>
+                      </div>
+                      <div class="overflow-auto max-h-60">
+                        <label v-for="item in itemsPembina" :key="item.id"
+                          class="flex items-center px-3 py-2 text-sm transition-colors cursor-pointer hover:bg-gray-50 text-primaryTextColor"
+                          :class="{ 'bg-gray-100': filterKK.selectedPembina.includes(item.id) }">
+                          <input type="checkbox" :value="item.id" v-model="filterKK.selectedPembina"
+                            class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                          <span class="ml-2">{{ item.name }}</span>
+                        </label>
+                      </div>
+                    </div>
+                  </transition>
+                </div>
               </div>
               <div class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">
                   Status Persetujuan
                 </h3>
-                <el-select v-model="filterKK.selectedPersetujuan" multiple clearable collapse-tags
-                  placeholder="Pilih Status Persetujuan" popper-class="custom-header" :max-collapse-tags="6"
-                  class="w-full text-primaryTextColor">
-                  <template #header>
-                    <el-checkbox v-model="checkPersetujuanKK" :indeterminate="indeterminateStatus"
-                      @change="handleCheckPersetujuanKK">
-                      Select All Items
-                    </el-checkbox>
-                  </template>
-                  <el-option v-for="item in itemsPersetujuan" :key="item.id" :label="item.name" :value="item.id" />
-                </el-select>
+                <div class="relative">
+                  <div @click="togglePersetujuanKKDropdown"
+                    class="flex items-center justify-between w-full min-h-[38px] p-2 transition-colors bg-white border rounded-md cursor-pointer hover:border-gray-300"
+                    :class="{ 'border-gray-300': isPersetujuanKKDropdownOpen }">
+                    <div class="flex flex-wrap items-center flex-1 gap-1">
+                      <template v-if="filterKK.selectedPersetujuan.length > 0">
+                        <span v-for="(id, index) in filterKK.selectedPersetujuan.slice(0, 2)" :key="id"
+                          class="inline-flex items-center px-2 py-0.5 text-xs bg-gray-100 rounded">
+                          {{itemsPersetujuan.find(item => item.id === id)?.name}}
+                          <button @click.stop="removeSelectedPersetujuanKK(id)" class="ml-1 hover:text-red-500">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                            </svg>
+                          </button>
+                        </span>
+                        <span v-if="filterKK.selectedPersetujuan.length > 2" class="text-xs text-gray-500">
+                          +{{ filterKK.selectedPersetujuan.length - 2 }}
+                        </span>
+                      </template>
+                      <span v-else class="text-sm text-gray-400">
+                        Pilih Status Persetujuan
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <button v-if="filterKK.selectedPersetujuan.length > 0" @click.stop="clearPersetujuanKK"
+                        class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                      <svg class="w-4 h-4 transition-transform duration-200"
+                        :class="{ 'rotate-180': isPersetujuanKKDropdownOpen }" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                  <transition name="dropdown">
+                    <div v-if="isPersetujuanKKDropdownOpen"
+                      class="absolute z-50 w-full mt-1 overflow-hidden bg-white border rounded-md shadow-lg">
+                      <div class="p-2 border-b">
+                        <label
+                          class="flex items-center p-1 rounded cursor-pointer hover:bg-gray-50 text-primaryTextColor">
+                          <input type="checkbox" v-model="checkPersetujuanKK" :indeterminate="indeterminateStatusKK"
+                            @change="handleCheckPersetujuanKK(checkPersetujuanKK)"
+                            class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                          <span class="ml-2 text-sm">Select All Items</span>
+                        </label>
+                      </div>
+                      <div class="overflow-auto max-h-60">
+                        <label v-for="item in itemsPersetujuan" :key="item.id"
+                          class="flex items-center px-3 py-2 text-sm transition-colors cursor-pointer hover:bg-gray-50 text-primaryTextColor"
+                          :class="{ 'bg-gray-100': filterKK.selectedPersetujuan.includes(item.id) }">
+                          <input type="checkbox" :value="item.id" v-model="filterKK.selectedPersetujuan"
+                            class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                          <span class="ml-2">{{ item.name }}</span>
+                        </label>
+                      </div>
+                    </div>
+                  </transition>
+                </div>
               </div>
               <hr class="w-full my-4" />
               <div class="flex justify-end">
@@ -113,7 +275,7 @@
                     class="px-5 py-2 text-sm font-semibold duration-300 border rounded-lg text-primaryColor border-primaryColor hover:bg-hoverColor hover:border-hoverColor hover:text-white">
                     Reset
                   </button>
-                  <button type="submit" @click="changeDataKK"
+                  <button type="submit" @click="changeDataKK(false)"
                     class="w-full text-white bg-[#0099AD] hover:bg-hoverColor duration-300 active:ring-2 active:outline-none active:ring-[#80C1CD] font-medium rounded-lg text-xs px-5 py-3 text-center">
                     Terapkan
                   </button>
@@ -293,7 +455,7 @@
           <div class="flex items-center space-x-2 text-sm">
             <span>Menampilkan</span>
             <select v-model="navigationKK.limit" name="" id=""
-              class="p-2 text-sm text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
+              class="p-2 text-sm text-gray-500 bg-white border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
               @change="changePageLimit($event)">
               <option value="10">10</option>
               <option value="20">20</option>
@@ -345,8 +507,8 @@
       <TabItem title="Feasibility Study">
         <div class="flex flex-row items-center justify-between mb-4">
           <div class="flex flex-row space-x-4">
-            <SearchBox class="w-60" @on-key-enter="changeFS" @on-click-submit="changeFS" @on-input="changeFS"
-              v-model="searchQFS" />
+            <SearchBox class="w-60" @on-key-enter="changeFS(true)" @on-click-submit="changeFS(true)"
+              @on-input="changeFS(true)" v-model="searchQFS" />
             <button type="button" id="hover-button"
               class="text-primaryColor relative bg-white border border-primaryColor hover:bg-primaryColor focus:ring-2 focus:ring-[#9ddee7] ml-4 p-2.5 font-medium rounded-lg text-sm flex justify-center items-center duration-300 hover:text-white"
               @click="showModalFS = !showModalFS">
@@ -396,17 +558,71 @@
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">
                   Unit Pengelola
                 </h3>
-                <el-select v-model="filterFS.selectedPengelola" multiple clearable collapse-tags
-                  placeholder="Pilih Unit Pengelola" popper-class="custom-header" :max-collapse-tags="5"
-                  class="w-full text-primaryTextColor">
-                  <template #header>
-                    <el-checkbox v-model="checkPengelolaFS" :indeterminate="indeterminatePengelola"
-                      @change="handleCheckPengelolaFS">
-                      Select All Items
-                    </el-checkbox>
-                  </template>
-                  <el-option v-for="item in itemsPengelola" :key="item.id" :label="item.name" :value="item.id" />
-                </el-select>
+                <div class="relative">
+                  <div @click="togglePengelolaFSDropdown"
+                    class="flex items-center justify-between w-full min-h-[38px] p-2 transition-colors bg-white border rounded-md cursor-pointer hover:border-gray-300"
+                    :class="{ 'border-gray-300': isPengelolaFSDropdownOpen }">
+                    <div class="flex flex-wrap items-center flex-1 gap-1">
+                      <template v-if="filterFS.selectedPengelola.length > 0">
+                        <span v-for="(id, index) in filterFS.selectedPengelola.slice(0, 2)" :key="id"
+                          class="inline-flex items-center px-2 py-0.5 text-xs bg-gray-100 rounded">
+                          {{itemsPengelola.find(item => item.id === id)?.name}}
+                          <button @click.stop="removeSelectedPengelolaFS(id)" class="ml-1 hover:text-red-500">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                            </svg>
+                          </button>
+                        </span>
+                        <span v-if="filterFS.selectedPengelola.length > 2" class="text-xs text-gray-500">
+                          +{{ filterFS.selectedPengelola.length - 2 }}
+                        </span>
+                      </template>
+                      <span v-else class="text-sm text-gray-400">
+                        Pilih Unit Pengelola
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <button v-if="filterFS.selectedPengelola.length > 0" @click.stop="clearPengelolaFS"
+                        class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                      <svg class="w-4 h-4 transition-transform duration-200"
+                        :class="{ 'rotate-180': isPengelolaFSDropdownOpen }" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                  <transition name="dropdown">
+                    <div v-if="isPengelolaFSDropdownOpen"
+                      class="absolute z-50 w-full mt-1 overflow-hidden bg-white border rounded-md shadow-lg">
+                      <div class="p-2 border-b">
+                        <label
+                          class="flex items-center p-1 rounded cursor-pointer hover:bg-gray-50 text-primaryTextColor">
+                          <input type="checkbox" v-model="checkPengelolaFS" :indeterminate="indeterminatePengelolaFS"
+                            @change="handleCheckPengelolaFS"
+                            class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                          <span class="ml-2 text-sm">Select All Items</span>
+                        </label>
+                      </div>
+                      <div class="overflow-auto max-h-60">
+                        <label v-for="item in itemsPengelola" :key="item.id"
+                          class="flex items-center px-3 py-2 text-sm transition-colors cursor-pointer hover:bg-gray-50 text-primaryTextColor"
+                          :class="{ 'bg-gray-100': filterFS.selectedPengelola.includes(item.id) }">
+                          <input type="checkbox" :value="item.id" v-model="filterFS.selectedPengelola"
+                            class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                          <span class="ml-2">{{ item.name }}</span>
+                        </label>
+                      </div>
+                    </div>
+                  </transition>
+                </div>
               </div>
               <div v-if="
                 userAuthStore.levelAlias === 'Xf!8qP@7' ||
@@ -414,33 +630,141 @@
                 userAuthStore.levelAlias === 'Gk#92lV&'
               " class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">Unit Pembina</h3>
-                <el-select v-model="filterFS.selectedPembina" multiple clearable collapse-tags
-                  placeholder="Pilih Unit Pembina" popper-class="custom-header" :max-collapse-tags="5"
-                  class="w-full text-primaryTextColor">
-                  <template #header>
-                    <el-checkbox v-model="checkPembinaFS" :indeterminate="indeterminatePembina"
-                      @change="handleCheckPembinaFS">
-                      Select All Items
-                    </el-checkbox>
-                  </template>
-                  <el-option v-for="item in itemsPembina" :key="item.id" :label="item.name" :value="item.id" />
-                </el-select>
+                <div class="relative">
+                  <div @click="togglePembinaFSDropdown"
+                    class="flex items-center justify-between w-full min-h-[38px] p-2 transition-colors bg-white border rounded-md cursor-pointer hover:border-gray-300"
+                    :class="{ 'border-gray-300': isPembinaFSDropdownOpen }">
+                    <div class="flex flex-wrap items-center flex-1 gap-1">
+                      <template v-if="filterFS.selectedPembina.length > 0">
+                        <span v-for="(id, index) in filterFS.selectedPembina.slice(0, 2)" :key="id"
+                          class="inline-flex items-center px-2 py-0.5 text-xs bg-gray-100 rounded">
+                          {{itemsPembina.find(item => item.id === id)?.name}}
+                          <button @click.stop="removeSelectedPembinaFS(id)" class="ml-1 hover:text-red-500">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                            </svg>
+                          </button>
+                        </span>
+                        <span v-if="filterFS.selectedPembina.length > 2" class="text-xs text-gray-500">
+                          +{{ filterFS.selectedPembina.length - 2 }}
+                        </span>
+                      </template>
+                      <span v-else class="text-sm text-gray-400">
+                        Pilih Unit Pembina
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <button v-if="filterFS.selectedPembina.length > 0" @click.stop="clearPembinaFS"
+                        class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                      <svg class="w-4 h-4 transition-transform duration-200"
+                        :class="{ 'rotate-180': isPembinaFSDropdownOpen }" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                  <transition name="dropdown">
+                    <div v-if="isPembinaFSDropdownOpen"
+                      class="absolute z-50 w-full mt-1 overflow-hidden bg-white border rounded-md shadow-lg">
+                      <div class="p-2 border-b">
+                        <label
+                          class="flex items-center p-1 rounded cursor-pointer hover:bg-gray-50 text-primaryTextColor">
+                          <input type="checkbox" v-model="checkPembinaFS" :indeterminate="indeterminatePembinaFS"
+                            @change="handleCheckPembinaFS"
+                            class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                          <span class="ml-2 text-sm">Select All Items</span>
+                        </label>
+                      </div>
+                      <div class="overflow-auto max-h-60">
+                        <label v-for="item in itemsPembina" :key="item.id"
+                          class="flex items-center px-3 py-2 text-sm transition-colors cursor-pointer hover:bg-gray-50 text-primaryTextColor"
+                          :class="{ 'bg-gray-100': filterFS.selectedPembina.includes(item.id) }">
+                          <input type="checkbox" :value="item.id" v-model="filterFS.selectedPembina"
+                            class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                          <span class="ml-2">{{ item.name }}</span>
+                        </label>
+                      </div>
+                    </div>
+                  </transition>
+                </div>
               </div>
               <div class="mt-4">
                 <h3 class="mb-2 text-[#4D5E80] font-semibold">
                   Status Persetujuan
                 </h3>
-                <el-select v-model="filterFS.selectedPersetujuan" multiple clearable collapse-tags
-                  placeholder="Pilih Status Persetujuan" popper-class="custom-header" :max-collapse-tags="6"
-                  class="w-full text-primaryTextColor">
-                  <template #header>
-                    <el-checkbox v-model="checkPersetujuanFS" :indeterminate="indeterminateStatus"
-                      @change="handleCheckPersetujuanFS">
-                      Select All Items
-                    </el-checkbox>
-                  </template>
-                  <el-option v-for="item in itemsPersetujuan" :key="item.id" :label="item.name" :value="item.id" />
-                </el-select>
+                <div class="relative">
+                  <div @click="togglePersetujuanFSDropdown"
+                    class="flex items-center justify-between w-full min-h-[38px] p-2 transition-colors bg-white border rounded-md cursor-pointer hover:border-gray-300"
+                    :class="{ 'border-gray-300': isPersetujuanFSDropdownOpen }">
+                    <div class="flex flex-wrap items-center flex-1 gap-1">
+                      <template v-if="filterFS.selectedPersetujuan.length > 0">
+                        <span v-for="(id, index) in filterFS.selectedPersetujuan.slice(0, 2)" :key="id"
+                          class="inline-flex items-center px-2 py-0.5 text-xs bg-gray-100 rounded">
+                          {{itemsPersetujuan.find(item => item.id === id)?.name}}
+                          <button @click.stop="removeSelectedPersetujuanFS(id)" class="ml-1 hover:text-red-500">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                            </svg>
+                          </button>
+                        </span>
+                        <span v-if="filterFS.selectedPersetujuan.length > 2" class="text-xs text-gray-500">
+                          +{{ filterFS.selectedPersetujuan.length - 2 }}
+                        </span>
+                      </template>
+                      <span v-else class="text-sm text-gray-400">
+                        Pilih Status Persetujuan
+                      </span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <button v-if="filterFS.selectedPersetujuan.length > 0" @click.stop="clearPersetujuanFS"
+                        class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                      <svg class="w-4 h-4 transition-transform duration-200"
+                        :class="{ 'rotate-180': isPersetujuanFSDropdownOpen }" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                  <transition name="dropdown">
+                    <div v-if="isPersetujuanFSDropdownOpen"
+                      class="absolute z-50 w-full mt-1 overflow-hidden bg-white border rounded-md shadow-lg">
+                      <div class="p-2 border-b">
+                        <label
+                          class="flex items-center p-1 rounded cursor-pointer hover:bg-gray-50 text-primaryTextColor">
+                          <input type="checkbox" v-model="checkPersetujuanFS" :indeterminate="indeterminateStatusFS"
+                            @change="handleCheckPersetujuanFS"
+                            class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                          <span class="ml-2 text-sm">Select All Items</span>
+                        </label>
+                      </div>
+                      <div class="overflow-auto max-h-60">
+                        <label v-for="item in itemsPersetujuan" :key="item.id"
+                          class="flex items-center px-3 py-2 text-sm transition-colors cursor-pointer hover:bg-gray-50 text-primaryTextColor"
+                          :class="{ 'bg-gray-100': filterFS.selectedPersetujuan.includes(item.id) }">
+                          <input type="checkbox" :value="item.id" v-model="filterFS.selectedPersetujuan"
+                            class="w-4 h-4 bg-white border border-gray-200 rounded appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto text-primaryColor focus:ring-primaryColor">
+                          <span class="ml-2">{{ item.name }}</span>
+                        </label>
+                      </div>
+                    </div>
+                  </transition>
+                </div>
               </div>
               <hr class="w-full my-4" />
               <div class="flex justify-end">
@@ -453,7 +777,7 @@
                     class="px-5 py-2 text-sm font-semibold duration-300 border rounded-lg text-primaryColor border-primaryColor hover:bg-hoverColor hover:border-hoverColor hover:text-white">
                     Reset
                   </button>
-                  <button type="submit" @click="changeFS"
+                  <button type="submit" @click="changeFS(false)"
                     class="w-full text-white bg-[#0099AD] hover:bg-hoverColor duration-300 active:ring-2 active:outline-none active:ring-[#80C1CD] font-medium rounded-lg text-xs px-5 py-3 text-center">
                     Terapkan
                   </button>
@@ -629,7 +953,7 @@
           <div class="flex items-center space-x-2 text-sm">
             <span>Menampilkan</span>
             <select v-model="navigationFS.limit" name="" id=""
-              class="p-2 text-sm text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
+              class="p-2 text-sm text-gray-500 bg-white border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
               @change="changeLimit($event)">
               <option value="10">10</option>
               <option value="20">20</option>
@@ -683,7 +1007,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from "vue";
+import { ref, onMounted, onUnmounted, watch, computed } from "vue";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import { useUserAuthStore } from "@/store/storeUserAuth";
 const userAuthStore = useUserAuthStore();
@@ -697,7 +1021,6 @@ import SearchBox from "@/components/ui/SearchBox.vue";
 import TabsWrapper from "@/components/ui/TabsWrapper.vue";
 import TabItem from "@/components/ui/TabItem.vue";
 import ModalWrapper from "@/components/ui/ModalWrapper.vue";
-import type { CheckboxValueType } from "element-plus";
 import TableComponent from "@/components/ui/Table.vue";
 import Empty from "@/components/ui/EmptyData.vue";
 
@@ -711,6 +1034,12 @@ const tahunBerjalan = date.getFullYear();
 const yearPicked = ref<number>(tahunBerjalan);
 const showModalKK = ref<boolean>(false);
 const showModalFS = ref<boolean>(false);
+const isPengelolaKKDropdownOpen = ref(false);
+const isPembinaKKDropdownOpen = ref(false);
+const isPersetujuanKKDropdownOpen = ref(false);
+const isPengelolaFSDropdownOpen = ref(false);
+const isPembinaFSDropdownOpen = ref(false);
+const isPersetujuanFSDropdownOpen = ref(false);
 const searchQKK = ref<string>("");
 const searchQFS = ref<string>("");
 const title = ref("Kertas Kerja");
@@ -721,9 +1050,12 @@ const persetujuanKK = ref<any[]>([]);
 const persetujuanFS = ref<any[]>([]);
 let encryptStorageRef: any = null;
 
-const indeterminatePengelola = ref(false);
-const indeterminatePembina = ref(false);
-const indeterminateStatus = ref(false);
+const indeterminatePengelolaKK = ref(false);
+const indeterminatePembinaKK = ref(false);
+const indeterminateStatusKK = ref(false);
+const indeterminatePengelolaFS = ref(false);
+const indeterminatePembinaFS = ref(false);
+const indeterminateStatusFS = ref(false);
 const checkPengelolaKK = ref<boolean>(false);
 const checkPembinaKK = ref<boolean>(false);
 const checkPersetujuanKK = ref<boolean>(false);
@@ -731,7 +1063,7 @@ const checkPengelolaFS = ref<boolean>(false);
 const checkPembinaFS = ref<boolean>(false);
 const checkPersetujuanFS = ref<boolean>(false);
 const itemsPengelola = ref<{ id: string; name: string }[]>([]);
-const itemsPembina = ref<{ id: number; name: string }[]>([]);
+const itemsPembina = ref<{ id: string; name: string }[]>([]);
 const itemsPersetujuan = ref([
   {
     id: 3,
@@ -829,7 +1161,7 @@ async function getDataPembina() {
       if (response.data.length > 0) {
         response.data.map((item: any) => {
           itemsPembina.value.push({
-            id: item.uuid_pembina,
+            id: item.uuid,
             name: item.pembina,
           });
         });
@@ -891,127 +1223,137 @@ const fetchPersetujuanFS = async (page?: number) => {
     isLoading.value = false;
   }
 };
-const changeDataKK = () => {
-  clearTimeout(debounceTimeout);
-  debounceTimeout = setTimeout(() => {
+const changeDataKK = (isSearch: boolean) => {
+  if (isSearch) {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+      isLoading.value = true;
+      fetchPersetujuanKK(1);
+    }, 500);
+  } else {
     isLoading.value = true;
     fetchPersetujuanKK(1);
-  }, 500);
+  }
 };
 
-const changeFS = () => {
-  clearTimeout(debounceTimeout);
-  debounceTimeout = setTimeout(() => {
+const changeFS = (isSearch: boolean) => {
+  if (isSearch) {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+      isLoading.value = true;
+      fetchPersetujuanFS(1);
+    }, 500);
+  } else {
     isLoading.value = true;
     fetchPersetujuanFS(1);
-  }, 500);
+  }
 };
 
 watch(filterKK.value.selectedPengelola, (val) => {
   if (val.length === 0) {
     checkPengelolaKK.value = false;
-    indeterminatePengelola.value = false;
+    indeterminatePengelolaKK.value = false;
   } else if (val.length === itemsPengelola.value.length) {
     checkPengelolaKK.value = true;
-    indeterminatePengelola.value = false;
+    indeterminatePengelolaKK.value = false;
   } else {
-    indeterminatePengelola.value = true;
+    indeterminatePengelolaKK.value = true;
   }
 });
 watch(filterFS.value.selectedPengelola, (val) => {
   if (val.length === 0) {
     checkPengelolaFS.value = false;
-    indeterminatePengelola.value = false;
+    indeterminatePengelolaFS.value = false;
   } else if (val.length === itemsPengelola.value.length) {
     checkPengelolaFS.value = true;
-    indeterminatePengelola.value = false;
+    indeterminatePengelolaFS.value = false;
   } else {
-    indeterminatePengelola.value = true;
+    indeterminatePengelolaFS.value = true;
   }
 });
 
 watch(filterKK.value.selectedPembina, (val) => {
   if (val.length === 0) {
     checkPembinaKK.value = false;
-    indeterminatePembina.value = false;
+    indeterminatePembinaKK.value = false;
   } else if (val.length === itemsPembina.value.length) {
     checkPembinaKK.value = true;
-    indeterminatePembina.value = false;
+    indeterminatePembinaKK.value = false;
   } else {
-    indeterminatePembina.value = true;
+    indeterminatePembinaKK.value = true;
   }
 });
 watch(filterFS.value.selectedPembina, (val) => {
   if (val.length === 0) {
     checkPembinaFS.value = false;
-    indeterminatePembina.value = false;
+    indeterminatePembinaFS.value = false;
   } else if (val.length === itemsPembina.value.length) {
     checkPembinaFS.value = true;
-    indeterminatePembina.value = false;
+    indeterminatePembinaFS.value = false;
   } else {
-    indeterminatePembina.value = true;
+    indeterminatePembinaFS.value = true;
   }
 });
 
 watch(filterKK.value.selectedPersetujuan, (val) => {
   if (val.length === 0) {
     checkPersetujuanKK.value = false;
-    indeterminateStatus.value = false;
+    indeterminateStatusKK.value = false;
   } else if (val.length === itemsPersetujuan.value.length) {
     checkPersetujuanKK.value = true;
-    indeterminateStatus.value = false;
+    indeterminateStatusKK.value = false;
   } else {
-    indeterminateStatus.value = true;
+    indeterminateStatusKK.value = true;
   }
 });
 watch(filterFS.value.selectedPersetujuan, (val) => {
   if (val.length === 0) {
     checkPersetujuanFS.value = false;
-    indeterminateStatus.value = false;
+    indeterminateStatusFS.value = false;
   } else if (val.length === itemsPersetujuan.value.length) {
     checkPersetujuanFS.value = true;
-    indeterminateStatus.value = false;
+    indeterminateStatusFS.value = false;
   } else {
-    indeterminateStatus.value = true;
+    indeterminateStatusFS.value = true;
   }
 });
 
-const handleCheckPengelolaKK = (val: CheckboxValueType) => {
-  indeterminatePengelola.value = false;
+const handleCheckPengelolaKK = (val: any) => {
+  indeterminatePengelolaKK.value = false;
   if (val) {
     filterKK.value.selectedPengelola = itemsPengelola.value.map((_) => _.id);
   } else {
     filterKK.value.selectedPengelola = [];
   }
 };
-const handleCheckPengelolaFS = (val: CheckboxValueType) => {
-  indeterminatePengelola.value = false;
-  if (val) {
+const handleCheckPengelolaFS = () => {
+  indeterminatePengelolaFS.value = false;
+  if (checkPengelolaFS.value) {
     filterFS.value.selectedPengelola = itemsPengelola.value.map((_) => _.id);
   } else {
     filterFS.value.selectedPengelola = [];
   }
 };
 
-const handleCheckPembinaKK = (val: CheckboxValueType) => {
-  indeterminatePembina.value = false;
-  if (val) {
+const handleCheckPembinaKK = () => {
+  indeterminatePembinaKK.value = false;
+  if (checkPembinaKK.value) {
     filterKK.value.selectedPembina = itemsPembina.value.map((_) => _.id);
   } else {
     filterKK.value.selectedPembina = [];
   }
 };
-const handleCheckPembinaFS = (val: CheckboxValueType) => {
-  indeterminatePembina.value = false;
-  if (val) {
+const handleCheckPembinaFS = () => {
+  indeterminatePembinaFS.value = false;
+  if (checkPembinaFS.value) {
     filterFS.value.selectedPembina = itemsPembina.value.map((_) => _.id);
   } else {
     filterFS.value.selectedPembina = [];
   }
 };
 
-const handleCheckPersetujuanKK = (val: CheckboxValueType) => {
-  indeterminateStatus.value = false;
+const handleCheckPersetujuanKK = (val: any) => {
+  indeterminateStatusKK.value = false;
   if (val) {
     filterKK.value.selectedPersetujuan = itemsPersetujuan.value.map(
       (_) => _.id
@@ -1020,14 +1362,100 @@ const handleCheckPersetujuanKK = (val: CheckboxValueType) => {
     filterKK.value.selectedPersetujuan = [];
   }
 };
-const handleCheckPersetujuanFS = (val: CheckboxValueType) => {
-  indeterminateStatus.value = false;
-  if (val) {
+const handleCheckPersetujuanFS = () => {
+  indeterminateStatusFS.value = false;
+  if (checkPersetujuanFS.value) {
     filterFS.value.selectedPersetujuan = itemsPersetujuan.value.map(
       (_) => _.id
     );
   } else {
     filterFS.value.selectedPersetujuan = [];
+  }
+};
+
+// KK Dropdown functions
+const togglePengelolaKKDropdown = () => {
+  isPengelolaKKDropdownOpen.value = !isPengelolaKKDropdownOpen.value;
+}
+
+const removeSelectedPengelolaKK = (id: any) => {
+  filterKK.value.selectedPengelola = filterKK.value.selectedPengelola.filter(item => item !== id);
+}
+
+const clearPengelolaKK = () => {
+  filterKK.value.selectedPengelola = [];
+}
+
+const togglePembinaKKDropdown = () => {
+  isPembinaKKDropdownOpen.value = !isPembinaKKDropdownOpen.value;
+}
+
+const removeSelectedPembinaKK = (id: any) => {
+  filterKK.value.selectedPembina = filterKK.value.selectedPembina.filter(item => item !== id);
+}
+
+const clearPembinaKK = () => {
+  filterKK.value.selectedPembina = [];
+}
+
+const togglePersetujuanKKDropdown = () => {
+  isPersetujuanKKDropdownOpen.value = !isPersetujuanKKDropdownOpen.value;
+}
+
+const removeSelectedPersetujuanKK = (id: any) => {
+  filterKK.value.selectedPersetujuan = filterKK.value.selectedPersetujuan.filter(item => item !== id);
+}
+
+const clearPersetujuanKK = () => {
+  filterKK.value.selectedPersetujuan = [];
+}
+
+// FS Dropdown functions
+const togglePengelolaFSDropdown = () => {
+  isPengelolaFSDropdownOpen.value = !isPengelolaFSDropdownOpen.value;
+}
+
+const removeSelectedPengelolaFS = (id: any) => {
+  filterFS.value.selectedPengelola = filterFS.value.selectedPengelola.filter(item => item !== id);
+}
+
+const clearPengelolaFS = () => {
+  filterFS.value.selectedPengelola = [];
+}
+
+const togglePembinaFSDropdown = () => {
+  isPembinaFSDropdownOpen.value = !isPembinaFSDropdownOpen.value;
+}
+
+const removeSelectedPembinaFS = (id: any) => {
+  filterFS.value.selectedPembina = filterFS.value.selectedPembina.filter(item => item !== id);
+}
+
+const clearPembinaFS = () => {
+  filterFS.value.selectedPembina = [];
+}
+
+const togglePersetujuanFSDropdown = () => {
+  isPersetujuanFSDropdownOpen.value = !isPersetujuanFSDropdownOpen.value;
+}
+
+const removeSelectedPersetujuanFS = (id: any) => {
+  filterFS.value.selectedPersetujuan = filterFS.value.selectedPersetujuan.filter(item => item !== id);
+}
+
+const clearPersetujuanFS = () => {
+  filterFS.value.selectedPersetujuan = [];
+}
+
+const handleClickOutside = (event: MouseEvent) => {
+  const target = event.target as HTMLElement;
+  if (!target.closest('.relative')) {
+    isPengelolaKKDropdownOpen.value = false;
+    isPembinaKKDropdownOpen.value = false;
+    isPersetujuanKKDropdownOpen.value = false;
+    isPengelolaFSDropdownOpen.value = false;
+    isPembinaFSDropdownOpen.value = false;
+    isPersetujuanFSDropdownOpen.value = false;
   }
 };
 
@@ -1231,5 +1659,27 @@ ul li.disabled {
   pointer-events: none;
   cursor: not-allowed;
   color: #d1d1db;
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+.transition-transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+.transition-colors {
+  transition-property: color, background-color, border-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
 }
 </style>

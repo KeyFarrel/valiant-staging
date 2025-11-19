@@ -102,7 +102,6 @@ export default class BaseService {
         params: params,
         responseType: responseType,
       });
-      console.log(response, "bangsat");
       return response;
     } catch (error) {
       console.error("Error:", error);
@@ -129,7 +128,7 @@ export default class BaseService {
         url: path,
         withCredentials: true,
         data:
-          nodeMode === "development"
+          nodeMode !== "development"
             ? encryptAES(JSON.stringify(payload))
             : payload,
         headers,

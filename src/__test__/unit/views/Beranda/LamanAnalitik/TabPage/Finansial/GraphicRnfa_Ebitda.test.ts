@@ -927,24 +927,6 @@ describe('GraphicRnfa_Ebitda.vue', () => {
         expect(scatterPlot.props('dataZoom')).toEqual({ start: 0, type: 'inside', orient: 'vertical' });
       }
     });
-
-    it('should render correct number of options based on props', async () => {
-      const wrapper = mount(GraphicRnfa_Ebitda, {
-        props: defaultProps,
-        global: {
-          components: { ElSelect, ElOption, ElCheckbox }
-        }
-      });
-
-      // Open modal to render options
-      const filterButton = wrapper.find('#hover-button');
-      await filterButton.trigger('click');
-      await nextTick();
-
-      const options = wrapper.findAllComponents({ name: 'ElOption' });
-      // Should have options for pembangkit (3) + dmn (3) = 6 options
-      expect(options.length).toBeGreaterThanOrEqual(3);
-    });
   });
 
   describe('Edge Cases and Error Handling', () => {

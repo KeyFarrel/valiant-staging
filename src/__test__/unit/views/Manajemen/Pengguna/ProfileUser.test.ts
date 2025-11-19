@@ -892,8 +892,8 @@ describe('ProfileUser.vue', () => {
     
     const vm = wrapper.vm as any;
     vm.otp = ['1', '2', '3', '4', '5', '6', '7', '8'];
-    vm.oldPassword = 'OldPass123@';
-    vm.newPassword = 'NewPass123@';
+    vm.formCp.oldP = 'OldPass123@';
+    vm.formCp.newP = 'NewPass123@';
     
     // Call verifyEmailOtp
     const verifyPromise = vm.verifyEmailOtp();
@@ -988,7 +988,7 @@ describe('ProfileUser.vue', () => {
     const vm = wrapper.vm as any;
     
     // Test with weak password
-    vm.newPassword = 'weak';
+    vm.formCp.newP = 'weak';
     vm.verifyRequirementPassword();
     
     expect(vm.hasMinLength).toBe(false);
@@ -997,7 +997,7 @@ describe('ProfileUser.vue', () => {
     expect(vm.hasSymbol).toBe(false);
     
     // Test with strong password
-    vm.newPassword = 'StrongPass123@';
+    vm.formCp.newP = 'StrongPass123@';
     vm.verifyRequirementPassword();
     
     expect(vm.hasMinLength).toBe(true);
@@ -1014,8 +1014,8 @@ describe('ProfileUser.vue', () => {
     
     const vm = wrapper.vm as any;
     
-    vm.oldPassword = 'SamePass123@';
-    vm.newPassword = 'SamePass123@';
+    vm.formCp.oldP = 'SamePass123@';
+    vm.formCp.newP = 'SamePass123@';
     vm.verifyRequirementPassword();
     
     expect(vm.isNewPasswordSameAsOld).toBe(true);
@@ -1029,8 +1029,8 @@ describe('ProfileUser.vue', () => {
     
     const vm = wrapper.vm as any;
     
-    vm.newPassword = 'NewPass123@';
-    vm.confirmNewPassword = 'NewPass123@';
+    vm.formCp.newP = 'NewPass123@';
+    vm.formCp.confirmNewP = 'NewPass123@';
     vm.verifyMatchPassword();
     
     expect(vm.isPasswordMatched).toBe(true);
@@ -1047,8 +1047,8 @@ describe('ProfileUser.vue', () => {
     
     const vm = wrapper.vm as any;
     
-    vm.newPassword = 'NewPass123@';
-    vm.confirmNewPassword = 'DifferentPass123@';
+    vm.formCp.newP = 'NewPass123@';
+    vm.formCp.confirmNewP = 'DifferentPass123@';
     vm.verifyMatchPassword();
     
     expect(vm.isPasswordMatched).toBe(false);
@@ -1065,18 +1065,18 @@ describe('ProfileUser.vue', () => {
     const vm = wrapper.vm as any;
     
     // Set some values
-    vm.oldPassword = 'old';
-    vm.newPassword = 'new';
-    vm.confirmNewPassword = 'new';
+    vm.formCp.oldP = 'old';
+    vm.formCp.newP = 'new';
+    vm.formCp.confirmNewP = 'new';
     vm.hasMinLength = true;
     vm.showOldPassword = true;
     
     // Call resetInputAndAttribute
     vm.resetInputAndAttribute();
     
-    expect(vm.oldPassword).toBe('');
-    expect(vm.newPassword).toBe('');
-    expect(vm.confirmNewPassword).toBe('');
+    expect(vm.formCp.oldP).toBe('');
+    expect(vm.formCp.newP).toBe('');
+    expect(vm.formCp.confirmNewP).toBe('');
     expect(vm.hasMinLength).toBe(false);
     expect(vm.showOldPassword).toBe(false);
   });
@@ -1137,14 +1137,14 @@ describe('ProfileUser.vue', () => {
     vm.hasLowercase = true;
     vm.hasSymbol = true;
     vm.isNewPasswordSameAsOld = false;
-    vm.newPassword = ' SpaceAtStart123@';
+    vm.formCp.newP = ' SpaceAtStart123@';
     
     // Call changePassword
     await vm.changePassword();
     
     // hasIllegalSpace is set to true initially then reset to false in finally
     // We can't reliably test the intermediate state, so we just verify the function runs
-    expect(vm.newPassword).toBe(' SpaceAtStart123@');
+    expect(vm.formCp.newP).toBe(' SpaceAtStart123@');
   });
 
   it('should handle changePassword successfully', async () => {
@@ -1165,7 +1165,7 @@ describe('ProfileUser.vue', () => {
     vm.hasLowercase = true;
     vm.hasSymbol = true;
     vm.isNewPasswordSameAsOld = false;
-    vm.newPassword = 'ValidPass123@';
+    vm.formCp.newP = 'ValidPass123@';
     
     // Call changePassword
     await vm.changePassword();
@@ -1192,7 +1192,7 @@ describe('ProfileUser.vue', () => {
     vm.hasLowercase = true;
     vm.hasSymbol = true;
     vm.isNewPasswordSameAsOld = false;
-    vm.newPassword = 'ValidPass123@';
+    vm.formCp.newP = 'ValidPass123@';
     
     // Call changePassword
     await vm.changePassword();
@@ -1209,10 +1209,10 @@ describe('ProfileUser.vue', () => {
     
     const vm = wrapper.vm as any;
     
-    vm.oldPassword = 'test"password\'with`quotes';
+    vm.formCp.oldP = 'test"password\'with`quotes';
     vm.sanitizeOldPassword();
     
-    expect(vm.oldPassword).toBe('testpasswordwithquotes');
+    expect(vm.formCp.oldP).toBe('testpasswordwithquotes');
   });
 
   it('should handle sanitizeNewPassword function', async () => {
@@ -1222,10 +1222,10 @@ describe('ProfileUser.vue', () => {
     
     const vm = wrapper.vm as any;
     
-    vm.newPassword = 'test  double  spaces';
+    vm.formCp.newP = 'test  double  spaces';
     vm.sanitizeNewPassword();
     
-    expect(vm.newPassword).toBe('test double spaces');
+    expect(vm.formCp.newP).toBe('test double spaces');
   });
 
   it('should handle sanitizeConfirmNewPassword function', async () => {
@@ -1235,10 +1235,10 @@ describe('ProfileUser.vue', () => {
     
     const vm = wrapper.vm as any;
     
-    vm.confirmNewPassword = 'test\nwith\nnewlines';
+    vm.formCp.confirmNewP = 'test\nwith\nnewlines';
     vm.sanitizeConfirmNewPassword();
     
-    expect(vm.confirmNewPassword).toBe('testwithnewlines');
+    expect(vm.formCp.confirmNewP).toBe('testwithnewlines');
   });
 
   it('should handle preventCopyPaste function', async () => {

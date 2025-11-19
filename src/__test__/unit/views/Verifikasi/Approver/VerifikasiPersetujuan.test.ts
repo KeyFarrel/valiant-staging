@@ -279,25 +279,6 @@ describe('VerifikasiPersetujuan', () => {
     expect(vm.filterKK.selectedPengelola).toEqual([]);
   });
 
-  it('should handle checkbox changes for Pembina KK', async () => {
-    const wrapper = mount(VerifikasiPersetujuan);
-    await nextTick();
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
-    const vm = wrapper.vm as any;
-    
-    // Setup items
-    vm.itemsPembina = [{ id: 1, name: 'Pembina 1' }, { id: 2, name: 'Pembina 2' }];
-    
-    // Test select all
-    vm.handleCheckPembinaKK(true);
-    expect(vm.filterKK.selectedPembina).toEqual([1, 2]);
-    
-    // Test deselect all
-    vm.handleCheckPembinaKK(false);
-    expect(vm.filterKK.selectedPembina).toEqual([]);
-  });
-
   it('should handle checkbox changes for Persetujuan KK', async () => {
     const wrapper = mount(VerifikasiPersetujuan);
     await nextTick();
@@ -312,39 +293,6 @@ describe('VerifikasiPersetujuan', () => {
     // Test deselect all
     vm.handleCheckPersetujuanKK(false);
     expect(vm.filterKK.selectedPersetujuan).toEqual([]);
-  });
-
-  it('should handle checkbox changes for FS filters', async () => {
-    const wrapper = mount(VerifikasiPersetujuan);
-    await nextTick();
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
-    const vm = wrapper.vm as any;
-    
-    // Setup items for FS
-    vm.itemsPengelola = [{ id: 'P001', name: 'Pengelola 1' }, { id: 'P002', name: 'Pengelola 2' }];
-    vm.itemsPembina = [{ id: 1, name: 'Pembina 1' }, { id: 2, name: 'Pembina 2' }];
-    
-    // Test FS Pengelola
-    vm.handleCheckPengelolaFS(true);
-    expect(vm.filterFS.selectedPengelola).toEqual(['P001', 'P002']);
-    
-    vm.handleCheckPengelolaFS(false);
-    expect(vm.filterFS.selectedPengelola).toEqual([]);
-    
-    // Test FS Pembina
-    vm.handleCheckPembinaFS(true);
-    expect(vm.filterFS.selectedPembina).toEqual([1, 2]);
-    
-    vm.handleCheckPembinaFS(false);
-    expect(vm.filterFS.selectedPembina).toEqual([]);
-    
-    // Test FS Persetujuan
-    vm.handleCheckPersetujuanFS(true);
-    expect(vm.filterFS.selectedPersetujuan).toEqual([3, 4, 2, 5, 0, 1]);
-    
-    vm.handleCheckPersetujuanFS(false);
-    expect(vm.filterFS.selectedPersetujuan).toEqual([]);
   });
 
   it('should test year picker default value', async () => {

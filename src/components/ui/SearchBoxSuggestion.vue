@@ -2,7 +2,7 @@
   <div class="relative flex flex-col" ref="container">
     <div class="flex flex-row items-center">
       <input ref="searchInput"
-        class="block focus:outline-none px-3 py-2 w-80 text-sm text-gray-900 rounded-l-lg border border-[#0099AD] focus:ring-[#80C1CD] focus:border-[#80C1CD]"
+        class="block focus:outline-none px-3 py-2 w-80 bg-white text-sm text-gray-900 rounded-l-lg border border-[#0099AD] focus:ring-[#80C1CD] focus:border-[#80C1CD]"
         type="search" placeholder="Cari pembangkit..." @focus="showSuggestion = true"
         @input="setSelected(searchResults[0].sentral, 0)" v-model="searchQuery" @keydown.down.prevent="selectNextItem"
         @keydown.up.prevent="selectPreviousItem"

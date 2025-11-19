@@ -23,7 +23,8 @@
             <button v-for="(itemData, itemIndex) in filterData.activity" @click="processValue(itemData)"
               class="flex items-center w-full p-3 space-x-2 border-b cursor-pointer">
               <input type="checkbox" @change="handleChangeFilter" v-model="filterValue.selectedActivity"
-                :value="itemData" class="border-2 border- rounded-[3px] cursor-pointer border-[#E5E7E9]">
+                :value="itemData"
+                class="border w-4 h-4 appearance-none checked:accent-blue-200 checked:appearance-auto bg-white rounded-[3px] cursor-pointer border-[#E5E7E9]">
               <p class="text-sm text-primaryTextColor">{{ itemData }}</p>
             </button>
           </div>
@@ -154,7 +155,7 @@
       <div class="flex items-center space-x-2 text-sm">
         <span>Menampilkan</span>
         <select v-model.number="navigation.limit" name="" id=""
-          class="p-2 text-sm text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
+          class="p-2 text-sm text-gray-500 bg-white border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
           @change="changePageLimit">
           <option value="10">10</option>
           <option value="20">20</option>

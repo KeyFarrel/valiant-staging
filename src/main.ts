@@ -89,8 +89,8 @@ axios.interceptors.response.use(
     return response;
   },
   async (error) => {
-    const currentRoute = router.currentRoute.value
-    
+    const currentRoute = router.currentRoute.value;
+
     if (
       nodeMode !== "development" &&
       error.response &&
@@ -99,8 +99,10 @@ axios.interceptors.response.use(
       typeof error.response.data.response === "string"
     ) {
       try {
-        const decryptedErrorData = await decryptAES(error.response.data.response);
-        console.log('decrypted error response', decryptedErrorData)
+        const decryptedErrorData = await decryptAES(
+          error.response.data.response,
+        );
+        console.log("decrypted error response", decryptedErrorData);
         try {
           error.response.data = JSON.parse(decryptedErrorData);
         } catch {
@@ -110,7 +112,7 @@ axios.interceptors.response.use(
         console.error("Failed to decrypt error response:", decryptError);
       }
     }
-    
+
     if (
       error.response &&
       error.response.status === 401 &&
@@ -131,17 +133,26 @@ axios.interceptors.response.use(
       }
       sessionStore.invalidateSession();
       router.push({ name: "login" });
-    } else if (error.code === "ERR_NETWORK" && error.config.url !== (nodeMode === 'development' ? 'https://stg-be-valiant.pln.co.id/v1/mutasiasset/download/' : 'http://localhost:8000/v1/mutasiasset/download/')) {
+    } else if (
+      error.code === "ERR_NETWORK" &&
+      error.config.url !==
+        (nodeMode !== "development"
+          ? "https://stg-be-valiant.pln.co.id/v1/mutasiasset/download/"
+          : "http://localhost:8000/v1/mutasiasset/download/")
+    ) {
       sessionStore.setErrNetwork();
       console.log("Network error detected, setting network error state", error);
       router.push({ name: "503" });
     } else if (
       error.response &&
       error.response.status !== 401 &&
-      error.code !== "ERR_NETWORK" && 
+      error.code !== "ERR_NETWORK" &&
       currentRoute.name !== "login"
     ) {
-      notifyError(`${error.response.data.message} ${error.response.data.uuid ?? 0}`, 5000);
+      notifyError(
+        `${error.response.data.message} ${error.response.data.uuid ?? 0}`,
+        5000,
+      );
     } else if (isDevelopment()) {
       console.log("API Error:", error);
       logger.error("API Error:", {
@@ -151,27 +162,25 @@ axios.interceptors.response.use(
         data: error.response?.data,
       });
     }
-    return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+    return Promise.reject(
+      error instanceof Error ? error : new Error(String(error)),
+    );
   },
 );
 
 const loadNonEssentialResources = async () => {
-  const [ElementPlus, VueDatePicker, autoAnimatePlugin, OpenLayersMap] =
-    await Promise.all([
-      import("element-plus"),
-      import("@vuepic/vue-datepicker"),
-      import("@formkit/auto-animate/vue").then((m) => m.autoAnimatePlugin),
-      import("vue3-openlayers"),
-    ]);
+  const [VueDatePicker, autoAnimatePlugin, OpenLayersMap] = await Promise.all([
+    import("@vuepic/vue-datepicker"),
+    import("@formkit/auto-animate/vue").then((m) => m.autoAnimatePlugin),
+    import("vue3-openlayers"),
+  ]);
 
   await Promise.all([
     import("@vuepic/vue-datepicker/dist/main.css"),
-    import("element-plus/dist/index.css"),
     import("aos/dist/aos.css"),
   ]);
 
   app
-    .use(ElementPlus.default)
     .use(autoAnimatePlugin)
     .use(OpenLayersMap.default)
     .component("VueDatePicker", VueDatePicker.default);

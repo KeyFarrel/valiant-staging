@@ -79,7 +79,7 @@ function handlePage(value: number) {
     <div class="flex items-center">
       <span class="inline-block pr-2 text-sm font-normal text-gray-500">Menampilkan</span>
       <select
-        class="p-2 text-sm text-gray-500 border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
+        class="p-2 text-sm text-gray-500 bg-white border-r-4 border-transparent rounded-lg cursor-pointer outline-1 outline outline-gray-300"
         v-model="itemsPerPage" @change="() => currentPage = 1">
         <option v-for="opt in optionPage" :value="opt.id" :key="opt.id">{{ opt.name }}</option>
       </select>

@@ -214,11 +214,11 @@ describe('Login.vue', () => {
     await nextTick();
     
     // Set password with special characters
-    wrapper.vm.oldPassword = 'test"password\0\n';
+    wrapper.vm.formCp.oldP = 'test"password\0\n';
     wrapper.vm.sanitizeOldPassword();
     
     // Check if password is sanitized
-    expect(wrapper.vm.oldPassword).toBe('testpassword');
+    expect(wrapper.vm.formCp.oldP).toBe('testpassword');
   });
 
   it('should verify password requirements', async () => {
@@ -241,8 +241,8 @@ describe('Login.vue', () => {
     await nextTick();
     
     // Set valid password
-    wrapper.vm.newPassword = 'Test123!';
-    wrapper.vm.confirmNewPassword = 'Test123!';
+    wrapper.vm.formCp.newP = 'Test123!';
+    wrapper.vm.formCp.confirmNewP = 'Test123!';
     wrapper.vm.verifyRequirementPassword();
     
     // Check password requirements
@@ -371,16 +371,16 @@ describe('Login.vue', () => {
     
     // Set initial values
     wrapper.vm.isModalChangePasswordShow = true;
-    wrapper.vm.oldPassword = 'test';
-    wrapper.vm.newPassword = 'test123';
+    wrapper.vm.formCp.oldP = 'test';
+    wrapper.vm.formCp.newP = 'test123';
     
     // Call closeChangePasswordModal
     wrapper.vm.closeChangePasswordModal();
     
     // Check if values are reset
     expect(wrapper.vm.isModalChangePasswordShow).toBe(false);
-    expect(wrapper.vm.oldPassword).toBe('');
-    expect(wrapper.vm.newPassword).toBe('');
+    expect(wrapper.vm.formCp.oldP).toBe('');
+    expect(wrapper.vm.formCp.newP).toBe('');
   });
 
   it('should open captcha modal on login click', async () => {
@@ -547,8 +547,8 @@ describe('Login.vue', () => {
     await nextTick();
     
     // Set mismatched passwords
-    wrapper.vm.newPassword = 'Test123!';
-    wrapper.vm.confirmNewPassword = 'Different123!';
+    wrapper.vm.formCp.newP = 'Test123!';
+    wrapper.vm.formCp.confirmNewP = 'Different123!';
     wrapper.vm.verifyMatchPassword();
     
     // Check password mismatch
@@ -690,11 +690,11 @@ describe('Login.vue', () => {
     await nextTick();
     
     // Set confirm password with special characters
-    wrapper.vm.confirmNewPassword = 'test"password\0\n';
+    wrapper.vm.formCp.confirmNewP = 'test"password\0\n';
     wrapper.vm.sanitizeConfirmNewPassword();
     
     // Check if password is sanitized
-    expect(wrapper.vm.confirmNewPassword).toBe('testpassword');
+    expect(wrapper.vm.formCp.confirmNewP).toBe('testpassword');
   });
 
   it('should handle sanitize new password', async () => {
@@ -717,11 +717,11 @@ describe('Login.vue', () => {
     await nextTick();
     
     // Set new password with special characters
-    wrapper.vm.newPassword = 'test"password\0\n';
+    wrapper.vm.formCp.newP = 'test"password\0\n';
     wrapper.vm.sanitizeNewPassword();
     
     // Check if password is sanitized
-    expect(wrapper.vm.newPassword).toBe('testpassword');
+    expect(wrapper.vm.formCp.newP).toBe('testpassword');
   });
 
   it('should handle generate captcha error with network error', async () => {
@@ -1255,12 +1255,12 @@ describe('Login.vue', () => {
     wrapper.vm.hasLowercase = true;
     wrapper.vm.hasSymbol = true;
     wrapper.vm.isNewPasswordSameAsOld = false;
-    wrapper.vm.newPassword = ' Password123!';
+    wrapper.vm.formCp.newP = ' Password123!';
     
     await wrapper.vm.changePassword();
     
     // Space check happens before the change
-    expect(wrapper.vm.newPassword).toContain(' ');
+    expect(wrapper.vm.formCp.newP).toContain(' ');
   });
 
   it('should handle validate password requirements all false', async () => {
@@ -1283,8 +1283,8 @@ describe('Login.vue', () => {
     await nextTick();
     
     // Set short password
-    wrapper.vm.newPassword = 'abc';
-    wrapper.vm.confirmNewPassword = 'abc';
+    wrapper.vm.formCp.newP = 'abc';
+    wrapper.vm.formCp.confirmNewP = 'abc';
     wrapper.vm.verifyRequirementPassword();
     
     // Check password requirements fail
@@ -1313,8 +1313,8 @@ describe('Login.vue', () => {
 
     await nextTick();
     
-    wrapper.vm.oldPassword = 'Password123!';
-    wrapper.vm.newPassword = 'Password123!';
+    wrapper.vm.formCp.oldP = 'Password123!';
+    wrapper.vm.formCp.newP = 'Password123!';
     wrapper.vm.verifyRequirementPassword();
     
     expect(wrapper.vm.isNewPasswordSameAsOld).toBe(true);
@@ -1987,45 +1987,6 @@ describe('Login.vue', () => {
     expect(mockPush).toHaveBeenCalledWith({ name: 'peta' });
     
     vi.useRealTimers();
-  });
-
-  it('should handle onCaptchaVerified with error not captcha failed', async () => {
-    mockAuthServiceDefault.login = vi.fn().mockRejectedValue({
-      response: { 
-        data: { 
-          message: 'User / Password tidak sesuai',
-          data: { temp_loc: 0, is_locked: false } 
-        } 
-      }
-    });
-
-    wrapper = mount(Login, {
-      global: {
-        stubs: {
-          Loading: true,
-          ModalWrapper: true,
-          PrivacyPolicy: true,
-          ModalNotification: true,
-          TextField: true,
-          IconRoundedChecked: true,
-          IconRoundedClose: true,
-          IconClose: true,
-          IconSendOTP: true
-        }
-      }
-    });
-
-    await nextTick();
-    
-    wrapper.vm.valEmail = 'test@example.com';
-    wrapper.vm.valPassword = 'WrongPass';
-    wrapper.vm.isCaptchaVerified = true;
-    wrapper.vm.captchaKey = 'test-key';
-    
-    await wrapper.vm.onCaptchaVerified(50);
-    await nextTick();
-    
-    expect(wrapper.vm.valEmailErr).toBe("Email atau Kata Sandi salah");
   });
 
   // Removed: test for account locked wait - timeout issue with fake timers

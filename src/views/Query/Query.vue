@@ -26,60 +26,65 @@
         <div class="flex flex-col space-y-1.5">
           <label for="" class="font-semibold text-labelColor">Unit Induk / Subholding / Anak Perusahaan</label>
           <select name="" id=""
-            class="h-10 text-sm border border-gray-300 rounded-lg cursor-pointer text-textFieldColor">
+            class="h-10 text-sm bg-white border border-gray-300 rounded-lg cursor-pointer text-textFieldColor">
             <option value="" selected disabled>Pilih Unit Induk / Subholding / Anak Perusahaan
             </option>
           </select>
           <div class="flex items-center space-x-1.5">
-            <input type="checkbox" name="" id="" class="w-3 h-3 border border-gray-300 rounded-lg cursor-pointer">
+            <input type="checkbox" name="" id=""
+              class="w-3 h-3 bg-white border border-gray-200 rounded-lg appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto">
             <label for="" class="text-xs">Pilih Semua</label>
           </div>
         </div>
         <div class="flex flex-col space-y-1.5">
           <label for="" class="font-semibold text-labelColor">Unit Pengelola 2 / Unit Bisnis / SHAP</label>
           <select name="" id=""
-            class="h-10 text-sm border border-gray-300 rounded-lg cursor-pointer text-textFieldColor">
+            class="h-10 text-sm bg-white border border-gray-300 rounded-lg cursor-pointer text-textFieldColor">
             <option value="" selected disabled>Pilih Unit Pengelola 2 / Unit Bisnis / SHAP
             </option>
           </select>
           <div class="flex items-center space-x-1.5">
-            <input type="checkbox" name="" id="" class="w-3 h-3 border border-gray-300 rounded-lg cursor-pointer">
+            <input type="checkbox" name="" id=""
+              class="w-3 h-3 bg-white border border-gray-200 rounded-lg appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto">
             <label for="" class="text-xs">Pilih Semua</label>
           </div>
         </div>
         <div class="flex flex-col space-y-1.5">
           <label for="" class="font-semibold text-labelColor">Kategori Pembangkit</label>
           <select name="" id=""
-            class="h-10 text-sm border border-gray-300 rounded-lg cursor-pointer text-textFieldColor">
+            class="h-10 text-sm bg-white border border-gray-300 rounded-lg cursor-pointer text-textFieldColor">
             <option value="" selected disabled>Pilih Kategori Pembangkit
             </option>
           </select>
           <div class="flex items-center space-x-1.5">
-            <input type="checkbox" name="" id="" class="w-3 h-3 border border-gray-300 rounded-lg cursor-pointer">
+            <input type="checkbox" name="" id=""
+              class="w-3 h-3 bg-white border border-gray-200 rounded-lg appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto">
             <label for="" class="text-xs">Pilih Semua</label>
           </div>
         </div>
         <div class="flex flex-col space-y-1.5">
           <label for="" class="font-semibold text-labelColor">Unit Sentral</label>
           <select name="" id=""
-            class="h-10 text-sm border border-gray-300 rounded-lg cursor-pointer text-textFieldColor">
+            class="h-10 text-sm bg-white border border-gray-300 rounded-lg cursor-pointer text-textFieldColor">
             <option value="" selected disabled>Pilih Unit Sentral
             </option>
           </select>
           <div class="flex items-center space-x-1.5">
-            <input type="checkbox" name="" id="" class="w-3 h-3 border border-gray-300 rounded-lg cursor-pointer">
+            <input type="checkbox" name="" id=""
+              class="w-3 h-3 bg-white border border-gray-200 rounded-lg appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto">
             <label for="" class="text-xs">Pilih Semua</label>
           </div>
         </div>
         <div class="flex flex-col space-y-1.5 col-span-2">
           <label for="" class="font-semibold text-labelColor">Unit Mesin</label>
           <select name="" id=""
-            class="h-10 text-sm border border-gray-300 rounded-lg cursor-pointer text-textFieldColor">
+            class="h-10 text-sm bg-white border border-gray-300 rounded-lg cursor-pointer text-textFieldColor">
             <option value="" selected disabled>Pilih Unit Mesin
             </option>
           </select>
           <div class="flex items-center space-x-1.5">
-            <input type="checkbox" name="" id="" class="w-3 h-3 border border-gray-300 rounded-lg cursor-pointer">
+            <input type="checkbox" name="" id=""
+              class="w-3 h-3 bg-white border border-gray-200 rounded-lg appearance-none cursor-pointer checked:accent-blue-200 checked:appearance-auto">
             <label for="" class="text-xs">Pilih Semua</label>
           </div>
         </div>
@@ -111,7 +116,7 @@
           <div class="flex flex-col space-y-1.5">
             <label for="" class="font-semibold text-labelColor">Table Name</label>
             <select name="" id=""
-              class="h-10 text-sm border border-gray-300 rounded-lg cursor-pointer text-textFieldColor">
+              class="h-10 text-sm bg-white border border-gray-300 rounded-lg cursor-pointer text-textFieldColor">
               <option value="" selected disabled>Pilih Table Name
               </option>
             </select>
@@ -119,7 +124,7 @@
           <div class="flex flex-col space-y-1.5">
             <label for="" class="font-semibold text-labelColor">Field Name</label>
             <select name="" id=""
-              class="h-10 text-sm border border-gray-300 rounded-lg cursor-pointer text-textFieldColor">
+              class="h-10 text-sm bg-white border border-gray-300 rounded-lg cursor-pointer text-textFieldColor">
               <option value="" selected disabled>Pilih Field Name
               </option>
             </select>
@@ -127,7 +132,7 @@
           <div class="flex flex-col space-y-1.5">
             <label for="" class="font-semibold text-labelColor">Operation</label>
             <select name="" id=""
-              class="h-10 text-sm border border-gray-300 rounded-lg cursor-pointer text-textFieldColor">
+              class="h-10 text-sm bg-white border border-gray-300 rounded-lg cursor-pointer text-textFieldColor">
               <option value="" selected disabled>Pilih Operation
               </option>
             </select>
@@ -135,7 +140,7 @@
           <div class="flex flex-col space-y-1.5">
             <label for="" class="font-semibold text-labelColor">Table Name</label>
             <input type="text" name="" id="" placeholder="Contoh : 10"
-              class="h-10 text-sm border border-gray-300 rounded-lg text-textFieldColor">
+              class="h-10 text-sm bg-white border border-gray-300 rounded-lg text-textFieldColor">
           </div>
         </div>
         <div class="flex flex-row space-x-5">

@@ -112,7 +112,7 @@
               <h3 class="text-textDisabledColor">
                 Longitude (Garis Bujur)
               </h3>
-              <input type="text" name="" id="" class="w-full h-10 border-gray-300 rounded-lg"
+              <input type="text" name="" id="" class="w-full h-10 bg-white border-gray-300 rounded-lg"
                 v-if="isSentral == true ? null : isEdit" />
               <p class="font-semibold" v-else>
                 {{ sentralDataById.longitude }}
@@ -122,7 +122,7 @@
               <h3 class="text-textDisabledColor">
                 Latitude (Garis Lintang)
               </h3>
-              <input type="text" name="" id="" class="w-full h-10 border-gray-300 rounded-lg"
+              <input type="text" name="" id="" class="w-full h-10 bg-white border-gray-300 rounded-lg"
                 v-if="isSentral == true ? null : isEdit" />
               <p class="font-semibold" v-else>{{ sentralDataById.latitude }}</p>
             </div>
@@ -275,7 +275,7 @@
               </span>
               <div v-if="isEditOpen(mesinItem.mesin)" class="flex items-center justify-end mt-2">
                 <input type="text" name="" id=""
-                  class="w-full h-10 pl-3 text-sm border border-gray-300 rounded-lg pr-14"
+                  class="w-full h-10 pl-3 text-sm bg-white border border-gray-300 rounded-lg ring-0 pr-14"
                   v-model.number="mesinFormModel[mesinIndex].masaManfaat"
                   @input="handleInputMasaManfaat(mesinFormModel[mesinIndex])" />
                 <label for="" class="absolute pr-3 text-sm text-primaryColor">Tahun</label>
@@ -300,7 +300,7 @@
               <div class="space-y-1.5" v-if="isEditOpen(mesinItem.mesin)">
                 <input @input="checkYearIsValid(mesinFormModel[mesinIndex], mesinIndex);" type="text" name="" id=""
                   :class="{ 'focus:ring-0': error[mesinIndex].tahunDataAwal, 'focus:border-2': error[mesinIndex].tahunDataAwal, 'focus:border-warningColor': error[mesinIndex].tahunDataAwal }"
-                  class="w-full h-10 pl-3 mt-2 text-sm border border-gray-300 rounded-lg pr-14"
+                  class="w-full h-10 pl-3 mt-2 text-sm bg-white border border-gray-300 rounded-lg pr-14"
                   v-model.number="mesinFormModel[mesinIndex].tahunDataAwal" />
                 <p class="text-sm text-warningColor" v-if="error[mesinIndex].tahunDataAwal">Tahun Tidak Valid!</p>
               </div>
@@ -320,7 +320,8 @@
               ]">
                 Longitude (Garis Bujur)
               </h3>
-              <input type="text" name="" id="" class="w-full h-10 pl-3 mt-2 text-sm border border-gray-300 rounded-lg"
+              <input type="text" name="" id=""
+                class="w-full h-10 pl-3 mt-2 text-sm bg-white border border-gray-300 rounded-lg"
                 v-if="isEditOpen(mesinItem.mesin)" v-model="mesinFormModel[mesinIndex].longitude" />
               <p class="font-semibold" v-else>
                 {{ mesinItem.longitude !== '' ? mesinItem.longitude : sentralDataById.longitude }}
@@ -333,7 +334,8 @@
               ]">
                 Latitude (Garis Lintang)
               </h3>
-              <input type="text" name="" id="" class="w-full h-10 pl-3 mt-2 text-sm border border-gray-300 rounded-lg"
+              <input type="text" name="" id=""
+                class="w-full h-10 pl-3 mt-2 text-sm bg-white border border-gray-300 rounded-lg"
                 v-if="isEditOpen(mesinItem.mesin)" v-model="mesinFormModel[mesinIndex].latitude" />
               <p class="font-semibold" v-else>
                 {{ mesinItem.latitude !== '' ? mesinItem.latitude : sentralDataById.latitude }}
