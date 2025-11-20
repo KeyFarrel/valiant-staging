@@ -117,11 +117,17 @@ export default class BaseService {
     const fingerprintID = await getFingerprint();
     const csrfStore = useCsrfTokenStore();
     const csrfToken = csrfStore.getCsrfToken();
+
+    if (!csrfToken || csrfToken.trim() === '') {
+      throw new Error("CSRF token is required for POST requests");
+    }
+
     const headers: any = {
       "Content-Type": "application/json",
       "X-Fingerprint-ID": fingerprintID,
       "X-CSRF-Token": csrfToken,
     };
+    
     try {
       const response: AxiosResponse = await axios({
         method: "POST",
