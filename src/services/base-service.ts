@@ -213,6 +213,8 @@ export default class BaseService {
     try {
       const response = await axios({
         method: "DELETE",
+        xsrfHeaderName: "X-CSRF-TOKEN",
+        xsrfCookieName: "csrf_token",
         url: path,
         headers,
         timeout: TIME_OUT,
@@ -236,6 +238,8 @@ export default class BaseService {
     try {
       const response = await axios({
         method: "POST",
+        xsrfHeaderName: "X-CSRF-TOKEN",
+        xsrfCookieName: "csrf_token",
         url: path,
         data: payload,
         headers,
@@ -260,6 +264,8 @@ export default class BaseService {
     try {
       const response = await axios({
         method: "PUT",
+        xsrfHeaderName: "X-CSRF-TOKEN",
+        xsrfCookieName: "csrf_token",
         url: path,
         data: payload,
         headers,
@@ -284,6 +290,8 @@ export default class BaseService {
     try {
       const response = await axios({
         method: "POST",
+        xsrfHeaderName: "X-CSRF-TOKEN",
+        xsrfCookieName: "csrf_token",
         url: path,
         data: payload,
         headers,
@@ -308,6 +316,8 @@ export default class BaseService {
     try {
       const response = await axios({
         method: "PUT",
+        xsrfHeaderName: "X-CSRF-TOKEN",
+        xsrfCookieName: "csrf_token",
         url: path,
         data: payload,
         headers,
