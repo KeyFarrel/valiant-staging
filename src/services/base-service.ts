@@ -118,7 +118,7 @@ export default class BaseService {
     const csrfStore = useCsrfTokenStore();
     const csrfToken = csrfStore.getCsrfToken();
 
-    if (!csrfToken || csrfToken.trim() === '') {
+    if (!csrfToken || csrfToken.trim() === "") {
       throw new Error("CSRF token is required for POST requests");
     }
 
@@ -127,10 +127,12 @@ export default class BaseService {
       "X-Fingerprint-ID": fingerprintID,
       "X-CSRF-Token": csrfToken,
     };
-    
+
     try {
       const response: AxiosResponse = await axios({
         method: "POST",
+        xsrfHeaderName: "X-CSRF-TOKEN",
+        xsrfCookieName: "csrf_token",
         url: path,
         withCredentials: true,
         data:
@@ -159,6 +161,8 @@ export default class BaseService {
     try {
       const response = await axios({
         method: "PUT",
+        xsrfHeaderName: "X-CSRF-TOKEN",
+        xsrfCookieName: "csrf_token",
         url: path,
         data: payload,
         headers,
@@ -183,6 +187,8 @@ export default class BaseService {
     try {
       const response = await axios({
         method: "PATCH",
+        xsrfHeaderName: "X-CSRF-TOKEN",
+        xsrfCookieName: "csrf_token",
         url: path,
         data: encryptAES(JSON.stringify(payload)),
         headers,
