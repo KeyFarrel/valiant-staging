@@ -330,6 +330,10 @@ build-image:
   stage: build-image
   needs:
     - job: build-app
+    - job: prepare_env_file_stg
+      optional: true
+    - job: prepare_env_file_prod
+      optional: true
   services:
     - harbor.pln.co.id/library/docker:24.0.7-dind
   variables:
