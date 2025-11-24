@@ -329,7 +329,7 @@ build-image:
     name: harbor.pln.co.id/library/docker:24.0.7
   stage: build-image
   needs:
-    - sonarqube-check
+    - job: build-app
   services:
     - harbor.pln.co.id/library/docker:24.0.7-dind
   variables:
