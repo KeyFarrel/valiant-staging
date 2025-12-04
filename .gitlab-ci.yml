@@ -263,10 +263,10 @@ fortify-sast-scancentral:
 
       echo "Untuk detail vulnerability dapat dilihat pada: $SSC_URL/html/ssc/version/$pvId/audit"
       
-      if [[ "$critical" -gt 100 ]]; then
+      if [[ "$critical" -gt $SAST_CRITICAL_THRESHOLD ]]; then
             echo "ERROR: Jumlah isu Critical ($critical) melebihi batas! Pipeline dihentikan."
             exit 1
-      elif [[ "$high" -gt 100 ]]; then
+      elif [[ "$high" -gt $SAST_HIGH_THRESHOLD ]]; then
             echo "ERROR: Jumlah isu High ($high) melebihi batas! Pipeline dihentikan."
             exit 1
       fi
@@ -310,10 +310,10 @@ fortify-sca:
 
       echo "Untuk detail vulnerability dapat dilihat pada: $url"
       
-      if [[ "$critical" -gt 50 ]]; then
+      if [[ "$critical" -gt $SCA_CRITICAL_THRESHOLD ]]; then
             echo "ERROR: Jumlah isu High ($critical) melebihi batas! Pipeline dihentikan."
             exit 1
-      elif [[ "$severe" -gt 100 ]]; then
+      elif [[ "$severe" -gt $SCA_HIGH_THRESHOLD ]]; then
             echo "ERROR: Jumlah isu Medium ($severe) melebihi batas! Pipeline dihentikan."
             exit 1
       fi
@@ -329,7 +329,13 @@ build-image:
     name: harbor.pln.co.id/library/docker:24.0.7
   stage: build-image
   needs:
-    - sonarqube-check
+    - job: build-app
+    - job: prepare_env_file_stg
+      optional: true
+    - job: prepare_env_file_prod
+      optional: true
+    - job: sonarqube-check
+      optional: true
   services:
     - harbor.pln.co.id/library/docker:24.0.7-dind
   variables:
