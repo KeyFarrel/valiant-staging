@@ -43,7 +43,7 @@
       </div>
     </div>
   </ModalWrapper>
-  <ModalWrapper :show-modal="isShowCaptchaModal" :width="'w-auto'" :height="'h-auto'">
+  <!-- <ModalWrapper :show-modal="isShowCaptchaModal" :width="'w-auto'" :height="'h-auto'">
     <div class="flex flex-col space-y-5">
       <div class="flex justify-between">
         <p class="font-bold tracking-wide text-gray-700 text-md">Verifikasi Captcha</p>
@@ -56,7 +56,7 @@
       </div>
       <gocaptcha-slide :config="captchaConfig" :data="captchaData" :events="eventCaptcha" ref="domRef" />
     </div>
-  </ModalWrapper>
+  </ModalWrapper> -->
   <ModalNotification :show-modal="isChangePasswordSuccess" :animation-data="LottieSuccess"
     :title="'Password Berhasil Diubah'" :subtitle="'Silahkan login kembali dengan password yang baru'" />
   <ModalNotification :show-modal="isShowLocked" :animation-data="errorJsonData" :title="'Akun Terkunci'"
@@ -322,7 +322,7 @@
             <input v-model="valPassword"
               class="block bg-white p-3 w-[350px] text-xs text-gray-900 rounded-md border border-gray-300 focus:ring-[#0099AD] focus:border-[#0099AD]"
               :type="showPassword ? 'text' : 'password'" id="password1" placeholder="Masukkan kata sandi"
-              @keyup.enter="onClickLogin" @copy.prevent @paste.prevent @cut.prevent />
+              @keyup.enter="onCaptchaVerified" @copy.prevent @paste.prevent @cut.prevent />
             <button @click="visiblePassword" class="absolute transform -translate-y-1/2 top-1/2 right-3" type="button">
               <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" width="16" class="mr-4" height="12"
                 viewBox="0 0 16 12" fill="none">
@@ -344,7 +344,7 @@
           </div>
           <p class="mt-1 text-xs text-red-500">{{ valKataSandiErr }}</p>
         </div>
-        <button @click="onClickLogin" type="button"
+        <button @click="onCaptchaVerified" type="button"
           class="text-white uppercase  bg-[#0099AD] w-[350px] hover:bg-[#0099AD] hover:text-white active:ring active:ring-[#005A66] rounded-lg text-xs p-3 my-3 focus:outline-none"
           v-if="valEmail && valPassword">
           <p v-show="!isLoadingButton" class="font-semibold">Masuk Ke Aplikasi</p>
@@ -471,44 +471,44 @@ const userData = ref<DataItem>({
   created_at: ""
 });
 const isCaptchaVerified = ref<boolean>(false);
-const isShowCaptchaModal = ref<boolean>(false);
-const captchaKey = ref<string>('');
+// const isShowCaptchaModal = ref<boolean>(false);
+// const captchaKey = ref<string>('');
 const captchaConfig = ref<any>({
   showTheme: true,
   title: "Geser untuk verifikasi",
   iconSize: 0,
   scope: true
 });
-const captchaData = ref<any>({
-  thumbX: 0,
-  thumbY: 0,
-  thumbWidth: 0,
-  thumbHeight: 0,
-  image: "",
-  thumb: "",
-});
+// const captchaData = ref<any>({
+//   thumbX: 0,
+//   thumbY: 0,
+//   thumbWidth: 0,
+//   thumbHeight: 0,
+//   image: "",
+//   thumb: "",
+// });
 
 // Event Handling
-const eventCaptcha: Partial<{
-  move: (x: number, y: number) => void;
-  refresh: () => void;
-  close: () => void;
-  confirm: any;
-}> = {
-  move: (x, y) => {
-    console.log(`Mouse bergerak ke posisi: X=${x}, Y=${y}`);
-  },
-  refresh: () => {
-    console.log("Captcha di-refresh");
-    domRef.value?.clear()
-  },
-  close: () => {
-    console.log("Captcha ditutup");
-  },
-  confirm: (point, reset) => {
-    onCaptchaVerified(point.x);
-  },
-};
+// const eventCaptcha: Partial<{
+//   move: (x: number, y: number) => void;
+//   refresh: () => void;
+//   close: () => void;
+//   confirm: any;
+// }> = {
+//   move: (x, y) => {
+//     console.log(`Mouse bergerak ke posisi: X=${x}, Y=${y}`);
+//   },
+//   refresh: () => {
+//     console.log("Captcha di-refresh");
+//     domRef.value?.clear()
+//   },
+//   close: () => {
+//     console.log("Captcha ditutup");
+//   },
+//   confirm: (point, reset) => {
+//     onCaptchaVerified(point.x);
+//   },
+// };
 
 
 interface DataItem {
@@ -616,13 +616,13 @@ const clickDebugFingerprint = async () => {
   debuggingFingerprint.value = fingerprintID;
 }
 
-const onClickLogin = () => {
-  isShowCaptchaModal.value = true;
-}
+// const onClickLogin = () => {
+//   isShowCaptchaModal.value = true;
+// }
 
-const closeCaptchaModal = () => {
-  isShowCaptchaModal.value = false;
-}
+// const closeCaptchaModal = () => {
+//   isShowCaptchaModal.value = false;
+// }
 
 const loginSSO = async () => {
   try {
@@ -634,27 +634,27 @@ const loginSSO = async () => {
   }
 }
 
-const generateCaptcha = async () => {
-  try {
-    const response: any = await authService.generateCaptcha();
-    captchaKey.value = response.captcha_key
-    captchaData.value.thumbY = response.tile_y;
-    captchaData.value.thumbWidth = response.tile_width;
-    captchaData.value.thumbHeight = response.tile_height;
-    captchaData.value.image = response.image_base64;
-    captchaData.value.thumb = response.tile_base64;
-  } catch (error: any) {
-    if (import.meta.env.MODE === 'development') {
-      console.error('Error Generate Captcha : ', error);
-    }
-    if (error?.message === 'Network Error') {
-      notifyError('Tidak dapat memuat captcha. Silakan coba lagi nanti.', 3000);
-      setTimeout(generateCaptcha, 5000);
-    } else {
-      notifyError('Terjadi kesalahan saat memuat captcha.', 3000);
-    }
-  }
-}
+// const generateCaptcha = async () => {
+//   try {
+//     const response: any = await authService.generateCaptcha();
+//     captchaKey.value = response.captcha_key
+//     captchaData.value.thumbY = response.tile_y;
+//     captchaData.value.thumbWidth = response.tile_width;
+//     captchaData.value.thumbHeight = response.tile_height;
+//     captchaData.value.image = response.image_base64;
+//     captchaData.value.thumb = response.tile_base64;
+//   } catch (error: any) {
+//     if (import.meta.env.MODE === 'development') {
+//       console.error('Error Generate Captcha : ', error);
+//     }
+//     if (error?.message === 'Network Error') {
+//       notifyError('Tidak dapat memuat captcha. Silakan coba lagi nanti.', 3000);
+//       setTimeout(generateCaptcha, 5000);
+//     } else {
+//       notifyError('Terjadi kesalahan saat memuat captcha.', 3000);
+//     }
+//   }
+// }
 
 const startTimers = () => {
   expiredOtpInterval = setInterval(() => {
@@ -840,7 +840,7 @@ const changePassword = async () => {
   }
 };
 
-const onCaptchaVerified = async (tileX: number) => {
+const onCaptchaVerified = async () => {
   isLoadingSpinner.value = true;
   isCaptchaVerified.value = true;
   if (isLoadingButton.value) return;
@@ -860,13 +860,13 @@ const onCaptchaVerified = async (tileX: number) => {
     param = {
       email: valEmail.value,
       password: valPassword.value,
-      captcha_key: captchaKey.value,
-      tile_x: tileX
+      // captcha_key: captchaKey.value,
+      // tile_x: tileX
     };
 
     try {
       const response: any = await authService.login(param);
-      isShowCaptchaModal.value = false;
+      // isShowCaptchaModal.value = false;
       if (response.message === 'Anda terdeteksi menggunakan device baru, silahkan lakukan verifikasi OTP') {
         notifyError(response.message, 7000);
         isShowCounter.value = false;
@@ -892,13 +892,15 @@ const onCaptchaVerified = async (tileX: number) => {
       console.error("Error: ", error)
       if (error.response.data.message === `validation failed: Key: 'RequestAuth.Email' Error:Field validation for 'Email' failed on the 'email' tag`) {
         notifyError("Format email tidak valid, mohon periksa kembali email anda", 5000);
-        isShowCaptchaModal.value = false;
-      } else if (error.response.data.message === 'Captcha verification failed') {
-        notifyError("Verifikasi captcha gagal, mohon coba lagi", 5000);
-        generateCaptcha();
-      } else {
+        // isShowCaptchaModal.value = false;
+      }
+      // else if (error.response.data.message === 'Captcha verification failed') {
+      //   notifyError("Verifikasi captcha gagal, mohon coba lagi", 5000);
+      //   generateCaptcha();
+      // } 
+      else {
         notifyError(error.response.data.message, 5000);
-        isShowCaptchaModal.value = false;
+        // isShowCaptchaModal.value = false;
       }
       isLoadingButton.value = false;
       if (error.response.data && error.response.data.data && error.response.data.data.temp_loc && error.response.data.data.temp_loc !== 0) {
@@ -962,7 +964,7 @@ const onDeclinePrivacy = async () => {
 
 onMounted(async () => {
   initFlowbite();
-  generateCaptcha();
+  // generateCaptcha();
   const hasRefreshed = sessionStorage.getItem('hasRefreshed');
   if (!hasRefreshed) {
     sessionStorage.setItem('hasRefreshed', 'true');
