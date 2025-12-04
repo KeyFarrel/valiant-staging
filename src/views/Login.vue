@@ -978,3 +978,10 @@ onUnmounted(() => {
   clearInterval(resetOtpInterval);
 })
 </script>
+
+<style lang="scss" scoped>
+#emailAddress:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: #111 !important;
+}
+</style>

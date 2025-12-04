@@ -59,7 +59,7 @@ const sessionStore = useSessionStore(getActivePinia());
 axios.interceptors.response.use(
   async (response: any) => {
     const csrfToken =
-      response.headers["x-csrf-token"] || response.headers["X-CSRF-Token"];
+      response.headers["x-csrf-token"] || response.headers["X-Csrf-Token"] || response.headers["X-CSRF-Token"];
     if (csrfToken) {
       const csrfStore = useCsrfTokenStore(getActivePinia());
       csrfStore.setCsrfToken(csrfToken);

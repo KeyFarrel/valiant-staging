@@ -84,7 +84,7 @@ export default class AuthService extends BaseService {
     return this.post(`${url}auth/verifikasi-token`, { code: code });
   }
   async generateCaptcha<T>(): Promise<T> {
-    return this.post(`${url}auth/generate-captcha`, null, true);
+    return this.post(`${url}auth/generate-captcha`, null);
   }
   async getPublicKey<T>(): Promise<T> {
     return this.post(`${url}auth/public-key`);
