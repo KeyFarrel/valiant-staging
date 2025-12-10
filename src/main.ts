@@ -135,10 +135,7 @@ axios.interceptors.response.use(
       router.push({ name: "login" });
     } else if (
       error.code === "ERR_NETWORK" &&
-      error.config.url !==
-        (nodeMode !== "development"
-          ? "https://stg-be-valiant.pln.co.id/v1/mutasiasset/download/"
-          : "http://localhost:8000/v1/mutasiasset/download/")
+      error.config.url !== "https://stg-be-valiant.pln.co.id/v1/mutasiasset/download/"
     ) {
       sessionStore.setErrNetwork();
       console.log("Network error detected, setting network error state", error);
