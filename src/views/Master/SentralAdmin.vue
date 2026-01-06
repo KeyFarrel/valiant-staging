@@ -357,13 +357,15 @@ const fetchSentralData = async () => {
     totalRecords.value = meta.totalRecords;
     pageLimit.value = meta.limit;
     for (const val of sentralData.value) {
-      try {
-        const response: any = await detailSentralService.getPhoto(val.photo);
-        console.log(response, "RESPONSE PHOTO")
-        const blob = new Blob([response.data]);
-        val.photo2 = URL.createObjectURL(blob);
-      } catch (error) {
-        console.error('Error Fetch Photo: ', error);
+      if (val.photo !== '') {
+        try {
+          const response: any = await detailSentralService.getPhoto(val.photo);
+          console.log(response, "RESPONSE PHOTO")
+          const blob = new Blob([response.data]);
+          val.photo2 = URL.createObjectURL(blob);
+        } catch (error) {
+          console.error('Error Fetch Photo: ', error);
+        }
       }
     }
     console.log(sentralData.value, 'sentralData')

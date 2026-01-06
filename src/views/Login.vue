@@ -735,67 +735,27 @@ const fetchDataProfile = async () => {
 };
 
 const verifyEmailOtp = async () => {
+  isLoadingSpinner.value = true;
+  const formattedOtp = otp.value.join("");
+  let responseVerifyOtp
+
   try {
-    isLoadingSpinner.value = true;
-    const formattedOtp = otp.value.join("");
-
-    let responseVerifyOtp
-    try {
-      responseVerifyOtp = await authService.verifyDeviceOtp(valEmail.value, formattedOtp);
-      if (responseVerifyOtp.code !== 200) {
-        throw new Error('Failed to verify OTP');
-      }
-    } catch (error) {
-      console.error("Error verifying OTP:", error);
-      notifyError(`Gagal verifikasi OTP! ${error.response.data.message}`, 5000);
-      return;
+    responseVerifyOtp = await authService.verifyDeviceOtp(valEmail.value, formattedOtp);
+    if (responseVerifyOtp.code !== 200) {
+      throw new Error('Failed to verify OTP');
     }
-
-    let param;
-
-    param = {
-      email: valEmail.value,
-      password: valPassword.value,
-    };
-
-    try {
-      const responseLogin: any = await authService.login(param);
-      if (responseLogin.message === 'Anda terdeteksi menggunakan device baru, silahkan lakukan verifikasi OTP') {
-        notifyError(responseLogin.message, 7000);
-        isShowCounter.value = false;
-        isModalOtpShow.value = true;
-        isLoadingButton.value = false;
-      } else if (responseLogin.data.is_reset) {
-        if (responseLogin.message === 'Password anda sudah expired, silahkan ganti password') {
-          notifyError("Password anda sudah expired, silahkan ganti password", 7000);
-        } else if (responseLogin.message === 'Password anda sudah direset sebelumnya, silahkan ganti password anda') {
-          notifyError("Password anda sudah direset sebelumnya, silahkan ganti password anda", 7000);
-        }
-        isShowCounter.value = false;
-        isShowCompletePassword.value = true;
-        isLoadingButton.value = false;
-      } else {
-        console.log("Masuk else")
-        setTimeout(() => {
-          router.push({ name: "peta" });
-        }, 500);
-      }
-      isLoadingSpinner.value = false;
-      isModalOtpShow.value = false;
-      otp.value = Array(8).fill(null);
-      resetInputAndAttribute();
-      clearInterval(expiredOtpInterval);
-      clearInterval(resetOtpInterval);
-      expiredOtpTimer.value = 300;
-      resetOtpTimer.value = 60;
-    } catch (error) {
-      isModalOtpShow.value = false;
-      console.error("Error during login:", error);
-      return;
-    }
+    isLoadingSpinner.value = false;
+    isModalOtpShow.value = false;
+    otp.value = Array(8).fill(null);
+    resetInputAndAttribute();
+    clearInterval(expiredOtpInterval);
+    clearInterval(resetOtpInterval);
+    expiredOtpTimer.value = 300;
+    resetOtpTimer.value = 60;
+    notifySuccess("OTP berhasil diverifikasi, silahkan login kembali!", 7000);
   } catch (error) {
-    console.error("Unexpected error:", error);
-    notifyError("Unexpected error occurred", 5000);
+    console.error("Error verifying OTP:", error);
+    notifyError(`Gagal verifikasi OTP! ${error.response.data.message}`, 5000);
   } finally {
     isLoadingSpinner.value = false;
   }

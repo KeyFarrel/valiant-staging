@@ -51,6 +51,8 @@ const disableDevTools = (): void => {
 
   // Method 2: Detect when DevTools is opened
   const devToolsDetector = (): void => {
+    // Logic removed to prevent infinite reload loops
+    /*
     const devtools = {
       isOpen: false,
       orientation: null
@@ -67,7 +69,8 @@ const disableDevTools = (): void => {
         if (!devtools.isOpen) {
           devtools.isOpen = true;
           // Optionally redirect or show a message
-          window.location.reload();
+          // window.location.reload(); 
+          console.warn("DevTools usage detected");
         }
       } else {
         devtools.isOpen = false;
@@ -76,6 +79,7 @@ const disableDevTools = (): void => {
 
     // Check periodically
     setInterval(checkDevTools, 1000);
+    */
   };
 
   // Method 3: Clear console and disable console methods

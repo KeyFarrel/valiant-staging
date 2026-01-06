@@ -113,12 +113,18 @@ axios.interceptors.response.use(
       }
     }
 
-    if (
-      error.response &&
-      error.response.status === 401 &&
-      error.response.data.message !==
-        "User belum terdaftar pada aplikasi Valiant"
-    ) {
+    const isUnauthorized = error.response?.status === 401;
+    const isUserNotRegistered = error.response?.data?.message === "User belum terdaftar pada aplikasi Valiant";
+    const isLoginPage = currentRoute.name === "login";
+    const isNetworkError = error.code === "ERR_NETWORK";
+    const isRecordNotFound = error.response?.data?.message === "record not found";
+    
+    const ignoredNetworkUrl = (nodeMode === "production" || nodeMode === "staging")
+      ? "https://stg-be-valiant.pln.co.id/v1/mutasiasset/download/"
+      : "http://localhost:8000/v1/mutasiasset/download/";
+    const shouldIgnoreNetworkError = error.config?.url === ignoredNetworkUrl;
+
+    if (isUnauthorized && !isUserNotRegistered && !isLoginPage) {
       console.log(
         "Unauthorized access detected, clearing storage and redirecting to login",
       );
@@ -133,18 +139,16 @@ axios.interceptors.response.use(
       }
       sessionStore.invalidateSession();
       router.push({ name: "login" });
-    } else if (
-      error.code === "ERR_NETWORK" &&
-      error.config.url !== "https://stg-be-valiant.pln.co.id/v1/mutasiasset/download/"
-    ) {
+    } else if (isNetworkError && !shouldIgnoreNetworkError) {
       sessionStore.setErrNetwork();
       console.log("Network error detected, setting network error state", error);
       router.push({ name: "503" });
     } else if (
       error.response &&
-      error.response.status !== 401 &&
-      error.code !== "ERR_NETWORK" &&
-      currentRoute.name !== "login"
+      !isUnauthorized &&
+      !isNetworkError &&
+      !isLoginPage &&
+      !isRecordNotFound
     ) {
       notifyError(
         `${error.response.data.message} ${error.response.data.uuid ?? 0}`,
@@ -165,11 +169,15 @@ axios.interceptors.response.use(
   },
 );
 
+const loadCriticalResources = async () => {
+  const OpenLayersMap = await import("vue3-openlayers");
+  app.use(OpenLayersMap.default);
+};
+
 const loadNonEssentialResources = async () => {
-  const [VueDatePicker, autoAnimatePlugin, OpenLayersMap] = await Promise.all([
+  const [VueDatePicker, autoAnimatePlugin] = await Promise.all([
     import("@vuepic/vue-datepicker"),
     import("@formkit/auto-animate/vue").then((m) => m.autoAnimatePlugin),
-    import("vue3-openlayers"),
   ]);
 
   await Promise.all([
@@ -179,16 +187,21 @@ const loadNonEssentialResources = async () => {
 
   app
     .use(autoAnimatePlugin)
-    .use(OpenLayersMap.default)
     .component("VueDatePicker", VueDatePicker.default);
 
   console.log("Non-essential resources loaded");
 };
 
 (async () => {
+  try {
+    await loadCriticalResources();
+  } catch (error) {
+    console.error("Failed to load critical resources:", error);
+  }
+
+  app.mount("#app");
+
   window.requestIdleCallback
     ? window.requestIdleCallback(async () => await loadNonEssentialResources())
     : setTimeout(() => loadNonEssentialResources(), 100);
-
-  app.mount("#app");
 })();

@@ -5,45 +5,71 @@ import { fileURLToPath, URL } from "node:url";
 
 function removeVersionSignatures(): Plugin {
   return {
-    name: 'remove-version-signatures',
+    name: "remove-version-signatures",
     transform(code, id) {
-      if (id.includes('node_modules/core-js') || id.endsWith('.js') || id.endsWith('.ts') || id.endsWith('.vue')) {
-        code = code.replace(/\/\*!\s*Core JS\s*([\d\.]+)\s*\*\//g, '/* Core JS */');
-        code = code.replace(/\/\*![\s\S]*?@version[\s\S]*?\*\//g, '/* JS Library */');
-        
-        code = code.replace(/VERSION[\s]*[:=][\s]*['"]([\d\.]+)['"]/, 'VERSION = "0.0.0"');
-        code = code.replace(/version[\s]*[:=][\s]*['"]([\d\.]+)['"]/, 'version = "0.0.0"');
-        
-        code = code.replace(/@version\s+([\d\.]+)/g, '@version 0.0.0');
-        
+      if (
+        id.includes("node_modules/core-js") ||
+        id.endsWith(".js") ||
+        id.endsWith(".ts") ||
+        id.endsWith(".vue")
+      ) {
+        code = code.replace(
+          /\/\*!\s*Core JS\s*([\d\.]+)\s*\*\//g,
+          "/* Core JS */",
+        );
+        code = code.replace(
+          /\/\*![\s\S]*?@version[\s\S]*?\*\//g,
+          "/* JS Library */",
+        );
+
+        code = code.replace(
+          /VERSION[\s]*[:=][\s]*['"]([\d\.]+)['"]/,
+          'VERSION = "0.0.0"',
+        );
+        code = code.replace(
+          /version[\s]*[:=][\s]*['"]([\d\.]+)['"]/,
+          'version = "0.0.0"',
+        );
+
+        code = code.replace(/@version\s+([\d\.]+)/g, "@version 0.0.0");
+
         code = code.replace(/['"]core-js\/([\d\.]+)['"]/g, '"core-js/0.0.0"');
-        code = code.replace(/require\(['"]core-js['"]\)/g, 'require("core-js-obfuscated")');
-        code = code.replace(/from\s+['"]core-js['"]/, 'from "core-js-obfuscated"');
-        
+        code = code.replace(
+          /require\(['"]core-js['"]\)/g,
+          'require("core-js-obfuscated")',
+        );
+        code = code.replace(
+          /from\s+['"]core-js['"]/,
+          'from "core-js-obfuscated"',
+        );
+
         code = code.replace(/['"](\d+\.\d+\.\d+(-[a-z0-9]+)?)['"]/g, '"0.0.0"');
       }
       return code;
     },
     transformIndexHtml(html) {
-      html = html.replace(/<meta[^>]*generator[^>]*>/gi, '');
-      html = html.replace(/<meta[^>]*version[^>]*>/gi, '');
-      
-      return html.replace(/<head>/, '<head>\n  <!-- Core JS 0.0.0 -->');
+      html = html.replace(/<meta[^>]*generator[^>]*>/gi, "");
+      html = html.replace(/<meta[^>]*version[^>]*>/gi, "");
+
+      return html.replace(/<head>/, "<head>\n  <!-- Core JS 0.0.0 -->");
     },
     generateBundle(options, bundle) {
-      Object.keys(bundle).forEach(fileName => {
+      Object.keys(bundle).forEach((fileName) => {
         const asset = bundle[fileName];
-        if (fileName.endsWith('.js') && 'source' in asset) {
+        if (fileName.endsWith(".js") && "source" in asset) {
           let code = asset.source.toString();
-          
-          code = code.replace(/core-js@(\d+\.\d+\.\d+)/g, 'core-js@0.0.0');
-          code = code.replace(/core-js\/(\d+\.\d+\.\d+)/g, 'core-js/0.0.0');
-          code = code.replace(/"version":"(\d+\.\d+\.\d+)"/g, '"version":"0.0.0"');
-          
+
+          code = code.replace(/core-js@(\d+\.\d+\.\d+)/g, "core-js@0.0.0");
+          code = code.replace(/core-js\/(\d+\.\d+\.\d+)/g, "core-js/0.0.0");
+          code = code.replace(
+            /"version":"(\d+\.\d+\.\d+)"/g,
+            '"version":"0.0.0"',
+          );
+
           asset.source = code;
         }
       });
-    }
+    },
   };
 }
 
@@ -105,22 +131,22 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: "dist",
       sourcemap: false,
-      minify: 'terser',
+      minify: "terser",
       terserOptions: {
         compress: {
-          // drop_console: true,
+          drop_console: true,
           drop_debugger: true,
           keep_fnames: true,
-          keep_classnames: true
+          keep_classnames: true,
         },
         format: {
-          comments: false
+          comments: false,
         },
         mangle: {
           keep_fnames: true,
           keep_classnames: true,
-          properties: false
-        }
+          properties: false,
+        },
       },
 
       rollupOptions: {
@@ -135,15 +161,9 @@ export default defineConfig(({ mode }) => {
             ]
           : [],
         output: {
-          entryFileNames: isProd
-            ? "assets/js/[hash].js"
-            : "assets/[name].js",
-          chunkFileNames: isProd
-            ? "assets/js/[hash].js"
-            : "assets/[name].js",
-          assetFileNames: isProd
-            ? "assets/[ext]/[hash].[ext]"
-            : "assets/[name].[ext]",
+          entryFileNames: "assets/[hash].js",
+          chunkFileNames: "assets/[hash].js",
+          assetFileNames: "assets/[hash].[ext]"
         },
       },
 
@@ -176,59 +196,87 @@ export default defineConfig(({ mode }) => {
       {
         name: "vite-plugin-html",
         transformIndexHtml(html) {
-          html = html.replace(/<meta[^>]*generator[^>]*>/gi, '');
-          html = html.replace(/<meta[^>]*version[^>]*>/gi, '');
-          html = html.replace(/<meta[^>]*http-equiv=["']X-Frame-Options["'][^>]*>/gi, '');
-          html = html.replace(/<meta[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/gi, '');
-          html = html.replace(/<meta[^>]*http-equiv=["']X-XSS-Protection["'][^>]*>/gi, '');
-          html = html.replace(/<meta[^>]*http-equiv=["']Strict-Transport-Security["'][^>]*>/gi, '');
-          
+          html = html.replace(/<meta[^>]*generator[^>]*>/gi, "");
+          html = html.replace(/<meta[^>]*version[^>]*>/gi, "");
+          html = html.replace(
+            /<meta[^>]*http-equiv=["']X-Frame-Options["'][^>]*>/gi,
+            "",
+          );
+          html = html.replace(
+            /<meta[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/gi,
+            "",
+          );
+          html = html.replace(
+            /<meta[^>]*http-equiv=["']X-XSS-Protection["'][^>]*>/gi,
+            "",
+          );
+          html = html.replace(
+            /<meta[^>]*http-equiv=["']Strict-Transport-Security["'][^>]*>/gi,
+            "",
+          );
+
           const safeHeaders = {
             "Referrer-Policy": "strict-origin-when-cross-origin",
             "X-Content-Type-Options": "nosniff",
-            "X-DNS-Prefetch-Control": "off"
+            "X-DNS-Prefetch-Control": "off",
           };
-          
+
           return html.replace(
             /<head>/,
             `<head>\n${Object.entries(safeHeaders)
-              .map(([key, val]) => `  <meta http-equiv="${key}" content="${val}">`)
-              .join("\n")}`
+              .map(
+                ([key, val]) => `  <meta http-equiv="${key}" content="${val}">`,
+              )
+              .join("\n")}`,
           );
         },
       },
-      isProd ? {
-        name: 'js-obfuscator',
-        enforce: 'post' as const,
-        apply: 'build' as const,
-        transformIndexHtml(html) {
-          return html.replace(/<!--[\s\S]*?-->/g, '');
-        },
-        generateBundle(options, bundle) {
-          Object.keys(bundle).forEach(fileName => {
-            const asset = bundle[fileName];
-            if (fileName.endsWith('.js') && 'source' in asset) {
-              let code = asset.source.toString();
-              
-              code = code.replace(/\/\*!\s*Core JS\s*([\d\.]+)\s*\*\//g, '');
-              code = code.replace(/\/\*![\s\S]*?\*\//g, '');
-              
-              code = code.replace(/VERSION[\s]*[:=][\s]*['"]([\d\.]+)['"]/, 'VERSION=""');
-              code = code.replace(/version[\s]*[:=][\s]*['"]([\d\.]+)['"]/, 'version=""');
-              
-              code = code.replace(/@version\s+([\d\.]+)/g, '@version');
-              code = code.replace(/core-js\/([\d\.]+)/g, 'core-js/x');
-              
-              code = code.replace(/['"](\d+\.\d+\.\d+(-[a-z0-9]+)?)['"]/g, '"0.0.0"');
-              
-              code = code.replace(/core-js-pure/g, 'core-js-x');
-              code = code.replace(/core-js-compat/g, 'core-js-x');
-              
-              asset.source = code;
-            }
-          });
-        }
-      } : null,
+      isProd
+        ? {
+            name: "js-obfuscator",
+            enforce: "post" as const,
+            apply: "build" as const,
+            transformIndexHtml(html) {
+              return html.replace(/<!--[\s\S]*?-->/g, "");
+            },
+            generateBundle(options, bundle) {
+              Object.keys(bundle).forEach((fileName) => {
+                const asset = bundle[fileName];
+                if (fileName.endsWith(".js") && "source" in asset) {
+                  let code = asset.source.toString();
+
+                  code = code.replace(
+                    /\/\*!\s*Core JS\s*([\d\.]+)\s*\*\//g,
+                    "",
+                  );
+                  code = code.replace(/\/\*![\s\S]*?\*\//g, "");
+
+                  code = code.replace(
+                    /VERSION[\s]*[:=][\s]*['"]([\d\.]+)['"]/,
+                    'VERSION=""',
+                  );
+                  code = code.replace(
+                    /version[\s]*[:=][\s]*['"]([\d\.]+)['"]/,
+                    'version=""',
+                  );
+
+                  code = code.replace(/@version\s+([\d\.]+)/g, "@version");
+                  code = code.replace(/core-js\/([\d\.]+)/g, "core-js/x");
+
+                  code = code.replace(
+                    /['"](\d+\.\d+\.\d+(-[a-z0-9]+)?)['"]/g,
+                    '"0.0.0"',
+                  );
+
+                  code = code.replace(/core-js-pure/g, "core-js-x");
+                  code = code.replace(/core-js-compat/g, "core-js-x");
+
+                  asset.source = code;
+                }
+              });
+            },
+          }
+        : null,
     ].filter(Boolean),
 
     resolve: {
