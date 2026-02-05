@@ -390,7 +390,7 @@
                         <p class="text-sm text-gray-400">
                           <span class="font-semibold text-primaryTextColor">{{ mesinItem.nilai_asset_awal === '-' ?
                             mesinItem.nilai_asset_awal : globalFormat.formatRupiah(mesinItem.nilai_asset_awal / 1000000)
-                          }}</span> Rp (Juta)
+                            }}</span> Rp (Juta)
                         </p>
                       </div>
                       <div>
@@ -1733,7 +1733,7 @@ const clearKondisiMesin = () => {
 
 const handleClickOutside = (event: MouseEvent) => {
   const target = event.target as HTMLElement;
-  if (!target.closest('.relative')) {
+  if (target && target.closest && !target.closest('.relative')) {
     isPembangkitDropdownOpen.value = false
     isDmnDropdownOpen.value = false;
     isUmurMesinDropdownOpen.value = false

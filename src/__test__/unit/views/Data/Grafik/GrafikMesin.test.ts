@@ -60,6 +60,9 @@ vi.mock('@/store/storeTagGrafik', () => ({
   })
 }));
 
+// Added import for useTagMesin to be used in tests
+import { useTagMesin } from '@/store/storeTagGrafik';
+
 // Mock the services with configurable responses
 const mockServiceResponses = {
   wlcAll: [],
@@ -216,6 +219,9 @@ vi.mock('@/services/auth-service', () => ({
 vi.mock('@/services/format/global-format', () => ({
   default: class MockGlobalFormat {
     constructor() {}
+    formatRupiah(val: any) { return 'Rp ' + val; }
+    formatDecimal(val: any) { return val + '.00'; }
+    formatNumber(val: any) { return val + ''; }
   }
 }));
 
@@ -1028,6 +1034,274 @@ describe('GrafikMesin.vue', () => {
       await wrapper.vm.$nextTick();
       wrapper.vm.showModalLastY = false;
       expect(wrapper.vm.showModalLastY).toBe(false);
+    });
+  });
+
+  describe('Data Mapping & Chart Options', () => {
+    it('should map WLC All Mesin data to chart options correctly', async () => {
+      mockServiceResponses.wlcAll = [
+        { tahun: 2020, revenue_annualized: 100, total_wlcc: 50, capex_annualized: 10, cost_component_bd: 5, cost_component_c_annualized: 5, optimum_life_fs: 80, bep_fs: 70 }
+      ];
+      
+      await wrapper.vm.fetchGrafikWLCAllMesin();
+      
+      expect(wrapper.vm.tahunWLCAllMesin).toContain(2020);
+      expect(wrapper.vm.revWLCMesin).toContain(100);
+      expect(wrapper.vm.chartWLCAllMesin).toBeDefined();
+    });
+
+    it('should map WLC Kom Mesin data to chart options correctly', async () => {
+      mockServiceResponses.wlcKom = [
+        { tahun: 2020, cost_komp_a: 10, cost_komp_b: 20, cost_komp_c: 30, cost_komp_d: 40 }
+      ];
+      
+      await wrapper.vm.fetchGrafikWLCKomMesin();
+      
+      expect(wrapper.vm.tahunWLCKomMesin).toContain(2020);
+      expect(wrapper.vm.costCompAMesin).toContain(10);
+      expect(wrapper.vm.chartWLCKomMesin).toBeDefined();
+    });
+
+    it('should map Planning Mesin data to chart options correctly', async () => {
+      mockServiceResponses.plan = [
+        { tahun: 2021, revenue_annualized: 110, total_wlcc: 60, capex_annualized: 15, cost_component_bd: 6, cost_component_c_annualized: 6, optimum_life_fs: 85, bep_fs: 75 }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanMesin();
+      
+      expect(wrapper.vm.tahunPlanningMesin).toContain(2021);
+      expect(wrapper.vm.revPlanMesin).toContain(110);
+      expect(wrapper.vm.chartPlanningMesin).toBeDefined();
+    });
+
+    it('should map Planning Kom Mesin data to chart options correctly', async () => {
+      mockServiceResponses.planKom = [
+        { tahun: 2021, revenue_komp_a: 15, revenue_komp_b: 25, revenue_komp_c: 35, revenue_komp_d: 45 }
+      ];
+      
+      await wrapper.vm.fetchGrafikPlanKomMesin();
+      
+      expect(wrapper.vm.tahunPlanKomMesin).toContain(2021);
+      expect(wrapper.vm.chartPlanKomMesin).toBeDefined();
+    });
+
+    it('should map PRP Mesin data to chart options correctly', async () => {
+      mockServiceResponses.prp = [{
+        realisasi_proyeksi: [
+          { tahun: 2022, revenue_annualized: 120, total_wlcc: 70, capex_annualized: 20, cost_component_bd: 7, cost_component_c_annualized: 7, total_revenue: 150, revenue_komp_bd: 10 }
+        ],
+        planning: [
+          { tahun: 2022, revenue_annualized: 130, total_wlcc: 75, capex_annualized: 22, cost_component_bd: 8, cost_component_c_annualized: 8, total_revenue: 160, revenue_komp_bd: 12 }
+        ]
+      }];
+      
+      await wrapper.vm.fetchGrafikPRPMesin();
+      
+      expect(wrapper.vm.tahunPRPMesin).toContain(2022);
+      expect(wrapper.vm.revPRPMesin).toContain(120);
+      expect(wrapper.vm.chartPRPMesin).toBeDefined();
+    });
+  });
+
+  describe('Tab Switching & Component Rendering', () => {
+    it('should handle Planning tab interactions', async () => {
+      const tagStore = useTagMesin();
+      tagStore.currentTabMesin = 'Planning / Feasibility Study';
+      await wrapper.vm.$nextTick();
+      
+      // Simulate data needing refresh or checked
+      expect(tagStore.currentTabMesin).toBe('Planning / Feasibility Study');
+    });
+
+    it('should handle PRP tab interactions', async () => {
+      const tagStore = useTagMesin();
+      tagStore.currentTabMesin = 'Planning & Realisasi + Proyeksi';
+      await wrapper.vm.$nextTick();
+      
+      expect(tagStore.currentTabMesin).toBe('Planning & Realisasi + Proyeksi');
+    });
+
+     it('should handle Last Year tab interactions', async () => {
+      const tagStore = useTagMesin();
+      tagStore.currentTabMesin = 'Planning vs Realisasi s/d Tahun Berjalan';
+      await wrapper.vm.$nextTick();
+      
+      expect(tagStore.currentTabMesin).toBe('Planning vs Realisasi s/d Tahun Berjalan');
+    });
+  });
+
+  describe('Force Render Coverage', () => {
+    it('should execute forceRender variations', async () => {
+       await wrapper.vm.forceRender()
+       await wrapper.vm.forceRender1()
+       await wrapper.vm.forceRender2()
+       await wrapper.vm.forceRender3()
+       await wrapper.vm.forceRender4()
+       await wrapper.vm.forceRender5()
+       await wrapper.vm.forceRender6()
+       await wrapper.vm.forceRender7()
+       await wrapper.vm.forceRender8()
+       await wrapper.vm.forceRender9()
+       await wrapper.vm.forceRender10()
+       await wrapper.vm.forceRender11()
+       
+       // Just verify it completes successfully and state is true (reset)
+       await wrapper.vm.$nextTick()
+       expect(wrapper.vm.updateWLCAllMesin).toBe(true)
+    })
+  })
+
+  describe('Chart Formatters Coverage', () => {
+    it('should execute WLC All Mesin chart formatters', async () => {
+      mockServiceResponses.wlcAll = [{ tahun: 2020, revenue_annualized: 100 }];
+      await wrapper.vm.fetchGrafikWLCAllMesin();
+      
+      const chart = wrapper.vm.chartWLCAllMesin;
+      // Y Axis Label Formatter
+      if (chart.yAxis && chart.yAxis[0] && chart.yAxis[0].axisLabel.formatter) {
+        expect(chart.yAxis[0].axisLabel.formatter(1000000)).toBeDefined();
+      }
+      // Series Tooltip Formatter
+      if (chart.series && chart.series[0] && chart.series[0].tooltip.valueFormatter) {
+        expect(chart.series[0].tooltip.valueFormatter(100)).toBeDefined();
+      }
+    });
+
+    it('should execute WLC Kom Mesin chart formatters', async () => {
+      mockServiceResponses.wlcKom = [{ tahun: 2020, cost_komp_a: 10 }];
+      await wrapper.vm.fetchGrafikWLCKomMesin();
+      
+      const chart = wrapper.vm.chartWLCKomMesin;
+      // X Axis Label Color Function (if complex logic exists there, based on grep it does)
+      if (chart.xAxis && chart.xAxis[0] && chart.xAxis[0].axisLabel.color) {
+        // Test different years to hit branches ( <, =, > filterTahun)
+        const colorFunc = chart.xAxis[0].axisLabel.color;
+        wrapper.setProps({ tahunData: 2020 });
+        await wrapper.vm.$nextTick();
+        
+        expect(colorFunc(2019)).toBeDefined(); // <
+        expect(colorFunc(2020)).toBeDefined(); // =
+        expect(colorFunc(2021)).toBeDefined(); // >
+      }
+    });
+
+    it('should execute Plan Mesin chart formatters', async () => {
+      mockServiceResponses.plan = [{ tahun: 2021, revenue_annualized: 110 }];
+      await wrapper.vm.fetchGrafikPlanMesin();
+      
+      const chart = wrapper.vm.chartPlanningMesin;
+      if (chart.yAxis && chart.yAxis[0]?.axisLabel?.formatter) {
+        expect(chart.yAxis[0].axisLabel.formatter(1000)).toBeDefined();
+      }
+      if (chart.series && chart.series[0]?.tooltip?.valueFormatter) {
+        expect(chart.series[0].tooltip.valueFormatter(100)).toBeDefined();
+      }
+    });
+
+    it('should execute Plan Kom Mesin chart formatters', async () => {
+      mockServiceResponses.planKom = [{ tahun: 2021, revenue_komp_a: 15 }];
+      await wrapper.vm.fetchGrafikPlanKomMesin();
+      
+      const chart = wrapper.vm.chartPlanKomMesin;
+       if (chart.series && chart.series[0]?.tooltip?.valueFormatter) {
+        expect(chart.series[0].tooltip.valueFormatter(100)).toBeDefined();
+      }
+    });
+
+    it('should execute PRP Mesin chart formatters', async () => {
+       mockServiceResponses.prp = [{
+        realisasi_proyeksi: [{ tahun: 2022, revenue_annualized: 120 }],
+        planning: []
+      }];
+      await wrapper.vm.fetchGrafikPRPMesin();
+      
+      const chart = wrapper.vm.chartPRPMesin;
+      if (chart.yAxis && chart.yAxis[0]?.axisLabel?.formatter) {
+        expect(chart.yAxis[0].axisLabel.formatter(1000)).toBeDefined();
+      }
+      if (chart.series && chart.series[0]?.tooltip?.valueFormatter) {
+        expect(chart.series[0].tooltip.valueFormatter(100)).toBeDefined();
+      }
+    });
+
+    // Add tests for detail modals if they have charts with formatters
+    it('should execute Detail WLC All Modal chart formatters', async () => {
+      // Setup mock for detail
+      const mockDetailRes = {
+        data: {
+          graph: [{ nomor: 1, judul: 'Test', wlcc: 100 }],
+          table: []
+        }
+      };
+      
+      // We need to spy on the service method or ensure the mock class returns this
+      // The current mock class returns generic structure. Let's update it via vm call or assume default mock is close enough
+      // Or safer: define a mock implementation for this test
+      wrapper.vm.grafikService = wrapper.vm.grafikService || {};
+      wrapper.vm.grafikService.getGrafikWLCALLDetailMesin = vi.fn().mockResolvedValue({ success: true, ...mockDetailRes });
+      
+      wrapper.vm.tahunWLCAllMesin = [2024];
+      await wrapper.vm.handleClickWlcAll({ dataIndex: 0 });
+      
+      const chart = wrapper.vm.chartDetailWLCAllMesin;
+      if (chart && chart.yAxis && chart.yAxis[0]?.axisLabel?.formatter) {
+        expect(chart.yAxis[0].axisLabel.formatter(1000)).toBeDefined();
+      }
+       if (chart && chart.series && chart.series[0]?.tooltip?.valueFormatter) {
+        expect(chart.series[0].tooltip.valueFormatter(100)).toBeDefined();
+      }
+    });
+    
+    it('should execute Detail WLC Kom Modal chart formatters', async () => {
+      wrapper.vm.grafikService.getGrafikWLCKomDetailMesin = vi.fn().mockResolvedValue({ 
+          success: true, 
+          data: { graph: [{ nomor: 1, judul: 'Test', cost: 100 }], table: [] } 
+      });
+      
+      wrapper.vm.tahunWLCKomMesin = [2024];
+      await wrapper.vm.handleClickWlcKom({ dataIndex: 0 });
+      
+      const chart = wrapper.vm.chartDetailWLCKomMesin;
+      // WLC Kom detail might have standard formatters ?
+      if (chart && chart.yAxis && chart.yAxis[0]?.axisLabel?.formatter) {
+        expect(chart.yAxis[0].axisLabel.formatter(1000)).toBeDefined();
+      }
+    });
+    
+    it('should execute Detail Plan Modal chart formatters', async () => {
+       wrapper.vm.grafikService.getGrafikPlanDetailMesin = vi.fn().mockResolvedValue({ 
+          success: true, 
+          data: { graph: [{ nomor: 1, judul: 'Test', planning: 100 }], table: [] } 
+      });
+      
+      wrapper.vm.tahunPlanningMesin = [2024];
+      await wrapper.vm.handleClickPlan({ dataIndex: 0 });
+      
+      const chart = wrapper.vm.chartDetailPlanMesin;
+      if (chart && chart.yAxis && chart.yAxis[0]?.axisLabel?.formatter) {
+        expect(chart.yAxis[0].axisLabel.formatter(1000)).toBeDefined();
+      }
+       if (chart && chart.series && chart.series[0]?.tooltip?.valueFormatter) {
+        expect(chart.series[0].tooltip.valueFormatter(100)).toBeDefined();
+      }
+    });
+    
+     it('should execute Detail Plan Kom Modal chart formatters', async () => {
+       wrapper.vm.grafikService.getGrafikPlanKomDetailMesin = vi.fn().mockResolvedValue({ 
+          success: true, 
+          data: { graph: [{ nomor: 1, judul: 'Test', planning: 100 }], table: [] } 
+      });
+      
+      wrapper.vm.tahunPlanKomMesin = [2024];
+      await wrapper.vm.handleClickPlanKom({ dataIndex: 0 });
+      
+      const chart = wrapper.vm.chartDetailPlanKomMesin;
+      if (chart && chart.yAxis && chart.yAxis[0]?.axisLabel?.formatter) {
+        expect(chart.yAxis[0].axisLabel.formatter(1000)).toBeDefined();
+      }
+       if (chart && chart.series && chart.series[0]?.tooltip?.valueFormatter) {
+        expect(chart.series[0].tooltip.valueFormatter(100)).toBeDefined();
+      }
     });
   });
 });

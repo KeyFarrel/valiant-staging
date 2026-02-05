@@ -755,7 +755,7 @@ const verifyEmailOtp = async () => {
     notifySuccess("OTP berhasil diverifikasi, silahkan login kembali!", 7000);
   } catch (error) {
     console.error("Error verifying OTP:", error);
-    notifyError(`Gagal verifikasi OTP! ${error.response.data.message}`, 5000);
+    notifyError(`Gagal verifikasi OTP! ${error.response?.data?.message || error.message}`, 5000);
   } finally {
     isLoadingSpinner.value = false;
   }
@@ -873,7 +873,7 @@ const onCaptchaVerified = async () => {
         valEmailErr.value = "Email atau Kata Sandi salah";
         valKataSandiErr.value = "Email atau Kata Sandi salah";
       }
-      if (error.response.data.data.is_locked) {
+      if (error.response?.data?.data?.is_locked) {
         isLoadingSpinner.value = false;
         isShowCounter.value = false;
         isShowLocked.value = true;

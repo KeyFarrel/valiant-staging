@@ -3,7 +3,6 @@ import { onMounted, onUnmounted, type Ref, ref, watch } from "vue"
 import Empty from "@/components/icons/IconEmptyData.vue";
 import ShimmerLoading from "@/components/ui/ShimmerLoading.vue"
 import ModalWrapper from "@/components/ui/ModalWrapper.vue";
-import PetaService from "@/services/peta-service"
 import GrafikService from "@/services/grafik-service";
 import type { BaseResponse, ResCapexNcf } from "@/types/LamanAnalitik/TypeFinansial";
 import { id } from "date-fns/locale"
@@ -164,7 +163,7 @@ async function getDataGraphNoDMN() {
 };
 
 const closeModal = () => {
-  if (value.value.length) {
+  if (value.value.length && filter.value.tahun) {
     showModal.value = false
   } else if (value.value.length === 0 && filter.value.tahun === null) {
     notifyError('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000)
@@ -176,7 +175,7 @@ const closeModal = () => {
 }
 
 const applyFilter = async () => {
-  if (value.value.length) {
+  if (value.value.length && filter.value.tahun) {
     getDataGraph()
     showModal.value = false
   } else if (value.value.length === 0 && filter.value.tahun === null) {
@@ -189,7 +188,7 @@ const applyFilter = async () => {
 }
 
 const applyFilterNoDMN = async () => {
-  if (value.value.length) {
+  if (value.value.length && filter.value.tahun) {
     getDataGraphNoDMN()
     showModal.value = false
   } else if (value.value.length === 0 && filter.value.tahun === null) {

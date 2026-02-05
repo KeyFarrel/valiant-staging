@@ -1,16 +1,22 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { mount, flushPromises } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import VerifikasiSSO from '@/views/VerifikasiSSO.vue';
 import LoginService from '@/services/auth-service';
 
 // Mock dependencies
 vi.mock('@/services/auth-service');
-vi.mock('@/utils/app-encrypt-storage', () => ({
-  encryptStoragePromise: Promise.resolve({
+
+const mocks = vi.hoisted(() => ({
+  encryptStorage: {
     setItem: vi.fn(),
     clear: vi.fn(),
-  }),
+    decryptValue: vi.fn(),
+  }
+}));
+
+vi.mock('@/utils/app-encrypt-storage', () => ({
+  encryptStoragePromise: Promise.resolve(mocks.encryptStorage),
 }));
 
 vi.mock('vue-router', () => ({
@@ -19,9 +25,10 @@ vi.mock('vue-router', () => ({
   }),
 }));
 
+const mockPush = vi.fn();
 vi.mock('@/router', () => ({
   default: {
-    push: vi.fn(),
+    push: (...args) => mockPush(...args),
   },
 }));
 
@@ -33,9 +40,10 @@ vi.mock('crypto-js', () => ({
   }
 }));
 
+const mockInvalidateSession = vi.fn();
 vi.mock('@/store/storeSession', () => ({
   useSessionStore: () => ({
-    invalidateSession: vi.fn()
+    invalidateSession: mockInvalidateSession
   })
 }));
 
@@ -51,6 +59,14 @@ global.console.error = vi.fn();
 describe('VerifikasiSSO.vue', () => {
   let pinia: any;
   let mockLoginService: any;
+  
+  const createWrapper = (): any => {
+    return mount(VerifikasiSSO, {
+      global: {
+        plugins: [pinia],
+      },
+    });
+  };
 
   beforeEach(() => {
     pinia = createPinia();
@@ -58,6 +74,7 @@ describe('VerifikasiSSO.vue', () => {
     
     // Reset mocks
     vi.clearAllMocks();
+    vi.useFakeTimers();
     
     // Mock LoginService
     mockLoginService = {
@@ -71,127 +88,11 @@ describe('VerifikasiSSO.vue', () => {
 
   afterEach(() => {
     vi.unstubAllEnvs();
+    vi.useRealTimers();
   });
 
-  it('should render component successfully', () => {
-    mockLoginService.verifikasiSSO.mockResolvedValue({ success: true, data: {} });
-    
-    const wrapper = mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
-
-    expect(wrapper.exists()).toBe(true);
-    expect(wrapper.find('.bg-white').exists()).toBe(true);
-  });
-
-  it('should have ModalNotification component with correct props', async () => {
-    mockLoginService.verifikasiSSO.mockResolvedValue({ success: true, data: {} });
-    
-    const wrapper = mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
-
-    const modal = wrapper.findComponent({ name: 'ModalNotification' });
-    expect(modal.exists()).toBe(true);
-    expect(modal.props('title')).toBe('Verifikasi SSO Gagal');
-    expect(modal.props('subtitle')).toBe('User anda tidak terdaftar pada aplikasi valiant');
-    expect(modal.props('animationData')).toBeDefined();
-  });
-
-  it('should initialize with isError as false', () => {
-    mockLoginService.verifikasiSSO.mockResolvedValue({ success: true, data: {} });
-    
-    const wrapper = mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
-
-    const modal = wrapper.findComponent({ name: 'ModalNotification' });
-    expect(modal.props('showModal')).toBe(false);
-  });
-
-  it('should create LoginService instance', () => {
-    mockLoginService.verifikasiSSO.mockResolvedValue({ success: true, data: {} });
-    
-    mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
-
-    expect(LoginService).toHaveBeenCalled();
-  });
-
-  it('should import necessary modules', () => {
-    mockLoginService.verifikasiSSO.mockResolvedValue({ success: true, data: {} });
-    
-    const wrapper = mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
-
-    // Test that component is properly importing and using the modules
-    expect(wrapper.vm).toBeDefined();
-    expect(wrapper.find('.min-h-dvh').exists()).toBe(true);
-    expect(wrapper.find('.bg-white').exists()).toBe(true);
-    expect(wrapper.find('.text-primaryTextColor').exists()).toBe(true);
-  });
-
-  it('should handle environment mode correctly', () => {
-    mockLoginService.verifikasiSSO.mockResolvedValue({ success: true, data: {} });
-    
-    // Test development mode
-    vi.stubEnv('MODE', 'development');
-    mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
-    
-    expect(import.meta.env.MODE).toBe('development');
-  });
-
-  it('should handle production environment mode', () => {
-    mockLoginService.verifikasiSSO.mockResolvedValue({ success: true, data: {} });
-    
-    // Test production mode
+  it('should handle successful SSO verification and set storage (Production)', async () => {
     vi.stubEnv('MODE', 'production');
-    mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
-    
-    expect(import.meta.env.MODE).toBe('production');
-  });
-
-  it('should have correct template structure', () => {
-    mockLoginService.verifikasiSSO.mockResolvedValue({ success: true, data: {} });
-    
-    const wrapper = mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
-
-    // Check if the template has the expected structure
-    const mainDiv = wrapper.find('.bg-white.text-primaryTextColor.min-h-dvh');
-    expect(mainDiv.exists()).toBe(true);
-    
-    const modal = wrapper.findComponent({ name: 'ModalNotification' });
-    expect(modal.exists()).toBe(true);
-  });
-
-  it('should handle successful SSO verification with data processing', async () => {
-    const mockLocalStorage = { setItem: vi.fn(), clear: vi.fn() };
-
-    // Mock successful response
     mockLoginService.verifikasiSSO.mockResolvedValue({
       success: true,
       data: {
@@ -200,442 +101,178 @@ describe('VerifikasiSSO.vue', () => {
       }
     });
 
-    // Mock localStorage
-    Object.defineProperty(window, 'localStorage', {
-      value: mockLocalStorage,
-      writable: true,
-    });
+    createWrapper();
 
-    vi.stubEnv('MODE', 'development');
+    await flushPromises();
 
-    mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
-
-    // Wait for async operations to complete
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('nama_pegawai', 'John Doe');
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('level_sentral', '123');
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('user_hash', 'mocked-hash');
+    expect(mocks.encryptStorage.setItem).toHaveBeenCalledWith('nama_pegawai', 'John Doe');
+    expect(mocks.encryptStorage.setItem).toHaveBeenCalledWith('level_sentral', '123');
+    expect(mocks.encryptStorage.setItem).toHaveBeenCalledWith('user_hash', 'mocked-hash');
+    expect(mockPush).toHaveBeenCalledWith('/peta');
   });
 
-  it('should handle crypto hash generation', () => {
+  it('should handle successful SSO verification with uuid_sentral "0" (Production)', async () => {
+    vi.stubEnv('MODE', 'production');
     mockLoginService.verifikasiSSO.mockResolvedValue({
       success: true,
       data: {
-        nama_pegawai: 'Test User',
-        uuid_sentral: 'test-id'
-      }
-    });
-
-    mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
-
-    // Test that crypto hash function is called via window method
-    expect((window as any).userHashSecretKey).toBeDefined();
-  });
-
-  it('should handle uuid_sentral logic correctly for empty string', async () => {
-    const mockLocalStorage = { setItem: vi.fn(), clear: vi.fn() };
-
-    mockLoginService.verifikasiSSO.mockResolvedValue({
-      success: true,
-      data: {
-        nama_pegawai: 'Test User',
-        uuid_sentral: ''
-      }
-    });
-
-    Object.defineProperty(window, 'localStorage', {
-      value: mockLocalStorage,
-      writable: true,
-    });
-
-    vi.stubEnv('MODE', 'development');
-
-    mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
-
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('level_sentral', 0);
-  });
-
-  it('should handle uuid_sentral as "0" correctly', async () => {
-    const mockLocalStorage = { setItem: vi.fn(), clear: vi.fn() };
-
-    // Mock successful response with uuid_sentral as "0"
-    mockLoginService.verifikasiSSO.mockResolvedValue({
-      success: true,
-      data: {
-        nama_pegawai: 'Test User',
+        nama_pegawai: 'John Doe',
         uuid_sentral: '0'
       }
     });
 
+    createWrapper();
+
+    await flushPromises();
+
+    expect(mocks.encryptStorage.setItem).toHaveBeenCalledWith('level_sentral', 0);
+    expect(mockPush).toHaveBeenCalledWith('/peta');
+  });
+
+   it('should handle successful SSO verification with empty uuid_sentral (Production)', async () => {
+    vi.stubEnv('MODE', 'production');
+    mockLoginService.verifikasiSSO.mockResolvedValue({
+      success: true,
+      data: {
+        nama_pegawai: 'John Doe',
+        uuid_sentral: ''
+      }
+    });
+
+    createWrapper();
+
+    await flushPromises();
+
+    expect(mocks.encryptStorage.setItem).toHaveBeenCalledWith('level_sentral', 0);
+    expect(mockPush).toHaveBeenCalledWith('/peta');
+  });
+
+  it('should handle successful SSO verification and set storage (Development)', async () => {
+    vi.stubEnv('MODE', 'development');
+    mockLoginService.verifikasiSSO.mockResolvedValue({
+      success: true,
+      data: {
+        nama_pegawai: 'Dev User',
+        uuid_sentral: '456'
+      }
+    });
+
+    const mockLocalStorage = { setItem: vi.fn(), clear: vi.fn() };
     Object.defineProperty(window, 'localStorage', {
       value: mockLocalStorage,
       writable: true,
     });
 
-    vi.stubEnv('MODE', 'development');
+    createWrapper();
 
-    mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
+    await flushPromises();
 
-    // Wait for async operations
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('level_sentral', 0);
+    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('nama_pegawai', 'Dev User');
+    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('level_sentral', '456');
+    expect(mockPush).toHaveBeenCalledWith('/peta');
   });
 
-  it('should test component reactive data and computed properties', () => {
-    mockLoginService.verifikasiSSO.mockResolvedValue({ success: true, data: {} });
-    
-    const wrapper = mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
-
-    // Test that component has reactive properties
-    expect(wrapper.vm).toBeDefined();
-    
-    // Test that modal component receives correct props
-    const modal = wrapper.findComponent({ name: 'ModalNotification' });
-    expect(modal.props('title')).toBe('Verifikasi SSO Gagal');
-    expect(modal.props('subtitle')).toBe('User anda tidak terdaftar pada aplikasi valiant');
-  });
-
-  it('should test environment mode handling', () => {
-    mockLoginService.verifikasiSSO.mockResolvedValue({ success: true, data: {} });
-    
-    // Test different environment modes
-    vi.stubEnv('MODE', 'development');
-    let wrapper = mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
-    expect(import.meta.env.MODE).toBe('development');
-
+  it('should handle failure SSO response (Production) with wait delay', async () => {
     vi.stubEnv('MODE', 'production');
-    wrapper = mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
-    expect(import.meta.env.MODE).toBe('production');
-  });
-
-  it('should test component imports and dependencies', () => {
-    mockLoginService.verifikasiSSO.mockResolvedValue({ success: true, data: {} });
-    
-    const wrapper = mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
-
-    // Test that all required imports are working
-    expect(LoginService).toHaveBeenCalled();
-    expect(wrapper.findComponent({ name: 'ModalNotification' }).exists()).toBe(true);
-    
-    // Test that error JSON data is imported
-    const modal = wrapper.findComponent({ name: 'ModalNotification' });
-    expect(modal.props('animationData')).toBeDefined();
-  });
-
-  it('should test wait function behavior', async () => {
     mockLoginService.verifikasiSSO.mockResolvedValue({ success: false });
-    
-    const startTime = Date.now();
-    
-    mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
 
-    // The wait function should cause some delay in execution
-    // This is indirectly testing the wait(5000) calls in the component
-    await new Promise(resolve => setTimeout(resolve, 10));
-    
-    const endTime = Date.now();
-    expect(endTime - startTime).toBeGreaterThan(0);
+    const wrapper = createWrapper();
+
+    await flushPromises();
+    expect(wrapper.vm.isError).toBe(true);
+
+    // Fast-forward 5 seconds
+    vi.advanceTimersByTime(5000);
+    await flushPromises();
+
+    expect(mocks.encryptStorage.clear).toHaveBeenCalled();
+    expect(mockInvalidateSession).toHaveBeenCalled();
+    expect(mockPush).toHaveBeenCalledWith('/login');
   });
 
-  it('should handle SSO verification failure in production environment', async () => {
-    // Mock failure response
-    mockLoginService.verifikasiSSO.mockResolvedValue({ success: false });
-    
-    // Mock production environment
-    vi.stubEnv('MODE', 'production');
-    
-    // Mock encryptStorage
-    const mockEncryptStorage = { clear: vi.fn() };
-    vi.doMock('@/utils/app-encrypt-storage', () => ({
-      encryptStoragePromise: Promise.resolve(mockEncryptStorage),
-    }));
-
-    // Mock router and session store
-    const mockRouter = { push: vi.fn() };
-    const mockSessionStore = { invalidateSession: vi.fn() };
-
-    vi.doMock('@/router', () => ({
-      default: mockRouter,
-    }));
-
-    vi.doMock('@/store/storeSession', () => ({
-      useSessionStore: () => mockSessionStore
-    }));
-
-    const wrapper = mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
-
-    // Wait for async operations to complete
-    await new Promise(resolve => setTimeout(resolve, 50));
-
-    // Verify that modal is shown (error state)
-    const modal = wrapper.findComponent({ name: 'ModalNotification' });
-    expect(modal.exists()).toBe(true);
-    expect(modal.props('showModal')).toBe(true);
-  });
-
-  it('should handle SSO verification failure in development environment', async () => {
-    // Mock failure response
-    mockLoginService.verifikasiSSO.mockResolvedValue({ success: false });
-    
-    // Mock development environment
+  it('should handle failure SSO response (Development) with wait delay', async () => {
     vi.stubEnv('MODE', 'development');
-    
-    // Mock localStorage
-    const mockLocalStorage = { clear: vi.fn() };
+    mockLoginService.verifikasiSSO.mockResolvedValue({ success: false });
+
+    const mockLocalStorage = { setItem: vi.fn(), clear: vi.fn() };
     Object.defineProperty(window, 'localStorage', {
       value: mockLocalStorage,
       writable: true,
     });
 
-    // Mock router and session store
-    const mockRouter = { push: vi.fn() };
-    const mockSessionStore = { invalidateSession: vi.fn() };
+    const wrapper = createWrapper();
 
-    vi.doMock('@/router', () => ({
-      default: mockRouter,
-    }));
+    await flushPromises();
+    expect(wrapper.vm.isError).toBe(true);
 
-    vi.doMock('@/store/storeSession', () => ({
-      useSessionStore: () => mockSessionStore
-    }));
+    // Fast-forward 5 seconds
+    vi.advanceTimersByTime(5000);
+    await flushPromises();
 
-    const wrapper = mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
-
-    // Wait for async operations to complete
-    await new Promise(resolve => setTimeout(resolve, 50));
-
-    // Verify that modal is shown (error state)
-    const modal = wrapper.findComponent({ name: 'ModalNotification' });
-    expect(modal.exists()).toBe(true);
-    expect(modal.props('showModal')).toBe(true);
+    expect(mockLocalStorage.clear).toHaveBeenCalled();
+    expect(mockInvalidateSession).toHaveBeenCalled();
+    expect(mockPush).toHaveBeenCalledWith('/login');
   });
 
-  it('should handle exceptions in verifikasiSSO function in production', async () => {
-    // Mock LoginService to throw an error
-    mockLoginService.verifikasiSSO.mockRejectedValue(new Error('Network error'));
-    
-    // Mock production environment
+  it('should handle exception during SSO (Production) with wait delay', async () => {
     vi.stubEnv('MODE', 'production');
-    
-    // Mock encryptStorage
-    const mockEncryptStorage = { clear: vi.fn() };
-    vi.doMock('@/utils/app-encrypt-storage', () => ({
-      encryptStoragePromise: Promise.resolve(mockEncryptStorage),
-    }));
+    const error = new Error('Network error');
+    mockLoginService.verifikasiSSO.mockRejectedValue(error);
 
-    // Mock router and session store
-    const mockRouter = { push: vi.fn() };
-    const mockSessionStore = { invalidateSession: vi.fn() };
+    const wrapper = createWrapper();
 
-    vi.doMock('@/router', () => ({
-      default: mockRouter,
-    }));
+    await flushPromises();
 
-    vi.doMock('@/store/storeSession', () => ({
-      useSessionStore: () => mockSessionStore
-    }));
+    // Verify error state
+    expect(wrapper.vm.isError).toBe(true);
 
-    const wrapper = mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
+    // Fast-forward 5 seconds
+    vi.advanceTimersByTime(5000);
+    await flushPromises();
 
-    // Wait for async operations to complete
-    await new Promise(resolve => setTimeout(resolve, 50));
-
-    // Verify that modal is shown (error state)
-    const modal = wrapper.findComponent({ name: 'ModalNotification' });
-    expect(modal.exists()).toBe(true);
-    expect(modal.props('showModal')).toBe(true);
+    expect(mocks.encryptStorage.clear).toHaveBeenCalled();
+    expect(mockInvalidateSession).toHaveBeenCalled();
+    expect(mockPush).toHaveBeenCalledWith('/login');
+    expect(console.error).toHaveBeenCalledWith("Error fetching data:", error);
   });
 
-  it('should handle exceptions in verifikasiSSO function in development', async () => {
-    // Mock LoginService to throw an error
-    mockLoginService.verifikasiSSO.mockRejectedValue(new Error('Network error'));
-    
-    // Mock development environment
+  it('should handle exception during SSO (Development) with wait delay', async () => {
     vi.stubEnv('MODE', 'development');
-    
-    // Mock localStorage
-    const mockLocalStorage = { clear: vi.fn() };
+    const error = new Error('API Error');
+    mockLoginService.verifikasiSSO.mockRejectedValue(error);
+
+    const mockLocalStorage = { setItem: vi.fn(), clear: vi.fn() };
     Object.defineProperty(window, 'localStorage', {
       value: mockLocalStorage,
       writable: true,
     });
 
-    // Mock router and session store
-    const mockRouter = { push: vi.fn() };
-    const mockSessionStore = { invalidateSession: vi.fn() };
+    const wrapper = createWrapper();
 
-    vi.doMock('@/router', () => ({
-      default: mockRouter,
-    }));
+    await flushPromises();
+    expect(wrapper.vm.isError).toBe(true);
 
-    vi.doMock('@/store/storeSession', () => ({
-      useSessionStore: () => mockSessionStore
-    }));
+    // Fast-forward 5 seconds
+    vi.advanceTimersByTime(5000);
+    await flushPromises();
 
-    const wrapper = mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
-
-    // Wait for async operations to complete
-    await new Promise(resolve => setTimeout(resolve, 50));
-
-    // Verify that modal is shown (error state)
-    const modal = wrapper.findComponent({ name: 'ModalNotification' });
-    expect(modal.exists()).toBe(true);
-    expect(modal.props('showModal')).toBe(true);
+    expect(mockLocalStorage.clear).toHaveBeenCalled();
+    expect(mockInvalidateSession).toHaveBeenCalled();
+    expect(mockPush).toHaveBeenCalledWith('/login');
+    expect(console.error).toHaveBeenCalledWith("Error fetching data:", error);
   });
 
-  it('should handle wait function and cleanup in failure scenario', async () => {
-    // Mock failure response to trigger lines 52-59
-    mockLoginService.verifikasiSSO.mockResolvedValue({ success: false });
-    
-    // Mock development environment
-    vi.stubEnv('MODE', 'development');
-    
-    // Mock localStorage with spy
-    const mockLocalStorage = { clear: vi.fn() };
-    Object.defineProperty(window, 'localStorage', {
-      value: mockLocalStorage,
-      writable: true,
-    });
-
-    // Mock router and session store with spies
-    const mockRouter = { push: vi.fn() };
-    const mockSessionStore = { invalidateSession: vi.fn() };
-
-    vi.doMock('@/router', () => ({
-      default: mockRouter,
-    }));
-
-    vi.doMock('@/store/storeSession', () => ({
-      useSessionStore: () => mockSessionStore
-    }));
-
-    // Mock the wait function to make test faster
-    vi.mock('@/views/VerifikasiSSO.vue', async () => {
-      const actual = await vi.importActual('@/views/VerifikasiSSO.vue');
-      return {
-        ...actual,
-        wait: vi.fn().mockResolvedValue(undefined)
-      };
-    });
-
-    const wrapper = mount(VerifikasiSSO, {
-      global: {
-        plugins: [pinia],
-      },
-    });
-
-    // Wait longer for all async operations to complete including wait(5000)
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    // Verify that error modal is shown
-    const modal = wrapper.findComponent({ name: 'ModalNotification' });
-    expect(modal.exists()).toBe(true);
-    expect(modal.props('showModal')).toBe(true);
-  });
-
-  it('should handle async error cleanup operations in catch block', async () => {
-    // Mock LoginService to throw an error to trigger catch block (lines 61-73)
-    mockLoginService.verifikasiSSO.mockRejectedValue(new Error('API Error'));
-    
-    // Mock production environment
+  it('should log error after handling it', async () => {
     vi.stubEnv('MODE', 'production');
+    const error = new Error('Critical error');
+    mockLoginService.verifikasiSSO.mockRejectedValue(error);
     
-    // Mock encryptStorage with spy
-    const mockEncryptStorage = { clear: vi.fn() };
-    vi.doMock('@/utils/app-encrypt-storage', () => ({
-      encryptStoragePromise: Promise.resolve(mockEncryptStorage),
-    }));
-
-    // Mock router and session store with spies
-    const mockRouter = { push: vi.fn() };
-    const mockSessionStore = { invalidateSession: vi.fn() };
-
-    vi.doMock('@/router', () => ({
-      default: mockRouter,
-    }));
-
-    vi.doMock('@/store/storeSession', () => ({
-      useSessionStore: () => mockSessionStore
-    }));
-
-    // Mock console.error
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-    try {
-      const wrapper = mount(VerifikasiSSO, {
-        global: {
-          plugins: [pinia],
-        },
-      });
-
-      // Wait for async operations to complete including the catch block
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // Verify that error modal is shown
-      const modal = wrapper.findComponent({ name: 'ModalNotification' });
-      expect(modal.exists()).toBe(true);
-      expect(modal.props('showModal')).toBe(true);
-    } catch (error) {
-      // Catch any thrown errors from the component
-      expect(error).toBeInstanceOf(Error);
-    }
-
-    consoleSpy.mockRestore();
+    createWrapper();
+    
+    await flushPromises();
+    vi.advanceTimersByTime(5000);
+    await flushPromises();
+    
+    expect(console.error).toHaveBeenCalledWith("Error fetching data:", error);
   });
 });

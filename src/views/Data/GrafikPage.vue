@@ -195,11 +195,11 @@
       @click="selectedTitle = item.mesin" class="relative">
       <div class="absolute z-20 flex flex-row items-center ml-4 space-x-3 right-5"
         :class="osDetector.getOS() === 'Windows' ? '-top-[131px]' : '-top-[118px]'"
-        v-if="selectedYear[i].tahun !== null || (selectedYear[i].range[0] !== null && selectedYear[i].range[1] !== null)">
+        v-if="selectedYear[i]?.tahun !== null || (selectedYear[i]?.range?.[0] !== null && selectedYear[i]?.range?.[1] !== null)">
         <label class="text-sm font-semibold text-labelColor" for="">Periode</label>
-        <VueDatePicker class="mr-3 text-xs date-picker" v-model="selectedYear[i].tahun"
-          :year-range="selectedYear[i].range" :clearable="false" year-picker :teleport="true"
-          :filters="yearPickerService.filterYears(responseLimitTahun.data, parseInt(selectedYear[i].range[0]), parseInt(selectedYear[i].range[1]))" />
+        <VueDatePicker v-if="selectedYear[i]" class="mr-3 text-xs date-picker" v-model="selectedYear[i].tahun"
+          :year-range="selectedYear[i]?.range" :clearable="false" year-picker :teleport="true"
+          :filters="yearPickerService.filterYears(responseLimitTahun?.data, parseInt(selectedYear[i]?.range?.[0]), parseInt(selectedYear[i]?.range?.[1]))" />
       </div>
       <div class="flex mt-2">
         <div v-auto-animate="{ duration: 300 }" class="w-full px-4 py-2 mr-2 bg-white border rounded-md">
@@ -234,15 +234,15 @@
                 <div class="flex flex-row mt-4">
                   <Chips :title="'Unit Pengelola'" :content="item.pengelola" class="block w-58" />
                   <Chips :title="'Unit Pembina'" :content="item.pembina ? item.pembina : '-'"
-                    class="block truncate max-w-56 w-fit" :class="item.pembina.length >= 16 ? 'cursor-pointer' : ''"
+                    class="block truncate max-w-56 w-fit" :class="item.pembina?.length >= 16 ? 'cursor-pointer' : ''"
                     @mouseenter="detailPembina" @mouseleave="detailPembina">
                   </Chips>
                   <Chips :title="'Tahun COD'" :content="item.tahun" />
                 </div>
                 <Transition>
-                  <div v-if="pembinaHover" v-show="item.pembina !== '' && item.pembina.length > 16"
+                  <div v-if="pembinaHover" v-show="item.pembina !== '' && item.pembina?.length > 16"
                     class="bg-blue-50 border border-[#0099AD] absolute text-xs p-2 -mt-[60px] z-10 rounded-lg whitespace-nowrap duration-300 font-bold text-[#0099AD]"
-                    :class="item.pembina.length <= 16 ? 'ml-[350px]' : 'ml-[195px] '" id="tooltipContentPembina">
+                    :class="item.pembina?.length <= 16 ? 'ml-[350px]' : 'ml-[195px] '" id="tooltipContentPembina">
                     {{ item.pembina ? item.pembina : '-' }}
                   </div>
                 </Transition>
@@ -365,17 +365,17 @@
             </div>
           </div>
           <div v-if="isHover" class="mt-3">
-            <TagMesin :id-mesin="item.uuid_mesin" :tahun-data="parseInt(selectedYear[i].tahun)"
+            <TagMesin :id-mesin="item.uuid_mesin" :tahun-data="parseInt(selectedYear[i]?.tahun)"
               v-if="dataUnit.length !== 0" />
           </div>
         </div>
       </div>
       <div class="w-full py-3 mt-2 bg-white border rounded-md h-1/2">
-        <GrafikMesin :id-mesin="item.uuid_mesin" :tahun-data="parseInt(selectedYear[i].tahun)"
+        <GrafikMesin :id-mesin="item.uuid_mesin" :tahun-data="parseInt(selectedYear[i]?.tahun)"
           v-if="dataUnit.length !== 0" />
       </div>
       <div class="grid grid-cols-3 gap-2 mt-2">
-        <InfoMesin :id-mesin="item.uuid_mesin" :tahun-data="parseInt(selectedYear[i].tahun)"
+        <InfoMesin :id-mesin="item.uuid_mesin" :tahun-data="parseInt(selectedYear[i]?.tahun)"
           v-if="dataUnit.length !== 0" />
       </div>
     </div>

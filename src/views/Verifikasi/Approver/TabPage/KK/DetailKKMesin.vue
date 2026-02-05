@@ -26,7 +26,7 @@
     <InfoHeader v-if="mesin && approveSentralKK" :nama-mesin="mesin.mesin ? mesin.mesin : '-'"
       :nama-pengelola="namaPengelola ? namaPengelola : '-'" :status-mesin="mesin.kondisi_unit"
       :kode-jenis-pembangkit="mesin.kode_jenis_pembangkit ? mesin.kode_jenis_pembangkit : '-'"
-      :daya-terpasang="mesin.daya_terpasang.toString()" :daya-mampu="mesin.daya_mampu.toString()"
+      :daya-terpasang="mesin.daya_terpasang?.toString() ?? '-'" :daya-mampu="mesin.daya_mampu?.toString() ?? '-'"
       :tahun-operasi="mesin.tahun_operasi ? mesin.tahun_operasi : '-'"
       :umur-teknis="mesin.masa_manfaat ? mesin.masa_manfaat : '-'" :nama-pembina="namaPembina"
       :kondisi-unit="mesin.kondisi_unit">
@@ -201,8 +201,8 @@
         :nama-pengelola="approveSentralKK.pengelola ? approveSentralKK.pengelola : '-'" :nama-pembina="namaPembina"
         :daya-terpasang="mesin.daya_terpasang / 1000" :daya-mampu="mesin.daya_mampu / 1000"
         :tahun-operasi="mesin.tahun_operasi ? mesin.tahun_operasi : '-'"
-        :tahun-perolehan-data="mesin.tahun_nilai_perolehan.toString ? mesin.tahun_nilai_perolehan.toString() : '-'"
-        :jumlah-mesin="jumlahMesin" :status-grafik="arrMesin.status">
+        :tahun-perolehan-data="mesin.tahun_nilai_perolehan?.toString() ?? '-'" :jumlah-mesin="jumlahMesin"
+        :status-grafik="arrMesin.status">
         <TabItem title="Asumsi Makro">
           <AsumsiMakro @on-click-reload="reloadAsumsiParameter" :data="data"
             :tahun="tahunTerakhirAsumsi ? tahunTerakhirAsumsi : '-'" :status="arrMesin.status ? arrMesin.status : '-'"

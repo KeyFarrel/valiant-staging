@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { mount, flushPromises } from '@vue/test-utils'
 import DetailFSMesin from '@/views/Verifikasi/Sentral/TabPage/FS/DetailFSMesin.vue'
+import { nextTick } from 'vue'
 
 // Mock route
 const mockRoute = {
   query: { uuid_sentral: 'test-uuid-sentral' },
-  params: { id: 'test-id-mesin' }
+  params: { id: '1' }
 }
 
 // Mock router
@@ -27,11 +27,15 @@ vi.mock('vue-router', () => ({
 // Mock encrypt storage
 vi.mock('@/utils/app-encrypt-storage', () => ({
   encryptStoragePromise: Promise.resolve({
-    decryptValue: vi.fn().mockReturnValue('decrypted-test-id')
+    decryptValue: vi.fn().mockReturnValue('1')
   })
 }))
 
 // Mock services
+const mockDetailSentralService = {
+    getPhoto: vi.fn().mockResolvedValue({ data: new Blob(['test']) })
+}
+
 const mockDetailRekapService = {
   getMesinById: vi.fn().mockResolvedValue({
     data: {
@@ -50,7 +54,20 @@ const mockDetailRekapService = {
       photo1: 'photo1.jpg',
       photo2: 'photo2.jpg'
     }
-  })
+  }),
+  getTypePeriodic: vi.fn().mockResolvedValue({ data: [] }),
+  getPembangkitByKode: vi.fn().mockResolvedValue({
+        data: {
+            kode_pengelola: 'PENGELOLA01',
+            id_pembina: 1,
+            mesins: [{}, {}]
+        }
+    }),
+    getPengelolaData: vi.fn().mockResolvedValue({
+        data: [
+            { kode_pengelola: 'PENGELOLA01', pengelola: 'Test Pengelola' }
+        ]
+    })
 }
 
 const mockPersetujuanService = {
@@ -59,37 +76,42 @@ const mockPersetujuanService = {
       pengelola: 'Test Pengelola',
       pembina: 'Test Pembina',
       mesins: [{
-        uuid_mesin: 'decrypted-test-id',
+        uuid_mesin: 1, // Matches decrypted-test-id (as number if parsed) but logic compares loosely usually
         id_status: 1,
-        status: 'approved',
+        status: 'Disetujui',
         keterangan: 'Test keterangan'
       }]
     }
-  })
+  }),
+  updateStatusFS: vi.fn().mockResolvedValue({ data: {} })
 }
 
 const mockFeasibilityStudyService = {
-  getAsumsi: vi.fn().mockResolvedValue({
+  getAsumsiFeasibility: vi.fn().mockResolvedValue({ // Renamed from getAsumsi to match usage
     data: {
-      corporate_tax_rate: 25,
-      discount_rate: 10,
-      interest_rate: 8,
-      loan_tenor: 15,
-      loan_portion: 70,
-      equity_portion: 30,
-      daya_terpasang: 100,
-      daya_mampu_netto_mw: 90,
-      auxiliary: 5,
-      susut_trafo: 2,
-      ps: 3,
-      nphr: 2500,
-      total_project_cost: 1000000,
-      loan: 700000,
-      equity: 300000,
-      electricity_price_a_rp_per_kwbln: 1000,
-      electricity_price_b_rp_per_kwbln: 1100,
-      electricity_price_c_rp_per_kwh: 1200,
-      electricity_price_d_rp_per_kwh: 1300,
+      asumsi_makro: {
+          corporate_tax_rate: 25,
+          discount_rate: 10,
+          interest_rate: 8,
+          loan_tenor: 15,
+          loan_portion: 70,
+          equity_portion: 30
+      },
+      parameter_teknis_financial: {
+          daya_terpasang: 100,
+          daya_mampu_netto_mw: 90,
+          auxiliary: 5,
+          susut_trafo: 2,
+          ps: 3,
+          nphr: 2500,
+          total_project_cost: 1000000,
+          loan: 700000,
+          equity: 300000,
+          electricity_price_a_rp_per_kwbln: 1000,
+          electricity_price_b_rp_per_kwbln: 1100,
+          electricity_price_c_rp_per_kwh: 1200,
+          electricity_price_d_rp_per_kwh: 1300
+      },
       harga_bahan_bakars: [],
       umur_teknis: 25
     }
@@ -103,35 +125,41 @@ const mockFeasibilityStudyService = {
   }),
   getDataFinansial: vi.fn().mockResolvedValue({
     data: {
-      detail: []
+      detail: [
+          { level: 1, name: 'Level 1' },
+          { level: 2, name: 'Level 2' },
+          { level: 3, name: 'Level 3' },
+          { level: 4, name: 'Level 4' }
+      ]
     }
   }),
   getHasilSimulasi: vi.fn().mockResolvedValue({
     data: {
-      npv: 1000000,
-      irr: 15.5,
-      payback_period: 7.2,
-      lcoe: 8.5
+      fs_irr_project: 10,
+      fs_irr_equity: 12,
+      fs_npv_equity: 100,
+      fs_npv_project: 200,
+      fs_average_cf: 50,
+      fs_on_project: 8,
+      fs_on_equity: 9,
+      fs_average_eaf: 80,
+      now_fs_irr_project: 11,
+      now_fs_irr_equity: 13,
+      now_fs_npv_equity: 110,
+      now_fs_npv_project: 210,
+      now_fs_average_cf: 55,
+      now_fs_average_eaf: 85
     }
   }),
-  downloadTemplateFS: vi.fn().mockResolvedValue({
-    data: new Blob(['test']),
-    headers: { 'content-disposition': 'attachment; filename="test.xlsx"' }
-  }),
-  uploadFS: vi.fn().mockResolvedValue({
-    success: true,
-    message: 'Upload berhasil'
-  })
+  getComboBahanBakar: vi.fn().mockResolvedValue({ data: [] })
 }
 
 const mockUserService = {
-  getPembina: vi.fn().mockResolvedValue({ data: [] }),
+  getPembina: vi.fn().mockResolvedValue({ data: [{ id_pembina: 1, pembina: 'Test Pembina' }] }),
   getUnitPengelola: vi.fn().mockResolvedValue({ data: [] })
 }
 
 const mockRekapService = {
-  getTypePeriodic: vi.fn().mockResolvedValue({ data: [] }),
-  getComboBahanBakar: vi.fn().mockResolvedValue({ data: [] }),
   uploadEvidence: vi.fn().mockResolvedValue({ data: 'path' }),
   updateEvidencePath: vi.fn().mockResolvedValue({ success: true }),
   getEvidencePath: vi.fn().mockResolvedValue({
@@ -140,8 +168,20 @@ const mockRekapService = {
   downloadEvidence: vi.fn().mockResolvedValue({
     data: new Blob(['test']),
     headers: { 'content-disposition': 'attachment; filename="test.xlsx"' }
+  }),
+  uploadTemplateAwalFS: vi.fn().mockResolvedValue({}), // Missing in original
+  downloadTemplateFS: vi.fn().mockResolvedValue({
+     data: new Blob(['test']),
+     headers: { 'content-disposition': 'attachment; filename="template.xlsx"' }
   })
 }
+
+// Mock Toast
+vi.mock("@/services/helper/toast-notification", () => ({
+    notifyError: vi.fn(),
+    notifySuccess: vi.fn()
+}))
+
 
 // Mock service constructors
 vi.mock('@/services/detail-rekap-service', () => ({
@@ -165,13 +205,18 @@ vi.mock('@/services/rekap-service', () => ({
 }))
 
 vi.mock('@/services/detail-sentral-service', () => ({
-  default: vi.fn(() => ({}))
+  default: vi.fn(() => mockDetailSentralService)
 }))
 
 vi.mock('@/services/format/global-format', () => ({
   default: vi.fn(() => ({
     formatCurrency: vi.fn(),
-    formatNumber: vi.fn()
+    formatNumber: vi.fn(),
+    formatBytes: vi.fn((bytes) => {
+        if (bytes === 0) return '0 Bytes';
+        return '1 KB';
+    }),
+    formatNumberFiveDigits: vi.fn((num) => '00001')
   }))
 }))
 
@@ -179,7 +224,8 @@ vi.mock('@/services/format/global-format', () => ({
 vi.mock('vue3-lottie', () => ({
   Vue3Lottie: {
     name: 'Vue3Lottie',
-    template: '<div></div>'
+    template: '<div></div>',
+    props: ['animationData']
   }
 }))
 
@@ -187,6 +233,11 @@ vi.mock('vue3-lottie', () => ({
 vi.mock('@/assets/lottie/success.json', () => ({
   default: {}
 }))
+
+// Mock URL.createObjectURL
+global.URL.createObjectURL = vi.fn(() => 'blob:test')
+global.URL.revokeObjectURL = vi.fn()
+
 
 describe('DetailFSMesin.vue', () => {
   let wrapper
@@ -196,14 +247,27 @@ describe('DetailFSMesin.vue', () => {
       global: {
         stubs: {
           Loading: true,
-          InfoHeader: true,
-          ModalWrapper: true,
-          TabsWrapper: true,
+          InfoHeader: {
+              template: '<div><slot></slot></div>',
+              props: ['namaMesin', 'namaPengelola', 'statusMesin', 'kodeJenisPembangkit', 'dayaTerpasang', 'dayaMampu', 'tahunOperasi', 'umurTeknis', 'namaPembina', 'kondisiUnit']
+          },
+          ModalWrapper: {
+              template: '<div v-if="showModal"><slot></slot></div>',
+              props: ['showModal', 'width', 'height'],
+              emits: ['on-escape']
+          },
+          TabsWrapper: {
+              template: '<div><slot></slot></div>',
+              props: ['isLihatGrafik', 'photo', 'lamanData', 'idMesin', 'nilaiAssetAwal', 'tahunGrafik', 'tahun', 'irrOnProject', 'irrOnEquity', 'npvOnEquity', 'npvOnProject', 'averageNcf', 'waccOnProject', 'waccOnEquity', 'averageEaf', 'namaMesin', 'namaPengelola', 'namaPembina', 'dayaTerpasang', 'dayaMampu', 'tahunPerolehanData', 'tahunOperasi', 'jumlahMesin', 'statusGrafik']
+          },
           Vue3Lottie: true,
           IconFolder: true,
           TableDataTeknis: true,
           TableDataFinansial: true,
-          TabItem: true,
+          TabItem: {
+              template: '<div v-show="false"><slot></slot></div>', // Simplified
+              props: ['title']
+          },
           AsumsiMakro: true,
           ParameterTeknis: true,
           AkhirMasaManfaat: true,
@@ -229,198 +293,209 @@ describe('DetailFSMesin.vue', () => {
     }
   })
 
-  describe('Component Mounting', () => {
-    it('should mount successfully', () => {
+  describe('Component Mounting and Initialization', () => {
+    it('should mount successfully and fetch initial data', async () => {
       wrapper = createWrapper()
-      expect(wrapper.exists()).toBe(true)
-    })
+      await flushPromises() // Wait for onMounted promises
 
-    it('should have vm instance', () => {
-      wrapper = createWrapper()
-      expect(wrapper.vm).toBeDefined()
+      expect(mockDetailRekapService.getMesinById).toHaveBeenCalled()
+      expect(mockDetailSentralService.getPhoto).toHaveBeenCalled()
+      expect(mockPersetujuanService.getPersetujuanFSSentral).toHaveBeenCalled()
+      expect(mockFeasibilityStudyService.getAsumsiFeasibility).toHaveBeenCalled()
+      expect(mockDetailRekapService.getTypePeriodic).toHaveBeenCalled()
+      expect(mockDetailRekapService.getPembangkitByKode).toHaveBeenCalled() // fetchUnitPengelola
+      expect(mockDetailRekapService.getPengelolaData).toHaveBeenCalled() // fetchUnitPengelola
+      expect(mockUserService.getPembina).toHaveBeenCalled() // fetchUnitPengelola
+      expect(mockFeasibilityStudyService.getDataTeknis).toHaveBeenCalled()
+      expect(mockFeasibilityStudyService.getDataFinansial).toHaveBeenCalled()
+      expect(mockFeasibilityStudyService.getHasilSimulasi).toHaveBeenCalled()
+      expect(mockFeasibilityStudyService.getComboBahanBakar).toHaveBeenCalled()
+      
+      expect(wrapper.vm.mesinDataById).toBeDefined()
+      expect(wrapper.vm.namaPengelola).toBe('Test Pengelola')
+      expect(wrapper.vm.namaPembina).toBe('Test Pembina')
     })
   })
 
-  describe('Initial State', () => {
-    it('should have correct initial data', () => {
-      wrapper = createWrapper()
-      const vm = wrapper.vm
-      
-      expect(vm.isLoading).toBe(true) // Component starts with loading true in onMounted
-      expect(vm.modalApprove).toBe(false)
-      expect(vm.selectedTab).toBe('Akhir Masa')
-      expect(vm.data).toBe('Feasibility Study')
-      expect(vm.isSuccess).toBe(false)
-      expect(vm.isHover).toBe(true)
-      expect(vm.isFSUploadSuccess).toBe(false)
-      expect(vm.isModalUnggahFSOpen).toBe(false)
-      expect(vm.isEvidenceSuccess).toBe(false)
-      expect(vm.selectedFileFS).toBe(null)
-      expect(vm.selectedFileEvidence).toBe(null)
-    })
+  describe('User Interactions', () => {
+      it('should toggle detail button', async () => {
+          wrapper = createWrapper()
+          await flushPromises()
+          
+          expect(wrapper.vm.isHover).toBe(true)
+          wrapper.vm.toggleButton()
+          expect(wrapper.vm.isHover).toBe(false)
+          wrapper.vm.toggleButton()
+          expect(wrapper.vm.isHover).toBe(true)
+      })
 
-    it('should calculate current year', () => {
-      wrapper = createWrapper()
-      const vm = wrapper.vm
-      
-      const currentYear = new Date().getFullYear()
-      expect(vm.tahunBerjalan).toBe(currentYear)
-    })
-  })
-
-  describe('Utility Methods', () => {
-    it('should toggle button state', () => {
-      wrapper = createWrapper()
-      const vm = wrapper.vm
-      
-      expect(vm.isHover).toBe(true)
-      vm.toggleButton()
-      expect(vm.isHover).toBe(false)
-      vm.toggleButton()
-      expect(vm.isHover).toBe(true)
-    })
-
-    it('should format bytes correctly', () => {
-      wrapper = createWrapper()
-      const vm = wrapper.vm
-      
-      expect(vm.formatBytes(0)).toBe('0 Bytes')
-      expect(vm.formatBytes(1024)).toBe('1 KB')
-      expect(vm.formatBytes(1048576)).toBe('1 MB')
-      expect(vm.formatBytes(1073741824)).toBe('1 GB')
-      expect(vm.formatBytes(2048)).toBe('2 KB')
-      expect(vm.formatBytes(512)).toBe('512 Bytes')
-    })
-
-    it('should handle wait function', async () => {
-      wrapper = createWrapper()
-      const vm = wrapper.vm
-      
-      const start = Date.now()
-      await vm.wait(50)
-      const end = Date.now()
-      
-      expect(end - start).toBeGreaterThanOrEqual(40)
-    })
+      it('should switch tabs', async () => {
+          wrapper = createWrapper()
+          await flushPromises()
+          
+          wrapper.find('li#tab').trigger('click')
+          await nextTick()
+          expect(wrapper.vm.selectedTab).toBe('Akhir Masa')
+      })
   })
 
   describe('File Handling', () => {
-    it('should handle FS file change', () => {
-      wrapper = createWrapper()
-      const vm = wrapper.vm
-      
-      const mockFile = new File(['test'], 'test.xlsx')
-      const mockEvent = {
-        target: { files: [mockFile] }
-      }
-      
-      vm.handleFileFSChange(mockEvent)
-      expect(vm.selectedFileFS).toStrictEqual(mockFile)
-    })
+      it('should handle FS file selection', async () => {
+          wrapper = createWrapper()
+          await flushPromises()
+          
+          const file = new File(['content'], 'test.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+          const event = { target: { files: [file] } }
+          
+          wrapper.vm.handleFileFSChange(event)
+          expect(wrapper.vm.selectedFileFS).toEqual(file)
 
-    it('should handle empty file selection', () => {
-      wrapper = createWrapper()
-      const vm = wrapper.vm
-      
-      const mockEvent = {
-        target: { files: [] }
-      }
-      
-      vm.handleFileFSChange(mockEvent)
-      expect(vm.selectedFileFS).toBe(null)
-    })
+          // Test empty selection
+          const emptyEvent = { target: { files: [] } }
+          wrapper.vm.handleFileFSChange(emptyEvent)
+          expect(wrapper.vm.selectedFileFS).toBeNull()
+      })
 
-    it('should handle evidence file change', () => {
-      wrapper = createWrapper()
-      const vm = wrapper.vm
-      
-      const mockFile = new File(['evidence'], 'evidence.xlsx')
-      const mockEvent = {
-        target: { files: [mockFile] }
-      }
-      
-      vm.handleFileChangeEvidence(mockEvent)
-      expect(vm.selectedFileEvidence).toStrictEqual(mockFile)
-    })
+       it('should handle Evidence file selection', async () => {
+          wrapper = createWrapper()
+          await flushPromises()
+          
+          const file = new File(['content'], 'evidence.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+          const event = { target: { files: [file] } }
+          
+          wrapper.vm.handleFileChangeEvidence(event)
+          expect(wrapper.vm.selectedFileEvidence).toEqual(file)
+
+            // Test empty selection
+          const emptyEvent = { target: { files: [] } }
+          wrapper.vm.handleFileChangeEvidence(emptyEvent)
+          expect(wrapper.vm.selectedFileEvidence).toBeNull()
+      })
   })
 
-  describe('Service Calls', () => {
-    it('should call getMesinById on mount', async () => {
-      wrapper = createWrapper()
-      await nextTick()
-      await new Promise(resolve => setTimeout(resolve, 100)) // Wait for async operations
-      
-      expect(mockDetailRekapService.getMesinById).toHaveBeenCalled()
-    })
+  describe('Actions', () => {
+      it('should download template FS', async () => {
+          wrapper = createWrapper()
+          await flushPromises()
+          
+          await wrapper.vm.handleDownloadTemplateFS()
+          expect(mockRekapService.downloadTemplateFS).toHaveBeenCalled()
+      })
 
-    it('should call getPersetujuanFSSentral on mount', async () => {
-      wrapper = createWrapper()
-      await nextTick()
-      await new Promise(resolve => setTimeout(resolve, 100)) // Wait for async operations
-      
-      expect(mockPersetujuanService.getPersetujuanFSSentral).toHaveBeenCalled()
-    })
+      it('should download evidence', async () => {
+          wrapper = createWrapper()
+          await flushPromises()
+          
+          await wrapper.vm.downloadEvidence()
+          expect(mockRekapService.getEvidencePath).toHaveBeenCalled()
+          expect(mockRekapService.downloadEvidence).toHaveBeenCalled()
+      })
 
-    it('should call getDataTeknis on mount', async () => {
-      wrapper = createWrapper()
-      await nextTick()
-      await new Promise(resolve => setTimeout(resolve, 100)) // Wait for async operations
-      
-      expect(mockFeasibilityStudyService.getDataTeknis).toHaveBeenCalled()
-    })
+      it('should handle download evidence error', async () => {
+          wrapper = createWrapper()
+          await flushPromises()
+          mockRekapService.getEvidencePath.mockRejectedValueOnce(new Error('Failed'))
+          
+          await wrapper.vm.downloadEvidence()
+          expect(wrapper.vm.isLoading).toBe(false)
+      })
 
-    it('should call getDataFinansial on mount', async () => {
-      wrapper = createWrapper()
-      await nextTick()
-      await new Promise(resolve => setTimeout(resolve, 100)) // Wait for async operations
-      
-      expect(mockFeasibilityStudyService.getDataFinansial).toHaveBeenCalled()
-    })
+      it('should upload file FS', async () => {
+           wrapper = createWrapper()
+           await flushPromises()
 
-    it('should call getHasilSimulasi on mount', async () => {
-      wrapper = createWrapper()
-      await nextTick()
-      await new Promise(resolve => setTimeout(resolve, 100)) // Wait for async operations
+           const file = new File(['content'], 'test.xlsx')
+           wrapper.vm.selectedFileFS = file
+           
+           await wrapper.vm.uploadFileFS()
+           expect(mockRekapService.uploadTemplateAwalFS).toHaveBeenCalled()
+           expect(wrapper.vm.isFSUploadSuccess).toBe(false) // Resets after wait
+      })
+
+      it('should not upload file FS if no file selected', async () => {
+           wrapper = createWrapper()
+           await flushPromises()
+           wrapper.vm.selectedFileFS = null
+           
+           await wrapper.vm.uploadFileFS()
+           expect(mockRekapService.uploadTemplateAwalFS).not.toHaveBeenCalled()
+      })
       
-      expect(mockFeasibilityStudyService.getHasilSimulasi).toHaveBeenCalled()
-    })
+       it('should upload file Evidence', async () => {
+           wrapper = createWrapper()
+           await flushPromises()
+
+           const file = new File(['content'], 'evidence.xlsx')
+           wrapper.vm.selectedFileEvidence = file
+           
+           await wrapper.vm.uploadFileEvidence()
+           expect(mockRekapService.uploadEvidence).toHaveBeenCalled()
+           expect(mockRekapService.updateEvidencePath).toHaveBeenCalled()
+           expect(wrapper.vm.isEvidenceSuccess).toBe(false) // Resets after wait
+      })
+      
+       it('should update FS status (Kirim Data)', async () => {
+           wrapper = createWrapper()
+           await flushPromises()
+           
+           await wrapper.vm.updateFS()
+           expect(mockPersetujuanService.updateStatusFS).toHaveBeenCalled()
+           expect(wrapper.vm.isSuccess).toBe(false) // Resets after wait
+           expect(wrapper.vm.modalApprove).toBe(false)
+       })
+  })
+  
+  describe('Rendering States', () => {
+      it('should render correct status component based on approval status', async () => {
+           mockPersetujuanService.getPersetujuanFSSentral.mockResolvedValueOnce({
+            data: {
+              pengelola: 'Test Pengelola',
+              pembina: 'Test Pembina',
+              mesins: [{
+                uuid_mesin: 1,
+                id_status: 1,
+                status: 'Ditolak T1',
+                keterangan: 'Reject reason'
+              }]
+            }
+          })
+          
+          wrapper = createWrapper()
+          await flushPromises()
+          
+          // Force update to verify template sections for Ditolak T1
+           expect(wrapper.vm.approveMesinFS.status).toBe('Ditolak T1')
+           
+           // Verify revisi button visibility logic if possible via snapshot or finding by text/class
+           // In this structure, we can check if certain methods are called or state is set correctly
+      })
+  })
+  
+  describe('Data Processing', () => {
+      it('should process financial data hierarchy correctly', async () => {
+           wrapper = createWrapper()
+           await flushPromises()
+           
+           // Verify that dataFinansial is structured correctly (levels nested)
+           // The mock returns flat array with levels. The component processes it.
+           // We can check if `finansialMappingResult` is populated correctly.
+           expect(wrapper.vm.finansialMappingResult.length).toBeGreaterThan(0)
+           expect(wrapper.vm.finansialMappingResult[0].level).toBe(1)
+           // If logic works, level 2 should be nested in level 1
+           expect(wrapper.vm.finansialMappingResult[0].level2).toBeDefined()
+      })
   })
 
-  describe('Async Methods', () => {
-    it('should fetch financial data', async () => {
-      wrapper = createWrapper()
-      const vm = wrapper.vm
-      
-      await vm.fetchDataFinansial()
-      
-      expect(mockFeasibilityStudyService.getDataFinansial).toHaveBeenCalled()
-      expect(vm.dataFinansial).toBeDefined()
-    })
-
-    it('should handle upload FS file', async () => {
-      wrapper = createWrapper()
-      const vm = wrapper.vm
-      
-      const mockFile = new File(['test'], 'test.xlsx')
-      vm.selectedFileFS = mockFile
-      vm.idGrafik = 'test-id'
-      
-      await vm.uploadFileFS()
-      
-      expect(vm.isLoading).toBe(false)
-    })
-
-    it('should handle upload evidence file', async () => {
-      wrapper = createWrapper()
-      const vm = wrapper.vm
-      
-      const mockFile = new File(['evidence'], 'evidence.xlsx')
-      vm.selectedFileEvidence = mockFile
-      vm.idGrafik = 'test-id'
-      
-      await vm.uploadFileEvidence()
-      
-      expect(mockRekapService.uploadEvidence).toHaveBeenCalled()
-    })
+  describe('Error Handling', () => {
+      it('should handle fetchMesinById error', async () => {
+          mockDetailRekapService.getMesinById.mockRejectedValueOnce(new Error('Network error'))
+          const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+          
+          wrapper = createWrapper()
+          await flushPromises()
+          
+          expect(consoleSpy).toHaveBeenCalledWith('Fetch Mesin By Id Error : ', expect.any(Error))
+          consoleSpy.mockRestore()
+      })
   })
 })

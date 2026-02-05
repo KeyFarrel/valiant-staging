@@ -69,7 +69,6 @@ const verifikasiSSO = async () => {
     sessionStore.invalidateSession();
     router.push('/login');
     console.error("Error fetching data:", error);
-    throw error;
   }
 };
 verifikasiSSO();

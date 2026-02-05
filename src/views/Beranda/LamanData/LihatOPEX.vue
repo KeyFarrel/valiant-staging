@@ -13,6 +13,7 @@
         <p>Periode <span class="ml-1 font-semibold text-primaryColor">{{ tahun }}</span></p>
       </div>
       <div
+        v-if="opexKomponenB"
         class="overflow-hidden w-full flex flex-col border px-5 pb-4 pt-1 rounded-lg shadow-sm border-l-8 border-l-[#0099AD] space-y-3">
         <div class="absolute bottom-0 right-0">
           <svg width="126" height="61" viewBox="0 0 126 61" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -63,6 +64,7 @@
         </div>
       </div>
       <div
+        v-if="opexKomponenC"
         class="overflow-hidden w-full flex flex-col border px-5 pb-4 pt-1 rounded-lg shadow-sm border-l-8 border-l-[#0099AD] space-y-3">
         <div class="absolute bottom-0 right-0">
           <svg width="126" height="61" viewBox="0 0 126 61" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -90,6 +92,7 @@
         </div>
       </div>
       <div
+        v-if="opexKomponenD"
         class="overflow-hidden w-full flex flex-col border px-5 pb-4 pt-1 rounded-lg shadow-sm border-l-8 border-l-[#0099AD] space-y-3">
         <div class="absolute bottom-0 right-0">
           <svg width="126" height="61" viewBox="0 0 126 61" fill="none" xmlns="http://www.w3.org/2000/svg">

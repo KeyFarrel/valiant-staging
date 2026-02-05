@@ -107,7 +107,7 @@
                   <IconDocument />
                 </div>
                 <p class="text-xs text-[#0A448F]">Excel {{ itemData.status_fs == 0 ? 'KK' : 'FS' }} {{ itemData.sentral
-                  }}.xlsx</p>
+                }}.xlsx</p>
               </button>
               <button
                 class="flex items-center space-x-1.5 bg-[#F7FBFC] rounded-md w-fit px-2 py-1 active:ring-1 active:ring-[#E7F1FD]"
@@ -514,6 +514,7 @@ const downloadExcelKK = async (tahun: number, tahunRealisasi: number, idMesin: n
     document.body.removeChild(link)
     isLoading.value = false;
   } catch (error) {
+    isLoading.value = false
     console.error("Handle Download Template Rekap Error : ", error)
   }
 };

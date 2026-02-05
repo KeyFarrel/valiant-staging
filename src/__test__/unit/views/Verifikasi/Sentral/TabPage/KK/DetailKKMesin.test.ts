@@ -152,7 +152,9 @@ describe('DetailKKMesin', () => {
       getDataFinansial: vi.fn(),
       getHasilSimulasi: vi.fn(),
       getTypePeriodic: vi.fn(),
-      getComboBahanBakar: vi.fn()
+      getComboBahanBakar: vi.fn(),
+      getPembangkitByKode: vi.fn(),
+      getPengelolaData: vi.fn()
     };
     mockRekapService = {
       getEvidencePath: vi.fn(),
@@ -160,7 +162,8 @@ describe('DetailKKMesin', () => {
     };
     mockUserService = {
       getListPembina: vi.fn(),
-      getUnitPengelola: vi.fn()
+      getUnitPengelola: vi.fn(),
+      getPembina: vi.fn()
     };
     mockDetailSentralService = {};
 
@@ -490,5 +493,121 @@ describe('DetailKKMesin', () => {
     // These functions are called automatically in onMounted
     // Let's check if the component is mounted correctly
     expect(wrapper.exists()).toBe(true);
+  });
+
+  it('should handle fetchUnitPengelola complex logic', async () => {
+    mockDetailRekapService.getMesinById.mockResolvedValue({
+      data: { ...mockMesinData.data, kode_sentral: 'SENTRAL01' }
+    });
+    mockPersetujuanService.getPersetujuanKKSentral.mockResolvedValue(mockPersetujuanData);
+    
+    // Mock dependent calls for fetchUnitPengelola
+    mockDetailRekapService.getPembangkitByKode.mockResolvedValue({
+      data: {
+        kode_pengelola: 'PENGELOLA01',
+        uuid_pembina: 'PEMBINA01',
+        mesins: [{}, {}, {}] // 3 machines
+      }
+    });
+    
+    mockDetailRekapService.getPengelolaData.mockResolvedValue({
+      data: [
+        { kode_pengelola: 'PENGELOLA01', pengelola: 'PT PENGELOLA JAYA' }
+      ]
+    });
+    
+    mockUserService.getPembina.mockResolvedValue({
+      data: [
+        { uuid_pembina: 'PEMBINA01', pembina: 'PEMBINA UTAMA' }
+      ]
+    });
+
+    const wrapper = mount(DetailKKMesin);
+    
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    expect(mockDetailRekapService.getPembangkitByKode).toHaveBeenCalledWith('SENTRAL01');
+    expect(mockDetailRekapService.getPengelolaData).toHaveBeenCalled();
+    expect(mockUserService.getPembina).toHaveBeenCalled();
+    // Verify results via wrapper.vm or inferred state if accessible, but mocks ensure lines hit
+  });
+
+  it('should handle fetchDataFinansial complex mapping logic', async () => {
+    mockDetailRekapService.getMesinById.mockResolvedValue(mockMesinData);
+    mockPersetujuanService.getPersetujuanKKSentral.mockResolvedValue(mockPersetujuanData);
+    
+    const hierarchyData = [
+      { level: 1, description: 'L1', id: 1 },
+      { level: 2, description: 'L2', id: 2 },
+      { level: 3, description: 'L3', id: 3 },
+      { level: 4, description: 'L4', id: 4 },
+      { level: 2, description: 'L2-2', id: 5 } // Additional branch
+    ];
+    
+    mockDetailRekapService.getDataFinansial.mockResolvedValue({
+      data: {
+        tahun: [2022, 2023, 2024], // Current is 2024 or based on route
+        header: ['H1'],
+        detail: hierarchyData
+      }
+    });
+
+    mount(DetailKKMesin);
+    
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    expect(mockDetailRekapService.getDataFinansial).toHaveBeenCalled();
+  });
+
+  it('should handle updateKK with wait and success flow', async () => {
+    vi.useFakeTimers();
+    mockDetailRekapService.getMesinById.mockResolvedValue(mockMesinData);
+    mockPersetujuanService.getPersetujuanKKSentral.mockResolvedValue(mockPersetujuanData);
+    
+    mockPersetujuanService.updateStatusKK.mockResolvedValue({
+        data: { success: true }
+    });
+
+    const wrapper = mount(DetailKKMesin);
+    const vm = wrapper.vm as any;
+    
+    vm.modalApprove = true;
+    const promise = vm.updateKK();
+    
+    await nextTick();
+    // modalApprove should become false
+    expect(vm.modalApprove).toBe(false);
+    
+    // Wait for delay
+    await vi.advanceTimersByTimeAsync(3000);
+    await promise;
+    
+    expect(mockPersetujuanService.updateStatusKK).toHaveBeenCalled();
+    expect(vm.isSuccess).toBe(false); // reset after wait
+    
+    vi.useRealTimers();
+  });
+
+  it('should handle photo fetching in fetchMesinById', async () => {
+    mockDetailRekapService.getMesinById.mockResolvedValue({
+        data: { ...mockMesinData.data, photo1: 'valid-photo.jpg' }
+    });
+    
+    // Mock photo response
+    mockDetailSentralService.getPhoto = vi.fn().mockResolvedValue({
+        data: new Blob(['photo'], { type: 'image/jpeg' })
+    });
+
+    mockPersetujuanService.getPersetujuanKKSentral.mockResolvedValue(mockPersetujuanData);
+
+    const wrapper = mount(DetailKKMesin);
+    await nextTick();
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    expect(mockDetailSentralService.getPhoto).toHaveBeenCalledWith('valid-photo.jpg');
+    // URL.createObjectURL is mocked globally
+    expect(global.URL.createObjectURL).toHaveBeenCalled();
   });
 });

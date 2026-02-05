@@ -6,6 +6,44 @@ global.document = document;
 global.navigator = navigator;
 global.location = location;
 
+// Mock Go WASM runtime (needed for encryption.ts)
+(window as any).Go = class MockGo {
+  importObject = {};
+  run = vi.fn(() => Promise.resolve());
+};
+
+// Mock WASM encryption functions
+(window as any).encryptStorageSecretKey = vi.fn(() => 'test-secret-key');
+(window as any).encryptAESPayload = vi.fn((text: string) => Promise.resolve(`encrypted:${text}`));
+(window as any).decryptAESPayload = vi.fn((cipher: string) => Promise.resolve(cipher.replace('encrypted:', '')));
+
+// Mock WebAssembly.instantiateStreaming
+global.WebAssembly = {
+  ...global.WebAssembly,
+  instantiateStreaming: vi.fn(() => Promise.resolve({
+    instance: {},
+    module: {},
+  })),
+} as any;
+
+// Mock fetch for WASM file loading
+global.fetch = vi.fn((url: string) => {
+  if (typeof url === 'string' && url.includes('.wasm')) {
+    return Promise.resolve(new Response());
+  }
+  return Promise.resolve(new Response(JSON.stringify({})));
+}) as any;
+
+// Mock encrypt-storage module
+vi.mock('@/utils/app-encrypt-storage', () => ({
+  encryptStoragePromise: Promise.resolve({
+    getItem: vi.fn(),
+    setItem: vi.fn(),
+    removeItem: vi.fn(),
+    clear: vi.fn(),
+  }),
+}));
+
 // Mock global objects
 Object.defineProperty(window, 'SVGElement', {
   value: class SVGElement {},

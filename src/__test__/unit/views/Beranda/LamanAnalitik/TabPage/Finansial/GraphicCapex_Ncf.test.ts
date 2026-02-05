@@ -347,6 +347,212 @@ describe('GraphicCapex_Ncf.vue', () => {
     })
   })
 
+  describe('UI Interaction & Event Handling', () => {
+    it('should remove selected pembangkit', () => {
+      const vm = wrapper.vm as any
+      vm.value = ['PLTU', 'PLTG']
+      
+      vm.removeSelectedPembangkit('PLTU')
+      expect(vm.value).toEqual(['PLTG'])
+    })
+
+    it('should clear all pembangkit', () => {
+      const vm = wrapper.vm as any
+      vm.value = ['PLTU', 'PLTG']
+      
+      vm.clearPembangkit()
+      expect(vm.value).toEqual([])
+    })
+
+    it('should toggle pembangkit dropdown', () => {
+      const vm = wrapper.vm as any
+      expect(vm.isPembangkitDropdownOpen).toBe(false)
+      
+      vm.togglePembangkitDropdown()
+      expect(vm.isPembangkitDropdownOpen).toBe(true)
+      
+      vm.togglePembangkitDropdown()
+      expect(vm.isPembangkitDropdownOpen).toBe(false)
+    })
+
+    it('should remove selected DMN', () => {
+      const vm = wrapper.vm as any
+      vm.dmn = ['1', '2']
+      
+      vm.removeSelectedDmn('1')
+      expect(vm.dmn).toEqual(['2'])
+    })
+
+    it('should clear all DMN', () => {
+      const vm = wrapper.vm as any
+      vm.dmn = ['1', '2']
+      
+      vm.clearDmn()
+      expect(vm.dmn).toEqual([])
+    })
+
+    it('should toggle DMN dropdown', () => {
+      const vm = wrapper.vm as any
+      expect(vm.isDmnDropdownOpen).toBe(false)
+      
+      vm.toggleDmnDropdown()
+      expect(vm.isDmnDropdownOpen).toBe(true)
+      
+      vm.toggleDmnDropdown()
+      expect(vm.isDmnDropdownOpen).toBe(false)
+    })
+
+    it('should handle click outside to close dropdowns', () => {
+      const vm = wrapper.vm as any
+      vm.isPembangkitDropdownOpen = true
+      vm.isDmnDropdownOpen = true
+      
+      const target = document.createElement('div')
+      target.closest = vi.fn().mockReturnValue(false)
+      
+      const event = { target } as unknown as MouseEvent
+      
+      vm.handleClickOutside(event)
+      
+      expect(vm.isPembangkitDropdownOpen).toBe(false)
+      expect(vm.isDmnDropdownOpen).toBe(false)
+    })
+
+    it('should NOT close dropdowns when clicking inside', () => {
+      const vm = wrapper.vm as any
+      vm.isPembangkitDropdownOpen = true
+      vm.isDmnDropdownOpen = true
+      
+      const target = document.createElement('div')
+      target.closest = vi.fn().mockImplementation((selector) => selector === '.relative')
+      
+      const event = { target } as unknown as MouseEvent
+      
+      vm.handleClickOutside(event)
+      
+      expect(vm.isPembangkitDropdownOpen).toBe(true)
+      expect(vm.isDmnDropdownOpen).toBe(true)
+    })
+  })
+
+  describe('Comprehensive Validation Logic', () => {
+    // Tests for closeModal branches
+    it('should close modal if values are selected and year selected', () => {
+      const vm = wrapper.vm as any
+      vm.value = ['PLTU']
+      vm.filter.tahun = 2024
+      vm.showModal = true
+      
+      vm.closeModal()
+      expect(vm.showModal).toBe(false)
+    })
+
+    it('should error in closeModal if value is empty and year is null', () => {
+      const vm = wrapper.vm as any
+      vm.value = []
+      vm.filter.tahun = null
+      
+      vm.closeModal()
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000)
+    })
+
+    it('should error in closeModal if year is null', () => {
+      const vm = wrapper.vm as any
+      vm.value = ['PLTU']
+      vm.filter.tahun = null
+      
+      vm.closeModal()
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih 1 tahun!', 5000)
+    })
+
+    it('should error in closeModal if value is empty', () => {
+      const vm = wrapper.vm as any
+      vm.value = []
+      vm.filter.tahun = 2024
+      
+      vm.closeModal()
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000)
+    })
+
+    // Tests for applyFilter branches
+    it('should apply filter and close modal if values are selected and year selected', async () => {
+      const vm = wrapper.vm as any
+      vm.value = ['PLTU']
+      vm.filter.tahun = 2024
+      vm.showModal = true
+      
+      await vm.applyFilter()
+      expect(mockGrafikService.getGraphicAnalitikCF).toHaveBeenCalled()
+      expect(vm.showModal).toBe(false)
+    })
+
+    it('should error in applyFilter if value is empty and year is null', async () => {
+      const vm = wrapper.vm as any
+      vm.value = []
+      vm.filter.tahun = null
+      
+      await vm.applyFilter()
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000)
+    })
+
+    it('should error in applyFilter if year is null (with value selected)', async () => {
+      const vm = wrapper.vm as any
+      vm.value = ['PLTU']
+      vm.filter.tahun = null
+      
+      await vm.applyFilter()
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih 1 tahun!', 5000)
+    })
+
+    it('should error in applyFilter if value is empty', async () => {
+      const vm = wrapper.vm as any
+      vm.value = []
+      vm.filter.tahun = 2024
+      
+      await vm.applyFilter()
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000)
+    })
+
+    // Tests for applyFilterNoDMN branches
+    it('should apply filter no DMN and close modal if values are selected and year selected', async () => {
+      const vm = wrapper.vm as any
+      vm.value = ['PLTU']
+      vm.filter.tahun = 2024
+      vm.showModal = true
+      
+      await vm.applyFilterNoDMN()
+      expect(mockGrafikService.getGraphicAnalitikCF).toHaveBeenCalled()
+      expect(vm.showModal).toBe(false)
+    })
+
+    it('should error in applyFilterNoDMN if value is empty and year is null', async () => {
+      const vm = wrapper.vm as any
+      vm.value = []
+      vm.filter.tahun = null
+      
+      await vm.applyFilterNoDMN()
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000)
+    })
+
+    it('should error in applyFilterNoDMN if year is null', async () => {
+      const vm = wrapper.vm as any
+      vm.value = ['PLTU']
+      vm.filter.tahun = null
+      
+      await vm.applyFilterNoDMN()
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih 1 tahun!', 5000)
+    })
+
+    it('should error in applyFilterNoDMN if value is empty', async () => {
+      const vm = wrapper.vm as any
+      vm.value = []
+      vm.filter.tahun = 2024
+      
+      await vm.applyFilterNoDMN()
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000)
+    })
+  })
+
   afterEach(() => {
     wrapper.unmount()
   })

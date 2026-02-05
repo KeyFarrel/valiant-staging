@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { mount, flushPromises } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { h } from 'vue'
 import TabsWrapperApprove from '@/components/ui/TabsWrapperApprove.vue'
@@ -12,24 +12,8 @@ vi.mock('@/store/storeLamanDataTab', () => ({
 }))
 
 // Mock the services
-vi.mock('@/services/grafik-service', () => ({
-  default: vi.fn().mockImplementation(() => ({
-    getGrafikWLCALLMesin: vi.fn().mockResolvedValue({ 
-      data: [
-        {
-          tahun: 2023,
-          revenue_annualized: 1000,
-          total_wlcc_annualized: 800,
-          capex_annualized: 500,
-          cost_component_bd: 200,
-          cost_component_c_annualized: 100,
-          optimum_life_fs: 25,
-          bep_fs: 10,
-          profit_loss: 200
-        }
-      ]
-    }),
-    getGrafikWLCKomMesin: vi.fn().mockResolvedValue({ 
+const mockGetGrafikWLCALLMesin = vi.fn()
+const mockGetGrafikWLCKomMesin = vi.fn().mockResolvedValue({ 
       data: [
         {
           tahun: 2023,
@@ -40,7 +24,12 @@ vi.mock('@/services/grafik-service', () => ({
           cost_komp_d: 30
         }
       ]
-    }),
+    })
+
+vi.mock('@/services/grafik-service', () => ({
+  default: vi.fn().mockImplementation(() => ({
+    getGrafikWLCALLMesin: mockGetGrafikWLCALLMesin,
+    getGrafikWLCKomMesin: mockGetGrafikWLCKomMesin,
     getGrafikWLCALLDetailMesin: vi.fn().mockResolvedValue({ 
       data: { 
         graph: [
@@ -69,7 +58,12 @@ vi.mock('@/services/detail-sentral-service', () => ({
 }))
 
 vi.mock('@/services/format/global-format', () => ({
-  default: vi.fn().mockImplementation(() => ({}))
+  default: vi.fn().mockImplementation(() => ({
+    formatCurrencyNotFixed: vi.fn((val) => val),
+    formatEnergy: vi.fn((val) => val),
+    formatRupiah: vi.fn((val) => val),
+    formatDecimal: vi.fn((val) => val)
+  }))
 }))
 
 describe('TabsWrapperApprove', () => {
@@ -102,6 +96,25 @@ describe('TabsWrapperApprove', () => {
   }
 
   beforeEach(() => {
+    vi.clearAllMocks()
+    
+    // Default mock response
+    mockGetGrafikWLCALLMesin.mockResolvedValue({ 
+      data: [
+        {
+          tahun: 2023,
+          revenue_annualized: 1000,
+          total_wlcc_annualized: 800,
+          capex_annualized: 500,
+          cost_component_bd: 200,
+          cost_component_c_annualized: 100,
+          optimum_life_fs: 25,
+          bep_fs: 10,
+          profit_loss: 200
+        }
+      ]
+    })
+    
     const pinia = createPinia()
     setActivePinia(pinia)
     
@@ -126,6 +139,66 @@ describe('TabsWrapperApprove', () => {
         }
       }
     })
+  })
+
+// ... existing tests until BEP test ...
+
+  it('should calculate BEP correctly', async () => {
+    // Mock data where BEP is found
+    // revenue >= wlcc
+    // i=0: rev 100, wlcc 200 (rev < wlcc)
+    // i=1: rev 300, wlcc 250 (rev > wlcc) -> BEP cross
+    const mockData = [
+      {
+        tahun: 2023,
+        revenue_annualized: 100,
+        total_wlcc_annualized: 200,
+        capex_annualized: 50,
+        cost_component_bd: 20,
+        cost_component_c_annualized: 10,
+        profit_loss: -100
+      },
+      {
+        tahun: 2024,
+        revenue_annualized: 300,
+        total_wlcc_annualized: 250,
+        capex_annualized: 50,
+        cost_component_bd: 20,
+        cost_component_c_annualized: 10,
+        profit_loss: 50
+      }
+    ]
+    
+    // Override mock response for this test
+    mockGetGrafikWLCALLMesin.mockResolvedValue({ data: mockData })
+    
+     // Re-mount to trigger onMounted with new mock
+     const wrapperBEP: any = mount(TabsWrapperApprove, {
+      props: defaultProps,
+      slots: {
+        default: [h('div', { title: 'Tab 1' }, 'Content')]
+      },
+      global: {
+        plugins: [createPinia()],
+        stubs: {
+          'vue-echarts': true,
+          'ModalWrapper': true,
+          'Chips': true,
+          'PopUp': true,
+          'Legend': true,
+          'Empty': true,
+          'StatusGrafik': true
+        }
+      }
+    })
+    
+    await wrapperBEP.vm.$nextTick()
+    await flushPromises()
+    
+    // Check if markPoint data is populated (indication that logic ran)
+    const chart = wrapperBEP.vm.chartWLCAllMesin
+    expect(chart.series[2].markPoint.data.length).toBeGreaterThan(0)
+    expect(chart.series[2].markPoint.data[0].name).toBe('Max')
   })
 
   it('should render component correctly', () => {
@@ -587,5 +660,33 @@ describe('TabsWrapperApprove', () => {
     expect(Array.isArray(wrapper.vm.judulDetWlcKom)).toBe(true)
     expect(Array.isArray(wrapper.vm.realDetWlcKom)).toBe(true)
     expect(Array.isArray(wrapper.vm.planDetWlcKom)).toBe(true)
+  })
+
+
+  it('should handle chart axis label formatters', async () => {
+    await wrapper.vm.$nextTick()
+    const chart = wrapper.vm.chartWLCAllMesin
+    
+    // Test color logic
+    const colorFn = chart.xAxis[0].axisLabel.color
+    expect(colorFn(2022)).toBe('#FF5656') // < 2023
+    expect(colorFn(2023)).toBe('#6C6C6C') // == 2023
+    expect(colorFn(2024)).toBe('#37B1D5') // > 2023
+    
+    // Test formatter
+    const formatFn = chart.xAxis[0].axisLabel.formatter
+    expect(formatFn(2023, 0)).toContain('1')
+    expect(formatFn(2023, 0)).toContain('2023')
+    
+    // Test tooltip formatter
+    const tooltipFn = chart.series[0].tooltip.valueFormatter
+    expect(typeof tooltipFn(100)).toBe('string')
+    
+    // Test yAxis label formatter
+    const yAxisFn = chart.yAxis[0].axisLabel.formatter
+    // globalFormat mock returns undefined or empty object in setup, 
+    // but in component it calls globalFormat.formatRupiah.
+    // We mocked globalFormat constructor to return empty object, so formatRupiah is undefined.
+    // We should fix globalFormat mock to have formatRupiah.
   })
 })

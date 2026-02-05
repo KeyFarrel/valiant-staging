@@ -3,7 +3,8 @@
   <InfoHeader v-if="mesinDataById && approveSentralFS" :nama-mesin="mesinDataById.mesin ? mesinDataById.mesin : '-'"
     :nama-pengelola="namaPengelola ? namaPengelola : '-'" :status-mesin="mesinDataById.kondisi_unit"
     :kode-jenis-pembangkit="mesinDataById.kode_jenis_pembangkit ? mesinDataById.kode_jenis_pembangkit : '-'"
-    :daya-terpasang="mesinDataById.daya_terpasang.toString()" :daya-mampu="mesinDataById.daya_mampu.toString()"
+    :daya-terpasang="mesinDataById.daya_terpasang?.toString() ?? '-'"
+    :daya-mampu="mesinDataById.daya_mampu?.toString() ?? '-'"
     :tahun-operasi="mesinDataById.tahun_operasi ? mesinDataById.tahun_operasi : '-'"
     :umur-teknis="approveSentralFS.umur_teknis ? approveSentralFS.umur_teknis : '-'" :nama-pembina="namaPembina"
     :kondisi-unit="mesinDataById.kondisi_unit">
@@ -212,7 +213,7 @@
       :nama-mesin="mesinDataById.mesin ? mesinDataById.mesin : '-'"
       :nama-pengelola="approveSentralFS.pengelola ? approveSentralFS.pengelola : '-'" :nama-pembina="namaPembina"
       :daya-terpasang="mesinDataById.daya_terpasang" :daya-mampu="mesinDataById.daya_mampu"
-      :tahun-perolehan-data="mesinDataById.tahun_nilai_perolehan.toString() ? mesinDataById.tahun_nilai_perolehan.toString() : '-'"
+      :tahun-perolehan-data="mesinDataById.tahun_nilai_perolehan?.toString() ?? '-'"
       :tahun-operasi="mesinDataById.tahun_operasi ? mesinDataById.tahun_operasi : '-'" :jumlah-mesin="jumlahMesin"
       :status-grafik="approveMesinFS.status">
       <TabItem :title="'Asumsi Makro'">

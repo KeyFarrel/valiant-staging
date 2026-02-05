@@ -2,8 +2,9 @@
   <Loading v-if="isLoading" />
   <InfoHeader v-if="mesinDataById" :nama-mesin="mesinDataById.nama_sentral" :nama-pengelola="namaPengelola"
     :kondisi-unit="mesinDataById.kondisi_unit" :kode-jenis-pembangkit="mesinDataById.kode_jenis_pembangkit"
-    :daya-terpasang="mesinDataById.daya_terpasang.toString()" :daya-mampu="mesinDataById.daya_mampu.toString()"
-    :tahun-operasi="mesinDataById.tahun_operasi.toString()" :umur-teknis="umurTeknis">
+    :daya-terpasang="mesinDataById.daya_terpasang?.toString() ?? '-'"
+    :daya-mampu="mesinDataById.daya_mampu?.toString() ?? '-'"
+    :tahun-operasi="mesinDataById.tahun_operasi?.toString() ?? '-'" :umur-teknis="umurTeknis">
   </InfoHeader>
   <div class="flex flex-col p-4 mt-4 bg-white rounded-lg">
     <TabsWrapper>

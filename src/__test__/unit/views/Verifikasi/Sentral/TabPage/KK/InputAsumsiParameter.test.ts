@@ -23,7 +23,12 @@ vi.mock('@/services/rekap-service', () => ({
     uploadEvidence() { return Promise.resolve({ data: 'test-path' }) }
     updateEvidencePath() { return Promise.resolve({}) }
     downloadTemplateRekap() { return Promise.resolve({ headers: {} }) }
+    uploadTemplateAwalKK() { return Promise.resolve({}) }
   }
+}))
+
+vi.mock('@/services/helper/toast-notification', () => ({
+  notifyError: vi.fn()
 }))
 
 vi.mock('@/services/input-asumsi-parameter-service', () => ({
@@ -317,5 +322,102 @@ describe('InputAsumsiParameter.vue', () => {
     const end = Date.now()
     
     expect(end - start).toBeGreaterThanOrEqual(90) // Allow some tolerance
+  })
+  it('should handle insertAsumsiParameter update flow correctly', async () => {
+    // Set valid data with formatting (commas)
+    wrapper.vm.interestRate = '10,5'
+    wrapper.vm.umurTeknis = '25'
+    wrapper.vm.loanTenor = '15'
+    wrapper.vm.loanPortion = '70,5'
+    wrapper.vm.nphr = '2.300,50'
+    wrapper.vm.auxiliary = '5,5'
+    wrapper.vm.susutTrafo = '3,5'
+    wrapper.vm.pemakaianSendiri = '2,5'
+    wrapper.vm.electricityPriceA = '1.200,50'
+    wrapper.vm.electricityPriceB = '1.300,50'
+    wrapper.vm.electricityPriceC = '1.400,50'
+    wrapper.vm.electricityPriceD = '1.500,50'
+    wrapper.vm.bahanBakars = [{ 
+      id: 1, 
+      kode_bahan_bakar: "BBM", 
+      harga_bahan_bakar: "15.000,50", 
+      sfc: "0,25" 
+    }]
+    wrapper.vm.idAsumsi = 123
+    wrapper.vm.idMesin = 'test-id'
+    wrapper.vm.year = 2024
+
+    // Mock services
+    const updateSpy = vi.spyOn(wrapper.vm.inputAsumsiParameterService, 'updateAsumsi')
+    const createParamSpy = vi.spyOn(wrapper.vm.inputAsumsiParameterService, 'createParameter')
+
+    await wrapper.vm.insertAsumsiParameter()
+
+    expect(updateSpy).toHaveBeenCalledWith(expect.objectContaining({
+      id_asumsi: 123,
+      interest_rate: 10.5,
+      loan_portion: 70.5
+    }))
+
+    expect(createParamSpy).toHaveBeenCalledWith(expect.objectContaining({
+      id_asumsi: 123,
+      nphr: 2300.5,
+      auxiliary: 5.5,
+      electricity_price_a_rp_per_kwbln: 1200.5,
+      harga_bahan_bakars: expect.arrayContaining([
+        expect.objectContaining({
+          harga_bahan_bakar: 15000.5,
+          sfc: 0.25
+        })
+      ])
+    }))
+    
+    expect(wrapper.vm.isInsertSuccess).toBe(false) // Waits 1500ms then false
+    expect(wrapper.vm.isModalUnggahKertasKerjaOpen).toBe(true)
+  })
+
+  it('should validate upload file requirements', async () => {
+    // import notifyError to spy
+    const { notifyError } = await import('@/services/helper/toast-notification')
+    
+    // No file selected
+    wrapper.vm.selectedFile = null
+    
+    await wrapper.vm.uploadFile()
+    // Should return early
+    expect(wrapper.vm.isLoading).toBe(false)
+    expect(notifyError).toHaveBeenCalledWith('Mohon pilih file excel terlebih dahulu', 3000)
+
+    // File too large
+    wrapper.vm.selectedFile = { name: 'large.xlsx', size: 3000000 } // 3MB
+    await wrapper.vm.uploadFile()
+    expect(wrapper.vm.isLoading).toBe(false)
+    expect(notifyError).toHaveBeenCalledWith('Ukuran file Kertas Kerja tidak boleh lebih dari 2MB', 5000)
+  })
+
+  it('should handle upload file with large evidence', async () => {
+    wrapper.vm.selectedFile = { name: 'valid.xlsx', size: 1000000 }
+    wrapper.vm.selectedFileEvidence = { name: 'large.xlsx', size: 6000000 } // 6MB
+    
+    await wrapper.vm.uploadFile()
+    expect(wrapper.vm.isLoading).toBe(false) // Should return early
+  })
+
+  it('should handle upload file success with evidence', async () => {
+    wrapper.vm.selectedFile = { name: 'valid.xlsx', size: 1000000 }
+    wrapper.vm.selectedFileEvidence = { name: 'valid.pdf', size: 1000000 }
+    
+    // Mock rekapService methods on the instance or prototype if possible, or assume mock works
+    const uploadEvidenceSpy = vi.spyOn(wrapper.vm.rekapService, 'uploadEvidence')
+    const uploadTemplateSpy = vi.spyOn(wrapper.vm.rekapService, 'uploadTemplateAwalKK')
+    
+    // Mock router go
+    wrapper.vm.router = { go: vi.fn() } // If router is attached to vm, else checking router.go via mock
+
+    await wrapper.vm.uploadFile()
+    
+    expect(uploadEvidenceSpy).toHaveBeenCalled()
+    expect(uploadTemplateSpy).toHaveBeenCalled()
+    expect(wrapper.vm.isUploadSuccess).toBe(false) // After wait
   })
 })
