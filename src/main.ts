@@ -119,9 +119,7 @@ axios.interceptors.response.use(
     const isNetworkError = error.code === "ERR_NETWORK";
     const isRecordNotFound = error.response?.data?.message === "record not found";
     
-    const ignoredNetworkUrl = (nodeMode === "production" || nodeMode === "staging")
-      ? "https://stg-be-valiant.pln.co.id/v1/mutasiasset/download/"
-      : "http://localhost:8000/v1/mutasiasset/download/";
+    const ignoredNetworkUrl = "https://stg-be-valiant.pln.co.id/v1/mutasiasset/download/";
     const shouldIgnoreNetworkError = error.config?.url === ignoredNetworkUrl;
 
     if (isUnauthorized && !isUserNotRegistered && !isLoginPage) {
