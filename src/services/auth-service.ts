@@ -65,9 +65,7 @@ export default class AuthService extends BaseService {
     
     return result as T;
   }
-  async getPermission<T>(param: any): Promise<T> {
-    return this.get(`${url}permission`, param);
-  }
+  
   async checkStatusToken<T>(): Promise<T> {
     return this.get(`${url}auths/check-status`);
   }
@@ -77,24 +75,15 @@ export default class AuthService extends BaseService {
   async loginSSO<T>(): Promise<T> {
     return this.get(`${url}auth/get-urlsso`);
   }
-  async checkStatus<T>(): Promise<T> {
-    return this.get(`${url}auth/status`);
+
+  async generateCaptcha<T>(): Promise<T> {
+    return this.post(`${url}auth/generate-captcha`, {});
   }
+
   async verifikasiSSO<T>(code: string): Promise<T> {
     return this.post(`${url}auth/verifikasi-token`, { code: code });
   }
-  async generateCaptcha<T>(): Promise<T> {
-    return this.post(`${url}auth/generate-captcha`, null);
-  }
-  async getPublicKey<T>(): Promise<T> {
-    return this.post(`${url}auth/public-key`);
-  }
-  async verifCaptcha<T>(payload: {
-    captcha_key: string;
-    tile_x: number;
-  }): Promise<T> {
-    return this.post(`${url}auth/verify-captcha`, payload);
-  }
+
   async changePassword<T>(
     oldPassword: string,
     newPassword: string,

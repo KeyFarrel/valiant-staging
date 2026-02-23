@@ -17,9 +17,6 @@ export default class AnalyticService extends BaseService {
     async getFinancialEBITDA<T>(param: ParamBubble): Promise<T> {
         return this.get(`${url}dashboard/grafik/finansial-ebitda`, param)
     }
-    async getFinancialROIC<T>(param: ParamBubble): Promise<T> {
-        return this.get(`${url}dashboard/grafik/finansial-roic`, param)
-    }
     async getFinancialKomponen<T>(param: ParamLine): Promise<T> {
         return this.get(`${url}grafik/laman/komponen`, param)
     }
@@ -29,13 +26,7 @@ export default class AnalyticService extends BaseService {
     async getTeknisEaf<T>(param: ParamLine): Promise<T> {
         return this.get(`${url}grafik/laman/teknis/eaf`, param)
     }
-    async getFilterPembangkit<T>(): Promise<T> {
-        return this.get(`${url}grafik/filter/pembangkit`)
-    }
     async getFilterDaya<T>(): Promise<T> {
         return this.get(`${url}grafik/filter/daya`)
-    }
-    async getFilterTahun<T>(): Promise<T> {
-        return this.get(`${url}grafik/filter/tahun`)
     }
 }

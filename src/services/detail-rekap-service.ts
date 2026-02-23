@@ -31,9 +31,6 @@ export default class DetailRekapService extends BaseService {
   async getTahunRealisasi<T>(uuid_mesin:any): Promise<T> {
     return this.get(`${url}filter/tahun-permesin`, {uuid_mesin: uuid_mesin});
   }
-  async downloadExcelMesin<T>(uuid_mesin: number, tahun: number): Promise<T> {
-    return this.get(`${url}kertas-kerja-detail/export-template-awal`, {uuid_mesin: uuid_mesin, tahun: tahun}, 'arraybuffer');
-  }
   async getHasilSimulasi<T>(uuid_mesin: number, tahun: number, status: number): Promise<T> {
     return this.post(`${url}kertas-kerja-detail/simulasi-cod`, {uuid_mesin: uuid_mesin, tahun: tahun, status: status});
   }

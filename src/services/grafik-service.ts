@@ -5,150 +5,137 @@ const url = import.meta.env.VITE_API_URL;
 export default class GrafikService extends BaseService {
   // Api for Card Information in Bottom
   async getPlanning<T>(param: any): Promise<T> {    
-    return this.get(url + "peta/detail-planing", param);
+    return this.get(`${url}peta/detail-planing`, param);
   }
 
   async getRealisasiProyeksi<T>(param: any): Promise<T> {    
-    return this.get(url + "peta/detail-realisasi-proyeksi", param);
+    return this.get(`${url}peta/detail-realisasi-proyeksi`, param);
   }
 
   async getRealisasiYoy<T>(param: any): Promise<T> {    
-    return this.get(url + "peta/detail-realisasi-yoy", param);
+    return this.get(`${url}peta/detail-realisasi-yoy`, param);
   }
   
-  async getPlanReal<T>(param: any): Promise<T> {    
-    return this.get(url + "peta/detail-planning-realisasi", param);
-  }
 
   async getPlanningMesin<T>(param: any): Promise<T> {    
-    return this.get(url + "peta/detail-planing-mesin", param);
+    return this.get(`${url}peta/detail-planing-mesin`, param);
   }
 
   async getRealisasiProyeksiMesin<T>(param: any): Promise<T> {    
-    return this.get(url + "peta/detail-realisasi-proyeksi-mesin", param);
+    return this.get(`${url}peta/detail-realisasi-proyeksi-mesin`, param);
   }
 
   async getRealisasiYoyMesin<T>(param: any): Promise<T> {    
-    return this.get(url + "peta/detail-realisasi-yoy-mesin", param);
+    return this.get(`${url}peta/detail-realisasi-yoy-mesin`, param);
   }
   
-  async getPlanRealMesin<T>(param: any): Promise<T> {    
-    return this.get(url + "peta/detail-planning-realisasi-mesin", param);
-  }
 
   async getYearSentral<T>(param: any): Promise<T> {    
-    return this.get(url + "filter/tahun-persentral", param);
+    return this.get(`${url}filter/tahun-persentral`, param);
   }
 
   async getYearMesin<T>(param: any): Promise<T> {    
-    return this.get(url + "filter/tahun-permesin", param);
+    return this.get(`${url}filter/tahun-permesin`, param);
   }
 
   async getRangeYearSentral<T>(param: any): Promise<T> {
-    return this.get(url + "filter/range-tahun-persentral", param);
+    return this.get(`${url}filter/range-tahun-persentral`, param);
   }
 
   async getRangeYearMesin<T>(param: any): Promise<T> {
-    return this.get(url + "filter/range-tahun-permesin", param);
+    return this.get(`${url}filter/range-tahun-permesin`, param);
   }
 
   // Api for All Graphic
   async getGrafikWLCALL<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/wlc-all-sentral", param);
+    return this.get(`${url}dashboard/grafik/wlc-all-sentral`, param);
   }
 
   async getGrafikWLCALLDetail<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/wlc-all-sentral/detail", param);
+    return this.get(`${url}dashboard/grafik/wlc-all-sentral/detail`, param);
   }
 
   async getGrafikWLCKom<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/wlc-komponen-sentral", param);
+    return this.get(`${url}dashboard/grafik/wlc-komponen-sentral`, param);
   }
 
   async getGrafikWLCKomDetail<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/wlc-komponen-sentral/detail", param);
+    return this.get(`${url}dashboard/grafik/wlc-komponen-sentral/detail`, param);
   }
 
   async getGrafikPlan<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/planning-fs-sentral", param);
+    return this.get(`${url}dashboard/grafik/planning-fs-sentral`, param);
   }
 
   async getGrafikPlanDetail<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/planning-fs-sentral/detail", param);
+    return this.get(`${url}dashboard/grafik/planning-fs-sentral/detail`, param);
   }
 
   async getGrafikPRP<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/planning-realisasi-proyeksi-sentral", param);
+    return this.get(`${url}dashboard/grafik/planning-realisasi-proyeksi-sentral`, param);
   }
 
   async getGrafikPRPDetail<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/planning-realisasi-proyeksi-sentral/detail", param);
+    return this.get(`${url}dashboard/grafik/planning-realisasi-proyeksi-sentral/detail`, param);
   }
 
   async getGrafikPRPLastYear<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/prp-lastyear-sentral", param);
+    return this.get(`${url}dashboard/grafik/prp-lastyear-sentral`, param);
   }
 
   async getGrafikLastYearDetail<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/prp-lastyear-sentral/detail", param);
+    return this.get(`${url}dashboard/grafik/prp-lastyear-sentral/detail`, param);
   }
 
   // Api for All Graphic Mesin
   async getGrafikWLCALLMesin<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/wlc-all", param);
+    return this.get(`${url}dashboard/grafik/wlc-all`, param);
   }
 
   async getGrafikWLCALLDetailMesin<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/wlc-all/detail", param);
+    return this.get(`${url}dashboard/grafik/wlc-all/detail`, param);
   }
 
   async getGrafikWLCKomMesin<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/wlc-komponen", param);
+    return this.get(`${url}dashboard/grafik/wlc-komponen`, param);
   }
 
   async getGrafikWLCKomDetailMesin<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/wlc-komponen/detail", param);
+    return this.get(`${url}dashboard/grafik/wlc-komponen/detail`, param);
   }
 
   async getGrafikPlanMesin<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/planning-fs", param);
+    return this.get(`${url}dashboard/grafik/planning-fs`, param);
   }
 
   async getGrafikPlanDetailMesin<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/planning-fs/detail", param);
+    return this.get(`${url}dashboard/grafik/planning-fs/detail`, param);
   }
 
   async getGrafikPlanKomMesin<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/wlc-komponen-fs", param);
+    return this.get(`${url}dashboard/grafik/wlc-komponen-fs`, param);
   }
 
   async getGrafikPlanKomDetailMesin<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/wlc-komponen-fs/detail", param);
+    return this.get(`${url}dashboard/grafik/wlc-komponen-fs/detail`, param);
   }
 
   async getGrafikPRPMesin<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/planning-realisasi-proyeksi", param);
+    return this.get(`${url}dashboard/grafik/planning-realisasi-proyeksi`, param);
   }
 
   async getGrafikPRPDetailMesin<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/planning-realisasi-proyeksi/detail", param);
+    return this.get(`${url}dashboard/grafik/planning-realisasi-proyeksi/detail`, param);
   }
 
   async getGrafikPRPLastYearMesin<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/prp-lastyear", param);
+    return this.get(`${url}dashboard/grafik/prp-lastyear`, param);
   }
 
   async getGrafikPRPLastYearDetailMesin<T>(param: any): Promise<T> {
-    return this.get(url + "dashboard/grafik/prp-lastyear/detail", param);
+    return this.get(`${url}dashboard/grafik/prp-lastyear/detail`, param);
   }
 
-  async getAnalitikCapex<T>(param: any): Promise<T> {
-    return this.post(`${url}grafik/laman/finansial/eaf`, param);
-  }
-
-  async getAnalitikOpex<T>(param: any): Promise<T> {
-    return this.post(`${url}laman/analitik/opex`, param);
-  }
 
   async getGraphicBiaya<T>(param: any): Promise<T> {
     return this.post(`${url}grafik/laman/komponen`, param);

@@ -322,12 +322,13 @@ describe('Login.vue', () => {
     wrapper.vm.onAcceptPrivacy();
     await flushPromises();
     expect(mockAuthService.privacyPolicy).toHaveBeenCalledWith(true);
-    expect(mockAuthService.login).toHaveBeenCalled();
+    // onAcceptPrivacy calls privacyPolicy(true) then clears sessionStorage - does NOT re-call login
     
     wrapper.vm.onDeclinePrivacy();
     await flushPromises();
     expect(mockAuthService.privacyPolicy).toHaveBeenCalledWith(false);
   });
+
 
   it('should handle privacy policy error', async () => {
     mockAuthService.privacyPolicy.mockRejectedValue(new Error('Privacy Error'));

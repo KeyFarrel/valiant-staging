@@ -68,9 +68,6 @@ const LihatOPEX = () => import("@/views/Beranda/LamanData/LihatOPEX.vue");
 const Parameter = () => import("@/views/Master/Parameter.vue");
 const ProfileUser = () => import("@/views/Manajemen/Pengguna/ProfileUser.vue");
 const Pengguna = () => import("@/views/Manajemen/Pengguna/Pengguna.vue");
-const Role = () => import("@/views/Manajemen/Pengguna/RolePage.vue");
-const EditPermission = () =>
-  import("@/views/Manajemen/Pengguna/EditPermission.vue");
 const LogActivity = () =>
   import("@/views/Manajemen/LogActivity/LogActivity.vue");
 const MesinBelumTerinput = () =>
@@ -408,24 +405,6 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
-        path: "/role",
-        name: "role",
-        component: Role,
-        meta: {
-          requiresAuth: true,
-          label: "Role",
-        },
-      },
-      {
-        path: "/edit-role/:id",
-        name: "edit-permission",
-        component: EditPermission,
-        meta: {
-          requiresAuth: true,
-          label: "Edit Permission",
-        },
-      },
-      {
         path: "/log-activity",
         name: "log-activity",
         component: LogActivity,
@@ -553,7 +532,7 @@ router.beforeEach(async (to, _, next) => {
 
   if (
     isAuthenticated &&
-    !menuStore.isMenuAccessible(to.name.toString()) &&
+    !menuStore.isMenuAccessible(to.name?.toString() ?? "") &&
     !sessionStore.isErrNetwork() &&
     to.name !== "503"
   ) {

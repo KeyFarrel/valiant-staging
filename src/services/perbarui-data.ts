@@ -18,9 +18,6 @@ export default class PerbaruiDataService extends BaseService {
   async getAsumsiParameterData<T>(tahun_realisasi:any, uuidMesin:any, tahun: any): Promise<T> {
     return this.post(`${url}kertas-kerja-detail/asumsi-parameter`, {tahun_realisasi: tahun_realisasi, uuid_mesin: uuidMesin, tahun: tahun});
   }
-  async getDataTeknisData<T>(tahun: any, uuid_mesin: any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/data-teknis`, {tahun: tahun, uuid_mesin: uuid_mesin});
-  }
   async getDataTeknisByPeriode<T>(tahun_realisasi:number, uuid_mesin:number): Promise<T> {
     return this.post(`${url}kertas-kerja-detail/data-teknis-periode`, {tahun_realisasi: tahun_realisasi, uuid_mesin: uuid_mesin});
   }
@@ -40,9 +37,6 @@ export default class PerbaruiDataService extends BaseService {
     return this.post(`${url}kertas-kerja-detail/data-finansial-detail-simulasi2`, {tahun: tahun_realisasi, uuid_mesin: uuid_mesin});
   }
   // Data Asumsi Parameter Simulasi 1 & 2 value sama
-  async getAsumsiParameterSimulasi<T>(tahun_realisasi: any, uuid_mesin: any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/asumsi-parameter-simulasi`, {tahun_realisasi: tahun_realisasi, uuid_mesin: uuid_mesin});
-  }
   // Data Teknis Simulasi 1
   async getDataTeknisSimulasi1<T>(tahun: any, uuid_mesin: any): Promise<T> {
     return this.post(`${url}kertas-kerja-detail/data-teknis`, {tahun: tahun, uuid_mesin: uuid_mesin});
@@ -69,9 +63,6 @@ export default class PerbaruiDataService extends BaseService {
   async downloadSimulasi2Excel<T>(tahun_realisasi: any, uuid_mesin: any): Promise<T> {
     return this.post(`${url}kertas-kerja-detail/export-template-simulasi2`, {tahun_realisasi: tahun_realisasi, uuid_mesin: uuid_mesin});
   }
-  async getComboTypePeriodicData<T>(jenis_pembangkit:any): Promise<T> {
-    return this.get(`${url}filter/combo-type-periodic`, {jenis_pembangkit: jenis_pembangkit});
-  }
   async createAsumsiMakroPermanent<T>(form_data:any): Promise<T> {
     return this.post(`${url}kertas-kerja-detail/asumsi-create`, form_data);
   }
@@ -80,9 +71,6 @@ export default class PerbaruiDataService extends BaseService {
   }
   async updateParameterTeknisPermanent<T>(form_data:any): Promise<T> {
     return this.post(`${url}kertas-kerja-detail/parameter-finansial`, form_data);
-  }
-  async updateParameterTeknisSimulasi<T>(form_data:any): Promise<T> {
-    return this.post(`${url}kertas-kerja-detail/parameter-finansial-simulasi`, form_data);
   }
   async updateDataTeknisPermanent<T>(form_data:any): Promise<T> {
     return this.post(`${url}kertas-kerja-detail/data-teknis-create`, form_data);

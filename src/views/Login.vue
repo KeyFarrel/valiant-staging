@@ -424,10 +424,10 @@ const valKataSandiErr = ref<string>("");
 const showPassword = ref<boolean>(false);
 const expiredOtpTimer = ref<number>(300); // 5 menit dalam detik
 const resetOtpTimer = ref<number>(60); // 1 menit dalam detik
-let expiredOtpInterval = null;
-let resetOtpInterval = null;
+let expiredOtpInterval: any = null;
+let resetOtpInterval: any = null;
 const otp = ref(Array(8).fill(null));
-const otpRefs = ref([])
+const otpRefs = ref<HTMLInputElement[]>([])
 const isShowCounter = ref<boolean>(false);
 const remainingAttempt = ref<number>(0);
 const isShowLocked = ref<boolean>(false);
@@ -674,7 +674,7 @@ const startTimers = () => {
   }, 1000);
 };
 
-const handleInput = (index, event) => {
+const handleInput = (index: number, event: any) => {
   let value = event.target.value.replace(/\D/g, '');
   if (value) {
     otp.value[index] = value;
@@ -691,7 +691,7 @@ const handleInput = (index, event) => {
   }
 };
 
-const handleKeyDown = (index, event) => {
+const handleKeyDown = (index: number, event: KeyboardEvent) => {
   if (!/\d/.test(event.key) && event.key !== 'Backspace' && event.key !== 'Tab') {
     event.preventDefault();
   }
@@ -863,13 +863,13 @@ const onCaptchaVerified = async () => {
         // isShowCaptchaModal.value = false;
       }
       isLoadingButton.value = false;
-      if (error.response.data && error.response.data.data && error.response.data.data.temp_loc && error.response.data.data.temp_loc !== 0) {
+      if (error.response?.data?.data?.temp_loc && error.response.data.data.temp_loc !== 0) {
         isShowCounter.value = true;
         remainingAttempt.value = maxAttempt - error.response.data.data.temp_loc;
-      } else if (error.response.data.message && error.response.data.message === 'Anda belum mengisi privacy policy') {
+      } else if (error.response?.data?.message === 'Anda belum mengisi privacy policy') {
         isShowPrivacyPolicy.value = true;
       }
-      if (error.response.data.message === "User / Password tidak sesuai") {
+      if (error.response?.data?.message === "User / Password tidak sesuai") {
         valEmailErr.value = "Email atau Kata Sandi salah";
         valKataSandiErr.value = "Email atau Kata Sandi salah";
       }
@@ -891,13 +891,8 @@ const onAcceptPrivacy = async () => {
   try {
     isLoadingSpinner.value = true;
     await authService.privacyPolicy(true);
-    const param = {
-      email: valEmail.value,
-      password: valPassword.value,
-    };
-    await authService.login(param);
     sessionStorage.clear();
-    router.push({ name: "peta" });
+    notifySuccess("Berhasil menyetujui kebijakan privasi, silahkan login kembali", 5000);
   } catch (error) {
     console.error("Error Accept Privacy Policy:", error);
     notifyError("Gagal menyetujui kebijakan privasi, mohon coba lagi", 5000);
@@ -928,7 +923,7 @@ onMounted(async () => {
   const hasRefreshed = sessionStorage.getItem('hasRefreshed');
   if (!hasRefreshed) {
     sessionStorage.setItem('hasRefreshed', 'true');
-    window.location.reload(true);
+    window.location.reload();
   } else {
     sessionStorage.removeItem('hasRefreshed');
   }
