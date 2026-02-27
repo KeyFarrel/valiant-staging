@@ -2,8 +2,8 @@
   <Loading v-if="isLoading" />
   <div class="space-y-5">
     <div class="justify-between md:flex">
-      <SearchBox class="w-60" placeholder="Cari sentral..." @on-input="fetchDataTeknis" @on-key-enter="fetchDataTeknis"
-        @on-click-submit="fetchDataTeknis" v-model="searchQ" />
+      <SearchBox class="w-60" placeholder="Cari sentral..." @on-input="handleSearch" @on-key-enter="fetchDataTeknis"
+        @on-click-submit="fetchDataTeknis" v-model="searchQ" :disabled="isSearchDisabled" />
       <div class="flex items-center space-x-3">
         <div class="flex flex-row items-center">
           <p class="mr-3 font-semibold text-labelColor">Tahun</p>
@@ -153,20 +153,22 @@
               </div>
             </td>
           </tr>
-          <template v-if="isUpOpen(pengelola.kode_pengelola)" v-for="pembangkit in pengelola.pembangkits"
-            :key="pembangkit.uuid_sentral">
+          <template v-if="isUpOpen(pengelola.kode_pengelola)"
+            v-for="(pembangkit, pembangkitIndex) in pengelola.pembangkits" :key="pembangkitIndex">
             <tr class="text-xs cursor-pointer bg-strokeColor bg-opacity-20 hover:bg-opacity-60"
-              @click="togglePembangkit(pembangkit.uuid_sentral)">
+              @click="togglePembangkit(`${pengelola.kode_pengelola}_${pembangkitIndex}`)">
               <td id="pembangkit">
                 <div class="flex flex-row items-center space-x-2">
-                  <svg v-if="!isPembangkitOpen(pembangkit.uuid_sentral) && pembangkit.mesins.length !== 0" width="24"
-                    height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg
+                    v-if="!isPembangkitOpen(`${pengelola.kode_pengelola}_${pembangkitIndex}`) && pembangkit.mesins.length !== 0"
+                    width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect x="24" y="24" width="24" height="24" rx="6" transform="rotate(-180 24 24)" fill="#E5E7E9" />
                     <path fill-rule="evenodd" clip-rule="evenodd"
                       d="M12.4419 14.0044C12.1979 14.2485 11.8021 14.2485 11.5581 14.0044L8.43306 10.8794C8.18898 10.6354 8.18898 10.2396 8.43306 9.99556C8.67714 9.75148 9.07286 9.75148 9.31694 9.99556L12 12.6786L14.6831 9.99556C14.9271 9.75148 15.3229 9.75148 15.5669 9.99556C15.811 10.2396 15.811 10.6354 15.5669 10.8794L12.4419 14.0044Z"
                       fill="#333333" />
                   </svg>
-                  <svg v-else-if="isPembangkitOpen(pembangkit.uuid_sentral) && pembangkit.mesins.length !== 0"
+                  <svg
+                    v-else-if="isPembangkitOpen(`${pengelola.kode_pengelola}_${pembangkitIndex}`) && pembangkit.mesins.length !== 0"
                     width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect width="24" height="24" rx="6" fill="#E5E7E9" />
                     <path fill-rule="evenodd" clip-rule="evenodd"
@@ -185,7 +187,8 @@
               <td class="text-end"></td>
               <td class="text-center"></td>
             </tr>
-            <template v-if="isPembangkitOpen(pembangkit.uuid_sentral) && isUpOpen(pengelola.kode_pengelola)"
+            <template
+              v-if="isPembangkitOpen(`${pengelola.kode_pengelola}_${pembangkitIndex}`) && isUpOpen(pengelola.kode_pengelola)"
               v-for="mesin in pembangkit.mesins" :key="mesin.uuid_mesin">
               <tr class="text-xs bg-strokeColor bg-opacity-10">
                 <td id="mesin">{{ mesin.mesin }}</td>
@@ -236,7 +239,7 @@ import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
 const lamanService = new LamanService();
 const teknisData = ref<PengelolaItem[]>([]);
 const isUpTabOpen = ref<string[]>([]);
-const isPembangkitTabOpen = ref<number[]>([]);
+const isPembangkitTabOpen = ref<string[]>([]);
 const dataSFC = ref<ItemSFC[]>([]);
 const isLoading = ref<boolean>(false);
 const currentPage = ref(1);
@@ -251,6 +254,8 @@ const periodeTahun = ref<Array<any>>([]);
 const searchQ = ref<string>("");
 const tahunBerjalan = new Date().getFullYear();
 const isOptionsExpanded = ref(false);
+const isSearchDisabled = ref<boolean>(false);
+let debounceTimeout: any = null;
 
 interface ItemSFC {
   jenis_kit: string
@@ -267,7 +272,7 @@ interface PengelolaItem {
   pembangkits: PembangkitItem[]
 }
 interface PembangkitItem {
-  uuid_sentral: number
+  uuid_sentral: string
   kode_sentral: string
   sentral: string
   mesins: any
@@ -304,6 +309,7 @@ const fetchPeriodeTahun = async () => {
 const fetchDataTeknis = async () => {
   try {
     isLoading.value = true;
+    isSearchDisabled.value = true;
     const response: PengelolaItem = await lamanService.getDataTeknis(searchQ.value, currentPage.value, pageLimit.value, tahunDari.value, tahunSampai.value);
     const { data, meta } = response;
     const filteredResponse = data.filter((val: any) => val.pembangkits.length > 0);
@@ -312,8 +318,11 @@ const fetchDataTeknis = async () => {
     totalRecords.value = meta.totalRecords;
     pageLimit.value = meta.limit;
     isLoading.value = false;
+    isSearchDisabled.value = false;
   } catch (error) {
     console.error(error);
+    isLoading.value = false;
+    isSearchDisabled.value = false;
   }
 };
 const fetchListTahun = async () => {
@@ -334,7 +343,7 @@ const toggleUp = (itemKode: string) => {
 const isUpOpen = (itemKode: string) => {
   return isUpTabOpen.value.includes(itemKode);
 };
-const togglePembangkit = (itemId: number) => {
+const togglePembangkit = (itemId: string) => {
   if (isPembangkitOpen(itemId)) {
     isPembangkitTabOpen.value = isPembangkitTabOpen.value.filter(
       (Id) => Id !== itemId
@@ -343,7 +352,7 @@ const togglePembangkit = (itemId: number) => {
     isPembangkitTabOpen.value.push(itemId);
   }
 }
-const isPembangkitOpen = (itemId: number) => {
+const isPembangkitOpen = (itemId: string) => {
   return isPembangkitTabOpen.value.includes(itemId);
 };
 
@@ -366,6 +375,13 @@ const handleExport = async () => {
   } catch (error) {
     console.error('Handle Download Template Rekap Error : ', error)
   };
+}
+
+const handleSearch = () => {
+  clearTimeout(debounceTimeout);
+  debounceTimeout = setTimeout(() => {
+    fetchDataTeknis();
+  }, 500);
 }
 
 watch(store, async (store) => {

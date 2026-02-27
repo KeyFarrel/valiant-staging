@@ -27,6 +27,7 @@ const props = defineProps<{
   itemsDayaMampu: { id: string; name: string }[]
   title: string
   yearRange: number[]
+  initialPembangkit: string[]
 }>();
 
 const isLoading = ref(false)
@@ -56,14 +57,7 @@ const filter: Ref<{
 })
 
 const fetchInitialPembangkit = async () => {
-  try {
-    const response: any = await grafikService.getInitialPembangkit();
-    for (const iterator of response.data) {
-      value.value.push(iterator.kode_jenis_pembangkit)
-    };
-  } catch (error) {
-    console.error('Fetch Initial Pembangkit Error : ', error)
-  };
+  value.value = [...props.initialPembangkit]
 }
 
 async function getDataGraph() {

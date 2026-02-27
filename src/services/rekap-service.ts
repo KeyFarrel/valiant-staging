@@ -73,23 +73,23 @@ export default class RekapService extends BaseService {
   async getMesinById<T>(idMesin: any): Promise<T> {
     return this.get(`${url}mesin-realisasi/${idMesin}`);
   }
-  async getStatusFSSentral<T>(): Promise<T> {
-    return this.get(`${url}pembangkit/status-fs-sentral`);
+  async getStatusFSSentral<T>(uuidSentral?: string): Promise<T> {
+    return this.get(`${url}pembangkit/status-fs-sentral`, uuidSentral ? { uuid: uuidSentral } : undefined);
   }
-  async getStatusFSMesin<T>(): Promise<T> {
-    return this.get(`${url}pembangkit/status-fs`);
+  async getStatusFSMesin<T>(uuidSentral?: string): Promise<T> {
+    return this.get(`${url}pembangkit/status-fs`, uuidSentral ? { uuid: uuidSentral } : undefined);
   }
-  async getStatusRealisasiSentral<T>(): Promise<T> {
-    return this.get(`${url}pembangkit/status-realisasi-sentral`);
+  async getStatusRealisasiSentral<T>(uuidSentral?: string): Promise<T> {
+    return this.get(`${url}pembangkit/status-realisasi-sentral`, uuidSentral ? { uuid: uuidSentral } : undefined);
   }
-  async getStatusRealisasiMesin<T>(): Promise<T> {
-    return this.get(`${url}pembangkit/status-realisasi`);
+  async getStatusRealisasiMesin<T>(uuidSentral?: string): Promise<T> {
+    return this.get(`${url}pembangkit/status-realisasi`, uuidSentral ? { uuid: uuidSentral } : undefined);
   }
-  async getCheckInputAsumsiSentral<T>(): Promise<T> {
-    return this.get(`${url}kertas-kerja-detail/all-rekap-asumsi`);
+  async getCheckInputAsumsiSentral<T>(uuidSentral?: string): Promise<T> {
+    return this.get(`${url}kertas-kerja-detail/all-rekap-asumsi`, uuidSentral ? { uuid_sentral: uuidSentral } : undefined);
   }
-  async getCheckInputAsumsiMesin<T>(): Promise<T> {
-    return this.get(`${url}kertas-kerja-detail/all-rekap-asumsi-mesin`);
+  async getCheckInputAsumsiMesin<T>(uuidSentral?: string): Promise<T> {
+    return this.get(`${url}kertas-kerja-detail/all-rekap-asumsi-mesin`, uuidSentral ? { uuid_sentral: uuidSentral } : undefined);
   }
   async getSuggestionSentral<T>(): Promise<T> {
     return this.get(`${url}filter/combo-sentral`);

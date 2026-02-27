@@ -1126,6 +1126,7 @@ const fetchSuggestionSentral = async () => {
 const fetchSentralData = async () => {
   try {
     isLoading.value = true;
+    isPembangkitTabOpen.value = [];
     const response: SentralItem = await rekapService.getSentralData(store.searchRekapQuery, selectedPengelola.value, selectedKategoriPembangkit.value, dmn.value, selectedKondisiMesin.value, selectedUmurMesin.value, navigationStore.currentPage, navigationStore.pageLimit)
     if (response.data !== null) {
       if (listSentralData.value.length === 0) {
@@ -1135,7 +1136,6 @@ const fetchSentralData = async () => {
         sentralData.value = response.data.map((sentral: any) => ({ ...sentral, mesins: [] }));
       }
       await togglePembangkit(response.data[0].uuid_sentral);
-      console.log(sentralData.value, 'uy');
     } else {
       sentralData.value = [];
     }
@@ -1281,9 +1281,9 @@ const fetchNilaiMesin = async () => {
     console.error('Fetch Nilai Mesin Error : ', error)
   }
 }
-const fetchStatusFSSentral = async () => {
+const fetchStatusFSSentral = async (uuidSentral?: string) => {
   try {
-    const response: any = await rekapService.getStatusFSSentral();
+    const response: any = await rekapService.getStatusFSSentral(uuidSentral);
     if (response.data !== null) {
       statusFSSentral.value = response.data;
     } else {
@@ -1293,42 +1293,77 @@ const fetchStatusFSSentral = async () => {
     console.error('Fetch Status FS Sentral Error : ', error);
   }
 }
-const fetchStatusFSMesin = async () => {
+const fetchStatusFSMesin = async (uuidSentral: string) => {
   try {
-    const response: any = await rekapService.getStatusFSMesin();
-    statusFSMesin.value = response.data;
+    const response: any = await rekapService.getStatusFSMesin(uuidSentral);
+    if (response.data !== null && response.data.length > 0) {
+      // Hapus data lama untuk sentral ini, lalu append data baru
+      const uuidsFromResponse: string[] = response.data.map((item: any) => item.uuid_mesin);
+      statusFSMesin.value = statusFSMesin.value.filter(
+        (item: any) => !uuidsFromResponse.includes(item.uuid_mesin)
+      );
+      statusFSMesin.value = [...statusFSMesin.value, ...response.data];
+    }
   } catch (error) {
     console.error('Fetch Status FS Mesin Error : ', error);
   }
 }
-const fetchStatusRealisasiSentral = async () => {
+const fetchStatusRealisasiSentral = async (uuidSentral: string) => {
   try {
-    const response: any = await rekapService.getStatusRealisasiSentral();
-    statusRealisasiSentral.value = response.data;
+    const response: any = await rekapService.getStatusRealisasiSentral(uuidSentral);
+    if (response.data !== null && response.data.length > 0) {
+      // Hapus data lama untuk sentral ini, lalu append data baru
+      const uuidsFromResponse: string[] = response.data.map((item: any) => item.kode_sentral);
+      statusRealisasiSentral.value = statusRealisasiSentral.value.filter(
+        (item: any) => !uuidsFromResponse.includes(item.kode_sentral)
+      );
+      statusRealisasiSentral.value = [...statusRealisasiSentral.value, ...response.data];
+    }
   } catch (error) {
     console.error('Fetch Status Realisasi Sentral Error : ', error);
   }
 }
-const fetchStatusRealisasiMesin = async () => {
+const fetchStatusRealisasiMesin = async (uuidSentral: string) => {
   try {
-    const response: any = await rekapService.getStatusRealisasiMesin();
-    statusRealisasiMesin.value = response.data;
+    const response: any = await rekapService.getStatusRealisasiMesin(uuidSentral);
+    if (response.data !== null && response.data.length > 0) {
+      // Hapus data lama untuk sentral ini, lalu append data baru
+      const uuidsFromResponse: string[] = response.data.map((item: any) => item.uuid_mesin);
+      statusRealisasiMesin.value = statusRealisasiMesin.value.filter(
+        (item: any) => !uuidsFromResponse.includes(item.uuid_mesin)
+      );
+      statusRealisasiMesin.value = [...statusRealisasiMesin.value, ...response.data];
+    }
   } catch (error) {
-    console.error('Fetch Status Realisasi Sentral Error : ', error);
+    console.error('Fetch Status Realisasi Mesin Error : ', error);
   }
 }
-const fetchCheckInputAsumsiSentral = async () => {
+const fetchCheckInputAsumsiSentral = async (uuidSentral: string) => {
   try {
-    const response: any = await rekapService.getCheckInputAsumsiSentral();
-    listStatusInputAsumsiSentral.value = response.data;
+    const response: any = await rekapService.getCheckInputAsumsiSentral(uuidSentral);
+    if (response.data !== null && response.data.length > 0) {
+      // Hapus data lama untuk sentral ini, lalu append data baru
+      const kodeSentralsFromResponse: Set<string> = new Set(response.data.map((item: any) => item.kode_sentral));
+      listStatusInputAsumsiSentral.value = listStatusInputAsumsiSentral.value.filter(
+        (item: any) => !kodeSentralsFromResponse.has(item.kode_sentral)
+      );
+      listStatusInputAsumsiSentral.value = [...listStatusInputAsumsiSentral.value, ...response.data];
+    }
   } catch (error) {
-    console.error('Fetch Check Input Asumsi Mesin Error : ', error);
+    console.error('Fetch Check Input Asumsi Sentral Error : ', error);
   }
 }
-const fetchCheckInputAsumsiMesin = async () => {
+const fetchCheckInputAsumsiMesin = async (uuidSentral: string) => {
   try {
-    const response: any = await rekapService.getCheckInputAsumsiMesin();
-    listStatusInputAsumsiMesin.value = response.data;
+    const response: any = await rekapService.getCheckInputAsumsiMesin(uuidSentral);
+    if (response.data !== null && response.data.length > 0) {
+      // Hapus data lama untuk sentral ini, lalu append data baru
+      const uuidMesinSet: Set<string> = new Set(response.data.map((item: any) => item.uuid_mesin));
+      listStatusInputAsumsiMesin.value = listStatusInputAsumsiMesin.value.filter(
+        (item: any) => !uuidMesinSet.has(item.uuid_mesin)
+      );
+      listStatusInputAsumsiMesin.value = [...listStatusInputAsumsiMesin.value, ...response.data];
+    }
   } catch (error) {
     console.error('Fetch Check Input Asumsi Mesin Error : ', error);
   }
@@ -1413,8 +1448,8 @@ const uploadFileEvidence = async (statusFS: any) => {
     await wait(1500)
     isEvidenceSuccess.value = false;
     isModalUnggahKertasKerjaOpen.value = false;
-    await fetchStatusRealisasiSentral();
-    await fetchStatusRealisasiMesin();
+    await fetchStatusRealisasiSentral(currentIdSentral.value);
+    await fetchStatusRealisasiMesin(currentIdSentral.value);
   } catch (error) {
     console.error('Error upload file : ', error);
   } finally {
@@ -1449,8 +1484,8 @@ const uploadFile = async () => {
     await wait(1500);
     isRekapUploadSuccess.value = false;
     isModalUnggahKertasKerjaOpen.value = false;
-    await fetchStatusRealisasiSentral();
-    await fetchStatusRealisasiMesin();
+    await fetchStatusRealisasiSentral(currentIdSentral.value);
+    await fetchStatusRealisasiMesin(currentIdSentral.value);
     selectedFileEvidence.value = null;
     if (userAuthStore.levelAlias === 'Mb*0yT%3' || userAuthStore.levelAlias === 'Xf!8qP@7' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k')) {
       router.push({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { uuid_sentral: currentIdSentral.value, tahun: tahunBerjalan.value } });
@@ -1492,8 +1527,8 @@ const uploadFileFS = async () => {
     await wait(1500)
     isFSUploadSuccess.value = false;
     isModalUnggahFSOpen.value = false;
-    await fetchStatusFSSentral();
-    await fetchStatusFSMesin();
+    await fetchStatusFSSentral(currentIdSentral.value);
+    await fetchStatusFSMesin(currentIdSentral.value);
     selectedFileEvidence.value = null
     if (userAuthStore.levelAlias === 'Mb*0yT%3') {
       router.push({ name: 'persetujuan-fs', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { uuid_sentral: currentIdSentral.value } });
@@ -1552,21 +1587,47 @@ const handleSearch = async () => {
 }
 const togglePembangkit = async (idSentral: any) => {
   isLoading.value = true;
-  console.log(idSentral, "ID SENTRAL")
   try {
     const { mesinById, sentral }: any = await fetchMesinByIdSentral(idSentral);
     if (isPembangkitOpen(idSentral)) {
       isPembangkitTabOpen.value = isPembangkitTabOpen.value.filter(
         (id) => id !== idSentral
       );
-      sentral[0].mesins.pop()
+      // Hapus data statusFSMesin, statusRealisasiMesin, dan listStatusInputAsumsiMesin untuk sentral yang ditutup
+      const uuidMesinsSentral: Set<string> = new Set(mesinById.data.map((mesin: any) => mesin.uuid_mesin));
+      statusFSMesin.value = statusFSMesin.value.filter(
+        (item: any) => !uuidMesinsSentral.has(item.uuid_mesin)
+      );
+      statusRealisasiMesin.value = statusRealisasiMesin.value.filter(
+        (item: any) => !uuidMesinsSentral.has(item.uuid_mesin)
+      );
+      listStatusInputAsumsiMesin.value = listStatusInputAsumsiMesin.value.filter(
+        (item: any) => !uuidMesinsSentral.has(item.uuid_mesin)
+      );
+      // Hapus data sentral-level untuk sentral yang ditutup
+      const kodeSentralSentral: string = sentral[0]?.kode_sentral ?? '';
+      if (kodeSentralSentral) {
+        statusRealisasiSentral.value = statusRealisasiSentral.value.filter(
+          (item: any) => item.kode_sentral !== kodeSentralSentral
+        );
+        listStatusInputAsumsiSentral.value = listStatusInputAsumsiSentral.value.filter(
+          (item: any) => item.kode_sentral !== kodeSentralSentral
+        );
+      }
+      sentral[0].mesins.pop();
     } else {
+      await fetchStatusFSSentral(idSentral);
+      await fetchStatusFSMesin(idSentral);
+      await fetchStatusRealisasiSentral(idSentral);
+      await fetchStatusRealisasiMesin(idSentral);
+      await fetchCheckInputAsumsiSentral(idSentral);
+      await fetchCheckInputAsumsiMesin(idSentral);
       isPembangkitTabOpen.value.push(idSentral);
       const finalMesin = mesinById.data.map((mesin: any) => {
         return {
           ...mesin,
-          status_fs: statusFSMesin.value.find((status: any) => status.id_mesin === mesin.id_mesin)?.status,
-          status_realisasi: statusRealisasiMesin.value.find((status: any) => status.id_mesin === mesin.id_mesin)?.status,
+          status_fs: statusFSMesin.value.find((status: any) => status.uuid_mesin === mesin.uuid_mesin)?.status,
+          status_realisasi: statusRealisasiMesin.value.find((status: any) => status.uuid_mesin === mesin.uuid_mesin)?.status,
         }
       });
       sentral[0].mesins.push(finalMesin);
@@ -1796,10 +1857,6 @@ onUnmounted(() => {
 onMounted(async () => {
   isLoading.value = true;
   encryptStorageRef = await encryptStoragePromise;
-  await fetchStatusFSSentral();
-  await fetchStatusFSMesin();
-  await fetchStatusRealisasiSentral();
-  await fetchStatusRealisasiMesin();
   await fetchSentralData();
   await fetchSuggestionSentral();
   await fetchPengelolaData();
@@ -1811,8 +1868,6 @@ onMounted(async () => {
   await fetchComboIRR();
   await fetchNilaiSentral();
   await fetchNilaiMesin();
-  await fetchCheckInputAsumsiSentral();
-  await fetchCheckInputAsumsiMesin();
   isLoading.value = false;
 });
 

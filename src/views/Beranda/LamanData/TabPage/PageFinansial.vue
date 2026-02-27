@@ -3,7 +3,8 @@
   <div class="space-y-5">
     <div class="justify-between md:flex">
       <SearchBox class="w-60" placeholder="Cari sentral..." @on-key-enter="fetchDataFinansial()"
-        @on-click-submit="fetchDataFinansial()" @on-input="fetchDataFinansial()" v-model="searchQ" />
+        @on-click-submit="fetchDataFinansial()" @on-input="handleSearch" v-model="searchQ"
+        :disabled="isSearchDisabled" />
       <div class="flex items-center">
         <p class="mr-3 text-sm font-semibold text-labelColor">Periode</p>
         <VueDatePicker class="mr-3 date-picker" v-model="yearPicked" teleport :year-range="periodeTahun"
@@ -101,20 +102,22 @@
               </div>
             </td>
           </tr>
-          <template v-if="isUpOpen(pengelola.kode_pengelola)" v-for="pembangkit in pengelola.pembangkits"
-            :key="pembangkit.uuid_sentral">
+          <template v-if="isUpOpen(pengelola.kode_pengelola)"
+            v-for="(pembangkit, pembangkitIndex) in pengelola.pembangkits" :key="pembangkitIndex">
             <tr class="text-xs cursor-pointer bg-strokeColor bg-opacity-20 hover:bg-opacity-60"
-              @click="togglePembangkit(pembangkit.uuid_sentral)">
+              @click="togglePembangkit(`${pengelola.kode_pengelola}_${pembangkitIndex}`)">
               <td id="pembangkit" class="cursor-pointer">
                 <div class="flex flex-row items-center space-x-2">
-                  <svg v-if="!isPembangkitOpen(pembangkit.uuid_sentral) && pembangkit.mesins.length !== 0" width="24"
-                    height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg
+                    v-if="!isPembangkitOpen(`${pengelola.kode_pengelola}_${pembangkitIndex}`) && pembangkit.mesins.length !== 0"
+                    width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect x="24" y="24" width="24" height="24" rx="6" transform="rotate(-180 24 24)" fill="#E5E7E9" />
                     <path fill-rule="evenodd" clip-rule="evenodd"
                       d="M12.4419 14.0044C12.1979 14.2485 11.8021 14.2485 11.5581 14.0044L8.43306 10.8794C8.18898 10.6354 8.18898 10.2396 8.43306 9.99556C8.67714 9.75148 9.07286 9.75148 9.31694 9.99556L12 12.6786L14.6831 9.99556C14.9271 9.75148 15.3229 9.75148 15.5669 9.99556C15.811 10.2396 15.811 10.6354 15.5669 10.8794L12.4419 14.0044Z"
                       fill="#333333" />
                   </svg>
-                  <svg v-else-if="isPembangkitOpen(pembangkit.uuid_sentral) && pembangkit.mesins.length !== 0"
+                  <svg
+                    v-else-if="isPembangkitOpen(`${pengelola.kode_pengelola}_${pembangkitIndex}`) && pembangkit.mesins.length !== 0"
                     width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect width="24" height="24" rx="6" fill="#E5E7E9" />
                     <path fill-rule="evenodd" clip-rule="evenodd"
@@ -133,7 +136,7 @@
               <td class="text-end"></td>
               <td class="text-end">{{ globalFormat.formatRupiah(pembangkit.total_nilai_asset / 1000000) }}</td>
             </tr>
-            <tr class="text-xs" v-if="isPembangkitOpen(pembangkit.uuid_sentral) &&
+            <tr class="text-xs" v-if="isPembangkitOpen(`${pengelola.kode_pengelola}_${pembangkitIndex}`) &&
               isUpOpen(pengelola.kode_pengelola)" v-for="mesinItem in pembangkit.mesins" :key="mesinItem.uuid_mesin">
               <td id="mesin">
                 {{ mesinItem.mesin }}
@@ -190,7 +193,7 @@ const date = new Date();
 const tahunBerjalan = date.getFullYear()
 const finansialData = ref<PengelolaItem[]>([]);
 const isUpTabOpen = ref<string[]>([]);
-const isPembangkitTabOpen = ref<number[]>([]);
+const isPembangkitTabOpen = ref<string[]>([]);
 const isLoading = ref();
 const currentPage = ref(1);
 const totalPages = ref(0);
@@ -199,6 +202,8 @@ const totalRecords = ref();
 const yearPicked = ref<number>(tahunBerjalan);
 const periodeTahun = ref<Array<number>>([]);
 const searchQ = ref<string>("");
+const isSearchDisabled = ref<boolean>(false);
+let debounceTimeout: any = null;
 
 interface PengelolaItem {
   meta: any
@@ -209,7 +214,7 @@ interface PengelolaItem {
   pembangkits: PembangkitItem[]
 }
 interface PembangkitItem {
-  uuid_sentral: number
+  uuid_sentral: string
   kode_sentral: string
   sentral: string
   mesins: Array<any>
@@ -226,6 +231,7 @@ interface PembangkitItem {
 const fetchDataFinansial = async () => {
   try {
     isLoading.value = true;
+    isSearchDisabled.value = true;
     const response: PengelolaItem = await lamanService.getDataFinansial(
       searchQ.value, yearPicked.value, currentPage.value, pageLimit.value
     );
@@ -236,8 +242,11 @@ const fetchDataFinansial = async () => {
     totalRecords.value = meta.totalRecords;
     pageLimit.value = meta.limit;
     isLoading.value = false;
+    isSearchDisabled.value = false;
   } catch (error) {
     console.error(error);
+    isLoading.value = false;
+    isSearchDisabled.value = false;
   }
 };
 const fetchTahunSelected = async () => {
@@ -265,7 +274,7 @@ const toggleUp = (itemKode: string) => {
 const isUpOpen = (itemKode: string) => {
   return isUpTabOpen.value.includes(itemKode)
 };
-const togglePembangkit = (itemId: number) => {
+const togglePembangkit = (itemId: string) => {
   if (isPembangkitOpen(itemId)) {
     isPembangkitTabOpen.value = isPembangkitTabOpen.value.filter(
       (Id) => Id !== itemId
@@ -274,7 +283,7 @@ const togglePembangkit = (itemId: number) => {
     isPembangkitTabOpen.value.push(itemId);
   }
 }
-const isPembangkitOpen = (itemId: number) => {
+const isPembangkitOpen = (itemId: string) => {
   return isPembangkitTabOpen.value.includes(itemId);
 };
 
@@ -297,8 +306,16 @@ const handleExport = async () => {
     isLoading.value = false
   } catch (error) {
     console.error('Handle Download Template Rekap Error : ', error);
+    isLoading.value = false;
   }
 };
+
+const handleSearch = () => {
+  clearTimeout(debounceTimeout);
+  debounceTimeout = setTimeout(() => {
+    fetchDataFinansial();
+  }, 500);
+}
 
 watch(store, async (store) => {
   if (store.currentTab === 'Finansial') {

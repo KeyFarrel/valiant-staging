@@ -12,7 +12,7 @@
   </ModalWrapper>
   <div class="p-6 space-y-5 bg-white rounded-lg">
     <div class="flex items-center justify-between">
-      <SearchBox class="w-72" :placeholder="'Cari nama pengguna...'" @on-key-enter="fetchData" v-model="search"
+      <SearchBox class="w-72" :placeholder="'Cari nama pengguna...'" :disabled="isLoading" @on-key-enter="fetchData" v-model="search"
         @on-click-submit="fetchData" @on-input="handleSearch" />
       <button @click="showModalCreate = !showModalCreate" type="button"
         class="flex justify-center items-center px-3 py-2 rounded-lg text-sm text-white bg-[#0099AD] space-x-2 duration-300 active:outline-none hover:bg-[#007E8F] active:ring active:ring-[#9ddee7]">

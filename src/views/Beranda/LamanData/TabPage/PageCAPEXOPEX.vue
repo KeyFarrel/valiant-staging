@@ -3,7 +3,7 @@
   <div class="space-y-5">
     <div class="flex flex-row items-center justify-between">
       <SearchBox class="w-60" placeholder="Cari sentral..." @on-key-enter="fetchDataAnggaran"
-        @on-click-submit="fetchDataAnggaran" v-model="searchQ" @on-input="fetchDataAnggaran" />
+        @on-click-submit="fetchDataAnggaran" v-model="searchQ" @on-input="handleSearch" :disabled="isSearchDisabled" />
       <div class="flex flex-row items-center space-x-3">
         <div class="flex flex-row items-center space-x-3">
           <label class="text-sm font-semibold text-labelColor" for="">Tahun</label>
@@ -78,11 +78,11 @@
         <template v-for="(pengelola, pengelolaIndex) in dataAnggaran" :key="pengelolaIndex" v-if="dataAnggaran">
           <tr class="text-xs bg-strokeColor bg-opacity-30 hover:bg-strokeColor hover:bg-opacity-60"
             :class="{ 'hover:bg-opacity-30': pengelola.pembangkits.length === 0, 'cursor-pointer': pengelola.pembangkits.length !== 0 }"
-            @click="toggleRow(pengelola.id_pengelola)">
+            @click="toggleRow(pengelola.kode_pengelola)">
             <td>
               <div class="flex flex-row items-center space-x-2" :class="{ 'ml-8': pengelola.pembangkits.length === 0 }">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                  v-if="!isRowOpen(pengelola.id_pengelola) && pengelola.pembangkits.length !== 0">
+                  v-if="!isRowOpen(pengelola.kode_pengelola) && pengelola.pembangkits.length !== 0">
                   <rect width="24" height="24" rx="6" fill="#E5E7E9" />
                   <path fill-rule="evenodd" clip-rule="evenodd"
                     d="M12.4419 14.0044C12.1979 14.2485 11.8021 14.2485 11.5581 14.0044L8.43306 10.8794C8.18898 10.6354 8.18898 10.2396 8.43306 9.99556C8.67714 9.75148 9.07286 9.75148 9.31694 9.99556L12 12.6786L14.6831 9.99556C14.9271 9.75148 15.3229 9.75148 15.5669 9.99556C15.811 10.2396 15.811 10.6354 15.5669 10.8794L12.4419 14.0044Z"
@@ -105,21 +105,21 @@
             <td class="text-end">{{ globalFormat.formatRupiah(pengelola.cost_component_c) }}</td>
             <td class="text-end">{{ globalFormat.formatRupiah(pengelola.cost_component_d) }}</td>
           </tr>
-          <template v-if="isRowOpen(pengelola.id_pengelola)"
+          <template v-if="isRowOpen(pengelola.kode_pengelola)"
             v-for="(pembangkit, pembangkitIndex) in pengelola.pembangkits" :key="pembangkitIndex">
             <tr class="text-xs cursor-pointer bg-strokeColor bg-opacity-20 hover:bg-opacity-60"
-              @click="toggleRow(pembangkit.uuid_sentral)">
+              @click="togglePembangkit(`${pengelola.kode_pengelola}_${pembangkitIndex}`)">
               <td id="pembangkit">
                 <div class="flex flex-row items-center space-x-2">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                    v-if="!isRowOpen(pembangkit.uuid_sentral) && pembangkit.mesins.length !== 0">
+                    v-if="!isPembangkitOpen(`${pengelola.kode_pengelola}_${pembangkitIndex}`) && pembangkit.mesins.length !== 0">
                     <rect width="24" height="24" rx="6" fill="#E5E7E9" />
                     <path fill-rule="evenodd" clip-rule="evenodd"
                       d="M12.4419 14.0044C12.1979 14.2485 11.8021 14.2485 11.5581 14.0044L8.43306 10.8794C8.18898 10.6354 8.18898 10.2396 8.43306 9.99556C8.67714 9.75148 9.07286 9.75148 9.31694 9.99556L12 12.6786L14.6831 9.99556C14.9271 9.75148 15.3229 9.75148 15.5669 9.99556C15.811 10.2396 15.811 10.6354 15.5669 10.8794L12.4419 14.0044Z"
                       fill="#333333" />
                   </svg>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                    v-else-if="isRowOpen(pembangkit.uuid_sentral) && pembangkit.mesins.length !== 0">
+                    v-else-if="isPembangkitOpen(`${pengelola.kode_pengelola}_${pembangkitIndex}`) && pembangkit.mesins.length !== 0">
                     <rect width="24" height="24" rx="6" fill="#E5E7E9" />
                     <path fill-rule="evenodd" clip-rule="evenodd"
                       d="M11.5581 9.99556C11.8021 9.75148 12.1979 9.75148 12.4419 9.99556L15.5669 13.1206C15.811 13.3646 15.811 13.7604 15.5669 14.0044C15.3229 14.2485 14.9271 14.2485 14.6831 14.0044L12 11.3214L9.31694 14.0044C9.07286 14.2485 8.67714 14.2485 8.43306 14.0044C8.18898 13.7604 8.18898 13.3646 8.43306 13.1206L11.5581 9.99556Z"
@@ -135,8 +135,8 @@
               <td class="text-end">{{ globalFormat.formatRupiah(pembangkit.cost_component_c) }}</td>
               <td class="text-end">{{ globalFormat.formatRupiah(pembangkit.cost_component_d) }}</td>
             </tr>
-            <template v-if="isRowOpen(pembangkit.uuid_sentral)" v-for="(mesin, mesinIndex) in pembangkit.mesins"
-              :key="mesinIndex">
+            <template v-if="isPembangkitOpen(`${pengelola.kode_pengelola}_${pembangkitIndex}`)"
+              v-for="(mesin, mesinIndex) in pembangkit.mesins" :key="mesinIndex">
               <tr class="text-xs bg-strokeColor bg-opacity-10">
                 <td id="mesin">{{ mesin.mesin }}</td>
                 <td class="text-center">{{ pembangkit.kode_jenis_pembangkit }}</td>
@@ -185,13 +185,16 @@ import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
 const tahunDari = ref<any>();
 const tahunSampai = ref<any>();
 const dataAnggaran = ref<any[]>([]);
-const isRowTabOpen = ref<number[]>([]);
+const isRowTabOpen = ref<string[]>([]);
+const isPembangkitTabOpen = ref<string[]>([]);
 const isLoading = ref();
 const yearRangePicked = ref<number[]>([]);
 const yearRange = ref<number[]>([]);
 const periodeTahun = ref<any[]>([]);
 const tahunBerjalan = new Date().getFullYear();
 const searchQ = ref<string>("");
+const isSearchDisabled = ref<boolean>(false);
+let debounceTimeout: any = null;
 
 const handleYearRangePicked = async (modelData: Array<number>) => {
   yearRangePicked.value = modelData;
@@ -202,8 +205,7 @@ const handleYearRangePicked = async (modelData: Array<number>) => {
   await fetchDataAnggaran();
   isLoading.value = false;
 }
-const toggleRow = (itemId: number) => {
-  console.log(yearRangePicked.value);
+const toggleRow = (itemId: string) => {
   if (isRowOpen(itemId)) {
     isRowTabOpen.value = isRowTabOpen.value.filter(
       (id) => id !== itemId
@@ -212,8 +214,20 @@ const toggleRow = (itemId: number) => {
     isRowTabOpen.value.push(itemId);
   }
 };
-const isRowOpen = (itemId: number) => {
+const isRowOpen = (itemId: string) => {
   return isRowTabOpen.value.includes(itemId);
+};
+const togglePembangkit = (itemId: string) => {
+  if (isPembangkitOpen(itemId)) {
+    isPembangkitTabOpen.value = isPembangkitTabOpen.value.filter(
+      (id) => id !== itemId
+    );
+  } else {
+    isPembangkitTabOpen.value.push(itemId);
+  }
+};
+const isPembangkitOpen = (itemId: string) => {
+  return isPembangkitTabOpen.value.includes(itemId);
 };
 const fetchPeriodeTahun = async () => {
   try {
@@ -231,12 +245,16 @@ const fetchPeriodeTahun = async () => {
 const fetchDataAnggaran = async () => {
   try {
     isLoading.value = true;
+    isSearchDisabled.value = true;
     const response: any = await lamanService.getDataAnggaran(searchQ.value, tahunSampai.value, tahunDari.value);
     const filteredResponse = response.data.filter((val: any) => val.pembangkits.length > 0);
     dataAnggaran.value = filteredResponse;
     isLoading.value = false;
+    isSearchDisabled.value = false;
   } catch (error) {
     console.error('Fetch Data Anggaran Error : ', error);
+    isLoading.value = false;
+    isSearchDisabled.value = false;
   }
 }
 const handleExport = async () => {
@@ -257,7 +275,15 @@ const handleExport = async () => {
     isLoading.value = false;
   } catch (error) {
     console.error('Handle Download Template Rekap Error : ', error);
+    isLoading.value = false;
   }
+}
+
+const handleSearch = () => {
+  clearTimeout(debounceTimeout);
+  debounceTimeout = setTimeout(() => {
+    fetchDataAnggaran();
+  }, 500);
 }
 
 onMounted(async () => {

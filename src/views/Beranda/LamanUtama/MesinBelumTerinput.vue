@@ -2,7 +2,7 @@
   <Loading v-if="isLoading" />
   <div class="p-6 space-y-5 bg-white rounded-lg">
     <SearchBox class="w-72" v-model="searchQuery" @on-click-submit="handleSearch" @on-key-enter="handleSearch"
-      @on-input="handleSearch" />
+      @on-input="handleSearch" :disabled="isSearchDisabled" />
     <div class="whitespace-nowrap">
       <ul class="flex w-full overflow-x-auto">
         <li v-for="(pengelola, pengelolaIndex) in pengelolaData" :key="pengelolaIndex"
@@ -136,10 +136,12 @@ const navigation = ref<{
   totalRecords: 0,
   limit: 10
 });
+const isSearchDisabled = ref<boolean>(false);
 let debounceTimeout: any = null;
 
 const fetchMesinBelumInput = async () => {
   isLoading.value = true;
+  isSearchDisabled.value = true;
   try {
     const response: any = await lamanService.getMesinBelumInput(navigation.value.currentPage, navigation.value.limit, selectedPengelola.value, searchQuery.value);
     mesinBelumTerinput.value = response.data;
@@ -150,6 +152,7 @@ const fetchMesinBelumInput = async () => {
     throw error;
   } finally {
     isLoading.value = false;
+    isSearchDisabled.value = false
   }
 };
 

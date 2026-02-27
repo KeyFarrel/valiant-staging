@@ -3,31 +3,31 @@
   <!-- Grafik RNFA -->
   <template v-else-if="itemsCategory.length !== 0">
     <GraphicRnfa_Ebitda title="Grafik RNFA - EBITDA MARGIN" :items-pembangkit="itemsCategory" :year-range="yearRange"
-      :items-daya-mampu="childDmn" />
+      :items-daya-mampu="childDmn" :initial-pembangkit="initialPembangkit" />
     <!-- Grafik CAPEX - EAF -->
     <GraphicCapex_Eaf title="Grafik CAPEX - EAF" :items-pembangkit="itemsCategory" :year-range="yearRange"
-      :items-daya-mampu="childDmn" />
+      :items-daya-mampu="childDmn" :initial-pembangkit="initialPembangkit" />
     <!-- Grafik CAPEX - CF -->
     <GraphicCapex_Ncf title="Grafik CAPEX - NCF" :items-pembangkit="itemsCategory" :year-range="yearRange"
-      :items-daya-mampu="childDmn" />
+      :items-daya-mampu="childDmn" :initial-pembangkit="initialPembangkit" />
     <!-- Grafik CAPEX - EFOR -->
     <GraphicCapex_Efor title="Grafik CAPEX - EFOR" :items-pembangkit="itemsCategory" :year-range="yearRange"
-      :items-daya-mampu="childDmn" />
+      :items-daya-mampu="childDmn" :initial-pembangkit="initialPembangkit" />
     <!-- Grafik B+D Daya Terpasang -->
     <GraphicOpexBd title="Grafik OPEX B+D - Daya Terpasang" :items-pembangkit="itemsCategory" :year-range="yearRange"
-      :items-daya-mampu="childDmn" />
+      :items-daya-mampu="childDmn" :initial-pembangkit="initialPembangkit" />
     <!-- Grafik NPHR -->
     <GraphicOpexc_Nphr title="Grafik OPEX C - NPHR" :items-pembangkit="itemsCategory" :year-range="yearRange"
-      :items-daya-mampu="childDmn" />
+      :items-daya-mampu="childDmn" :initial-pembangkit="initialPembangkit" />
     <!-- Grafik Biaya Komponen A -->
     <GraphicComponentA title="Grafik Biaya Komponen A" :items-pembangkit="itemsCategory" :items-daya="itemsDaya"
-      :year-range="yearRange" :items-daya-mampu="childDmn" />
+      :year-range="yearRange" :items-daya-mampu="childDmn" :initial-pembangkit="initialPembangkit" />
     <!-- Grafik Biaya Komponen B+D -->
     <GraphicComponentBD title="Grafik Biaya Komponen B + D" :items-pembangkit="itemsCategory" :items-daya="itemsDaya"
-      :year-range="yearRange" :items-daya-mampu="childDmn" />
+      :year-range="yearRange" :items-daya-mampu="childDmn" :initial-pembangkit="initialPembangkit" />
     <!-- Grafik Biaya Komponen C -->
     <GraphicComponentC title="Grafik Biaya Komponen C" :items-pembangkit="itemsCategory" :items-daya="itemsDaya"
-      :year-range="yearRange" :items-daya-mampu="childDmn" />
+      :year-range="yearRange" :items-daya-mampu="childDmn" :initial-pembangkit="initialPembangkit" />
   </template>
 </template>
 
@@ -50,6 +50,7 @@ const grafikService = new GrafikService();
 const lamanService = new LamanService();
 const isLoading = ref();
 const itemsCategory = ref<{ id: string; name: string; power?: string }[]>([])
+const initialPembangkit = ref<string[]>([])
 const itemsDaya = ref<{ id: string; daya: string; satuan: string }[]>([])
 const itemsDmn = ref<{
   [x: string]: any; id: string; name: string;
@@ -60,8 +61,14 @@ const yearRange = ref<number[]>([])
 async function getCategory() {
   try {
     isLoading.value = true
-    const response: any = await grafikService.getComboKategoriPembangkit()
+    const [response, pembangkitResponse]: any[] = await Promise.all([
+      grafikService.getComboKategoriPembangkit(),
+      grafikService.getInitialPembangkit(),
+    ])
     await grafikService.getFilterDaya()
+    if (pembangkitResponse?.data) {
+      initialPembangkit.value = pembangkitResponse.data.map((item: any) => item.kode_jenis_pembangkit)
+    }
     if (response.success) {
       itemsCategory.value = []
       if (response.data.length > 0) {
@@ -83,6 +90,12 @@ async function getCategory() {
       }
     }
     itemsCategory.value.reverse()
+
+    // If PLTU is not in the category list, fall back to the first available category as default
+    const hasPLTU = itemsCategory.value.some(item => item.id === 'PLTU')
+    if (!hasPLTU && itemsCategory.value.length > 0) {
+      initialPembangkit.value = [itemsCategory.value[0].id]
+    }
   } catch (e) {
     console.log("Fetch items filter Kategori Error : " + e)
   } finally {

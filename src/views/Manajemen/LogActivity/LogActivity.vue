@@ -3,7 +3,8 @@
   <div class="p-6 space-y-5 bg-white rounded-lg">
     <div class="flex items-center justify-between">
       <div class="flex space-x-4">
-        <SearchBox placeholder="Cari uuid..." class="w-72" @on-input="handleSearch" v-model="filterValue.searchValue" />
+        <SearchBox placeholder="Cari uuid..." class="w-72" @on-input="handleSearch" v-model="filterValue.searchValue"
+          :disabled="isSearchDisabled" />
         <div class="relative flex flex-col" ref="dropdownContainer">
           <button
             class="relative flex items-center h-auto px-3 py-[7px] text-base text-gray-400 duration-300 border border-gray-300 rounded-lg hover:text-white hover:border-primaryColor hover:bg-primaryColor"
@@ -241,6 +242,7 @@ const dropdownContainer = ref<any>(null);
 const showModalFilter = ref<boolean>(false);
 const startDate = ref<any>();
 const endDate = ref<any>();
+const isSearchDisabled = ref<boolean>(false);
 const filterValue = ref<{
   selectedActivity: string[]
   selectedDate: any
@@ -417,6 +419,7 @@ const handleChangeDate = () => {
 const fetchLogActivity = async () => {
   try {
     isLoading.value = true;
+    isSearchDisabled.value = true;
     const formattedStartDate = `${filterValue.value.selectedDate[0].getFullYear()}-${String(filterValue.value.selectedDate[0].getMonth() + 1).padStart(2, '0')}-${String(filterValue.value.selectedDate[0].getDate()).padStart(2, '0')}`;
     const formattedEndDate = `${filterValue.value.selectedDate[1].getFullYear()}-${String(filterValue.value.selectedDate[1].getMonth() + 1).padStart(2, '0')}-${String(filterValue.value.selectedDate[1].getDate()).padStart(2, '0')}`;
     console.log(formattedStartDate);
@@ -439,9 +442,11 @@ const fetchLogActivity = async () => {
     navigation.value.totalRecords = response.meta.totalRecords
     navigation.value.limit = response.meta.limit;
     isLoading.value = false;
+    isSearchDisabled.value = false;
   } catch (error) {
     console.error('Fetch Log Error : ', error);
     isLoading.value = false;
+    isSearchDisabled.value = false;
   }
 };
 

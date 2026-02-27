@@ -7,7 +7,7 @@ import PageCAPEXOPEX from "@/views/Beranda/LamanData/TabPage/PageCAPEXOPEX.vue";
 </script>
 
 <template>
-  <div class="bg-white px-6 rounded-lg min-h-full flex flex-col pt-2">
+  <div class="flex flex-col min-h-full px-6 pt-2 bg-white rounded-lg">
     <TabsWrapper :laman-data="true" :is-lihat-grafik="false" class="my-3 ml-1">
       <TabItem title="CAPEX - OPEX">
         <PageCAPEXOPEX />

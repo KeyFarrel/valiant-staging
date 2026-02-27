@@ -53,7 +53,7 @@ function removeVersionSignatures(): Plugin {
 
       return html.replace(/<head>/, "<head>\n  <!-- Core JS 0.0.0 -->");
     },
-    generateBundle(options, bundle) {
+    generateBundle(_options, bundle) {
       Object.keys(bundle).forEach((fileName) => {
         const asset = bundle[fileName];
         if (fileName.endsWith(".js") && "source" in asset) {
@@ -76,7 +76,7 @@ function removeVersionSignatures(): Plugin {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd());
 
-  const exposedEnvs = Object.entries(env).reduce((acc, [key, val]) => {
+  const exposedEnvs = Object.entries(env).reduce<Record<string, string>>((acc, [key, val]) => {
     if (key.startsWith("VITE_")) {
       acc[`import.meta.env.${key}`] = JSON.stringify(val);
     }
@@ -163,7 +163,37 @@ export default defineConfig(({ mode }) => {
         output: {
           entryFileNames: "assets/[hash].js",
           chunkFileNames: "assets/[hash].js",
-          assetFileNames: "assets/[hash].[ext]"
+          assetFileNames: "assets/[hash].[ext]",
+          manualChunks(id) {
+            if (id.includes("node_modules/vue") || id.includes("node_modules/@vue")) {
+              return "vendor-vue";
+            }
+            if (id.includes("node_modules/pinia")) {
+              return "vendor-pinia";
+            }
+            if (id.includes("node_modules/axios")) {
+              return "vendor-axios";
+            }
+            if (id.includes("node_modules/crypto-js")) {
+              return "vendor-crypto";
+            }
+            if (
+              id.includes("node_modules/leaflet") ||
+              id.includes("node_modules/@mapbox") ||
+              id.includes("node_modules/maplibre")
+            ) {
+              return "vendor-map";
+            }
+            if (
+              id.includes("node_modules/echarts") ||
+              id.includes("node_modules/zrender")
+            ) {
+              return "vendor-charts";
+            }
+            if (id.includes("node_modules")) {
+              return "vendor-misc";
+            }
+          },
         },
       },
 
@@ -239,7 +269,7 @@ export default defineConfig(({ mode }) => {
             transformIndexHtml(html) {
               return html.replace(/<!--[\s\S]*?-->/g, "");
             },
-            generateBundle(options, bundle) {
+            generateBundle(_options, bundle) {
               Object.keys(bundle).forEach((fileName) => {
                 const asset = bundle[fileName];
                 if (fileName.endsWith(".js") && "source" in asset) {
@@ -276,8 +306,8 @@ export default defineConfig(({ mode }) => {
               });
             },
           }
-        : null,
-    ].filter(Boolean),
+        : undefined,
+    ].filter((p): p is NonNullable<typeof p> => p != null),
 
     resolve: {
       extensions: [

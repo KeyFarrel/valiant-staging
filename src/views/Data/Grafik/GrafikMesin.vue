@@ -1,7 +1,21 @@
 <template>
-  <Loading v-if="isLoading" />
   <div v-if="stored.currentTabMesin === 'WLC (Realisasi & Proyeksi)'">
-    <div v-if="statusApprove === 'Draft'" class="my-20 text-center">
+    <!-- Shimmer while status is loading -->
+    <div v-if="isLoadingStatus" class="space-y-3 px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <ShimmerLoading class="h-7 w-64" />
+          <ShimmerLoading class="h-6 w-24" />
+        </div>
+        <ShimmerLoading class="h-10 w-28 rounded-lg" />
+      </div>
+      <div class="flex space-x-4 ml-10">
+        <ShimmerLoading class="h-5 w-16" />
+        <ShimmerLoading class="h-5 w-28" />
+      </div>
+      <ShimmerLoading class="h-[450px] w-full" />
+    </div>
+    <div v-else-if="statusApprove === 'Draft'" class="my-20 text-center">
       <DraftGrafik />
     </div>
     <div v-else-if="statusApprove === 'Menunggu Persetujuan T1'" class="my-20 text-center">
@@ -68,7 +82,8 @@
         </ul>
       </div>
       <div v-if="tabGraphic === 'Semua'">
-        <div v-if="dataWLCAllMesin === null">
+        <ShimmerLoading v-if="isLoadingWlcAll" class="h-[450px] w-full mt-2" />
+        <div v-else-if="dataWLCAllMesin === null">
           <Empty />
         </div>
         <div v-else>
@@ -77,7 +92,8 @@
         </div>
       </div>
       <div v-else-if="tabGraphic === 'Biaya Komponen'">
-        <div v-if="dataWLCKomMesin === null">
+        <ShimmerLoading v-if="isLoadingWlcKom" class="h-[450px] w-full mt-2" />
+        <div v-else-if="dataWLCKomMesin === null">
           <Empty />
         </div>
         <div v-else>
@@ -88,7 +104,21 @@
     </div>
   </div>
   <div v-else-if="stored.currentTabMesin === 'Planning / Feasibility Study'">
-    <div v-if="statusApprovePlanning === 'Draft'" class="my-20 text-center">
+    <div v-if="isLoadingStatus" class="space-y-3 px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <ShimmerLoading class="h-7 w-52" />
+          <ShimmerLoading class="h-6 w-24" />
+        </div>
+        <ShimmerLoading class="h-10 w-28 rounded-lg" />
+      </div>
+      <div class="flex space-x-4 ml-10">
+        <ShimmerLoading class="h-5 w-16" />
+        <ShimmerLoading class="h-5 w-28" />
+      </div>
+      <ShimmerLoading class="h-[450px] w-full" />
+    </div>
+    <div v-else-if="statusApprovePlanning === 'Draft'" class="my-20 text-center">
       <DraftGrafik />
     </div>
     <div v-else-if="statusApprovePlanning === 'Menunggu Persetujuan T1'" class="my-20 text-center">
@@ -170,8 +200,17 @@
     </div>
   </div>
   <div v-else-if="stored.currentTabMesin === 'Planning & Realisasi + Proyeksi'">
+    <div v-if="isLoadingStatus" class="space-y-3 px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <ShimmerLoading class="h-7 w-72" />
+        </div>
+        <ShimmerLoading class="h-10 w-28 rounded-lg" />
+      </div>
+      <ShimmerLoading class="h-[450px] w-full" />
+    </div>
     <div
-      v-if="statusApprove != 'Disetujui' && statusApprove != 'Data sudah update' && statusApprovePlanning != 'Disetujui' && statusApprovePlanning != 'Data sudah update'"
+      v-else-if="statusApprove != 'Disetujui' && statusApprove != 'Data sudah update' && statusApprovePlanning != 'Disetujui' && statusApprovePlanning != 'Data sudah update'"
       class="my-20 text-center">
       <Empty />
     </div>
@@ -220,8 +259,17 @@
   </div>
   <div v-else-if="stored.currentTabMesin === 'Planning vs Realisasi s/d Tahun Berjalan'
   ">
+    <div v-if="isLoadingStatus" class="space-y-3 px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <ShimmerLoading class="h-7 w-80" />
+        </div>
+        <ShimmerLoading class="h-10 w-28 rounded-lg" />
+      </div>
+      <ShimmerLoading class="h-[450px] w-full" />
+    </div>
     <div
-      v-if="statusApprove != 'Disetujui' && statusApprove != 'Data sudah update' && statusApprovePlanning != 'Disetujui' && statusApprovePlanning != 'Data sudah update'"
+      v-else-if="statusApprove != 'Disetujui' && statusApprove != 'Data sudah update' && statusApprovePlanning != 'Disetujui' && statusApprovePlanning != 'Data sudah update'"
       class="my-20 text-center">
       <Empty />
     </div>
@@ -600,8 +648,9 @@ import GrafikService from "@/services/grafik-service";
 import GlobalFormat from "@/services/format/global-format";
 import Empty from "@/components/ui/EmptyData.vue";
 import ModalWrapper from "@/components/ui/ModalWrapper.vue";
-import Loading from '@/components/ui/LoadingSpinner.vue';
+import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
 import StatusGrafik from "@/components/Status/StatusGrafik.vue";
+import { fetchSharedPlanningMesin, fetchSharedRealisasiProyeksiMesin, invalidateMesinCache } from "@/composables/useMesinSharedData";
 import DraftGrafik from '@/components/Status/Grafik/DraftGrafik.vue';
 import WaitingGrafikT1 from '@/components/Status/Grafik/WaitingGrafikT1.vue';
 import WaitingGrafikT2 from '@/components/Status/Grafik/WaitingGrafikT2.vue';
@@ -639,9 +688,10 @@ const showModalPlan = ref(false);
 const showModalPlanKom = ref(false);
 const showModalPRP = ref(false);
 const showModalLastY = ref(false);
-const tahunBerjalan = new Date().getFullYear();
 
-const isLoading = ref(false);
+const isLoadingStatus = ref(false);
+const isLoadingWlcAll = ref(false);
+const isLoadingWlcKom = ref(false);
 const props = defineProps<Mesin>();
 const tahunData = computed(() => props.tahunData);
 const tabGraphic = ref("Semua");
@@ -649,6 +699,77 @@ const tabGraphicFS = ref("Semua");
 const statusApprove = ref<any>('');
 const statusApprovePlanning = ref<any>('');
 let encryptStorageRef: any = null;
+
+// Track which data sections have been fetched to avoid re-fetching
+const hasFetched = ref({
+  wlcAll: false,
+  wlcKom: false,
+  plan: false,
+  planKom: false,
+  prp: false,
+  prpLastYear: false,
+  status: false,
+});
+
+const resetHasFetched = () => {
+  hasFetched.value = {
+    wlcAll: false,
+    wlcKom: false,
+    plan: false,
+    planKom: false,
+    prp: false,
+    prpLastYear: false,
+    status: false,
+  };
+};
+
+// Fetch only data relevant to the current active tab
+const fetchDataForCurrentTab = async () => {
+  const currentTab = stored.currentTabMesin;
+  const promises = [];
+
+  // Always fetch status if not yet fetched (fire in parallel with chart data)
+  if (!hasFetched.value.status) {
+    isLoadingStatus.value = true;
+    promises.push(
+      Promise.all([
+        fetchRealisasiProyeksiMesin(),
+        fetchPlanningMesin(),
+      ]).then(() => {
+        hasFetched.value.status = true;
+        isLoadingStatus.value = false;
+      })
+    );
+  }
+
+  if (currentTab === 'WLC (Realisasi & Proyeksi)') {
+    if (!hasFetched.value.wlcAll) {
+      isLoadingWlcAll.value = true;
+      promises.push(fetchGrafikWLCAllMesin().then(() => { hasFetched.value.wlcAll = true; isLoadingWlcAll.value = false; }));
+    }
+    if (!hasFetched.value.wlcKom) {
+      isLoadingWlcKom.value = true;
+      promises.push(fetchGrafikWLCKomMesin().then(() => { hasFetched.value.wlcKom = true; isLoadingWlcKom.value = false; }));
+    }
+  } else if (currentTab === 'Planning / Feasibility Study') {
+    if (!hasFetched.value.plan) {
+      promises.push(fetchGrafikPlanMesin().then(() => { hasFetched.value.plan = true; }));
+    }
+    if (!hasFetched.value.planKom) {
+      promises.push(fetchGrafikPlanKomMesin().then(() => { hasFetched.value.planKom = true; }));
+    }
+  } else if (currentTab === 'Planning & Realisasi + Proyeksi') {
+    if (!hasFetched.value.prp) {
+      promises.push(fetchGrafikPRPMesin().then(() => { hasFetched.value.prp = true; }));
+    }
+  } else if (currentTab === 'Planning vs Realisasi s/d Tahun Berjalan') {
+    if (!hasFetched.value.prpLastYear) {
+      promises.push(fetchGrafikPRPLastYearMesin().then(() => { hasFetched.value.prpLastYear = true; }));
+    }
+  }
+
+  if (promises.length > 0) await Promise.all(promises);
+};
 
 interface Mesin {
   idMesin: any;
@@ -1574,6 +1695,7 @@ function handleClickLastY(param: any) {
 }
 
 const fetchGrafikWLCAllMesin = async () => {
+  if (isNaN(tahunData.value)) return;
   try {
     const response: any = await grafikService.getGrafikWLCALLMesin({ uuid_mesin: props.idMesin, start_year: '', end_year: '', tahun_realisasi: tahunData.value });
     let indexTerdekat;
@@ -1992,6 +2114,7 @@ const fetchGrafikWLCAllMesin = async () => {
 }
 
 const fetchGrafikWLCKomMesin = async () => {
+  if (isNaN(tahunData.value)) return;
   try {
     const response: any = await grafikService.getGrafikWLCKomMesin({ uuid_mesin: props.idMesin, start_year: '', end_year: '', tahun_realisasi: tahunData.value });
     dataWLCKomMesin.value = response.data;
@@ -2150,6 +2273,7 @@ const fetchGrafikWLCKomMesin = async () => {
 }
 
 const fetchGrafikPlanMesin = async () => {
+  if (isNaN(tahunData.value)) return;
   try {
     const response: any = await grafikService.getGrafikPlanMesin({ uuid_mesin: props.idMesin, tahun_realisasi: tahunData.value })
     let indexTerdekat;
@@ -2703,6 +2827,7 @@ const fetchGrafikPlanKomMesin = async () => {
 }
 
 const fetchGrafikPRPMesin = async () => {
+  if (isNaN(tahunData.value)) return;
   try {
     const response: any = await grafikService.getGrafikPRPMesin({ uuid_mesin: props.idMesin, tahun_realisasi: tahunData.value });
     let indexTerdekat;
@@ -5603,6 +5728,7 @@ const fetchGrafikPRPMesin = async () => {
 }
 
 const fetchGrafikPRPLastYearMesin = async () => {
+  if (isNaN(tahunData.value)) return;
   try {
     const response: any = await grafikService.getGrafikPRPLastYearMesin({ uuid_mesin: props.idMesin, tahun_realisasi: tahunData.value })
 
@@ -6630,10 +6756,8 @@ const fetchGrafikPRPLastYearMesin = async () => {
 
 const fetchRealisasiProyeksiMesin = async () => {
   try {
-    const response: any = await grafikService.getRealisasiProyeksiMesin({
-      tahun: tahunData.value, uuid_mesin: props.idMesin
-    })
-    statusApprove.value = response.data.status;
+    const data = await fetchSharedRealisasiProyeksiMesin(props.idMesin, tahunData.value);
+    statusApprove.value = data?.status ?? '';
   } catch (error) {
     console.error('Fetch Realisasi Proyeksi Mesin Error', error);
   }
@@ -6641,8 +6765,8 @@ const fetchRealisasiProyeksiMesin = async () => {
 
 const fetchPlanningMesin = async () => {
   try {
-    const response: any = await grafikService.getPlanningMesin({ uuid_mesin: props.idMesin })
-    statusApprovePlanning.value = response.data.status;
+    const data = await fetchSharedPlanningMesin(props.idMesin, tahunData.value);
+    statusApprovePlanning.value = data?.status ?? '';
   } catch (error) {
     console.error('Fetch Planning Mesin Error', error)
   }
@@ -6650,31 +6774,21 @@ const fetchPlanningMesin = async () => {
 
 onMounted(async () => {
   AOS.init();
-  isLoading.value = true;
   encryptStorageRef = await encryptStoragePromise;
-  await fetchGrafikWLCAllMesin();
-  await fetchGrafikWLCKomMesin();
-  await fetchGrafikPlanMesin();
-  await fetchGrafikPlanKomMesin();
-  await fetchGrafikPRPMesin();
-  await fetchGrafikPRPLastYearMesin();
-  await fetchRealisasiProyeksiMesin();
-  await fetchPlanningMesin();
-  isLoading.value = false;
+  // Only fetch data for the currently active tab (lazy loading)
+  await fetchDataForCurrentTab();
 });
 
+// Watch for tab changes - fetch data lazily when a new tab is selected
+watch(() => stored.currentTabMesin, async () => {
+  await fetchDataForCurrentTab();
+});
 
 watch(tahunData, async (tahun) => {
-  isLoading.value = true;
-  await fetchGrafikWLCAllMesin();
-  await fetchGrafikWLCKomMesin();
-  await fetchGrafikPlanMesin();
-  await fetchGrafikPlanKomMesin();
-  await fetchGrafikPRPMesin();
-  await fetchGrafikPRPLastYearMesin();
-  await fetchRealisasiProyeksiMesin();
-  await fetchPlanningMesin();
-  isLoading.value = false;
+  // Reset fetched flags since year changed - all data needs re-fetching
+  resetHasFetched();
+  invalidateMesinCache(props.idMesin, tahun);
+  await fetchDataForCurrentTab();
 })
 
 </script>

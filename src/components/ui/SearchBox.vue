@@ -1,11 +1,14 @@
 <template>
-  <div class="flex items-center">
+  <div class="flex items-center" :class="{ 'opacity-60 cursor-not-allowed': props.disabled }">
     <input type="search" autocomplete="off" id="search"
-      class="block px-3 py-2 focus:outline-none w-full bg-white text-sm text-gray-900 rounded-l-lg border border-[#0099AD] focus:ring-[#80C1CD] focus:border-[#80C1CD]"
-      :placeholder="props.placeholder" @change="emit('onChange')" @focus="handleFocus" @keydown="emit('onKeyDown')"
+      class="block px-3 py-2 focus:outline-none w-full bg-white text-sm text-gray-900 rounded-l-lg border border-[#0099AD] focus:ring-[#80C1CD] focus:border-[#80C1CD] disabled:bg-gray-100 disabled:cursor-not-allowed"
+      :placeholder="props.placeholder"
+      :disabled="props.disabled"
+      @change="emit('onChange')" @focus="handleFocus" @keydown="emit('onKeyDown')"
       @keyup.enter="emit('onKeyEnter')" @input="emit('onInput')" v-model="model" />
     <button type="submit"
-      class="relative float-left px-2 py-2.5 text-sm font-medium text-white bg-[#0099AD] rounded-r-lg border border-[#0099AD] hover:bg-[#007E8F] focus:ring-2 focus:outline-none focus:ring-[#9ddee7]"
+      class="relative float-left px-2 py-2.5 text-sm font-medium text-white bg-[#0099AD] rounded-r-lg border border-[#0099AD] hover:bg-[#007E8F] focus:ring-2 focus:outline-none focus:ring-[#9ddee7] disabled:cursor-not-allowed disabled:hover:bg-[#0099AD]"
+      :disabled="props.disabled"
       @click="emit('onClickSubmit')">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" clip-rule="evenodd"
@@ -27,7 +30,9 @@ const handleFocus = () => {
 
 const props = withDefaults(defineProps<{
   placeholder?: string;
+  disabled?: boolean;
 }>(), {
   placeholder: 'Cari...',
+  disabled: false,
 });
 </script>

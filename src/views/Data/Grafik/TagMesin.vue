@@ -1,6 +1,12 @@
 <template>
   <div v-if="stored.currentTabMesin === 'WLC (Realisasi & Proyeksi)'">
-    <div class="text-xs">
+    <div v-if="isLoadingPlanning || isLoadingRealisasi || isLoadingYoy" class="text-xs space-y-1">
+      <div v-for="n in 6" :key="n" class="flex justify-between py-1">
+        <ShimmerLoading class="h-4 w-24" />
+        <ShimmerLoading class="h-4 w-20" />
+      </div>
+    </div>
+    <div v-else class="text-xs">
       <div class="flex justify-between py-1">
         <div class="flex">
           <div class="text-slate-500">IRR On Project</div>
@@ -196,7 +202,13 @@
     </div>
   </div>
   <div v-else-if="stored.currentTabMesin === 'Planning / Feasibility Study'">
-    <div class="text-xs">
+    <div v-if="isLoadingPlanning" class="text-xs space-y-1">
+      <div v-for="n in 6" :key="n" class="flex justify-between py-1">
+        <ShimmerLoading class="h-4 w-24" />
+        <ShimmerLoading class="h-4 w-20" />
+      </div>
+    </div>
+    <div v-else class="text-xs">
       <div class="flex justify-between py-1">
         <div class="flex">
           <div class="text-slate-500">IRR On Project</div>
@@ -288,7 +300,13 @@
     </div>
   </div>
   <div v-else-if="stored.currentTabMesin === 'Planning & Realisasi + Proyeksi'">
-    <div class="text-xs">
+    <div v-if="isLoadingRealisasi" class="text-xs space-y-1">
+      <div v-for="n in 6" :key="n" class="flex justify-between py-1">
+        <ShimmerLoading class="h-4 w-24" />
+        <ShimmerLoading class="h-4 w-20" />
+      </div>
+    </div>
+    <div v-else class="text-xs">
       <div class="flex justify-between py-1">
         <div class="flex">
           <div class="text-slate-500">IRR On Project</div>
@@ -376,7 +394,13 @@
     </div>
   </div>
   <div v-else-if="stored.currentTabMesin === 'Planning vs Realisasi s/d Tahun Berjalan'">
-    <div class="text-xs">
+    <div v-if="isLoadingRealisasi" class="text-xs space-y-1">
+      <div v-for="n in 6" :key="n" class="flex justify-between py-1">
+        <ShimmerLoading class="h-4 w-24" />
+        <ShimmerLoading class="h-4 w-20" />
+      </div>
+    </div>
+    <div v-else class="text-xs">
       <div class="flex justify-between py-1">
         <div class="flex">
           <div class="text-slate-500">IRR On Project</div>
@@ -464,7 +488,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from "vue";
 import { useTagMesin } from "@/store/storeTagGrafik";
-import GrafikService from "@/services/grafik-service";
 import GlobalFormat from "@/services/format/global-format";
 import PopUp from "@/components/Grafik/PoupWacc.vue";
 import FSRedDown from "@/components/icons/FSRedDown.vue";
@@ -473,10 +496,13 @@ import FSRedSame from "@/components/icons/FSRedSame.vue";
 import YoyRedDown from "@/components/icons/YoyRedDown.vue";
 import YoyGreenUp from "@/components/icons/YoyGreenUp.vue";
 import YoyRedSame from "@/components/icons/YoyRedSame.vue";
+import ShimmerLoading from "@/components/ui/ShimmerLoading.vue";
+import { fetchSharedPlanningMesin, fetchSharedRealisasiProyeksiMesin, fetchSharedRealisasiYoyMesin, invalidateMesinCache } from "@/composables/useMesinSharedData";
 
-const isLoading = ref(false);
+const isLoadingPlanning = ref(false);
+const isLoadingRealisasi = ref(false);
+const isLoadingYoy = ref(false);
 const stored = useTagMesin();
-const grafikService = new GrafikService();
 const globalFormat = new GlobalFormat();
 const dataPlanningMesin = ref<PlanningItem>({});
 const dataRealisasiMesin = ref<RelProyItem>({});
@@ -522,43 +548,50 @@ interface RelProyItem {
 }
 
 const fetchPlanningMesin = async () => {
+  isLoadingPlanning.value = true;
   try {
-    const response: any = await grafikService.getPlanningMesin({ uuid_mesin: props.idMesin })
-    dataPlanningMesin.value = response.data;
+    dataPlanningMesin.value = await fetchSharedPlanningMesin(props.idMesin, tahunData.value) ?? {};
   } catch (error) {
     console.error('Fetch Planning Mesin Error', error);
+  } finally {
+    isLoadingPlanning.value = false;
   }
 }
 const fetchRealisasiProyeksiMesin = async () => {
+  isLoadingRealisasi.value = true;
   try {
-    const response: any = await grafikService.getRealisasiProyeksiMesin({ tahun: tahunData.value, uuid_mesin: props.idMesin })
-    dataRealisasiMesin.value = response.data;
+    dataRealisasiMesin.value = await fetchSharedRealisasiProyeksiMesin(props.idMesin, tahunData.value) ?? {};
   } catch (error) {
     console.error('Fetch Realisasi Proyeksi Mesin Error', error);
+  } finally {
+    isLoadingRealisasi.value = false;
   }
 }
 const fetchRealisasiYoyMesin = async () => {
+  isLoadingYoy.value = true;
   try {
-    const response: any = await grafikService.getRealisasiYoyMesin({ uuid_mesin: props.idMesin, tahun: tahunData.value - 1 })
-    dataYoyMesin.value = response.data;
+    dataYoyMesin.value = await fetchSharedRealisasiYoyMesin(props.idMesin, tahunData.value) ?? {};
   } catch (error) {
     console.error('Fetch Realisasi Yoy Mesin Error', error);
+  } finally {
+    isLoadingYoy.value = false;
   }
 }
 
 watch(tahunData, async (tahun) => {
-  isLoading.value = true;
-  await fetchPlanningMesin();
-  await fetchRealisasiProyeksiMesin();
-  await fetchRealisasiYoyMesin();
-  isLoading.value = false;
+  invalidateMesinCache(props.idMesin, tahun);
+  await Promise.all([
+    fetchPlanningMesin(),
+    fetchRealisasiProyeksiMesin(),
+    fetchRealisasiYoyMesin(),
+  ]);
 })
 
 onMounted(async () => {
-  isLoading.value = true;
-  await fetchPlanningMesin();
-  await fetchRealisasiProyeksiMesin();
-  await fetchRealisasiYoyMesin();
-  isLoading.value = false;
+  await Promise.all([
+    fetchPlanningMesin(),
+    fetchRealisasiProyeksiMesin(),
+    fetchRealisasiYoyMesin(),
+  ]);
 })
 </script>

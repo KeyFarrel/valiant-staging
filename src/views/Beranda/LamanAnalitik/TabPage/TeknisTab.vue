@@ -1,14 +1,17 @@
 <template>
   <Loading v-if="isLoading" />
-  <!-- Grafik NCF -->
-  <GraphicNCF title="Grafik Net Capacity Factor (NCF)" :items-pembangkit="itemsCategory" :items-daya="itemsDaya"
-    :year-range="yearRange" :items-daya-mampu="childDmn" />
-  <!-- Grafik EAF -->
-  <GraphicEAF title="Grafik Equivalent Availability Factor (EAF)" :items-pembangkit="itemsCategory"
-    :items-daya="itemsDaya" :year-range="yearRange" :items-daya-mampu="childDmn" />
-  <!-- Grafik NPHR -->
-  <GraphicNPHR title="Grafik Net Plant Heat Rate (NPHR)" :items-pembangkit="itemsCategory" :items-daya="itemsDaya"
-    :year-range="yearRange" :items-daya-mampu="childDmn" />
+  <template v-else-if="itemsCategory.length !== 0">
+    <!-- Grafik NCF -->
+    <GraphicNCF title="Grafik Net Capacity Factor (NCF)" :items-pembangkit="itemsCategory" :items-daya="itemsDaya"
+      :year-range="yearRange" :items-daya-mampu="childDmn" :initial-pembangkit="initialPembangkit" />
+    <!-- Grafik EAF -->
+    <GraphicEAF title="Grafik Equivalent Availability Factor (EAF)" :items-pembangkit="itemsCategory"
+      :items-daya="itemsDaya" :year-range="yearRange" :items-daya-mampu="childDmn"
+      :initial-pembangkit="initialPembangkit" />
+    <!-- Grafik NPHR -->
+    <GraphicNPHR title="Grafik Net Plant Heat Rate (NPHR)" :items-pembangkit="itemsCategory" :items-daya="itemsDaya"
+      :year-range="yearRange" :items-daya-mampu="childDmn" :initial-pembangkit="initialPembangkit" />
+  </template>
 </template>
 
 <script setup lang="ts">
@@ -24,6 +27,7 @@ const lamanService = new LamanService();
 const grafikService = new GrafikService();
 const itemsCategory = ref<{ id: string; name: string; power?: string }[]>([])
 const isLoading = ref();
+const initialPembangkit = ref<string[]>([])
 const itemsDmn = ref<{
   [x: string]: any; id: string; name: string;
 }[]>([])
@@ -45,7 +49,14 @@ const fetchYearRange = async () => {
 
 async function getCategory() {
   try {
-    const response: any = await grafikService.getComboKategoriPembangkit()
+    isLoading.value = true
+    const [response, pembangkitResponse]: any[] = await Promise.all([
+      grafikService.getComboKategoriPembangkit(),
+      grafikService.getInitialPembangkit(),
+    ])
+    if (pembangkitResponse?.data) {
+      initialPembangkit.value = pembangkitResponse.data.map((item: any) => item.kode_jenis_pembangkit)
+    }
     if (response.success) {
       itemsCategory.value = [];
       if (response.data.length > 0) {
@@ -67,8 +78,16 @@ async function getCategory() {
       };
     };
     itemsCategory.value.reverse();
+
+    // If PLTU is not in the category list, fall back to the first available category as default
+    const hasPLTU = itemsCategory.value.some(item => item.id === 'PLTU')
+    if (!hasPLTU && itemsCategory.value.length > 0) {
+      initialPembangkit.value = [itemsCategory.value[0].id]
+    }
   } catch (e) {
     console.log("Fetch items filter Kategori Error : " + e);
+  } finally {
+    isLoading.value = false
   }
 }
 

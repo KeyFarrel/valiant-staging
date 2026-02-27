@@ -1125,6 +1125,7 @@ const fetchSuggestionSentral = async () => {
 const fetchSentralData = async () => {
   try {
     isLoading.value = true;
+    isPembangkitTabOpen.value = []
     const response: SentralItem = await rekapService.getSentralData(store.searchRekapQuery, selectedPengelola.value, selectedKategoriPembangkit.value, dmn.value, selectedKondisiMesin.value, selectedUmurMesin.value, navigationStore.currentPage, navigationStore.pageLimit)
     if (response.data !== null) {
       if (listSentralData.value.length === 0) {
@@ -1134,7 +1135,6 @@ const fetchSentralData = async () => {
         sentralData.value = response.data.map((sentral: any) => ({ ...sentral, mesins: [] }))
       }
       await togglePembangkit(response.data[0].uuid_sentral);
-      console.log(sentralData.value, 'uy')
     } else {
       sentralData.value = [];
     }

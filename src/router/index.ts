@@ -485,7 +485,9 @@ router.beforeEach(async (to, _, next) => {
   if (isAuthenticated) {
     let levelSentral: any;
     let namaPegawai: any;
-    await userAuthStore.fetchUserAuth();
+    if (!userAuthStore.isDataFetched) {
+      await userAuthStore.fetchUserAuth();
+    }
     const getStorage = (storage: any) => {
       levelSentral = storage.getItem("level_sentral");
       namaPegawai = storage.getItem("nama_pegawai");

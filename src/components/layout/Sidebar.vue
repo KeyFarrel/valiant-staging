@@ -129,7 +129,8 @@
               <li
                 v-for="(subMenuItem, subMenuIndex) in menuItem.sub_menus.filter(item => item.is_docked && !['Laman Utama', 'Laman Data', 'Laman Analitik'].includes(item.sub_menu))"
                 :key="subMenuIndex">
-                <RouterLink :to="`/${subMenuItem.url}`" id="sidebar-button" @click="store.label = subMenuItem.sub_menu"
+                <RouterLink :to="`/${subMenuItem.url}`" id="sidebar-button" @mouseenter="prefetchRoute(subMenuItem.url)"
+                  @click="store.label = subMenuItem.sub_menu"
                   class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
                   :class="{ selected: store.label === subMenuItem.sub_menu }">
                   <div class="flex items-center ml-5 text-xs">
@@ -152,7 +153,8 @@
               <li
                 v-for="(subMenuItem, subMenuIndex) in menuItem.sub_menus.filter(item => ['Laman Utama', 'Laman Data', 'Laman Analitik'].includes(item.sub_menu) && item.is_docked)"
                 :key="subMenuIndex">
-                <RouterLink :to="`/${subMenuItem.url}`" id="sidebar-button" @click="store.label = subMenuItem.sub_menu"
+                <RouterLink :to="`/${subMenuItem.url}`" id="sidebar-button" @mouseenter="prefetchRoute(subMenuItem.url)"
+                  @click="store.label = subMenuItem.sub_menu"
                   class="flex items-center px-5 py-2 text-[#7F7F80] duration-500"
                   :class="{ selected: store.label === subMenuItem.sub_menu }">
                   <svg width="11" height="11" class="ml-5" viewBox="0 0 11 11" fill="none"
@@ -270,6 +272,35 @@ const isLoading = ref<boolean>(false);
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
 }
+
+/**
+ * Prefetch lazy route chunks saat user hover menu item.
+ * Set `prefetched` memastikan setiap chunk hanya diunduh satu kali per sesi.
+ * Failure diabaikan (silent) agar tidak mengganggu UX.
+ */
+const prefetchRoute = (() => {
+  const prefetched = new Set<string>();
+  const routeMap: Record<string, () => Promise<unknown>> = {
+    peta: () => import("@/views/Beranda/PetaSebaran.vue"),
+    laman: () => import("@/views/Beranda/LamanUtama/LamanUtama.vue"),
+    "laman-data": () => import("@/views/Beranda/LamanData/LamanData.vue"),
+    "laman-analitik": () => import("@/views/Beranda/LamanAnalitik/LamanAnalitik.vue"),
+    "rekap-kertas-kerja": () => import("@/views/Data/RekapKertasKerja/RekapKertasKerja.vue"),
+    "rekap-kertas-kerja-v1": () => import("@/views/Data/RekapKertasKerjaV1/RekapKertasKerjaV1.vue"),
+    "persetujuan-by-approve": () => import("@/views/Verifikasi/Approver/VerifikasiPersetujuan.vue"),
+    persetujuan: () => import("@/views/Verifikasi/Sentral/VerifikasiPersetujuan.vue"),
+    "master-unit-sentral": () => import("@/views/Master/SentralAdmin.vue"),
+    "master-parameter": () => import("@/views/Master/Parameter.vue"),
+    pengguna: () => import("@/views/Manajemen/Pengguna/Pengguna.vue"),
+    "log-activity": () => import("@/views/Manajemen/LogActivity/LogActivity.vue"),
+  };
+  return (url: string): void => {
+    if (!prefetched.has(url) && routeMap[url]) {
+      prefetched.add(url);
+      routeMap[url]().catch(() => { /* prefetch failure tidak blocking navigasi */ });
+    }
+  };
+})();
 
 const { lastActive } = useIdle(15 * 60 * 1000); // 15 menit, ini dalam Milisecond
 const countdown = ref<number>(10);
