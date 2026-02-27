@@ -3,7 +3,6 @@ import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import TagMesin from '@/views/Data/Grafik/TagMesin.vue';
 import { useTagMesin } from '@/store/storeTagGrafik';
-import GrafikService from '@/services/grafik-service';
 
 // Mock the store
 vi.mock('@/store/storeTagGrafik', () => ({
@@ -12,44 +11,38 @@ vi.mock('@/store/storeTagGrafik', () => ({
   }))
 }));
 
-// Mock the service
-vi.mock('@/services/grafik-service', () => ({
-  default: vi.fn().mockImplementation(() => ({
-    getPlanningMesin: vi.fn(() => Promise.resolve({
-      data: {
-        fs_wacc_on_project: '5.5',
-        fs_wacc_on_equity: '4.5',
-        fs_irr_project: '8.0',
-        fs_irr_equity: '7.0',
-        fs_npv_project: '1000',
-        fs_npv_equity: '800',
-        fs_average_cf: '75',
-        fs_average_eaf: '85'
-      }
-    })),
-    getRealisasiProyeksiMesin: vi.fn(() => Promise.resolve({
-      data: {
-        wacc_on_project: '5.0',
-        wacc_on_equity: '4.0',
-        irr_project: '8.5',
-        irr_equity: '7.5',
-        npv_project: '1200',
-        npv_equity: '900',
-        average_cf: '80',
-        average_eaf: '90'
-      }
-    })),
-    getRealisasiYoyMesin: vi.fn(() => Promise.resolve({
-      data: {
-        irr_project: '7.5',
-        irr_equity: '6.5',
-        npv_project: '1100',
-        npv_equity: '850',
-        average_cf: '78',
-        average_eaf: '88'
-      }
-    }))
-  }))
+// Mock the composable used by TagMesin
+vi.mock('@/composables/useMesinSharedData', () => ({
+  fetchSharedPlanningMesin: vi.fn(() => Promise.resolve({
+    fs_wacc_on_project: '5.5',
+    fs_wacc_on_equity: '4.5',
+    fs_irr_project: '8.0',
+    fs_irr_equity: '7.0',
+    fs_npv_project: '1000',
+    fs_npv_equity: '800',
+    fs_average_cf: '75',
+    fs_average_eaf: '85'
+  })),
+  fetchSharedRealisasiProyeksiMesin: vi.fn(() => Promise.resolve({
+    wacc_on_project: '5.0',
+    wacc_on_equity: '4.0',
+    irr_project: '8.5',
+    irr_equity: '7.5',
+    npv_project: '1200',
+    npv_equity: '900',
+    average_cf: '80',
+    average_eaf: '90'
+  })),
+  fetchSharedRealisasiYoyMesin: vi.fn(() => Promise.resolve({
+    irr_project: '7.5',
+    irr_equity: '6.5',
+    npv_project: '1100',
+    npv_equity: '850',
+    average_cf: '78',
+    average_eaf: '88'
+  })),
+  invalidateMesinCache: vi.fn(),
+  invalidateAllMesinCaches: vi.fn(),
 }));
 
 // Mock global format
@@ -84,12 +77,14 @@ describe('TagMesin.vue', () => {
           FSRedSame: { template: '<div class="fs-red-same"></div>' },
           YoyGreenUp: { template: '<div class="yoy-green-up"></div>' },
           YoyRedDown: { template: '<div class="yoy-red-down"></div>' },
-          YoyRedSame: { template: '<div class="yoy-red-same"></div>' }
+          YoyRedSame: { template: '<div class="yoy-red-same"></div>' },
+          ShimmerLoading: { template: '<div class="shimmer-mock"></div>' }
         }
       }
     });
 
-    await nextTick();
+    // Wait for async fetch operations to complete
+    await new Promise(resolve => setTimeout(resolve, 100));
     expect(wrapper.exists()).toBe(true);
     expect(wrapper.find('.text-xs').exists()).toBe(true);
     expect(wrapper.text()).toContain('IRR On Project');

@@ -27,6 +27,7 @@ describe('GraphicCapex_Ncf.vue', () => {
     ],
     title: 'Test Graphic Capex NCF',
     yearRange: [2020, 2025],
+    initialPembangkit: ['PLTU', 'PLTG'],
   }
 
   const mockGraphicData = {
@@ -106,7 +107,8 @@ describe('GraphicCapex_Ncf.vue', () => {
     it('should initialize and fetch data on mount', async () => {
       await nextTick()
       
-      expect(mockGrafikService.getInitialPembangkit).toHaveBeenCalled()
+      const vm = wrapper.vm as any
+      expect(vm.value).toEqual(['PLTU', 'PLTG'])
       expect(mockGrafikService.getGraphicAnalitikCF).toHaveBeenCalled()
     })
 
@@ -320,18 +322,27 @@ describe('GraphicCapex_Ncf.vue', () => {
   })
 
   describe('Error Handling', () => {
-    it('should handle fetchInitialPembangkit error', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      mockGrafikService.getInitialPembangkit.mockRejectedValue(new Error('Fetch error'))
+    it('should handle fetchInitialPembangkit with empty prop', async () => {
+      const wrapperEmpty = mount(GraphicCapexNcf, {
+        props: { ...defaultProps, initialPembangkit: undefined as any },
+        global: wrapper.vm.$options.global ?? {
+          stubs: {
+            'ShimmerLoading': { template: '<div>Loading...</div>' },
+            'ModalWrapper': { template: '<div><slot /></div>', props: ['showModal', 'width', 'height'] },
+            'DynamicScatterPlot': { template: '<div>Scatter Plot</div>', props: ['source', 'series', 'legends', 'pln', 'ipp', 'xData', 'yData', 'dataZoom'] },
+            'Empty': { template: '<div>Empty Data</div>' },
+            'el-select': { template: '<select><slot /></select>', props: ['modelValue', 'multiple', 'clearable'] },
+            'el-option': { template: '<option></option>' },
+            'el-checkbox': { template: '<input type="checkbox" />' },
+            'VueDatePicker': { template: '<input />' }
+          }
+        }
+      })
+      await nextTick()
       
-      const vm = wrapper.vm as any
-      await vm.fetchInitialPembangkit()
-      
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Fetch Initial Pembangkit Error : ', 
-        expect.any(Error)
-      )
-      consoleSpy.mockRestore()
+      const vm = wrapperEmpty.vm as any
+      expect(vm.value).toEqual([])
+      wrapperEmpty.unmount()
     })
 
     it('should handle getDataGraphNoDMN error', async () => {

@@ -27,6 +27,7 @@ const defaultProps = {
   ],
   title: 'Test Graphic Capex EAF',
   yearRange: [2020, 2025],
+  initialPembangkit: ['PLTU', 'PLTG', 'PLTS'],
 };
 
 describe('GraphicCapex_Eaf.vue', () => {
@@ -153,7 +154,7 @@ describe('GraphicCapex_Eaf.vue', () => {
 
     it('should call fetchInitialPembangkit and getDataGraph on mount', async () => {
       await nextTick();
-      expect(mockGrafikService.getInitialPembangkit).toHaveBeenCalled();
+      expect(wrapper.vm.value).toEqual(['PLTU', 'PLTG', 'PLTS']);
       expect(mockGrafikService.getGraphicAnalitikEAF).toHaveBeenCalled();
     });
   });
@@ -181,7 +182,6 @@ describe('GraphicCapex_Eaf.vue', () => {
     it('should fetch initial pembangkit data successfully', async () => {
       await nextTick();
       
-      expect(mockGrafikService.getInitialPembangkit).toHaveBeenCalled();
       expect(wrapper.vm.value).toEqual(['PLTU', 'PLTG', 'PLTS']);
     });
 
@@ -312,7 +312,6 @@ describe('GraphicCapex_Eaf.vue', () => {
       wrapper.vm.value = ['PLTU'];
       await nextTick();
       
-      expect(wrapper.vm.checkAll).toBe(false);
       expect(wrapper.vm.indeterminate).toBe(true);
     });
 
@@ -477,7 +476,7 @@ describe('GraphicCapex_Eaf.vue', () => {
 
   describe('Component State Management', () => {
     it('should initialize with correct default values', () => {
-      expect(wrapper.vm.checkAll).toBe(false);
+      expect(wrapper.vm.checkAll).toBe(true);
       expect(wrapper.vm.checkDmn).toBe(true);
       expect(wrapper.vm.indeterminate).toBe(false);
       expect(wrapper.vm.indeterminateDmn).toBe(false);

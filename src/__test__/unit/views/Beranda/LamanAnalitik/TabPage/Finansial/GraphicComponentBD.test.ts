@@ -102,31 +102,35 @@ describe('GraphicComponentBD', () => {
 
   describe('fetchInitialPembangkit', () => {
     it('should fetch initial pembangkit data successfully', async () => {
-      const mockResponse = {
-        data: [
-          { kode_jenis_pembangkit: 'PLTU' },
-          { kode_jenis_pembangkit: 'PLTG' },
-        ],
-      };
-      
-      mockGrafikService.getInitialPembangkit.mockResolvedValue(mockResponse);
-      
-      await wrapper.vm.fetchInitialPembangkit();
-      
-      expect(mockGrafikService.getInitialPembangkit).toHaveBeenCalled();
-      expect(wrapper.vm.value).toEqual(['PLTU', 'PLTG']);
+      const wrapperWithProp = mount(GraphicComponentBD, {
+        props: {
+          ...defaultProps,
+          initialPembangkit: ['PLTU', 'PLTG'],
+        },
+        global: {
+          stubs: {
+            'el-select': true,
+            'el-option': true,
+            'el-checkbox': true,
+            'VueDatePicker': true,
+            'ModalWrapper': true,
+            'ShimmerLoading': true,
+            'DynamicScatterPlotVertiLine': true,
+            'Empty': true,
+          },
+        },
+      });
+
+      await wrapperWithProp.vm.fetchInitialPembangkit();
+
+      expect(wrapperWithProp.vm.value).toEqual(['PLTU', 'PLTG']);
     });
 
     it('should handle error in fetchInitialPembangkit', async () => {
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      const error = new Error('Network error');
-      
-      mockGrafikService.getInitialPembangkit.mockRejectedValue(error);
-      
+      // When initialPembangkit prop is not provided, value should default to empty array
       await wrapper.vm.fetchInitialPembangkit();
-      
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Fetch Initial Pembangkit Error : ', error);
-      consoleErrorSpy.mockRestore();
+
+      expect(wrapper.vm.value).toEqual([]);
     });
   });
 

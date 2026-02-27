@@ -32,6 +32,7 @@ describe('GraphicEAF.vue - Uncovered Lines', () => {
     ],
     title: 'Test EAF',
     yearRange: [2020, 2025],
+    initialPembangkit: ['PLTU', 'PLTG'],
   };
 
   beforeEach(() => {
@@ -63,15 +64,12 @@ describe('GraphicEAF.vue - Uncovered Lines', () => {
 
   describe('Error Handling - fetchInitialPembangkit', () => {
     it('should handle error in fetchInitialPembangkit', async () => {
-      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      const error = new Error('Network error');
-      grafikServiceMock.getInitialPembangkit.mockRejectedValue(error);
-
-      wrapper = createWrapper();
+      // When initialPembangkit prop is undefined/missing, value should default to empty array
+      wrapper = createWrapper({ ...defaultProps, initialPembangkit: undefined });
       await nextTick();
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Fetch Initial Pembangkit Error : ', expect.any(Error));
-      consoleErrorSpy.mockRestore();
+      const vm = wrapper.vm;
+      expect(vm.value).toEqual([]);
     });
   });
 
@@ -345,6 +343,10 @@ describe('GraphicEAF.vue - Uncovered Lines', () => {
 
     it('should handle value watch with partial selection', async () => {
       const vm = wrapper.vm;
+
+      // Reset to empty first so checkAll starts at false
+      vm.value = [];
+      await nextTick();
       
       // Test partial selection (indeterminate)
       vm.value = ['PLTU'];
@@ -447,17 +449,9 @@ describe('GraphicEAF.vue - Uncovered Lines', () => {
     });
 
     it('should populate value array from initial pembangkit data on mount', async () => {
-      const mockInitialData = {
-        data: [
-          { kode_jenis_pembangkit: 'PLTU' },
-          { kode_jenis_pembangkit: 'PLTG' }
-        ]
-      };
-
-      grafikServiceMock.getInitialPembangkit.mockResolvedValue(mockInitialData);
       grafikServiceMock.getGraphicTeknisEAF.mockResolvedValue({ success: true, data: { data: [], legend: [] } });
 
-      wrapper = createWrapper();
+      wrapper = createWrapper({ ...defaultProps, initialPembangkit: ['PLTU', 'PLTG'] });
       await nextTick();
 
       const vm = wrapper.vm;

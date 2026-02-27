@@ -20,6 +20,7 @@ const defaultProps = {
   ],
   title: 'Test Graphic CAPEX EFOR',
   yearRange: [2020, 2025],
+  initialPembangkit: ['PLTU', 'PLTG'],
 };
 
 // Mock the services
@@ -151,8 +152,9 @@ describe('GraphicCapex_Efor.vue', () => {
       await nextTick();
       await new Promise(resolve => setTimeout(resolve, 100));
       
-      // Test service calls during initialization
-      expect(mockGrafikService.getInitialPembangkit).toHaveBeenCalled();
+      // Test that value is populated from props.initialPembangkit
+      const vm = wrapper.vm as any;
+      expect(vm.value).toEqual(['PLTU', 'PLTG']);
       expect(mockGrafikService.getGraphicAnalitikEFOR).toHaveBeenCalled();
       
       // Test UI rendering
@@ -239,15 +241,14 @@ describe('GraphicCapex_Efor.vue', () => {
       // Should show empty state
       expect(wrapper.find('.empty-mock').exists()).toBe(true);
       
-      // Test error handling in fetchInitialPembangkit
-      mockGrafikService.getInitialPembangkit.mockRejectedValue(new Error('API Error'));
-      
-      const errorWrapper = createWrapper();
+      // Test fetchInitialPembangkit with empty prop (no initialPembangkit)
+      const errorWrapper = createWrapper({ initialPembangkit: [] });
       await nextTick();
       await new Promise(resolve => setTimeout(resolve, 100));
       
-      // Should handle error gracefully
-      expect(mockGrafikService.getInitialPembangkit).toHaveBeenCalled();
+      // Should handle empty initialPembangkit gracefully
+      const errorVm = errorWrapper.vm as any;
+      expect(errorVm.value).toEqual([]);
       
       // Test getDataGraph error handling
       mockGrafikService.getGraphicAnalitikEFOR.mockRejectedValue(new Error('Graph API Error'));

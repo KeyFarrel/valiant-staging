@@ -40,6 +40,15 @@ vi.mock('@/utils/app-encrypt-storage', () => ({
   })
 }));
 
+// Mock the composable used by GrafikMesin for shared data fetching
+vi.mock('@/composables/useMesinSharedData', () => ({
+  fetchSharedRealisasiProyeksiMesin: vi.fn(() => Promise.resolve(mockServiceResponses.realisasiProyeksi)),
+  fetchSharedPlanningMesin: vi.fn(() => Promise.resolve(mockServiceResponses.planning)),
+  fetchSharedRealisasiYoyMesin: vi.fn(() => Promise.resolve(null)),
+  invalidateMesinCache: vi.fn(),
+  invalidateAllMesinCaches: vi.fn(),
+}));
+
 // Mock AOS
 vi.mock('aos', () => ({
   default: {
@@ -535,7 +544,8 @@ describe('GrafikMesin.vue', () => {
 
   describe('Chart configuration', () => {
     it('should have valid tahunBerjalan value', () => {
-      expect(wrapper.vm.tahunBerjalan).toBe(new Date().getFullYear());
+      // tahunData is a computed from the prop
+      expect(wrapper.vm.tahunData).toBe(2024);
     });
 
     it('should initialize empty data arrays', () => {
@@ -989,7 +999,7 @@ describe('GrafikMesin.vue', () => {
 
   describe('Loading state', () => {
     it('should have isLoading as a boolean', () => {
-      expect(typeof wrapper.vm.isLoading).toBe('boolean');
+      expect(typeof wrapper.vm.isLoadingStatus).toBe('boolean');
     });
   });
 

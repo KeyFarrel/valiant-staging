@@ -58,7 +58,7 @@ const filter: Ref<{
 })
 
 const fetchInitialPembangkit = async () => {
-  value.value = [...props.initialPembangkit]
+  value.value = [...(props.initialPembangkit || [])]
 }
 
 async function getDataGraph() {

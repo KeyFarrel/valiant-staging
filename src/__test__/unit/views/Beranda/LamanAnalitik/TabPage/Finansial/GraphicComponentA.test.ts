@@ -97,6 +97,7 @@ describe('GraphicComponentA.vue', () => {
     ],
     title: 'Test Graphic Component A',
     yearRange: [2020, 2025],
+    initialPembangkit: ['PLTU', 'PLTG'],
   };
 
   beforeEach(() => {
@@ -194,14 +195,6 @@ describe('GraphicComponentA.vue', () => {
 
   describe('Fetch Initial Pembangkit', () => {
     it('should fetch initial pembangkit successfully', async () => {
-      mockGrafikService.getInitialPembangkit.mockResolvedValue({
-        data: [
-          { kode_jenis_pembangkit: 'PLTU' },
-          { kode_jenis_pembangkit: 'PLTG' },
-          { kode_jenis_pembangkit: 'PLTS' }
-        ]
-      });
-      
       mockGrafikService.getGraphicBiaya.mockResolvedValue({
         success: true,
         data: { data: [], legend: [] }
@@ -212,25 +205,27 @@ describe('GraphicComponentA.vue', () => {
       await wrapper.vm.$nextTick();
       await new Promise(resolve => setTimeout(resolve, 0));
 
-      expect(mockGrafikService.getInitialPembangkit).toHaveBeenCalled();
+      // fetchInitialPembangkit reads from props.initialPembangkit, not from a service call
+      const componentInstance = wrapper.vm as any;
+      expect(componentInstance.value).toEqual(['PLTU', 'PLTG']);
     });
 
     it('should handle error in fetchInitialPembangkit', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      
-      mockGrafikService.getInitialPembangkit.mockRejectedValue(new Error('API Error'));
       mockGrafikService.getGraphicBiaya.mockResolvedValue({
         success: true,
         data: { data: [], legend: [] }
       });
 
-      const wrapper = mount(GraphicComponentA, { props: defaultProps });
+      // When initialPembangkit is undefined/empty, value should default to empty array
+      const wrapper = mount(GraphicComponentA, {
+        props: { ...defaultProps, initialPembangkit: [] }
+      });
       
       await wrapper.vm.$nextTick();
       await new Promise(resolve => setTimeout(resolve, 0));
 
-      expect(consoleSpy).toHaveBeenCalledWith('Fetch Initial Pembangkit Error : ', expect.any(Error));
-      consoleSpy.mockRestore();
+      const componentInstance = wrapper.vm as any;
+      expect(componentInstance.value).toEqual([]);
     });
   });
 

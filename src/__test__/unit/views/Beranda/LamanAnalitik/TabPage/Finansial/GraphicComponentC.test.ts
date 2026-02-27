@@ -21,6 +21,7 @@ describe('GraphicComponentC', () => {
 
   const defaultTestProps = {
     ...defaultProps,
+    initialPembangkit: ['PLTU', 'PLTG'],
     itemsDaya: [
       { id: '1', daya: '100', satuan: 'MW' },
       { id: '2', daya: '200', satuan: 'MW' },
@@ -108,8 +109,8 @@ describe('GraphicComponentC', () => {
       wrapper = createWrapper();
       await nextTick();
       
-      // Check initial state
-      expect(wrapper.vm.isLoading).toBe(false);
+      // Check initial state - isLoading is true because getDataGraph is in progress after mount
+      expect(wrapper.vm.isLoading).toBe(true);
       expect(wrapper.vm.showModal).toBe(false);
       expect(wrapper.vm.graphData.isEmpty).toBe(true);
     });
@@ -121,7 +122,8 @@ describe('GraphicComponentC', () => {
       // Wait for component to mount and async calls to complete
       await new Promise(resolve => setTimeout(resolve, 50));
       
-      expect(mockGrafikService.getInitialPembangkit).toHaveBeenCalled();
+      // fetchInitialPembangkit reads from props.initialPembangkit, not from service
+      expect(wrapper.vm.value).toEqual(['PLTU', 'PLTG']);
       expect(mockGrafikService.getGraphicBiaya).toHaveBeenCalled();
     });
   });
@@ -141,14 +143,11 @@ describe('GraphicComponentC', () => {
     });
 
     it('should handle error in fetchInitialPembangkit', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      mockGrafikService.getInitialPembangkit.mockRejectedValue(new Error('Network error'));
-      
-      wrapper = createWrapper();
+      // fetchInitialPembangkit reads from props; when initialPembangkit is undefined, value defaults to []
+      wrapper = createWrapper({ initialPembangkit: undefined });
       await nextTick();
       
-      expect(consoleSpy).toHaveBeenCalledWith('Fetch Initial Pembangkit Error : ', expect.any(Error));
-      consoleSpy.mockRestore();
+      expect(wrapper.vm.value).toEqual([]);
     });
 
     it('should handle error in getDataGraph', async () => {

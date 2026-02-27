@@ -55,6 +55,7 @@ describe('TeknisTab.vue', () => {
     // Create mock instances
     mockGrafikService = {
       getComboKategoriPembangkit: vi.fn(),
+      getInitialPembangkit: vi.fn().mockResolvedValue({ data: [{ kode_jenis_pembangkit: 'PLTU' }] }),
     };
     
     mockLamanService = {
@@ -94,7 +95,9 @@ describe('TeknisTab.vue', () => {
       
       mockGrafikService.getComboKategoriPembangkit.mockResolvedValue({
         success: true,
-        data: []
+        data: [
+          { jenis_kit: 'PLTU', dmn: [{ id_daya: '1', daya_mampu: '< 100' }] }
+        ]
       });
 
       const wrapper = mount(TeknisTab);
@@ -346,7 +349,7 @@ describe('TeknisTab.vue', () => {
       
       mockGrafikService.getComboKategoriPembangkit.mockResolvedValue({
         success: true,
-        data: []
+        data: [{ jenis_kit: 'PLTU', dmn: [{ id_daya: '1', daya_mampu: '< 100' }] }]
       });
 
       const wrapper = mount(TeknisTab);
@@ -366,7 +369,7 @@ describe('TeknisTab.vue', () => {
       
       mockGrafikService.getComboKategoriPembangkit.mockResolvedValue({
         success: true,
-        data: []
+        data: [{ jenis_kit: 'PLTU', dmn: [{ id_daya: '1', daya_mampu: '< 100' }] }]
       });
 
       const wrapper = mount(TeknisTab);
@@ -386,7 +389,7 @@ describe('TeknisTab.vue', () => {
       
       mockGrafikService.getComboKategoriPembangkit.mockResolvedValue({
         success: true,
-        data: []
+        data: [{ jenis_kit: 'PLTU', dmn: [{ id_daya: '1', daya_mampu: '< 100' }] }]
       });
 
       const wrapper = mount(TeknisTab);

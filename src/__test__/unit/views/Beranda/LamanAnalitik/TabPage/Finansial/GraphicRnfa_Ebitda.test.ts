@@ -107,7 +107,8 @@ describe('GraphicRnfa_Ebitda.vue', () => {
       { id: '3', name: 'PLTU > 400' }
     ],
     title: 'Test Graphic RNFA EBITDA',
-    yearRange: [2020, 2025]
+    yearRange: [2020, 2025],
+    initialPembangkit: ['PLTU', 'PLTG']
   };
 
   const mockGraphicResponse = {
@@ -187,9 +188,10 @@ describe('GraphicRnfa_Ebitda.vue', () => {
 
       expect(vm.checkAll).toBe(false);
       expect(vm.checkDmn).toBe(true);
-      expect(vm.indeterminate).toBe(false);
+      // indeterminate is true because 2 of 3 pembangkit items are selected
+      expect(vm.indeterminate).toBe(true);
       expect(vm.indeterminateDmn).toBe(false);
-      // Component fetches and populates value array on mount
+      // Component reads initialPembangkit from props on mount
       expect(vm.value).toEqual(['PLTU', 'PLTG']);
       expect(vm.dmn).toEqual([1, 2, 3]);
       expect(vm.showModal).toBe(false);
@@ -210,7 +212,7 @@ describe('GraphicRnfa_Ebitda.vue', () => {
 
   describe('Data Fetching and API Integration', () => {
     it('should fetch initial pembangkit data on mount', async () => {
-      mount(GraphicRnfa_Ebitda, {
+      const wrapper = mount(GraphicRnfa_Ebitda, {
         props: defaultProps,
         global: {
           components: { ElSelect, ElOption, ElCheckbox }
@@ -218,44 +220,41 @@ describe('GraphicRnfa_Ebitda.vue', () => {
       });
 
       await nextTick();
-      expect(mockGrafikService.getInitialPembangkit).toHaveBeenCalled();
+      const vm = wrapper.vm as any;
+      // Component reads initialPembangkit from props, not from API
+      expect(vm.value).toEqual(['PLTU', 'PLTG']);
     });
 
     it('should call getDataGraph on mount after fetchInitialPembangkit', async () => {
-      const wrapper = mount(GraphicRnfa_Ebitda, {
+      mount(GraphicRnfa_Ebitda, {
         props: defaultProps
       });
 
       // Wait for all async operations to complete
       await nextTick();
-      await vi.waitFor(() => {
-        expect(mockGrafikService.getInitialPembangkit).toHaveBeenCalled();
-      });
 
-      // After initial data is fetched, getDataGraph should be called
+      // After initial data is fetched from props, getDataGraph should be called
       await nextTick();
       await vi.waitFor(() => {
         expect(mockGrafikService.getGraphicRNFA).toHaveBeenCalled();
       });
     });
 
-    it('should handle fetchInitialPembangkit error gracefully', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      mockGrafikService.getInitialPembangkit.mockRejectedValueOnce(new Error('API Error'));
-
-      mount(GraphicRnfa_Ebitda, {
-        props: defaultProps,
+    it('should handle fetchInitialPembangkit with empty prop gracefully', async () => {
+      const wrapper = mount(GraphicRnfa_Ebitda, {
+        props: { ...defaultProps, initialPembangkit: [] },
         global: {
           components: { ElSelect, ElOption, ElCheckbox }
         }
       });
 
       await nextTick();
-      expect(consoleSpy).toHaveBeenCalledWith('Fetch Initial Pembangkit Error : ', expect.any(Error));
-      consoleSpy.mockRestore();
+      const vm = wrapper.vm as any;
+      // When initialPembangkit is empty, value should be empty
+      expect(vm.value).toEqual([]);
     });
 
-    it('should populate value array from fetchInitialPembangkit response', async () => {
+    it('should populate value array from initialPembangkit prop', async () => {
       const wrapper = mount(GraphicRnfa_Ebitda, {
         props: defaultProps,
         global: {
@@ -266,7 +265,7 @@ describe('GraphicRnfa_Ebitda.vue', () => {
       await nextTick();
       const vm = wrapper.vm as any;
       
-      // Should populate value from API response
+      // Should populate value from props
       expect(vm.value).toContain('PLTU');
       expect(vm.value).toContain('PLTG');
     });
@@ -1019,9 +1018,9 @@ describe('GraphicRnfa_Ebitda.vue', () => {
 
       await nextTick();
       
-      // Should call APIs during initialization - this is expected behavior
-      expect(mockGrafikService.getInitialPembangkit).toHaveBeenCalledTimes(1);
-      // getGraphicRNFA might be called as part of the normal flow after fetchInitialPembangkit
+      // Component reads from props (not API) for initialPembangkit
+      // Only getGraphicRNFA should be called as API during initialization
+      expect(mockGrafikService.getGraphicRNFA).toHaveBeenCalled();
     });
 
     it('should maintain reactive data integrity through state changes', async () => {

@@ -34,6 +34,7 @@ const defaultProps = {
   ],
   title: 'Test Graphic NPHR',
   yearRange: [2020, 2025],
+  initialPembangkit: ['PLTU', 'PLTG'],
 };
 
 const mockGraphicData = {
@@ -93,14 +94,15 @@ describe('GraphicNPHR.vue', () => {
     });
 
     it('should initialize and fetch data on mount', async () => {
-      mount(GraphicNPHR, {
+      const wrapper = mount(GraphicNPHR, {
         props: defaultProps,
       });
 
       // Wait for onMounted lifecycle
       await new Promise(resolve => setTimeout(resolve, 10));
 
-      expect(mockGrafikService.getInitialPembangkit).toHaveBeenCalled();
+      const vm = wrapper.vm as any;
+      expect(vm.value).toEqual(['PLTU', 'PLTG']);
     });
 
     it('should populate initial pembangkit data', async () => {
@@ -148,19 +150,18 @@ describe('GraphicNPHR.vue', () => {
       expect(vm.graphData.isEmpty).toBe(true);
     });
 
-    it('should handle fetchInitialPembangkit error', async () => {
-      mockGrafikService.getInitialPembangkit.mockRejectedValue(new Error('Fetch Error'));
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
+    it('should handle fetchInitialPembangkit with empty prop', async () => {
       const wrapper = mount(GraphicNPHR, {
-        props: defaultProps,
+        props: {
+          ...defaultProps,
+          initialPembangkit: [],
+        },
       });
 
       const vm = wrapper.vm as any;
       await vm.fetchInitialPembangkit();
 
-      expect(consoleSpy).toHaveBeenCalledWith('Fetch Initial Pembangkit Error : ', expect.any(Error));
-      consoleSpy.mockRestore();
+      expect(vm.value).toEqual([]);
     });
 
     it('should handle getDataGraph error and log error', async () => {

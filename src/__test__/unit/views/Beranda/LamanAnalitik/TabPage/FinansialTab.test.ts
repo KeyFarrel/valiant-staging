@@ -101,6 +101,7 @@ describe('FinansialTab.vue', () => {
     mockGrafikService = {
       getComboKategoriPembangkit: vi.fn(),
       getFilterDaya: vi.fn(),
+      getInitialPembangkit: vi.fn().mockResolvedValue({ data: [{ kode_jenis_pembangkit: 'PLTU' }] }),
     };
     
     mockLamanService = {

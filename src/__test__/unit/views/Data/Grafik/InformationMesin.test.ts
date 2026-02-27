@@ -3,20 +3,25 @@ import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import InformationMesin from '@/views/Data/Grafik/InformationMesin.vue';
 
-// Mock the services
-const mockGrafikService = {
-  getPlanningMesin: vi.fn(),
-  getRealisasiProyeksiMesin: vi.fn(),
-  getRealisasiYoyMesin: vi.fn(),
-};
+// Use vi.hoisted to define mock variables before vi.mock hoisting
+const { mockFetchPlanning, mockFetchRealisasi, mockFetchYoy, mockInvalidateCache } = vi.hoisted(() => ({
+  mockFetchPlanning: vi.fn(),
+  mockFetchRealisasi: vi.fn(),
+  mockFetchYoy: vi.fn(),
+  mockInvalidateCache: vi.fn(),
+}));
 
-const mockGlobalFormat = {
-  formatRupiah: vi.fn((value) => `Rp ${value}`),
-};
+const mockGlobalFormat = vi.hoisted(() => ({
+  formatRupiah: vi.fn((value: any) => `Rp ${value}`),
+}));
 
-// Mock the modules
-vi.mock('@/services/grafik-service', () => ({
-  default: vi.fn(() => mockGrafikService),
+// Mock the composable used by InformationMesin
+vi.mock('@/composables/useMesinSharedData', () => ({
+  fetchSharedPlanningMesin: mockFetchPlanning,
+  fetchSharedRealisasiProyeksiMesin: mockFetchRealisasi,
+  fetchSharedRealisasiYoyMesin: mockFetchYoy,
+  invalidateMesinCache: mockInvalidateCache,
+  invalidateAllMesinCaches: vi.fn(),
 }));
 
 vi.mock('@/services/format/global-format', () => ({
@@ -65,44 +70,38 @@ describe('InformationMesin.vue', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     
-    // Setup mock responses
-    mockGrafikService.getPlanningMesin.mockResolvedValue({
-      data: {
-        fs_wacc_on_project: '10.5',
-        fs_wacc_on_equity: '12.0',
-        fs_irr_project: '15.2',
-        fs_irr_equity: '18.5',
-        fs_npv_project: '1000000',
-        fs_npv_equity: '750000',
-        fs_average_cf: '85.0',
-        fs_average_eaf: '90.0',
-      },
+    // Setup mock responses for the composable functions
+    mockFetchPlanning.mockResolvedValue({
+      fs_wacc_on_project: '10.5',
+      fs_wacc_on_equity: '12.0',
+      fs_irr_project: '15.2',
+      fs_irr_equity: '18.5',
+      fs_npv_project: '1000000',
+      fs_npv_equity: '750000',
+      fs_average_cf: '85.0',
+      fs_average_eaf: '90.0',
     });
 
-    mockGrafikService.getRealisasiProyeksiMesin.mockResolvedValue({
-      data: {
-        wacc_on_project: '11.0',
-        wacc_on_equity: '13.0',
-        irr_project: '16.0',
-        irr_equity: '19.0',
-        npv_project: '1100000',
-        npv_equity: '800000',
-        average_cf: '87.0',
-        average_eaf: '92.0',
-      },
+    mockFetchRealisasi.mockResolvedValue({
+      wacc_on_project: '11.0',
+      wacc_on_equity: '13.0',
+      irr_project: '16.0',
+      irr_equity: '19.0',
+      npv_project: '1100000',
+      npv_equity: '800000',
+      average_cf: '87.0',
+      average_eaf: '92.0',
     });
 
-    mockGrafikService.getRealisasiYoyMesin.mockResolvedValue({
-      data: {
-        wacc_on_project: '10.8',
-        wacc_on_equity: '12.5',
-        irr_project: '15.8',
-        irr_equity: '18.8',
-        npv_project: '1050000',
-        npv_equity: '775000',
-        average_cf: '86.0',
-        average_eaf: '91.0',
-      },
+    mockFetchYoy.mockResolvedValue({
+      wacc_on_project: '10.8',
+      wacc_on_equity: '12.5',
+      irr_project: '15.8',
+      irr_equity: '18.8',
+      npv_project: '1050000',
+      npv_equity: '775000',
+      average_cf: '86.0',
+      average_eaf: '91.0',
     });
   });
 
@@ -131,17 +130,9 @@ describe('InformationMesin.vue', () => {
     // Wait for async operations to complete
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    expect(mockGrafikService.getPlanningMesin).toHaveBeenCalledWith({
-      uuid_mesin: 123,
-    });
-    expect(mockGrafikService.getRealisasiProyeksiMesin).toHaveBeenCalledWith({
-      tahun: 2024,
-      uuid_mesin: 123,
-    });
-    expect(mockGrafikService.getRealisasiYoyMesin).toHaveBeenCalledWith({
-      uuid_mesin: 123,
-      tahun: 2023,
-    });
+    expect(mockFetchPlanning).toHaveBeenCalledWith(123, 2024);
+    expect(mockFetchRealisasi).toHaveBeenCalledWith(123, 2024);
+    expect(mockFetchYoy).toHaveBeenCalledWith(123, 2024);
   });
 
   it('should update tahunData computed property correctly', async () => {
@@ -172,9 +163,9 @@ describe('InformationMesin.vue - Additional Coverage Tests', () => {
 
   it('should handle service errors gracefully', async () => {
     // Mock service errors
-    mockGrafikService.getPlanningMesin.mockRejectedValue(new Error('Planning service error'));
-    mockGrafikService.getRealisasiProyeksiMesin.mockRejectedValue(new Error('Realisasi service error'));
-    mockGrafikService.getRealisasiYoyMesin.mockRejectedValue(new Error('YoY service error'));
+    mockFetchPlanning.mockRejectedValue(new Error('Planning service error'));
+    mockFetchRealisasi.mockRejectedValue(new Error('Realisasi service error'));
+    mockFetchYoy.mockRejectedValue(new Error('YoY service error'));
 
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -193,37 +184,31 @@ describe('InformationMesin.vue - Additional Coverage Tests', () => {
 
   it('should display NUM when IRR values are empty strings', async () => {
     // Mock empty string responses
-    mockGrafikService.getPlanningMesin.mockResolvedValue({
-      data: {
-        fs_irr_equity: '',
-        fs_irr_project: '',
-        fs_npv_project: '',
-        fs_npv_equity: '',
-        fs_average_cf: '',
-        fs_average_eaf: '',
-      },
+    mockFetchPlanning.mockResolvedValue({
+      fs_irr_equity: '',
+      fs_irr_project: '',
+      fs_npv_project: '',
+      fs_npv_equity: '',
+      fs_average_cf: '',
+      fs_average_eaf: '',
     });
 
-    mockGrafikService.getRealisasiProyeksiMesin.mockResolvedValue({
-      data: {
-        irr_project: '',
-        irr_equity: '',
-        npv_project: '',
-        npv_equity: '',
-        average_cf: '',
-        average_eaf: '',
-      },
+    mockFetchRealisasi.mockResolvedValue({
+      irr_project: '',
+      irr_equity: '',
+      npv_project: '',
+      npv_equity: '',
+      average_cf: '',
+      average_eaf: '',
     });
 
-    mockGrafikService.getRealisasiYoyMesin.mockResolvedValue({
-      data: {
-        irr_project: '',
-        irr_equity: '',
-        npv_project: '',
-        npv_equity: '',
-        average_cf: '',
-        average_eaf: '',
-      },
+    mockFetchYoy.mockResolvedValue({
+      irr_project: '',
+      irr_equity: '',
+      npv_project: '',
+      npv_equity: '',
+      average_cf: '',
+      average_eaf: '',
     });
 
     const wrapper = mount(InformationMesin, {
@@ -238,9 +223,9 @@ describe('InformationMesin.vue - Additional Coverage Tests', () => {
   });
 
   it('should handle watch effect when tahunData changes', async () => {
-    mockGrafikService.getPlanningMesin.mockResolvedValue({ data: {} });
-    mockGrafikService.getRealisasiProyeksiMesin.mockResolvedValue({ data: {} });
-    mockGrafikService.getRealisasiYoyMesin.mockResolvedValue({ data: {} });
+    mockFetchPlanning.mockResolvedValue({});
+    mockFetchRealisasi.mockResolvedValue({});
+    mockFetchYoy.mockResolvedValue({});
 
     const wrapper = mount(InformationMesin, {
       props: mockProps,
@@ -254,51 +239,39 @@ describe('InformationMesin.vue - Additional Coverage Tests', () => {
     await wrapper.setProps({ tahunData: 2025 });
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    // Should have called services again due to watch
-    expect(mockGrafikService.getPlanningMesin).toHaveBeenCalled();
-    expect(mockGrafikService.getRealisasiProyeksiMesin).toHaveBeenCalledWith({
-      tahun: 2025,
-      uuid_mesin: 123,
-    });
-    expect(mockGrafikService.getRealisasiYoyMesin).toHaveBeenCalledWith({
-      uuid_mesin: 123,
-      tahun: 2024, // tahunData - 1
-    });
+    // Should have called composable functions again due to watch
+    expect(mockFetchPlanning).toHaveBeenCalledWith(123, 2025);
+    expect(mockFetchRealisasi).toHaveBeenCalledWith(123, 2025);
+    expect(mockFetchYoy).toHaveBeenCalledWith(123, 2025);
   });
 
   it('should render conditional icons based on comparison values', async () => {
     // Mock data to trigger different icon conditions
-    mockGrafikService.getPlanningMesin.mockResolvedValue({
-      data: {
-        fs_irr_project: '15.0',
-        fs_irr_equity: '18.0',
-        fs_npv_project: '1000000',
-        fs_npv_equity: '750000',
-        fs_average_cf: '85.0',
-        fs_average_eaf: '90.0',
-      },
+    mockFetchPlanning.mockResolvedValue({
+      fs_irr_project: '15.0',
+      fs_irr_equity: '18.0',
+      fs_npv_project: '1000000',
+      fs_npv_equity: '750000',
+      fs_average_cf: '85.0',
+      fs_average_eaf: '90.0',
     });
 
-    mockGrafikService.getRealisasiProyeksiMesin.mockResolvedValue({
-      data: {
-        irr_project: '16.0', // Greater than planning (15.0)
-        irr_equity: '17.0',  // Less than planning (18.0)
-        npv_project: '1000000', // Equal to planning
-        npv_equity: '800000',
-        average_cf: '87.0',
-        average_eaf: '92.0',
-      },
+    mockFetchRealisasi.mockResolvedValue({
+      irr_project: '16.0', // Greater than planning (15.0)
+      irr_equity: '17.0',  // Less than planning (18.0)
+      npv_project: '1000000', // Equal to planning
+      npv_equity: '800000',
+      average_cf: '87.0',
+      average_eaf: '92.0',
     });
 
-    mockGrafikService.getRealisasiYoyMesin.mockResolvedValue({
-      data: {
-        irr_project: '15.5',
-        irr_equity: '17.5',
-        npv_project: '950000',
-        npv_equity: '750000',
-        average_cf: '86.0',
-        average_eaf: '91.0',
-      },
+    mockFetchYoy.mockResolvedValue({
+      irr_project: '15.5',
+      irr_equity: '17.5',
+      npv_project: '950000',
+      npv_equity: '750000',
+      average_cf: '86.0',
+      average_eaf: '91.0',
     });
 
     const wrapper = mount(InformationMesin, {
@@ -317,25 +290,19 @@ describe('InformationMesin.vue - Additional Coverage Tests', () => {
   it('should format values correctly using globalFormat', async () => {
     mockGlobalFormat.formatRupiah.mockReturnValue('Rp 15.5');
 
-    mockGrafikService.getPlanningMesin.mockResolvedValue({
-      data: {
-        fs_irr_project: '15.5',
-        fs_wacc_on_project: '10.0',
-      },
+    mockFetchPlanning.mockResolvedValue({
+      fs_irr_project: '15.5',
+      fs_wacc_on_project: '10.0',
     });
 
-    mockGrafikService.getRealisasiProyeksiMesin.mockResolvedValue({
-      data: {
-        irr_project: '16.0',
-        wacc_on_project: '11.0',
-      },
+    mockFetchRealisasi.mockResolvedValue({
+      irr_project: '16.0',
+      wacc_on_project: '11.0',
     });
 
-    mockGrafikService.getRealisasiYoyMesin.mockResolvedValue({
-      data: {
-        irr_project: '15.8',
-        wacc_on_project: '10.5',
-      },
+    mockFetchYoy.mockResolvedValue({
+      irr_project: '15.8',
+      wacc_on_project: '10.5',
     });
 
     const wrapper = mount(InformationMesin, {

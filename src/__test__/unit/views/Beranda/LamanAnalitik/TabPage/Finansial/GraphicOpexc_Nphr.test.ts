@@ -49,7 +49,8 @@ describe('GraphicOpexcNphr', () => {
       { id: '2', name: 'PLTU 100 - 400' }
     ],
     title: 'Test Chart',
-    yearRange: [2020, 2025]
+    yearRange: [2020, 2025],
+    initialPembangkit: ['PLTU', 'PLTG']
   }
 
   const mockSuccessResponse = {
@@ -99,17 +100,15 @@ describe('GraphicOpexcNphr', () => {
     wrapper = createWrapper()
     await flushPromises()
 
-    // Test onMounted lifecycle
-    expect(mockGrafikService.getInitialPembangkit).toHaveBeenCalled()
+    // Test onMounted lifecycle - fetchInitialPembangkit reads from props.initialPembangkit
+    expect(wrapper.vm.value).toEqual(['PLTU', 'PLTG'])
     expect(mockGrafikService.getGraphicOpexC).toHaveBeenCalled()
     expect(wrapper.vm.isLoading).toBe(false)
 
-    // Test fetchInitialPembangkit error path
-    mockGrafikService.getInitialPembangkit.mockRejectedValue(new Error('API Error'))
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    await wrapper.vm.fetchInitialPembangkit()
-    expect(consoleSpy).toHaveBeenCalledWith('Fetch Initial Pembangkit Error : ', expect.any(Error))
-    consoleSpy.mockRestore()
+    // Test fetchInitialPembangkit with empty prop fallback
+    const wrapperEmpty = createWrapper({ initialPembangkit: undefined })
+    await flushPromises()
+    expect(wrapperEmpty.vm.value).toEqual([])
 
     // Test getDataGraph success path
     wrapper.vm.value = ['PLTU']

@@ -102,6 +102,7 @@ describe('GraphicOpexBd.vue - Complete Coverage Test', () => {
     ],
     title: 'Test Graphic OpexBD',
     yearRange: [2020, 2025],
+    initialPembangkit: ['PLTU', 'PLTG'],
   };
 
   const mockGraphicData = {
@@ -217,7 +218,8 @@ describe('GraphicOpexBd.vue - Complete Coverage Test', () => {
       expect(wrapper.vm.checkDmn).toBe(true);
       expect(wrapper.vm.indeterminate).toBe(false);
       expect(wrapper.vm.indeterminateDmn).toBe(false);
-      expect(wrapper.vm.value).toEqual([]);
+      // value is populated from props.initialPembangkit on mount
+      expect(wrapper.vm.value).toEqual(['PLTU', 'PLTG']);
       expect(wrapper.vm.dmn).toEqual([1, 2, 3]);
       expect(wrapper.vm.showModal).toBe(false);
       // isLoading akan true karena onMounted dipanggil
@@ -275,7 +277,9 @@ describe('GraphicOpexBd.vue - Complete Coverage Test', () => {
       await nextTick();
       await new Promise(resolve => setTimeout(resolve, 0)); // Wait for async operations
       
-      expect(mockGrafikService.getInitialPembangkit).toHaveBeenCalledTimes(1);
+      // fetchInitialPembangkit reads from props.initialPembangkit
+      expect(wrapper.vm.value).toContain('PLTU');
+      expect(wrapper.vm.value).toContain('PLTG');
       expect(mockGrafikService.getGraphicOpexBD).toHaveBeenCalledTimes(1);
     });
 
@@ -297,22 +301,18 @@ describe('GraphicOpexBd.vue - Complete Coverage Test', () => {
       // Call the function directly
       await wrapper.vm.fetchInitialPembangkit();
       
-      expect(mockGrafikService.getInitialPembangkit).toHaveBeenCalled();
+      // fetchInitialPembangkit reads from props.initialPembangkit
       expect(wrapper.vm.value).toContain('PLTU');
       expect(wrapper.vm.value).toContain('PLTG');
     });
 
     it('should handle error in fetchInitialPembangkit', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      mockGrafikService.getInitialPembangkit.mockRejectedValue(new Error('API Error'));
-      
-      wrapper = createWrapper();
+      // When initialPembangkit prop is undefined/empty, value should default to empty array
+      wrapper = createWrapper('shallow', { initialPembangkit: undefined });
       
       await wrapper.vm.fetchInitialPembangkit();
       
-      expect(consoleSpy).toHaveBeenCalledWith('Fetch Initial Pembangkit Error : ', expect.any(Error));
-      
-      consoleSpy.mockRestore();
+      expect(wrapper.vm.value).toEqual([]);
     });
   });
 
