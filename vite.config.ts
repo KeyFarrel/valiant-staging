@@ -190,9 +190,6 @@ export default defineConfig(({ mode }) => {
             ) {
               return "vendor-charts";
             }
-            if (id.includes("node_modules")) {
-              return "vendor-misc";
-            }
           },
         },
       },
@@ -225,7 +222,7 @@ export default defineConfig(({ mode }) => {
       removeVersionSignatures(),
       {
         name: "vite-plugin-html",
-        transformIndexHtml(html) {
+        transformIndexHtml(html: any) {
           html = html.replace(/<meta[^>]*generator[^>]*>/gi, "");
           html = html.replace(/<meta[^>]*version[^>]*>/gi, "");
           html = html.replace(
@@ -266,10 +263,10 @@ export default defineConfig(({ mode }) => {
             name: "js-obfuscator",
             enforce: "post" as const,
             apply: "build" as const,
-            transformIndexHtml(html) {
+            transformIndexHtml(html: any) {
               return html.replace(/<!--[\s\S]*?-->/g, "");
             },
-            generateBundle(_options, bundle) {
+            generateBundle(_options: any, bundle: any) {
               Object.keys(bundle).forEach((fileName) => {
                 const asset = bundle[fileName];
                 if (fileName.endsWith(".js") && "source" in asset) {

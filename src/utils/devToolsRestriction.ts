@@ -91,9 +91,9 @@ const disableDevTools = (): void => {
     const consoleMethodsToDisable = ['log', 'debug', 'info', 'warn', 'error', 'table', 'trace', 'dir', 'dirxml'];
     
     consoleMethodsToDisable.forEach(method => {
-      console[method] = () => {};
+      (console as any)[method] = () => {};
     });
-    
+    ;
     // Disable debugging
     setInterval(() => {
       console.clear();

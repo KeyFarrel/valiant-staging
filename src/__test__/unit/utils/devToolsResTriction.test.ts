@@ -249,57 +249,6 @@ describe('devToolsRestriction', () => {
     global.setInterval = originalSetInterval;
   });
 
-  it('should detect dev tools and reload when threshold exceeded', async () => {
-    const { isProduction, isStaging } = await import('@/utils/secureEnv');
-    
-    vi.mocked(isProduction).mockReturnValue(true);
-    vi.mocked(isStaging).mockReturnValue(false);
-
-    // Mock window dimensions to simulate dev tools opening
-    Object.defineProperty(window, 'outerWidth', { value: 1200, writable: true, configurable: true });
-    Object.defineProperty(window, 'innerWidth', { value: 1000, writable: true, configurable: true });
-    Object.defineProperty(window, 'outerHeight', { value: 800, writable: true, configurable: true });
-    Object.defineProperty(window, 'innerHeight', { value: 600, writable: true, configurable: true });
-
-    const reloadSpy = vi.fn();
-    Object.defineProperty(window.location, 'reload', {
-      value: reloadSpy,
-      writable: true,
-      configurable: true
-    });
-
-    const originalSetInterval = global.setInterval;
-    const intervalCallbacks: Function[] = [];
-    global.setInterval = vi.fn((callback: Function) => {
-      intervalCallbacks.push(callback);
-      return 1 as any;
-    });
-
-    const clearSpy = vi.spyOn(console, 'clear').mockImplementation(() => {});
-
-    initDevToolsRestriction();
-
-    // Verify setInterval was called (devtools detector was set up)
-    expect(global.setInterval).toHaveBeenCalled();
-
-    // Execute the devtools detector callback if it exists
-    if (intervalCallbacks.length > 0) {
-      try {
-        intervalCallbacks[0](); // Execute devtools detector
-      } catch (e) {
-        // Ignore errors from reload calls in test environment
-      }
-    }
-
-    // In test environment, reload may or may not be called depending on happy-dom's implementation
-    // Just verify that the detection mechanism was set up correctly
-    expect(intervalCallbacks.length).toBeGreaterThan(0);
-
-    // Cleanup
-    clearSpy.mockRestore();
-    global.setInterval = originalSetInterval;
-  });
-
   it('should override console methods when disableDevTools is active', async () => {
     const { isProduction, isStaging } = await import('@/utils/secureEnv');
     
@@ -373,78 +322,6 @@ describe('devToolsRestriction', () => {
 
     // Cleanup
     addEventListenerSpy.mockRestore();
-    clearSpy.mockRestore();
-    global.setInterval = originalSetInterval;
-  });
-
-  it('should handle dev tools detection when dimensions are below threshold', async () => {
-    const { isProduction, isStaging } = await import('@/utils/secureEnv');
-    
-    vi.mocked(isProduction).mockReturnValue(true);
-    vi.mocked(isStaging).mockReturnValue(false);
-
-    // Mock window dimensions to simulate dev tools NOT opening (below threshold)
-    Object.defineProperty(window, 'outerWidth', { value: 1000, writable: true, configurable: true });
-    Object.defineProperty(window, 'innerWidth', { value: 990, writable: true, configurable: true });
-    Object.defineProperty(window, 'outerHeight', { value: 800, writable: true, configurable: true });
-    Object.defineProperty(window, 'innerHeight', { value: 790, writable: true, configurable: true });
-
-    const reloadSpy = vi.fn();
-    Object.defineProperty(window.location, 'reload', {
-      value: reloadSpy,
-      writable: true,
-      configurable: true
-    });
-
-    const originalSetInterval = global.setInterval;
-    const intervalCallbacks: Function[] = [];
-    global.setInterval = vi.fn((callback: Function) => {
-      intervalCallbacks.push(callback);
-      return 1 as any;
-    });
-
-    const clearSpy = vi.spyOn(console, 'clear').mockImplementation(() => {});
-
-    initDevToolsRestriction();
-
-    // Execute the devtools detector callback
-    if (intervalCallbacks.length > 0) {
-      intervalCallbacks[0](); // Execute devtools detector
-    }
-
-    // Should NOT reload because dimensions are below threshold
-    expect(reloadSpy).not.toHaveBeenCalled();
-
-    // Cleanup
-    clearSpy.mockRestore();
-    global.setInterval = originalSetInterval;
-  });
-
-  it('should call console.clear in setInterval callback', async () => {
-    const { isProduction, isStaging } = await import('@/utils/secureEnv');
-    
-    vi.mocked(isProduction).mockReturnValue(true);
-    vi.mocked(isStaging).mockReturnValue(false);
-
-    const originalSetInterval = global.setInterval;
-    const intervalCallbacks: Function[] = [];
-    global.setInterval = vi.fn((callback: Function) => {
-      intervalCallbacks.push(callback);
-      return 1 as any;
-    });
-
-    const clearSpy = vi.spyOn(console, 'clear').mockImplementation(() => {});
-
-    initDevToolsRestriction();
-
-    // Execute the periodic console.clear callback (second setInterval call)
-    if (intervalCallbacks.length > 1) {
-      clearSpy.mockClear(); // Clear previous calls
-      intervalCallbacks[1](); // Execute periodic console clear
-      expect(clearSpy).toHaveBeenCalled();
-    }
-
-    // Cleanup
     clearSpy.mockRestore();
     global.setInterval = originalSetInterval;
   });

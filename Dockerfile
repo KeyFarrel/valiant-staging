@@ -14,8 +14,8 @@ RUN npm ci \
 COPY . .
 
 # Build the Vue.js application
-ARG BUILD_MODE=development
-RUN npx vite build --mode $BUILD_MODE
+ARG BUILD_SCRIPT=build:development
+RUN npm run $BUILD_SCRIPT
 
 # Stage 2: Serve the staging build with Nginx
 FROM harbor.pln.co.id/library/nginx:stable-alpine
