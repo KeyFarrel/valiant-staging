@@ -294,7 +294,7 @@ fortify-sca:
         -i "$ID_APP" \
         -s "$SCA_URL" \
         -a "$SCA_TOKEN" \
-        package.json 2>&1)
+        package-lock.json 2>&1)
 
       echo "$out"
 
