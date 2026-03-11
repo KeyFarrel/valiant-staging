@@ -1,16 +1,16 @@
 <template>
   <div v-if="stored.currentTabMesin === 'WLC (Realisasi & Proyeksi)'">
     <!-- Shimmer while status is loading -->
-    <div v-if="isLoadingStatus" class="space-y-3 px-6 py-4">
+    <div v-if="isLoadingStatus" class="px-6 py-4 space-y-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-4">
-          <ShimmerLoading class="h-7 w-64" />
-          <ShimmerLoading class="h-6 w-24" />
+          <ShimmerLoading class="w-64 h-7" />
+          <ShimmerLoading class="w-24 h-6" />
         </div>
-        <ShimmerLoading class="h-10 w-28 rounded-lg" />
+        <ShimmerLoading class="h-10 rounded-lg w-28" />
       </div>
-      <div class="flex space-x-4 ml-10">
-        <ShimmerLoading class="h-5 w-16" />
+      <div class="flex ml-10 space-x-4">
+        <ShimmerLoading class="w-16 h-5" />
         <ShimmerLoading class="h-5 w-28" />
       </div>
       <ShimmerLoading class="h-[450px] w-full" />
@@ -44,7 +44,7 @@
         <div class="flex items-center justify-center px-6"
           v-if="props.tahunData && userAuthStore.roleAlias !== 'Vx_91$pN'">
           <RouterLink
-            :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(props.idMesin) : props.idMesin }, query: { tahun: props.tahunData } }">
+            :to="{ name: 'detail-rekap', params: { id: getEncrypted(props.idMesin) }, query: { tahun: props.tahunData } }">
             <button type="button" id="lihat-data-button" :disabled="statusApprove === 'Data belum terisi'"
               class="space-x-2 text-[#0099AD] hover:text-white hover:bg-primaryColor bg-white border border-[#0099AD] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2.5 flex justify-center items-center duration-300 focus:outline-none">
               <p class="font-semibold">Lihat Data</p>
@@ -104,16 +104,16 @@
     </div>
   </div>
   <div v-else-if="stored.currentTabMesin === 'Planning / Feasibility Study'">
-    <div v-if="isLoadingStatus" class="space-y-3 px-6 py-4">
+    <div v-if="isLoadingStatus" class="px-6 py-4 space-y-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-4">
           <ShimmerLoading class="h-7 w-52" />
-          <ShimmerLoading class="h-6 w-24" />
+          <ShimmerLoading class="w-24 h-6" />
         </div>
-        <ShimmerLoading class="h-10 w-28 rounded-lg" />
+        <ShimmerLoading class="h-10 rounded-lg w-28" />
       </div>
-      <div class="flex space-x-4 ml-10">
-        <ShimmerLoading class="h-5 w-16" />
+      <div class="flex ml-10 space-x-4">
+        <ShimmerLoading class="w-16 h-5" />
         <ShimmerLoading class="h-5 w-28" />
       </div>
       <ShimmerLoading class="h-[450px] w-full" />
@@ -144,7 +144,7 @@
         </div>
         <div class="flex items-center justify-center px-6">
           <RouterLink
-            :to="{ name: 'feasibility-study', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(props.idMesin) : props.idMesin } }">
+            :to="{ name: 'feasibility-study', params: { id: getEncrypted(props.idMesin) } }">
             <button type="button" id="lihat-data-button" :disabled="statusApprovePlanning === 'Data belum terisi'"
               class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center focus:outline-none">
               <svg id="lihat-data-svg" width="8" height="12" viewBox="0 0 8 12" fill="none"
@@ -200,12 +200,12 @@
     </div>
   </div>
   <div v-else-if="stored.currentTabMesin === 'Planning & Realisasi + Proyeksi'">
-    <div v-if="isLoadingStatus" class="space-y-3 px-6 py-4">
+    <div v-if="isLoadingStatus" class="px-6 py-4 space-y-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-4">
           <ShimmerLoading class="h-7 w-72" />
         </div>
-        <ShimmerLoading class="h-10 w-28 rounded-lg" />
+        <ShimmerLoading class="h-10 rounded-lg w-28" />
       </div>
       <ShimmerLoading class="h-[450px] w-full" />
     </div>
@@ -221,7 +221,7 @@
         </div>
         <div class="flex items-center justify-center px-6">
           <RouterLink
-            :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(props.idMesin) : props.idMesin }, query: { tahun: props.tahunData } }">
+            :to="{ name: 'detail-rekap', params: { id: getEncrypted(props.idMesin) }, query: { tahun: props.tahunData } }">
             <button type="button" id="lihat-data-button" :disabled="statusApprove === 'Data belum terisi'"
               class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center focus:outline-none">
               <svg id="lihat-data-svg" width="8" height="12" viewBox="0 0 8 12" fill="none"
@@ -259,12 +259,12 @@
   </div>
   <div v-else-if="stored.currentTabMesin === 'Planning vs Realisasi s/d Tahun Berjalan'
   ">
-    <div v-if="isLoadingStatus" class="space-y-3 px-6 py-4">
+    <div v-if="isLoadingStatus" class="px-6 py-4 space-y-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-4">
           <ShimmerLoading class="h-7 w-80" />
         </div>
-        <ShimmerLoading class="h-10 w-28 rounded-lg" />
+        <ShimmerLoading class="h-10 rounded-lg w-28" />
       </div>
       <ShimmerLoading class="h-[450px] w-full" />
     </div>
@@ -280,7 +280,7 @@
         </div>
         <div class="flex items-center justify-center px-6">
           <RouterLink
-            :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(props.idMesin) : props.idMesin }, query: { tahun: props.tahunData } }">
+            :to="{ name: 'detail-rekap', params: { id: getEncrypted(props.idMesin) }, query: { tahun: props.tahunData } }">
             <button id="lihat-data-button" type="button" :disabled="statusApprove === 'Data belum terisi'"
               class="text-[#0099AD] bg-white border border-[#0099AD] hover:bg-[#9ddee7] focus:ring-2 focus:ring-[#9ddee7] font-medium rounded-lg text-sm ml-4 p-2 flex justify-center items-center focus:outline-none">
               <svg id="lihat-data-svg" width="8" height="12" viewBox="0 0 8 12" fill="none"
@@ -635,8 +635,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, nextTick, computed, watch } from "vue";
-import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
-import AOS from 'aos'
+import { useEncryptParam } from "@/composables/useEncryptParam";
+const { encryptParam, getEncrypted } = useEncryptParam();
 import { VueEcharts } from "vue3-echarts";
 import { useUserAuthStore } from "@/store/storeUserAuth";
 const userAuthStore = useUserAuthStore();
@@ -698,7 +698,6 @@ const tabGraphic = ref("Semua");
 const tabGraphicFS = ref("Semua");
 const statusApprove = ref<any>('');
 const statusApprovePlanning = ref<any>('');
-let encryptStorageRef: any = null;
 
 // Track which data sections have been fetched to avoid re-fetching
 const hasFetched = ref({
@@ -6773,8 +6772,7 @@ const fetchPlanningMesin = async () => {
 }
 
 onMounted(async () => {
-  AOS.init();
-  encryptStorageRef = await encryptStoragePromise;
+  await encryptParam(props.idMesin);
   // Only fetch data for the currently active tab (lazy loading)
   await fetchDataForCurrentTab();
 });

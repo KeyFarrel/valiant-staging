@@ -347,7 +347,7 @@ describe('KertasKerjaMesin.vue', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  it('should initialize encryptStorageRef on mounted', async () => {
+  it('should initialize encryptParam composable on mounted', async () => {
     const wrapper = mount(KertasKerjaMesin, {
       props: {
         source: mockData
@@ -363,8 +363,8 @@ describe('KertasKerjaMesin.vue', () => {
     await wrapper.vm.$nextTick();
     
     const component: any = wrapper.vm;
-    expect(component.encryptStorageRef).toBeDefined();
-    expect(component.encryptStorageRef.encryptValue).toBeDefined();
+    expect(component.getEncrypted).toBeDefined();
+    expect(typeof component.getEncrypted).toBe('function');
   });
 
   it('should display different status badges correctly', async () => {

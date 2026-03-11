@@ -968,7 +968,7 @@ const rejectKKPembina = async () => {
 onMounted(async () => {
   isLoading.value = true;
   const encryptStorage = await encryptStoragePromise;
-  idGrafik.value = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id;
+  idGrafik.value = nodeMode === 'production' ? await encryptStorage.decryptValue(route.params.id.toString()) : route.params.id;
   await fetchPersetujuanKK();
   await fetchMesinById();
   isLoading.value = false;

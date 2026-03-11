@@ -470,8 +470,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick, computed, watch } from "vue";
-import AOS from 'aos'
+import { ref, nextTick, computed, watch } from "vue";
 import { VueEcharts } from "vue3-echarts"
 import { useTagSentral } from "@/store/storeTagGrafik";
 import Legend from "@/components/Grafik/LegendGrafik.vue";
@@ -738,10 +737,6 @@ function changeTab(tabs: number) {
     tabGraphic.value = "Biaya Komponen";
   }
 }
-
-onMounted(async () => {
-  AOS.init();
-});
 
 let tahunDetail = ref("");
 

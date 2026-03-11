@@ -81,13 +81,6 @@ vi.mock('@/services/format/global-format', () => ({
   }
 }));
 
-// Mock AOS
-vi.mock('aos', () => ({
-  default: {
-    init: vi.fn()
-  }
-}));
-
 // Mock store
 vi.mock('@/store/storeLamanDataTab', () => ({
   useLamanDataPeriodeStore: () => ({

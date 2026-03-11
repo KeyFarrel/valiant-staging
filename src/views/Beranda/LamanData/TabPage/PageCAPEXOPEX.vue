@@ -174,7 +174,6 @@ import LamanService from '@/services/laman-service';
 const lamanService = new LamanService();
 import GlobalFormat from "@/services/format/global-format";
 const globalFormat = new GlobalFormat();
-import AOS from 'aos'
 import Empty from "@/components/ui/EmptyData.vue";
 import ButtonComponent from "@/components/ui/Button.vue";
 import TableComponent from '@/components/ui/Table.vue'
@@ -288,7 +287,6 @@ const handleSearch = () => {
 
 onMounted(async () => {
   isLoading.value = true;
-  AOS.init();
   await fetchPeriodeTahun();
   await fetchDataAnggaran();
   console.log(dataAnggaran.value);

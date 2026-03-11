@@ -2467,7 +2467,7 @@ const handleFinalSubmit = async () => {
     await wait(3000);
     isFinalSubmitSuccess.value = false;
     if (userAuthStore.levelAlias === 'Mb*0yT%3') {
-      router.replace({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(uuidMesin.value) : uuidMesin.value }, query: { uuid_sentral: idSentral.value, tahun: tahunBerjalan } });
+      router.replace({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? await encryptStorage.encryptValue(uuidMesin.value) : uuidMesin.value }, query: { uuid_sentral: idSentral.value, tahun: tahunBerjalan } });
     } else {
       router.replace({ name: 'persetujuan-by-approve' });
     }
@@ -2559,7 +2559,7 @@ onUnmounted(() => {
 
 onMounted(async () => {
   const encryptStorage = await encryptStoragePromise;
-  uuidMesin.value = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString();
+  uuidMesin.value = nodeMode === 'production' ? await encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString();
   await fetchMesinById();
   await fetchUnitPengelola();
   await fetchPersetujuanKK();

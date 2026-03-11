@@ -506,7 +506,7 @@ const isPengelolaDropdownOpen = ref(false)
 const isPembangkitDropdownOpen = ref(false)
 const isDmnDropdownOpen = ref(false)
 const isUmurDropdownOpen = ref(false)
-let encryptStorageRef: any = null;
+
 
 interface PetaItem {
   data: any;
@@ -554,13 +554,14 @@ const fetchPetaSentral = async () => {
   }
 }
 
-function getDetailSentral(kode: string) {
+async function getDetailSentral(kode: string) {
   kode_sentral.value = kode;
   try {
+    const encryptStorage = await encryptStoragePromise;
     petaService.getSentralByKode(kode);
     return router.push({
       name: "grafik",
-      params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(kode) : kode },
+      params: { id: nodeMode === 'production' ? await encryptStorage.encryptValue(kode) : kode },
     });
   } catch (error) {
     console.error('Fetch Detail Sentral By Kode Error : ', error);
@@ -824,7 +825,6 @@ async function changeDataNoDMN() {
 
 onMounted(async () => {
   isLoading.value = true;
-  encryptStorageRef = await encryptStoragePromise;
   await fetchPetaSentral();
   getDataPengelola()
   getDataPembangkit()

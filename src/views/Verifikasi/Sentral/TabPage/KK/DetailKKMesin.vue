@@ -12,7 +12,7 @@
         <div v-if="approveMesinKK.status === 'Ditolak T1' || approveMesinKK.status === 'Ditolak T2'" class="flex">
           <!-- Revisi Data -->
           <RouterLink
-            :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data-approveKK', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(approveMesinKK.uuid_mesin) : approveMesinKK.uuid_mesin }, query: { uuid_sentral: route.query.uuid_sentral, tahun: route.query.tahun } }">
+            :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data-approveKK', params: { id: getEncrypted(approveMesinKK.uuid_mesin) }, query: { uuid_sentral: route.query.uuid_sentral, tahun: route.query.tahun } }">
             <button class="w-fit p-2 ml-1 flex items-center justify-center bg-[#0099AD] rounded-md text-white">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g clip-path="url(#clip0_8312_23311)">
@@ -36,7 +36,7 @@
         <div v-else-if="approveMesinKK.status === 'Draft'" class="flex">
           <!-- Edit Data -->
           <RouterLink
-            :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data-approveKK', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(approveMesinKK.uuid_mesin) : approveMesinKK.uuid_mesin }, query: { uuid_sentral: route.query.uuid_sentral, tahun: route.query.tahun } }">
+            :to="{ name: avrIrr === 0 ? 'input-asumsi-parameter-approveKK' : 'perbarui-data-approveKK', params: { id: getEncrypted(approveMesinKK.uuid_mesin) }, query: { uuid_sentral: route.query.uuid_sentral, tahun: route.query.tahun } }">
             <button
               class="w-fit p-2 mr-1 flex items-center justify-center border border-[#0099AD] rounded-md text-[#0099AD] duration-300 hover:text-white">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -312,6 +312,8 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from 'vue-router'
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
+import { useEncryptParam } from "@/composables/useEncryptParam";
+const { encryptParam, getEncrypted } = useEncryptParam();
 import { notifyError } from "@/services/helper/toast-notification";
 import RekapService from "@/services/rekap-service";
 const rekapService = new RekapService();
@@ -354,7 +356,6 @@ const isHover = ref(true);
 const persetujuanService = new PersetujuanService();
 const detailRekapService = new DetailRekapService();
 const tahunGrafik = ref<number>(0);
-let encryptStorageRef: any = null;
 
 const approveSentralKK = ref<ListApprove>();
 const approveMesinKK = ref<ListApprove>({
@@ -839,8 +840,9 @@ const fetchUnitPengelola = async () => {
 
 onMounted(async () => {
   isLoading.value = true;
-  encryptStorageRef = await encryptStoragePromise;
-  idGrafik.value = nodeMode === 'production' ? encryptStorageRef.decryptValue(route.params.id.toString()) : route.params.id;
+  const encryptStorage = await encryptStoragePromise;
+  idGrafik.value = nodeMode === 'production' ? await encryptStorage.decryptValue(route.params.id.toString()) : route.params.id;
+  if (idGrafik.value) await encryptParam(idGrafik.value);
   console.log(idGrafik.value);
   await fetchMesinById();
   await fetchPersetujuanKK();

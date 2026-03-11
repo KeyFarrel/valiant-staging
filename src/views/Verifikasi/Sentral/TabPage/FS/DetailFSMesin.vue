@@ -906,7 +906,7 @@ const updateFS = async () => {
 onMounted(async () => {
   isLoading.value = true;
   const encryptStorage = await encryptStoragePromise;
-  idGrafik.value = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id;
+  idGrafik.value = nodeMode === 'production' ? await encryptStorage.decryptValue(route.params.id.toString()) : route.params.id;
   await fetchMesinById();
   await fetchPersetujuanFS();
   await fetchAsumsiFeasibility();

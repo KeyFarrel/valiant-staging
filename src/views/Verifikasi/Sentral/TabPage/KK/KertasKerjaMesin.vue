@@ -77,7 +77,7 @@
         <td class="text-center">
           <div>
             <RouterLink
-              :to="{ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(persetujuanKKItem.uuid_mesin) : persetujuanKKItem.uuid_mesin }, query: { uuid_sentral: persetujuanKKItem.uuid_sentral, tahun: persetujuanKKItem.tahun } }">
+              :to="{ name: 'persetujuan-kk', params: { id: getEncrypted(persetujuanKKItem.uuid_mesin) }, query: { uuid_sentral: persetujuanKKItem.uuid_sentral, tahun: persetujuanKKItem.tahun } }">
               <button>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" clip-rule="evenodd"
@@ -140,8 +140,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
-import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
+import { ref, computed, onMounted, watch } from "vue";
+import { useEncryptParam } from "@/composables/useEncryptParam";
+const { encryptParams, getEncrypted } = useEncryptParam();
 const nodeMode = import.meta.env.MODE;
 import GlobalFormat from "@/services/format/global-format";
 const globalFormat = new GlobalFormat();
@@ -162,6 +163,8 @@ interface PersetujuanKKItem {
   uuid_sentral: any
 }
 
+const props = defineProps<Props>()
+
 const navigation = ref<{
   currentPage: number,
   totalPages: number,
@@ -173,7 +176,9 @@ const navigation = ref<{
   totalRecords: 0,
   limit: 10
 });
-let encryptStorageRef: any = null;
+watch(() => props.source, async (items) => {
+  if (items?.length) await encryptParams(items.map((i: any) => i.uuid_mesin));
+}, { immediate: true });
 
 const generatePageList = computed(() => {
   const pageList = []
@@ -223,12 +228,8 @@ const goToNext = () => {
   goToPage(navigation.value.currentPage + 1);
 };
 
-const props = defineProps<Props>()
 
 
-onMounted(async () => {
-  encryptStorageRef = await encryptStoragePromise;
-})
 </script>
 
 <style scoped>

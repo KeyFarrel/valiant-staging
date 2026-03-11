@@ -515,7 +515,7 @@
                 <div class="flex mt-2 space-x-3"
                   v-if="listStatusInputAsumsiMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0]">
                   <RouterLink
-                    :to="checkUnggahRequiredProp(mesinItem.nilai_asset_awal, mesinItem.tahun_nilai_perolehan, mesinItem.masa_manfaat) ? '' : { name: 'input-asumsi-parameter', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(mesinItem.uuid_mesin) : mesinItem.uuid_mesin } }"
+                    :to="checkUnggahRequiredProp(mesinItem.nilai_asset_awal, mesinItem.tahun_nilai_perolehan, mesinItem.masa_manfaat) ? '' : { name: 'input-asumsi-parameter', params: { id: getEncrypted(mesinItem.uuid_mesin) } }"
                     v-if="userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Mb*0yT%3' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k')">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
@@ -545,7 +545,7 @@
                     <span class="text-sm font-semibold">Unggah Feasibility Study</span>
                   </button>
                   <RouterLink :to="{
-                    name: 'feasibility-study', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(mesinItem.uuid_mesin) : mesinItem.uuid_mesin },
+                    name: 'feasibility-study', params: { id: getEncrypted(mesinItem.uuid_mesin) },
                   }
                     "
                     v-else-if="statusFSMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Data sudah update' && userAuthStore.roleAlias !== 'Vx_91$pN'">
@@ -573,7 +573,7 @@
                     <span class="text-sm font-semibold">Unggah Kertas Kerja</span>
                   </button>
                   <RouterLink
-                    :to="{ name: 'perbarui-data', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(mesinItem.uuid_mesin) : mesinItem.uuid_mesin } }"
+                    :to="{ name: 'perbarui-data', params: { id: getEncrypted(mesinItem.uuid_mesin) } }"
                     v-else-if="statusRealisasiMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Data belum update' && (userAuthStore.levelAlias === 'Xf!8qP@7' || userAuthStore.levelAlias === 'Mb*0yT%3' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k'))">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
@@ -594,7 +594,7 @@
                     </button>
                   </RouterLink>
                   <RouterLink
-                    :to="{ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(mesinItem.uuid_mesin) : mesinItem.uuid_mesin }, query: { tahun: tahunBerjalan } }"
+                    :to="{ name: 'detail-rekap', params: { id: getEncrypted(mesinItem.uuid_mesin) }, query: { tahun: tahunBerjalan } }"
                     v-else-if="statusRealisasiMesin.filter((mesin) => mesin.uuid_mesin === mesinItem.uuid_mesin)[0].status === 'Data sudah update' && userAuthStore.roleAlias !== 'Vx_91$pN'">
                     <button
                       class="flex items-center p-3 space-x-2 duration-300 rounded-lg text-primaryColor hover:bg-primaryColor hover:text-white"
@@ -853,7 +853,7 @@
             sebelum melanjutkan aksi lebih lanjut</p>
           <div class="flex flex-col w-full space-y-3">
             <RouterLink
-              :to="{ name: 'input-asumsi-parameter', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(currentIdMesin) : currentIdMesin } }">
+              :to="{ name: 'input-asumsi-parameter', params: { id: getEncrypted(currentIdMesin) } }">
               <button
                 class="w-full px-3 py-2 text-sm font-semibold text-white duration-300 rounded-lg bg-primaryColor hover:bg-hoverColor active:bg-hoverColor active:bg-opacity-80 active:ring active:ring-hoverColor active:ring-opacity-90 active:duration-0">Input
                 Asumsi &
@@ -911,7 +911,7 @@
           <div class="flex flex-col w-full space-y-3">
             <RouterLink :to="{
               name: 'detail-unit',
-              params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(currentIdSentral) : currentIdSentral },
+              params: { id: getEncrypted(currentIdSentral) },
               query: { kode_pengelola: currentKodePengelola, tab: currentNamaMesin }
             }">
               <button
@@ -989,6 +989,8 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 import { Vue3Lottie } from "vue3-lottie";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
+import { useEncryptParam } from "@/composables/useEncryptParam";
+const { encryptParam, encryptParams, getEncrypted } = useEncryptParam();
 import { useUserAuthStore } from "@/store/storeUserAuth";
 const userAuthStore = useUserAuthStore();
 import { useWindowScroll } from '@vueuse/core'
@@ -1086,7 +1088,11 @@ const isRekapUploadSuccess = ref(false);
 const totalPagesRef = ref(1);
 const totalRecords = ref(0);
 const totalPages = ref(0);
-let encryptStorageRef: any = null;
+
+watch([currentIdMesin, currentIdSentral], async ([mesinId, sentralId]) => {
+  const vals = [mesinId, sentralId].filter(Boolean);
+  if (vals.length) await encryptParams(vals);
+});
 
 interface PengelolaItem {
   data: any
@@ -1488,7 +1494,9 @@ const uploadFile = async () => {
     await fetchStatusRealisasiMesin(currentIdSentral.value);
     selectedFileEvidence.value = null;
     if (userAuthStore.levelAlias === 'Mb*0yT%3' || userAuthStore.levelAlias === 'Xf!8qP@7' || (userAuthStore.levelAlias === 'Dr^3Zn$!' && userAuthStore.roleAlias === 'nT!z03&k')) {
-      router.push({ name: 'persetujuan-kk', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { uuid_sentral: currentIdSentral.value, tahun: tahunBerjalan.value } });
+      const encryptStorage = await encryptStoragePromise;
+      const encryptedId = nodeMode === 'production' ? await encryptStorage.encryptValue(currentIdMesin.value) : currentIdMesin.value;
+      router.push({ name: 'persetujuan-kk', params: { id: encryptedId }, query: { uuid_sentral: currentIdSentral.value, tahun: tahunBerjalan.value } });
     }
     else {
       router.push({ name: 'persetujuan-by-approve' });
@@ -1531,7 +1539,9 @@ const uploadFileFS = async () => {
     await fetchStatusFSMesin(currentIdSentral.value);
     selectedFileEvidence.value = null
     if (userAuthStore.levelAlias === 'Mb*0yT%3') {
-      router.push({ name: 'persetujuan-fs', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(currentIdMesin.value) : currentIdMesin.value }, query: { uuid_sentral: currentIdSentral.value } });
+      const encryptStorage = await encryptStoragePromise;
+      const encryptedId = nodeMode === 'production' ? await encryptStorage.encryptValue(currentIdMesin.value) : currentIdMesin.value;
+      router.push({ name: 'persetujuan-fs', params: { id: encryptedId }, query: { uuid_sentral: currentIdSentral.value } });
     } else {
       router.push({ name: 'persetujuan-by-approve' });
     }
@@ -1631,6 +1641,7 @@ const togglePembangkit = async (idSentral: any) => {
         }
       });
       sentral[0].mesins.push(finalMesin);
+      await encryptParams(finalMesin.map((m: any) => m.uuid_mesin));
     }
   } catch (error) {
     console.error('Toggle Error : ', error);
@@ -1856,7 +1867,6 @@ onUnmounted(() => {
 
 onMounted(async () => {
   isLoading.value = true;
-  encryptStorageRef = await encryptStoragePromise;
   await fetchSentralData();
   await fetchSuggestionSentral();
   await fetchPengelolaData();

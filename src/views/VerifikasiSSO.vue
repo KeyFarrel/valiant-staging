@@ -37,14 +37,14 @@ const verifikasiSSO = async () => {
       const dataString = `${levelSentral}:${namaPegawai}`;
       const hash = CryptoJS.HmacSHA512(dataString, (window as any).userHashSecretKey()).toString();
 
-      const setStorage = (storage: any) => {
-        storage.setItem("nama_pegawai", namaPegawai);
-        storage.setItem("level_sentral", levelSentral);
-        storage.setItem("user_hash", hash);
+      const setStorage = async (storage: any) => {
+        await storage.setItem("nama_pegawai", namaPegawai);
+        await storage.setItem("level_sentral", levelSentral);
+        await storage.setItem("user_hash", hash);
       };
 
       const storage = nodeMode === "production" ? encryptStorage : localStorage;
-      setStorage(storage);
+      await setStorage(storage);
       router.push('/peta');
     } else {
       isError.value = true;

@@ -238,15 +238,6 @@ watch(dmn, (val) => {
   }
 });
 
-const handleCheckDmn = (val: any) => {
-  indeterminateDmn.value = false;
-  if (val) {
-    dmn.value = props.itemsDayaMampu.map((_) => _.id)
-  } else {
-    dmn.value = [];
-  }
-};
-
 const handleCheckAll = (val: any) => {
   indeterminate.value = false;
   if (val) {
@@ -260,9 +251,14 @@ const togglePembangkitDropdown = () => {
   isPembangkitDropdownOpen.value = !isPembangkitDropdownOpen.value;
 }
 
-const removeSelectedPembangkit = (id: any) => {
-  value.value = value.value.filter(item => item !== id);
-}
+const handleCheckDmn = (val: any) => {
+  indeterminateDmn.value = false;
+  if (val) {
+    dmn.value = props.itemsDayaMampu.map((_) => _.id)
+  } else {
+    dmn.value = [];
+  }
+};
 
 const clearPembangkit = () => {
   value.value = [];
@@ -272,8 +268,8 @@ const toggleDmnDropdown = () => {
   isDmnDropdownOpen.value = !isDmnDropdownOpen.value;
 }
 
-const removeSelectedDmn = (id: any) => {
-  dmn.value = dmn.value.filter(item => item !== id);
+const removeSelectedPembangkit = (id: any) => {
+  value.value = value.value.filter(item => item !== id);
 }
 
 const clearDmn = () => {
@@ -288,14 +284,18 @@ const handleClickOutside = (event: MouseEvent) => {
   }
 };
 
+const removeSelectedDmn = (id: any) => {
+  dmn.value = dmn.value.filter(item => item !== id);
+}
+
 onMounted(async () => {
   fetchInitialPembangkit();
   getDataGraph()
-  document.addEventListener('click', handleClickOutside);
+  document.addEventListener('click', handleClickOutside)
 });
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
+  document.removeEventListener('click', handleClickOutside)
 });
 </script>
 

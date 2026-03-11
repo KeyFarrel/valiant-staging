@@ -106,13 +106,6 @@ vi.mock('@/services/grafik-service', () => ({
   default: vi.fn().mockImplementation(() => mockGrafikService)
 }));
 
-// Mock AOS
-vi.mock('aos', () => ({
-  default: {
-    init: vi.fn()
-  }
-}));
-
 // Mock global format
 vi.mock('@/services/format/global-format', () => ({
   default: vi.fn().mockImplementation(() => ({
@@ -299,25 +292,6 @@ describe('GrafikSentral.vue', () => {
     expect(vm.showModalLastY).toBe(true);
     expect(vm.tahunDetail).toBe(2024);
     expect(mockGrafikService.getGrafikLastYearDetail).toHaveBeenCalled();
-  });
-
-  it('should initialize AOS on mounted', async () => {
-    const AOSMock = await import('aos');
-    
-    mount(GrafikSentral, {
-      props: defaultProps,
-      global: {
-        stubs: {
-          Loading: true,
-          Empty: true,
-          'vue-echarts': true,
-          Legend: true,
-          ModalWrapper: true
-        }
-      }
-    });
-
-    expect(AOSMock.default.init).toHaveBeenCalled();
   });
 
   it('should watch tahunData prop changes and load data', async () => {

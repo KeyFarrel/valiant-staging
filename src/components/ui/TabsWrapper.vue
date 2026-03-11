@@ -7,9 +7,9 @@
         :class="{ selected: title === selectedTitle }">{{
           title }}</li>
       <li class="items-end content-end justify-end ml-auto justify-items-end" v-if="isLihatGrafik">
-        <div v-if="encryptStorageRef">
+        <div v-if="props.kodeSentral">
           <RouterLink
-            :to="{ name: 'grafik', params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(props.kodeSentral) : props.kodeSentral } }">
+            :to="{ name: 'grafik', params: { id: getEncrypted(props.kodeSentral) } }">
             <button
               class="flex space-x-2 items-center px-3 py-2 border border-[#0099AD] rounded-lg text-[#0099AD] hover:bg-blue-600 hover:border-blue-600 hover:text-white duration-300">
               <span class="font-semibold">Lihat Grafik</span>
@@ -33,7 +33,8 @@ import { useLamanDataTabStore } from "@/store/storeLamanDataTab";
 const store = useLamanDataTabStore();
 import { usePerbaruiTabStore } from "@/store/storeRekapKertasKerja";
 const storePerbaruiTab = usePerbaruiTabStore();
-import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
+import { useEncryptParam } from "@/composables/useEncryptParam";
+const { encryptParam, getEncrypted } = useEncryptParam();
 
 interface Props {
   isLihatGrafik?: boolean,
@@ -64,10 +65,9 @@ const selectedTitle = ref(tabTitles.value[0]);
 provide("selectedTitle", selectedTitle);
 
 const nodeMode = import.meta.env.MODE;
-let encryptStorageRef: any = null;
 
 onMounted(async () => {
-  encryptStorageRef = await encryptStoragePromise;
+  if (props.kodeSentral) await encryptParam(props.kodeSentral);
 })
 </script>
 

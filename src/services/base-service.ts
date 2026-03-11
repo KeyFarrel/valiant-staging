@@ -128,9 +128,9 @@ export default class BaseService {
         url: path,
         withCredentials: true,
         data:
-          nodeMode !== "development"
-            ? encryptAES(JSON.stringify(payload))
-            : payload,
+          nodeMode === "development"
+            ? payload
+            : encryptAES(JSON.stringify(payload)),
         headers,
         timeout: TIME_OUT,
       });
@@ -178,7 +178,9 @@ export default class BaseService {
       const response = await axios({
         method: "PATCH",
         url: path,
-        data: encryptAES(JSON.stringify(payload)),
+        data: nodeMode === "development"
+          ? payload
+          : encryptAES(JSON.stringify(payload)),
         headers,
         timeout: TIME_OUT,
         withCredentials: true,

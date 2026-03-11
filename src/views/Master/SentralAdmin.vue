@@ -116,7 +116,7 @@
                 <div class="mt-4 border-b"></div>
                 <RouterLink :to="{
                   name: 'detail-unit',
-                  params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(sentralItem.uuid) : sentralItem.uuid },
+                  params: { id: getEncrypted(sentralItem.uuid) },
                   query: { kode_pengelola: sentralItem.kode_pengelola, tab: 'Sentral' },
                 }">
                   <button
@@ -197,7 +197,7 @@
                 <div class="mt-4 border-b"></div>
                 <RouterLink :to="{
                   name: 'detail-unit',
-                  params: { id: nodeMode === 'production' ? encryptStorageRef.encryptValue(sentralItem.uuid) : sentralItem.uuid },
+                  params: { id: getEncrypted(sentralItem.uuid) },
                   query: { kode_pengelola: sentralItem.kode_pengelola, tab: mesinItem.mesin },
                 }">
                   <button
@@ -268,7 +268,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue";
-import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
+import { useEncryptParam } from "@/composables/useEncryptParam";
+const { encryptParams, getEncrypted } = useEncryptParam();
 import { useUserAuthStore } from "@/store/storeUserAuth";
 const userAuthStore = useUserAuthStore();
 import TabWrapperSentral from "@/components/MasterUnitSentral/TabWrapperSentral.vue";
@@ -302,7 +303,6 @@ const listSuggestionSentral = ref<any[]>([]);
 const isLoading = ref();
 const selectedAll = ref<string[]>(['ALL']);
 const tahunBerjalan = new Date().getFullYear();
-let encryptStorageRef: any = null;
 
 interface PengelolaItem {
   data: any
@@ -391,6 +391,7 @@ const fetchSentralData = async () => {
       console.log(val, "VALLLL")
     }
     isPembangkitTabOpen.value.push(data[0].kode_sentral);
+    await encryptParams(sentralData.value.map((val: any) => val.uuid));
   } catch (error) {
     console.error(error);
   } finally {
@@ -542,7 +543,6 @@ watch(searchQuery, async (val) => {
 
 onMounted(async () => {
   isLoading.value = true;
-  encryptStorageRef = await encryptStoragePromise;
   await fetchSuggestionSentral();
   await fetchSentralData();
   isLoading.value = true;

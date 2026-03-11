@@ -167,7 +167,7 @@ function toggleButton() {
 onMounted(async () => {
   isLoading.value = true;
   const encryptStorage = await encryptStoragePromise;
-  levelSentral.value = nodeMode === 'production' ? encryptStorage.getItem('level_sentral') : localStorage.getItem("level_sentral");
+  levelSentral.value = nodeMode === 'production' ? await encryptStorage.getItem('level_sentral') : localStorage.getItem("level_sentral");
   await fetchPersetujuanKK();
   await fetchPersetujuanFS();
   await fetchDetailMesin();

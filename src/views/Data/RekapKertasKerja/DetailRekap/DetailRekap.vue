@@ -319,7 +319,7 @@ const fetchMesinById = async () => {
   try {
     const encryptStorage = await encryptStoragePromise;
     const response: MesinItem = await detailRekapService.getMesinById(
-      nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id
+      nodeMode === 'production' ? await encryptStorage.decryptValue(route.params.id.toString()) : route.params.id
     );
     mesin.value = response.data;
     kodeMesin.value = response.data.kode_mesin;
@@ -504,7 +504,7 @@ const fetchTahunRealisasiData = async () => {
   try {
     const encryptStorage = await encryptStoragePromise;
     const response: any = await detailRekapService.getTahunRealisasi(
-      nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id
+      nodeMode === 'production' ? await encryptStorage.decryptValue(route.params.id.toString()) : route.params.id
     );
     listtahunRealisasi.value = response.data;
     listYear.value[0] = response.data[0].tahun;
@@ -565,7 +565,7 @@ const fetchTypePeriodic = async () => {
 const handleYearChange = async () => {
   isLoading.value = true
   const encryptStorage = await encryptStoragePromise;
-  router.replace({ name: 'detail-rekap', params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(idMesin.value) : idMesin.value }, query: { tahun: selectedYear.value } });
+  router.replace({ name: 'detail-rekap', params: { id: nodeMode === 'production' ? await encryptStorage.encryptValue(idMesin.value) : idMesin.value }, query: { tahun: selectedYear.value } });
   await fetchMesinById();
   await fetchTahunRealisasiData();
   await fetchStatusPersetujuan();

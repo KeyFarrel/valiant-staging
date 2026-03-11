@@ -580,7 +580,7 @@ const fetchDataSentral = async () => {
     idMesin.value = [];
     tahunMesin.value = [];
     const response: SentralItem = await petaService.getSentralByKode(
-      nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id
+      nodeMode === 'production' ? await encryptStorage.decryptValue(route.params.id.toString()) : route.params.id
     );
     dataSentral.value = response.data;
     idSentral.value = response.data.uuid_sentral;
@@ -613,7 +613,7 @@ const replaceSentral = async () => {
   const encryptStorage = await encryptStoragePromise;
   await router.push({
     name: "grafik",
-    params: { id: nodeMode === 'production' ? encryptStorage.encryptValue(kodeSentral.value) : kodeSentral.value }
+    params: { id: nodeMode === 'production' ? await encryptStorage.encryptValue(kodeSentral.value) : kodeSentral.value }
   });
 };
 
@@ -660,7 +660,7 @@ const fetchPeriodeTahunSentral = async () => {
   try {
     const encryptStorage = await encryptStoragePromise;
     const response: any = await grafikService.getYearSentral({
-      kode_sentral: nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id,
+      kode_sentral: nodeMode === 'production' ? await encryptStorage.decryptValue(route.params.id.toString()) : route.params.id,
     });
     periodeTahunSentral.value = [response.data[0].tahun, response.data[response.data.length - 1].tahun];
     yearPickedSentral.value = response.data[response.data.length - 1].tahun;

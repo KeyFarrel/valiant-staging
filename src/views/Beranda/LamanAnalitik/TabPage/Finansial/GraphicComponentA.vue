@@ -245,6 +245,10 @@ watch(dmn, (val) => {
   }
 });
 
+const togglePembangkitDropdown = () => {
+  isPembangkitDropdownOpen.value = !isPembangkitDropdownOpen.value;
+}
+
 const handleCheckDmn = (val: any) => {
   indeterminateDmn.value = false;
   if (val) {
@@ -254,20 +258,12 @@ const handleCheckDmn = (val: any) => {
   };
 }
 
-const togglePembangkitDropdown = () => {
-  isPembangkitDropdownOpen.value = !isPembangkitDropdownOpen.value;
-}
-
-const removeSelectedPembangkit = (id: any) => {
-  value.value = value.value.filter(item => item !== id);
-}
-
 const clearPembangkit = () => {
   value.value = [];
 }
 
-const toggleDmnDropdown = () => {
-  isDmnDropdownOpen.value = !isDmnDropdownOpen.value;
+const removeSelectedPembangkit = (id: any) => {
+  value.value = value.value.filter(item => item !== id);
 }
 
 const removeSelectedDmn = (id: any) => {
@@ -278,6 +274,16 @@ const clearDmn = () => {
   dmn.value = [];
 }
 
+const toggleDmnDropdown = () => {
+  isDmnDropdownOpen.value = !isDmnDropdownOpen.value;
+}
+
+onMounted(async () => {
+  await fetchInitialPembangkit()
+  getDataGraph();
+  document.addEventListener('click', handleClickOutside);
+});
+
 const handleClickOutside = (event: MouseEvent) => {
   const target = event.target as HTMLElement;
   if (!target.closest('.relative')) {
@@ -285,12 +291,6 @@ const handleClickOutside = (event: MouseEvent) => {
     isDmnDropdownOpen.value = false;
   }
 };
-
-onMounted(async () => {
-  await fetchInitialPembangkit()
-  getDataGraph();
-  document.addEventListener('click', handleClickOutside);
-});
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);

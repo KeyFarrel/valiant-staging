@@ -537,7 +537,7 @@ const insertAsumsiParameter = async () => {
 onMounted(async () => {
   isLoading.value = true;
   const encryptStorage = await encryptStoragePromise;
-  idMesin.value = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id
+  idMesin.value = nodeMode === 'production' ? await encryptStorage.decryptValue(route.params.id.toString()) : route.params.id
   bahanBakars.value.push({
     id: 1,
     uuid_mesin: idMesin.value,

@@ -258,28 +258,28 @@ const handleCheckDmn = (val: any) => {
   }
 };
 
-const togglePembangkitDropdown = () => {
-  isPembangkitDropdownOpen.value = !isPembangkitDropdownOpen.value;
-}
-
 const removeSelectedPembangkit = (id: any) => {
   value.value = value.value.filter(item => item !== id);
 }
 
-const clearPembangkit = () => {
-  value.value = [];
+const togglePembangkitDropdown = () => {
+  isPembangkitDropdownOpen.value = !isPembangkitDropdownOpen.value;
 }
 
 const toggleDmnDropdown = () => {
   isDmnDropdownOpen.value = !isDmnDropdownOpen.value;
 }
 
-const removeSelectedDmn = (id: any) => {
-  dmn.value = dmn.value.filter(item => item !== id);
+const clearPembangkit = () => {
+  value.value = [];
 }
 
 const clearDmn = () => {
   dmn.value = [];
+}
+
+const removeSelectedDmn = (id: any) => {
+  dmn.value = dmn.value.filter(item => item !== id);
 }
 
 const handleClickOutside = (event: MouseEvent) => {
@@ -290,15 +290,14 @@ const handleClickOutside = (event: MouseEvent) => {
   }
 };
 
-onMounted(async () => {
-  fetchInitialPembangkit();
-
-  getDataGraph()
-  document.addEventListener('click', handleClickOutside);
-});
-
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
+});
+
+onMounted(async () => {
+  fetchInitialPembangkit();
+  getDataGraph()
+  document.addEventListener('click', handleClickOutside);
 });
 </script>
 

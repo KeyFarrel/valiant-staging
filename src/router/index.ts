@@ -462,7 +462,7 @@ router.beforeEach(async (to, _, next) => {
   const authService = new AuthService();
   const encryptStorage = await encryptStoragePromise;
   const storage = nodeMode === "production" ? encryptStorage : localStorage;
-  let storedHash = storage.getItem("user_hash");
+  let storedHash = await storage.getItem("user_hash");
 
   storeNavbar.label = to.meta.label;
 
@@ -488,12 +488,12 @@ router.beforeEach(async (to, _, next) => {
     if (!userAuthStore.isDataFetched) {
       await userAuthStore.fetchUserAuth();
     }
-    const getStorage = (storage: any) => {
-      levelSentral = storage.getItem("level_sentral");
-      namaPegawai = storage.getItem("nama_pegawai");
-      storedHash = storage.getItem("user_hash");
+    const getStorage = async (storage: any) => {
+      levelSentral = await storage.getItem("level_sentral");
+      namaPegawai = await storage.getItem("nama_pegawai");
+      storedHash = await storage.getItem("user_hash");
     };
-    getStorage(storage);
+    await getStorage(storage);
 
     if (
       levelSentral === null ||

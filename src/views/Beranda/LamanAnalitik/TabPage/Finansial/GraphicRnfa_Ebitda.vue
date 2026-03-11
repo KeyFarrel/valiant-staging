@@ -94,14 +94,15 @@ async function getDataGraph() {
       //   const totalResponse = data.grafik?.length
       let totalPLNEAF = 0
       let totalEbitda = 0
-      for (const key in data.grafik) {
-        totalPLNEAF += data.grafik[key].data.rnfa_real;
-        totalEbitda += data.grafik[key].data.ebitda_real;
-        console.log(data.grafik[key].data.ebitda_real);
+      for (const item of data.grafik ?? []) {
+        totalPLNEAF += item.data.rnfa_real;
+        totalEbitda += item.data.ebitda_real;
+        console.log(item.data.ebitda_real);
       }
 
-      let avgPLNEAF = totalPLNEAF / data.grafik?.length;
-      let avgEbitda = totalEbitda / data.grafik?.length;
+      const grafikLength = data.grafik?.length ?? 0;
+      let avgPLNEAF = grafikLength > 0 ? totalPLNEAF / grafikLength : 0;
+      let avgEbitda = grafikLength > 0 ? totalEbitda / grafikLength : 0;
       console.log(totalPLNEAF, 'TOTAL PLN EAF');
       console.log(totalEbitda, 'TOTAL PLN EBITDA');
       console.log(avgPLNEAF, 'AVG PLN EAF');
@@ -195,6 +196,14 @@ watch(dmn, (val) => {
   }
 });
 
+const togglePembangkitDropdown = () => {
+  isPembangkitDropdownOpen.value = !isPembangkitDropdownOpen.value;
+}
+
+const removeSelectedPembangkit = (id: any) => {
+  value.value = value.value.filter(item => item !== id);
+}
+
 const handleCheckDmn = (val: any) => {
   indeterminateDmn.value = false;
   if (val) {
@@ -204,18 +213,6 @@ const handleCheckDmn = (val: any) => {
   };
 };
 
-const togglePembangkitDropdown = () => {
-  isPembangkitDropdownOpen.value = !isPembangkitDropdownOpen.value;
-}
-
-const removeSelectedPembangkit = (id: any) => {
-  value.value = value.value.filter(item => item !== id);
-}
-
-const clearPembangkit = () => {
-  value.value = [];
-}
-
 const toggleDmnDropdown = () => {
   isDmnDropdownOpen.value = !isDmnDropdownOpen.value;
 }
@@ -224,8 +221,8 @@ const removeSelectedDmn = (id: any) => {
   dmn.value = dmn.value.filter(item => item !== id);
 }
 
-const clearDmn = () => {
-  dmn.value = [];
+const clearPembangkit = () => {
+  value.value = [];
 }
 
 const handleClickOutside = (event: MouseEvent) => {
@@ -242,6 +239,10 @@ onMounted(async () => {
   getDataGraph()
   document.addEventListener('click', handleClickOutside);
 });
+
+const clearDmn = () => {
+  dmn.value = [];
+}
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);

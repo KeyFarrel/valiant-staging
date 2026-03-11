@@ -49,13 +49,6 @@ vi.mock('@/composables/useMesinSharedData', () => ({
   invalidateAllMesinCaches: vi.fn(),
 }));
 
-// Mock AOS
-vi.mock('aos', () => ({
-  default: {
-    init: vi.fn(),
-  },
-}));
-
 // Mock the stores
 vi.mock('@/store/storeUserAuth', () => ({
   useUserAuthStore: () => ({

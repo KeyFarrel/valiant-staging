@@ -413,10 +413,7 @@
                   " :to="{
                     name: 'persetujuan-kk',
                     params: {
-                      id:
-                        nodeMode === 'production'
-                          ? encryptStorageRef.encryptValue(item.uuid_mesin)
-                          : item.uuid_mesin,
+                      id: getEncrypted(item.uuid_mesin),
                     },
                     query: { uuid_sentral: item.uuid_sentral, tahun: item.tahun },
                   }">
@@ -431,10 +428,7 @@
                   <RouterLink v-else :to="{
                     name: 'app-kk-mesin',
                     params: {
-                      id:
-                        nodeMode === 'production'
-                          ? encryptStorageRef.encryptValue(item.uuid_mesin)
-                          : item.uuid_mesin,
+                      id: getEncrypted(item.uuid_mesin),
                     },
                     query: { uuid_sentral: item.uuid_sentral, tahun: item.tahun },
                   }">
@@ -909,10 +903,7 @@
                   <RouterLink :to="{
                     name: 'persetujuan-fs',
                     params: {
-                      id:
-                        nodeMode === 'production'
-                          ? encryptStorageRef.encryptValue(item.uuid_mesin)
-                          : item.uuid_mesin,
+                      id: getEncrypted(item.uuid_mesin),
                     },
                     query: { uuid_sentral: item.uuid_sentral },
                   }">
@@ -929,10 +920,7 @@
                   <RouterLink :to="{
                     name: 'app-fs-mesin',
                     params: {
-                      id:
-                        nodeMode === 'production'
-                          ? encryptStorageRef.encryptValue(item.uuid_mesin)
-                          : item.uuid_mesin,
+                      id: getEncrypted(item.uuid_mesin),
                     },
                     query: { uuid_sentral: item.uuid_sentral },
                   }">
@@ -1008,7 +996,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch, computed } from "vue";
-import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
+import { useEncryptParam } from "@/composables/useEncryptParam";
+const { encryptParams, getEncrypted } = useEncryptParam();
 import { useUserAuthStore } from "@/store/storeUserAuth";
 const userAuthStore = useUserAuthStore();
 import PersetujuanService from "@/services/persetujuan-service";
@@ -1048,7 +1037,6 @@ const pengelolaList = ref<any[]>([]);
 const pembinaList = ref<any[]>([]);
 const persetujuanKK = ref<any[]>([]);
 const persetujuanFS = ref<any[]>([]);
-let encryptStorageRef: any = null;
 
 const indeterminatePengelolaKK = ref(false);
 const indeterminatePembinaKK = ref(false);
@@ -1188,6 +1176,7 @@ const fetchPersetujuanKK = async (page?: number) => {
       navigationKK.value.currentPage = 1;
     }
     persetujuanKK.value = response.data;
+    await encryptParams(persetujuanKK.value.map((item: any) => item.uuid_mesin));
     navigationKK.value.totalPages = response.meta.totalPages;
     navigationKK.value.totalRecords = response.meta.totalRecords;
     navigationKK.value.limit = response.meta.limit;
@@ -1213,6 +1202,7 @@ const fetchPersetujuanFS = async (page?: number) => {
       (navigationFS.value.currentPage = 1)
     }
     persetujuanFS.value = response.data;
+    await encryptParams(persetujuanFS.value.map((item: any) => item.uuid_mesin));
     navigationFS.value.totalPages = response.meta.totalPages;
     navigationFS.value.totalRecords = response.meta.totalRecords;
     navigationFS.value.limit = response.meta.limit;
@@ -1609,7 +1599,6 @@ const goNext = () => {
 
 onMounted(async () => {
   isLoading.value = true;
-  encryptStorageRef = await encryptStoragePromise;
   await fetchPersetujuanKK();
   await fetchPersetujuanFS();
   await getDataPengelola();

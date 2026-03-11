@@ -226,52 +226,52 @@ watch(dmn, (val) => {
 });
 
 const handleCheckDmn = (val: any) => {
-  indeterminateDmn.value = false
+  indeterminateDmn.value = false;
   if (val) {
     dmn.value = props.itemsDayaMampu.map((_) => _.id);
   } else {
-    dmn.value = []
+    dmn.value = [];
   };
-}
+};
 
 const togglePembangkitDropdown = () => {
   isPembangkitDropdownOpen.value = !isPembangkitDropdownOpen.value;
-}
+};
 
 const removeSelectedPembangkit = (id: any) => {
   value.value = value.value.filter(item => item !== id);
-}
+};
 
 const clearPembangkit = () => {
   value.value = [];
-}
+};
 
 const toggleDmnDropdown = () => {
   isDmnDropdownOpen.value = !isDmnDropdownOpen.value;
-}
+};
 
 const removeSelectedDmn = (id: any) => {
   dmn.value = dmn.value.filter(item => item !== id);
-}
+};
 
 const clearDmn = () => {
   dmn.value = [];
-}
+};
 
 const handleClickOutside = (event: MouseEvent) => {
   const target = event.target as HTMLElement;
   if (!target.closest('.relative')) {
     isPembangkitDropdownOpen.value = false;
     isDmnDropdownOpen.value = false;
-  }
+  };
 };
 
 onMounted(async () => {
   isLoading.value = true;
-  await fetchInitialPembangkit()
+  await fetchInitialPembangkit();
   getDataGraph();
   document.addEventListener('click', handleClickOutside);
-})
+});
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);

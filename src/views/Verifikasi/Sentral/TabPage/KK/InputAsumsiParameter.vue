@@ -186,7 +186,7 @@
         <TabParameterTeknis :is-perbarui-data="false" :tahun-realisasi="year" :init-pemakaian-sendiri="pemakaianSendiri"
           :init-auxiliary="auxiliary" :init-susut-trafo="susutTrafo" :combo-bahan-bakar="comboBahanBakar"
           :bahan-bakars="bahanBakars"
-          :uuid_mesin="nodeMode === 'production' ? encryptStorageRef.decryptValue(route.params.id.toString()) : route.params.id"
+          :uuid_mesin="idMesin"
           :is-input-asumsi-parameter="true" :mesin="mesin.mesin" v-model:pickedValue="pickedParameterValue"
           v-model:checkedBahanBakar="checkedBahanBakar" v-model:nphr="nphr" v-model:auxiliary="auxiliary"
           v-model:susut-trafo="susutTrafo" v-model:pemakaian-sendiri="pemakaianSendiri"
@@ -270,7 +270,6 @@ const namaMesin = ref<string>('');
 const year = parseInt(route.query.tahun as string, 10);
 const isDownloaded = ref(false)
 const pickedParameterValue = ref<string>('auxiliarySusut');
-let encryptStorageRef: any = null;
 const error = ref<{
   asumsi: {
     interestRate: boolean,
@@ -738,8 +737,8 @@ const handleCancelUpload = async () => {
 
 onMounted(async () => {
   isLoading.value = true;
-  encryptStorageRef = await encryptStoragePromise;
-  idMesin.value = nodeMode === 'production' ? encryptStorageRef.decryptValue(route.params.id.toString()) : route.params.id.toString();
+  const encryptStorage = await encryptStoragePromise;
+  idMesin.value = nodeMode === 'production' ? await encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString();
   await fetchMesinById();
   await fetchCheckIntegrasi();
   await fetchAsumsiParameter(false);

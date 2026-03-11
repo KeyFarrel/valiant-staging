@@ -716,7 +716,7 @@ const onFileChange = (event: Event, index: number) => {
 onMounted(async () => {
   isLoading.value = true;
   const encryptStorage = await encryptStoragePromise;
-  id.value = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id;
+  id.value = nodeMode === 'production' ? await encryptStorage.decryptValue(route.params.id.toString()) : route.params.id;
   await getSentralById();
   await fetchUnitPengelola();
   await fetchPhotoSentral();

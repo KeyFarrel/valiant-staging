@@ -341,7 +341,7 @@ const handleDownloadExcelMesin = async () => {
 onMounted(async () => {
   isLoading.value = true;
   const encryptStorage = await encryptStoragePromise;
-  idMesin.value = nodeMode === 'production' ? encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString();
+  idMesin.value = nodeMode === 'production' ? await encryptStorage.decryptValue(route.params.id.toString()) : route.params.id.toString();
   await fetchMesinById();
   await fetchAsumsiFeasibility();
   await fetchDataTeknis();

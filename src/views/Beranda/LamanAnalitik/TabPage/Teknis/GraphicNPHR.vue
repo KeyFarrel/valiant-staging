@@ -229,35 +229,30 @@ watch(dmn, (val) => {
   }
 })
 
-const handleCheckDmn = (val: any) => {
-  indeterminateDmn.value = false
-  if (val) {
-    dmn.value = props.itemsDayaMampu.map((_) => _.id);
-  } else {
-    dmn.value = []
-  }
-}
-
 const handleCheckAll = (val: any) => {
   indeterminate.value = false;
   if (val) {
-    value.value = props.itemsPembangkit.map((_) => _.name)
+    value.value = props.itemsPembangkit.map((_) => _.name);
   } else {
     value.value = []
-  }
+  };
 };
 
 const togglePembangkitDropdown = () => {
-  isPembangkitDropdownOpen.value = !isPembangkitDropdownOpen.value;
-}
+  isPembangkitDropdownOpen.value = !isPembangkitDropdownOpen.value
+};
 
-const removeSelectedPembangkit = (id: any) => {
-  value.value = value.value.filter(item => item !== id);
+const clearDmn = () => {
+  dmn.value = [];
 }
 
 const clearPembangkit = () => {
   value.value = [];
-}
+};
+
+const removeSelectedPembangkit = (id: any) => {
+  value.value = value.value.filter(item => item !== id)
+};
 
 const toggleDmnDropdown = () => {
   isDmnDropdownOpen.value = !isDmnDropdownOpen.value;
@@ -265,29 +260,34 @@ const toggleDmnDropdown = () => {
 
 const removeSelectedDmn = (id: any) => {
   dmn.value = dmn.value.filter(item => item !== id);
-}
-
-const clearDmn = () => {
-  dmn.value = [];
-}
+};
 
 const handleClickOutside = (event: MouseEvent) => {
-  const target = event.target as HTMLElement;
+  const target = event.target as HTMLElement
   if (!target.closest('.relative')) {
     isPembangkitDropdownOpen.value = false;
     isDmnDropdownOpen.value = false;
   }
 };
 
+const handleCheckDmn = (val: any) => {
+  indeterminateDmn.value = false;
+  if (val) {
+    dmn.value = props.itemsDayaMampu.map((_) => _.id)
+  } else {
+    dmn.value = [];
+  };
+}
+
 onMounted(async () => {
-  fetchInitialPembangkit()
-  getDataGraph()
-  document.addEventListener('click', handleClickOutside);
-})
+  fetchInitialPembangkit();
+  getDataGraph();
+  document.addEventListener('click', handleClickOutside)
+});
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
-});
+})
 </script>
 
 <template>
