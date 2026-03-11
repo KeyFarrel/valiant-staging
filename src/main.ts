@@ -3,7 +3,8 @@ import App from "./App.vue";
 import router from "./router";
 import { createPinia, getActivePinia } from "pinia";
 import axios from "axios";
-import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
+import { encryptStoragePromise, setDecryptFailureHandler } from "@/utils/app-encrypt-storage";
+import AuthService from "@/services/auth-service";
 
 import Vue3Toastify from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
@@ -180,7 +181,6 @@ const loadNonEssentialResources = async () => {
 
   await Promise.all([
     import("@vuepic/vue-datepicker/dist/main.css"),
-    import("aos/dist/aos.css"),
   ]);
 
   app
@@ -198,6 +198,25 @@ const loadNonEssentialResources = async () => {
   }
 
   app.mount("#app");
+
+  setDecryptFailureHandler(async () => {
+    try {
+      const authService = new AuthService();
+      const encryptStorage = await encryptStoragePromise;
+      await authService.logout();
+      nodeMode === 'production' || nodeMode === 'staging'
+        ? encryptStorage.clear()
+        : localStorage.clear();
+      document.cookie.split(';').forEach(c => {
+        document.cookie = c.trimStart().split('=')[0] + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+      });
+      sessionStore.invalidateSession();
+      router.push({ name: 'login' });
+    } catch {
+      localStorage.clear();
+      window.location.href = '/login';
+    }
+  });
 
   window.requestIdleCallback
     ? window.requestIdleCallback(async () => await loadNonEssentialResources())
