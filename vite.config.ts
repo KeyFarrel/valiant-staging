@@ -23,12 +23,12 @@ function removeVersionSignatures(): Plugin {
         );
 
         code = code.replace(
-          /VERSION[\s]*[:=][\s]*['"]([\d\.]+)['"]/,
-          'VERSION = "0.0.0"',
+          /VERSION([\s]*[:=][\s]*)['"][\d\.]+['"]/ ,
+          'VERSION$1"0.0.0"',
         );
         code = code.replace(
-          /version[\s]*[:=][\s]*['"]([\d\.]+)['"]/,
-          'version = "0.0.0"',
+          /version([\s]*[:=][\s]*)['"][\d\.]+['"]/ ,
+          'version$1"0.0.0"',
         );
 
         code = code.replace(/@version\s+([\d\.]+)/g, "@version 0.0.0");
