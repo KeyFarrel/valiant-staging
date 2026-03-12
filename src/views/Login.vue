@@ -222,39 +222,44 @@
   </ModalWrapper>
   <div class="h-screen md:flex">
     <div class="relative hidden w-8/12 max-h-screen md:flex">
-      <div id="default-carousel" class="relative w-full" data-carousel="slide">
+      <div class="relative w-full">
         <!-- Carousel wrapper -->
         <div class="relative h-screen overflow-hidden md:h-screen">
           <div class="relative z-50 p-10">
             <!-- Critical logo preloaded -->
             <img src="../assets/img/LogoPLN.png" class="w-26" alt="logo-pln" fetchpriority="high" />
           </div>
-          <!-- Item 1 - First carousel image preloaded -->
-          <div class="hidden duration-700 ease-in-out" data-carousel-item>
+          <!-- Item 1 -->
+          <div class="absolute inset-0 transition-opacity duration-700 ease-in-out"
+            :class="currentSlide === 0 ? 'opacity-100' : 'opacity-0'">
             <img src="../assets/img/carousel-1.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
               alt="Carousel slide 1" fetchpriority="high" />
           </div>
-          <!-- Item 2 - Lazy loaded -->
-          <div class="hidden duration-700 ease-in-out" data-carousel-item>
+          <!-- Item 2 -->
+          <div class="absolute inset-0 transition-opacity duration-700 ease-in-out"
+            :class="currentSlide === 1 ? 'opacity-100' : 'opacity-0'">
             <img src="../assets/img/carousel-2.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
               loading="lazy" decoding="async" alt="Carousel slide 2" />
           </div>
-          <!-- Item 3 - Lazy loaded -->
-          <div class="hidden duration-700 ease-in-out" data-carousel-item>
+          <!-- Item 3 -->
+          <div class="absolute inset-0 transition-opacity duration-700 ease-in-out"
+            :class="currentSlide === 2 ? 'opacity-100' : 'opacity-0'">
             <img src="../assets/img/carousel-3.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
               loading="lazy" decoding="async" alt="Carousel slide 3" />
           </div>
-          <!-- Item 4 - Lazy loaded -->
-          <div class="hidden duration-700 ease-in-out" data-carousel-item>
+          <!-- Item 4 -->
+          <div class="absolute inset-0 transition-opacity duration-700 ease-in-out"
+            :class="currentSlide === 3 ? 'opacity-100' : 'opacity-0'">
             <img src="../assets/img/carousel-4.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
               loading="lazy" decoding="async" alt="Carousel slide 4" />
           </div>
-          <!-- Item 5 - Lazy loaded -->
-          <div class="hidden duration-700 ease-in-out" data-carousel-item>
+          <!-- Item 5 -->
+          <div class="absolute inset-0 transition-opacity duration-700 ease-in-out"
+            :class="currentSlide === 4 ? 'opacity-100' : 'opacity-0'">
             <img src="../assets/img/carousel-5.jpg"
               class="absolute block object-cover w-full h-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2"
               loading="lazy" decoding="async" alt="Carousel slide 5" />
@@ -262,16 +267,9 @@
         </div>
         <!-- Slider indicators -->
         <div class="absolute z-30 flex space-x-3 -translate-x-1/2 bottom-5 left-1/2">
-          <button type="button" class="w-12 h-2 rounded-full" aria-current="true" aria-label="Slide 1"
-            data-carousel-slide-to="0"></button>
-          <button type="button" class="w-12 h-2 rounded-full" aria-current="false" aria-label="Slide 2"
-            data-carousel-slide-to="1"></button>
-          <button type="button" class="w-12 h-2 rounded-full" aria-current="false" aria-label="Slide 3"
-            data-carousel-slide-to="2"></button>
-          <button type="button" class="w-12 h-2 rounded-full" aria-current="false" aria-label="Slide 4"
-            data-carousel-slide-to="3"></button>
-          <button type="button" class="w-12 h-2 rounded-full" aria-current="false" aria-label="Slide 5"
-            data-carousel-slide-to="4"></button>
+          <button v-for="i in 5" :key="i" type="button" class="w-12 h-2 rounded-full"
+            :class="currentSlide === i - 1 ? 'bg-white' : 'bg-white/50'" :aria-current="currentSlide === i - 1"
+            :aria-label="'Slide ' + i" @click="goToSlide(i - 1)"></button>
         </div>
       </div>
     </div>
@@ -383,7 +381,6 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { ref, onMounted, onUnmounted, nextTick, reactive } from "vue";
-import { initFlowbite } from "flowbite";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import { notifyError, notifySuccess } from "@/services/helper/toast-notification";
 import TimeFormatOtp from '../services/format/time-format-otp';
@@ -530,6 +527,22 @@ interface DataItem {
 }
 
 const domRef = ref<any>();
+
+const currentSlide = ref(0);
+let carouselInterval: ReturnType<typeof setInterval> | null = null;
+
+const goToSlide = (index: number) => {
+  currentSlide.value = index;
+  resetCarouselInterval();
+};
+
+const resetCarouselInterval = () => {
+  if (carouselInterval) clearInterval(carouselInterval);
+  carouselInterval = setInterval(() => {
+    currentSlide.value = (currentSlide.value + 1) % 5;
+  }, 5000);
+};
+
 const visiblePassword = () => {
   showPassword.value = !showPassword.value;
 }
@@ -918,7 +931,7 @@ const onDeclinePrivacy = async () => {
 }
 
 onMounted(async () => {
-  initFlowbite();
+  resetCarouselInterval();
   // generateCaptcha();
   const hasRefreshed = sessionStorage.getItem('hasRefreshed');
   if (!hasRefreshed) {
@@ -933,6 +946,7 @@ onUnmounted(() => {
   sessionStorage.clear();
   clearInterval(expiredOtpInterval);
   clearInterval(resetOtpInterval);
+  if (carouselInterval) clearInterval(carouselInterval);
 })
 </script>
 

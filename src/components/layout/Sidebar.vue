@@ -13,8 +13,7 @@
   <nav
     class="fixed top-0 h-[55px] z-50 w-full items-center px-3 py-2 lg:px-5 lg:pl-3 justify-between bg-gradient-to-r flex from-[#00A2B9] to-[#035B71]">
     <div class="flex items-center justify-start">
-      <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar"
-        type="button"
+      <button @click="isMobileDrawerOpen = !isMobileDrawerOpen" aria-controls="logo-sidebar" type="button"
         class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#0099AD] ">
         <span class="sr-only">Open sidebar</span>
         <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
@@ -40,10 +39,9 @@
       <p class="text-white">
         {{ namaPegawai }}
       </p>
-      <div class="flex items-center mr-4">
+      <div class="relative flex items-center mr-4">
         <button type="button" class="flex text-sm bg-gray-800 rounded-full active:ring active:ring-[#0099AD]"
-          aria-expanded="false" data-dropdown-toggle="dropdown-user" data-dropdown-offset-distance="-30"
-          data-dropdown-offset-skidding="90" data-dropdown-placement="left">
+          aria-expanded="false" @click.stop="toggleUserDropdown">
           <span class="sr-only">Open user menu</span>
           <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect width="16" height="16" rx="8" fill="#E5E7E9" />
@@ -52,8 +50,8 @@
               fill="#0099AD" />
           </svg>
         </button>
-        <div
-          class="max-w-64 border whitespace-nowrap z-[45] hidden text-base list-none bg-white divide-y divide-gray-100 rounded-md shadow"
+        <div v-show="isUserDropdownOpen" @click.stop
+          class="absolute right-0 top-8 max-w-64 border whitespace-nowrap z-[45] text-base list-none bg-white divide-y divide-gray-100 rounded-md shadow"
           id="dropdown-user">
           <div class="flex flex-row items-center p-5">
             <div class="mr-3">
@@ -84,7 +82,8 @@
   </nav>
   <aside id="logo-sidebar"
     class="fixed top-0 left-0 z-40 h-screen pt-[55px] border-r border-[#E5E7E9] sm:translate-x-0 duration-300"
-    :class="isSidebarOpen ? 'w-[240px]' : 'w-20'" @mouseleave="toggleSidebar" aria-label="Sidebar">
+    :class="[isSidebarOpen ? 'w-[240px]' : 'w-20', isMobileDrawerOpen ? 'translate-x-0' : '-translate-x-full']"
+    @mouseleave="toggleSidebar" aria-label="Sidebar">
     <div v-show="isSidebarOpen" class="h-full pb-4 overflow-y-auto bg-white whitespace-nowrap">
       <ul class="mt-5 space-y-5 font-medium">
         <li v-for="(menuItem, menuIndex) in menuList" :key="menuIndex" class="px-3">
@@ -236,8 +235,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from "vue";
-import { initFlowbite } from "flowbite";
+import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { RouterView } from "vue-router";
 import { useNavbarLabelStore } from "@/store/storeNavbar";
 import { useSessionStore } from "@/store/storeSession";
@@ -268,6 +266,16 @@ const totalPersetujuanKK = ref<number>(0);
 const totalPersetujuanFS = ref<number>(0);
 const menuList = ref<any>('');
 const isLoading = ref<boolean>(false);
+const isUserDropdownOpen = ref(false);
+const isMobileDrawerOpen = ref(false);
+
+const toggleUserDropdown = () => {
+  isUserDropdownOpen.value = !isUserDropdownOpen.value;
+};
+
+const closeUserDropdown = () => {
+  isUserDropdownOpen.value = false;
+};
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
@@ -412,9 +420,13 @@ onMounted(async () => {
   levelSentral.value = nodeMode === 'production' ? await encryptStorage.getItem('level_sentral') : localStorage.getItem('level_sentral');
   namaPegawai.value = nodeMode === 'production' ? await encryptStorage.getItem('nama_pegawai') : localStorage.getItem('nama_pegawai');
   menuList.value = menuStore.menuList;
-  initFlowbite();
+  document.addEventListener('click', closeUserDropdown);
   fetchPersetujuanKK();
   fetchPersetujuanFS();
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', closeUserDropdown);
 });
 </script>
 

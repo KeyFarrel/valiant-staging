@@ -21,7 +21,6 @@ const scriptList = {
   'rollup:inspect': '      Inspect the rollup bundling on the localhost (after build)',
   coverage: '            Run the unit tests and generate a coverage report (c8)',
   'type-check': '          Type check the app',
-  lint: '                Lint the app with ESlint',
   format: '              Format the app with prettier'
 }
 scripts.forEach((script) => {
