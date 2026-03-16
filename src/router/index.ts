@@ -11,6 +11,7 @@ import Sidebar from "@/components/layout/Sidebar.vue";
 import Login from "../views/Login.vue";
 import Error404Page from "@/views/Error/404Page.vue";
 import Error503Page from "@/views/Error/503Page.vue";
+import PrivacyPolicyPage from "@/views/PrivacyPolicyPage.vue";
 
 const PetaSebaran = () => import("@/views/Beranda/PetaSebaran.vue");
 const LamanUtama = () => import("@/views/Beranda/LamanUtama/LamanUtama.vue");
@@ -101,6 +102,14 @@ const routes: RouteRecordRaw[] = [
     component: Error503Page,
     meta: {
       label: "503 Error",
+    },
+  },
+  {
+    path: "/kebijakan-privasi",
+    name: "kebijakan-privasi",
+    component: PrivacyPolicyPage,
+    meta: {
+      label: "Kebijakan Privasi",
     },
   },
   {
