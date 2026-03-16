@@ -17,7 +17,7 @@ import router from "@/router";
 const ssoCode = route.query.code as string;
 import errorJsonData from '@/assets/lottie/error.json';
 import ModalNotification from '@/components/ui/ModalNotification.vue';
-import CryptoJS from "crypto-js";
+import HmacSHA512 from "crypto-js/hmac-sha512";
 
 const isError = ref(false);
 const nodeMode = import.meta.env.MODE;
@@ -35,7 +35,7 @@ const verifikasiSSO = async () => {
           : response.data.uuid_sentral;
 
       const dataString = `${levelSentral}:${namaPegawai}`;
-      const hash = CryptoJS.HmacSHA512(dataString, (window as any).userHashSecretKey()).toString();
+      const hash = HmacSHA512(dataString, (window as any).userHashSecretKey()).toString();
 
       const setStorage = async (storage: any) => {
         await storage.setItem("nama_pegawai", namaPegawai);

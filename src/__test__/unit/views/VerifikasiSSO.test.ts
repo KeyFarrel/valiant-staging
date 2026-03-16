@@ -32,12 +32,10 @@ vi.mock('@/router', () => ({
   },
 }));
 
-vi.mock('crypto-js', () => ({
-  default: {
-    HmacSHA512: vi.fn(() => ({
-      toString: () => 'mocked-hash'
-    }))
-  }
+vi.mock('crypto-js/hmac-sha512', () => ({
+  default: vi.fn(() => ({
+    toString: () => 'mocked-hash'
+  }))
 }));
 
 const mockInvalidateSession = vi.fn();

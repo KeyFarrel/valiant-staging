@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import CryptoJS from "crypto-js";
+import HmacSHA512 from "crypto-js/hmac-sha512";
 import { useNavbarLabelStore } from "@/store/storeNavbar";
 import { useRekapNavigationStore } from "@/store/storeRekapKertasKerja";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
@@ -510,7 +510,7 @@ router.beforeEach(async (to, _, next) => {
 
     const dataString = `${levelSentral}:${namaPegawai}`;
 
-    const currentHash = CryptoJS.HmacSHA512(
+    const currentHash = HmacSHA512(
       dataString,
       (window as any).userHashSecretKey(),
     ).toString();
