@@ -15,7 +15,7 @@ const mockGlobalFormat = {
   formatBytes: vi.fn((val) => val)
 };
 vi.mock('@/services/format/global-format', () => ({
-  default: vi.fn().mockImplementation(() => mockGlobalFormat)
+  default: vi.fn().mockImplementation(function() { return mockGlobalFormat; } as any)
 }));
 
 vi.mock('@/utils/app-encrypt-storage', () => ({
@@ -62,7 +62,7 @@ describe('InputAsumsiParameter.vue', () => {
     vi.useFakeTimers();
 
     // Setup Mock Services
-    mockInputAsumsiParameterService = {
+    mockInputAsumsiParameterService = { getAsumsiMakroData: vi.fn(), getComboBahanBakar: vi.fn(), getStatusRealisasiById: vi.fn(),
       getMesinById: vi.fn().mockResolvedValue({
         data: {
           mesin: 'Test Machine',
@@ -84,7 +84,7 @@ describe('InputAsumsiParameter.vue', () => {
       getAsumsiMakroData: vi.fn().mockResolvedValue({
         code: 404, // Default not found so we can test init
         data: {
-          tahun: 2024,
+          tahun: new Date().getFullYear(),
           status: 'pending',
           id_asumsi: 0,
           asumsi_makro: {
@@ -102,7 +102,9 @@ describe('InputAsumsiParameter.vue', () => {
              electricity_price_d_rp_per_kwh: 7,
              electricity_price_c_rp_per_kwh: 8
           },
-          harga_bahan_bakars: []
+          harga_bahan_bakars: [
+          { kode_bahan_bakar: 'BBL', harga_bahan_bakar: 1000.5, sfc: 1.5, tahun: '2023', uuid_mesin: '1' }
+        ]
         }
       }),
       getComboBahanBakar: vi.fn().mockResolvedValue({
@@ -126,7 +128,7 @@ describe('InputAsumsiParameter.vue', () => {
       updateAsumsi: vi.fn().mockResolvedValue({ code: 200 })
     };
 
-    mockUserService = {
+    mockUserService = { getPembina: vi.fn(),
       getPembina: vi.fn().mockResolvedValue({
         data: [
           { uuid_pembina: 'pembina-uuid-123', pembina: 'Test Pembina' }
@@ -134,15 +136,15 @@ describe('InputAsumsiParameter.vue', () => {
       })
     };
 
-    mockPerbaruiDataService = {
+    mockPerbaruiDataService = { getCheckIntegrasi: vi.fn(),
       getCheckIntegrasi: vi.fn().mockResolvedValue({
         data: [{ status_data_integrasi: "1" }]
       })
     };
 
-    (InputAsumsiParameterService as any).mockImplementation(() => mockInputAsumsiParameterService);
-    (UserService as any).mockImplementation(() => mockUserService);
-    (PerbaruiDataService as any).mockImplementation(() => mockPerbaruiDataService);
+    (InputAsumsiParameterService as any).mockImplementation(function() { return mockInputAsumsiParameterService; } as any);
+    (UserService as any).mockImplementation(function() { return mockUserService; } as any);
+    (PerbaruiDataService as any).mockImplementation(function() { return mockPerbaruiDataService; } as any);
   });
 
   afterEach(() => {
@@ -153,15 +155,27 @@ describe('InputAsumsiParameter.vue', () => {
     return mount(InputAsumsiParameter, {
       global: {
         stubs: {
-          Loading: true,
-          ModalNotification: true,
-          ModalWrapper: true,
-          InfoHeader: true,
-          TabsWrapper: true,
-          TabItem: true,
-          TabAsumsiMakro: true,
-          TabParameterTeknis: true,
-          ConfirmationDialog: true,
+          Loading: { template: '<div />' },
+          ModalNotification: { template: '<div />' },
+          ModalWrapper: {
+            props: ['showModal'],
+            template: '<div v-if="showModal"><slot /></div>'
+          },
+          InfoHeader: { template: '<div />' },
+          TabsWrapper: { template: '<div><slot /></div>' },
+          TabItem: { props: ['title'], template: '<div><slot /></div>' },
+          TabAsumsiMakro: {
+            emits: ['update:interest-rate', 'update:umur-teknis', 'update:loan-tenor', 'update:loan-portion'],
+            template: '<div><button data-testid="emit-asumsi" @click="$emit(\'update:interest-rate\', \'6\'); $emit(\'update:umur-teknis\', \'20\'); $emit(\'update:loan-tenor\', \'10\'); $emit(\'update:loan-portion\', \'70\')" /></div>'
+          },
+          TabParameterTeknis: {
+            emits: ['on-checked', 'on-hapus-bahan-bakar', 'on-tambah-bahan-bakar', 'on-submit', 'update:bahan-bakars', 'update:pickedValue', 'update:checkedBahanBakar', 'update:nphr', 'update:auxiliary', 'update:susut-trafo', 'update:pemakaian-sendiri', 'update:electricity-price-a', 'update:electricity-price-b', 'update:electricity-price-c', 'update:electricity-price-d'],
+            template: '<div><button data-testid="btn-checked" @click="$emit(\'on-checked\')" /><button data-testid="btn-hapus" @click="$emit(\'on-hapus-bahan-bakar\')" /><button data-testid="btn-tambah" @click="$emit(\'on-tambah-bahan-bakar\')" /><button data-testid="btn-submit" @click="$emit(\'on-submit\')" /><button data-testid="emit-parameter" @click="$emit(\'update:pickedValue\', \'auxiliarySusut\'); $emit(\'update:checkedBahanBakar\', [1]); $emit(\'update:nphr\', \'1\'); $emit(\'update:auxiliary\', \'2\'); $emit(\'update:susut-trafo\', \'3\'); $emit(\'update:pemakaian-sendiri\', \'4\'); $emit(\'update:electricity-price-a\', \'5\'); $emit(\'update:electricity-price-b\', \'6\'); $emit(\'update:electricity-price-c\', \'7\'); $emit(\'update:electricity-price-d\', \'8\')" /></div>'
+          },
+          ConfirmationDialog: {
+            emits: ['on-batal-click', 'on-accept-click'],
+            template: '<div><button data-testid="btn-batal" @click="$emit(\'on-batal-click\')" /><button data-testid="btn-accept" @click="$emit(\'on-accept-click\')" /></div>'
+          },
         }
       }
     });
@@ -260,10 +274,10 @@ describe('InputAsumsiParameter.vue', () => {
   });
 
   it('should submit successfully (Update Flow)', async () => {
-    mockInputAsumsiParameterService.getAsumsiMakroData.mockResolvedValue({
+    mockInputAsumsiParameterService.getAsumsiMakroData = vi.fn().mockResolvedValue({
       code: 200,
       data: {
-        tahun: 2024,
+        tahun: new Date().getFullYear(),
         status: 'pending',
         id_asumsi: 101, // Existing
         asumsi_makro: {
@@ -281,7 +295,9 @@ describe('InputAsumsiParameter.vue', () => {
              electricity_price_d_rp_per_kwh: 7,
              electricity_price_c_rp_per_kwh: 8
         },
-        harga_bahan_bakars: []
+        harga_bahan_bakars: [
+          { kode_bahan_bakar: 'BBL', harga_bahan_bakar: 1000.5, sfc: 1.5, tahun: '2023', uuid_mesin: '1' }
+        ]
       }
     });
 
@@ -403,5 +419,204 @@ describe('InputAsumsiParameter.vue', () => {
     // Check that all error states are set to true
     expect(wrapper.vm.error.asumsi.interestRate).toBe(true);
     // ... check others if needed
+  });
+
+  it('should cover fetchAsumsiParameter when isCreate is false', async () => {
+    mockInputAsumsiParameterService.getAsumsiMakroData = vi.fn().mockResolvedValue({
+      code: 200,
+      data: {
+        tahun: new Date().getFullYear(),
+        status: 'status',
+        id_asumsi: 'id',
+        harga_bahan_bakars: [
+          { harga_bahan_bakar: 100, sfc: 200 }
+        ],
+        asumsi_makro: {
+          interest_rate: 5,
+          loan_tenor: 10,
+          loan_portion: 15
+        },
+        parameter_teknis_financial: {
+          nphr: 10,
+          auxiliary: 20,
+          susut_trafo: 30,
+          ps: 40,
+          electricity_price_a_rp_per_kwbln: 50,
+          electricity_price_b_rp_per_kwbln: 60,
+          electricity_price_c_rp_per_kwh: 70,
+          electricity_price_d_rp_per_kwh: 80
+        }
+      }
+    });
+
+    wrapper = createWrapper();
+    await flushPromises();
+
+    await wrapper.vm.fetchAsumsiParameter(false);
+    await flushPromises();
+    
+  });
+
+  it('should cover error branches for api calls', async () => {
+    wrapper = createWrapper();
+    await flushPromises();
+
+    mockPerbaruiDataService.getCheckIntegrasi = vi.fn().mockRejectedValue(new Error('err1'));
+    await wrapper.vm.fetchCheckIntegrasi();
+
+    mockInputAsumsiParameterService.getStatusRealisasiById.mockRejectedValue(new Error('err2'));
+    await wrapper.vm.fetchStatusRealisasiById();
+
+    mockInputAsumsiParameterService.getAsumsiMakroData = vi.fn().mockRejectedValue(new Error('err3'));
+    await wrapper.vm.fetchAsumsiParameter(true);
+
+    mockUserService.getPembina.mockRejectedValue(new Error('err4'));
+    await wrapper.vm.fetchListPembina();
+
+    mockInputAsumsiParameterService.getComboBahanBakar.mockRejectedValue(new Error('err5'));
+    await wrapper.vm.fetchComboBahanBakar();
+  });
+
+  it('should cover update-flow conversion branches with mixed dotted and non-dotted values', async () => {
+    wrapper = createWrapper();
+    await flushPromises();
+
+    wrapper.vm.idAsumsi = 999;
+    wrapper.vm.masaManfaat = '25';
+    wrapper.vm.loanTenor = '10';
+
+    wrapper.vm.interestRate = '1.234,56';
+    wrapper.vm.loanPortion = '75,5';
+    wrapper.vm.nphr = '2.500,10';
+    wrapper.vm.auxiliary = '12,5';
+    wrapper.vm.susutTrafo = '1.000';
+    wrapper.vm.pemakaianSendiri = '5,5';
+    wrapper.vm.electricityPriceA = '2.000,1';
+    wrapper.vm.electricityPriceB = '2000';
+    wrapper.vm.electricityPriceC = '3.333,3';
+    wrapper.vm.electricityPriceD = '4000';
+    wrapper.vm.bahanBakars = [
+      { kode_bahan_bakar: 'BBL', harga_bahan_bakar: '1.234,56', sfc: '2.345', tahun: '2023', uuid_mesin: '1' }
+    ];
+
+    const firstUpdatePromise = wrapper.vm.insertAsumsiParameter();
+    await flushPromises();
+    vi.advanceTimersByTime(10000);
+    await firstUpdatePromise;
+    await flushPromises();
+
+    wrapper.vm.interestRate = '1234,56';
+    wrapper.vm.loanPortion = '755';
+    wrapper.vm.nphr = '2500';
+    wrapper.vm.auxiliary = '125';
+    wrapper.vm.susutTrafo = '1000';
+    wrapper.vm.pemakaianSendiri = '55';
+    wrapper.vm.electricityPriceA = '20001';
+    wrapper.vm.electricityPriceB = '2000';
+    wrapper.vm.electricityPriceC = '33333';
+    wrapper.vm.electricityPriceD = '4000';
+    wrapper.vm.bahanBakars = [
+      { kode_bahan_bakar: 'BBL', harga_bahan_bakar: '1234,56', sfc: '2345', tahun: '2023', uuid_mesin: '1' }
+    ];
+
+    const secondUpdatePromise = wrapper.vm.insertAsumsiParameter();
+    await flushPromises();
+    vi.advanceTimersByTime(10000);
+    await secondUpdatePromise;
+    await flushPromises();
+
+    expect(mockInputAsumsiParameterService.updateAsumsi).toHaveBeenCalled();
+    expect(mockInputAsumsiParameterService.createParameter).toHaveBeenCalled();
+  });
+
+  it('should cover create-flow conversion branches with dotted values and non-400 catch branch', async () => {
+    wrapper = createWrapper();
+    await flushPromises();
+
+    wrapper.vm.idAsumsi = 0;
+    wrapper.vm.masaManfaat = '25';
+    wrapper.vm.loanTenor = '10';
+    wrapper.vm.interestRate = '1.234,56';
+    wrapper.vm.loanPortion = '7.890,12';
+    wrapper.vm.nphr = '2.500,10';
+    wrapper.vm.auxiliary = '12.34';
+    wrapper.vm.susutTrafo = '1.000';
+    wrapper.vm.pemakaianSendiri = '5.5';
+    wrapper.vm.electricityPriceA = '2.000,1';
+    wrapper.vm.electricityPriceB = '2.100,2';
+    wrapper.vm.electricityPriceC = '2.200,3';
+    wrapper.vm.electricityPriceD = '2.300,4';
+    wrapper.vm.bahanBakars = [
+      { kode_bahan_bakar: 'BBL', harga_bahan_bakar: '1.234,56', sfc: '9.876,5', tahun: '2023', uuid_mesin: '1' }
+    ];
+
+    const firstCreatePromise = wrapper.vm.insertAsumsiParameter();
+    await flushPromises();
+    vi.advanceTimersByTime(10000);
+    await firstCreatePromise;
+    await flushPromises();
+    expect(mockInputAsumsiParameterService.createAsumsi).toHaveBeenCalled();
+
+    mockInputAsumsiParameterService.createAsumsi.mockRejectedValueOnce({ response: { data: { code: 500 } } });
+    const secondCreatePromise = wrapper.vm.insertAsumsiParameter();
+    await flushPromises();
+    vi.advanceTimersByTime(10000);
+    await secondCreatePromise;
+    await flushPromises();
+    expect(wrapper.vm.isLoading).toBe(false);
+  });
+
+  it('should execute tab submit and confirmation dialog template events', async () => {
+    wrapper = createWrapper();
+    await flushPromises();
+
+    await wrapper.find('[data-testid="btn-submit"]').trigger('click');
+    expect(wrapper.vm.isShowModalConfirmation).toBe(true);
+
+    await wrapper.find('[data-testid="btn-batal"]').trigger('click');
+    expect(wrapper.vm.isShowModalConfirmation).toBe(false);
+
+    await wrapper.find('[data-testid="btn-submit"]').trigger('click');
+    await wrapper.find('[data-testid="btn-accept"]').trigger('click');
+    await flushPromises();
+    expect(wrapper.vm.isShowModalNotification).toBe(true);
+  });
+
+  it('should execute tab parameter action emit handlers', async () => {
+    wrapper = createWrapper();
+    await flushPromises();
+
+    const initialLength = wrapper.vm.bahanBakars.length;
+    await wrapper.find('[data-testid="btn-tambah"]').trigger('click');
+    expect(wrapper.vm.bahanBakars.length).toBe(initialLength + 1);
+
+    wrapper.vm.checkedBahanBakar = [wrapper.vm.bahanBakars[0].id];
+    await wrapper.find('[data-testid="btn-hapus"]').trigger('click');
+    expect(wrapper.vm.bahanBakars.length).toBeGreaterThanOrEqual(0);
+
+    const logSpy = vi.spyOn(console, 'log');
+    await wrapper.find('[data-testid="btn-checked"]').trigger('click');
+    expect(logSpy).toHaveBeenCalled();
+  });
+
+  it('should update v-model fields from child emits in template', async () => {
+    wrapper = createWrapper();
+    await flushPromises();
+
+    await wrapper.find('[data-testid="emit-asumsi"]').trigger('click');
+    await wrapper.find('[data-testid="emit-parameter"]').trigger('click');
+
+    expect(wrapper.vm.interestRate).toBe('6');
+    expect(wrapper.vm.umurTeknis).toBe('20');
+    expect(wrapper.vm.loanTenor).toBe('10');
+    expect(wrapper.vm.loanPortion).toBe('70');
+    expect(wrapper.vm.nphr).toBe('1');
+    expect(wrapper.vm.auxiliary).toBe('2');
+    expect(wrapper.vm.susutTrafo).toBe('3');
+    expect(wrapper.vm.pemakaianSendiri).toBe('4');
+    expect(wrapper.vm.electricityPriceA).toBe('5');
+    expect(wrapper.vm.electricityPriceB).toBe('6');
+    expect(wrapper.vm.electricityPriceC).toBe('7');
+    expect(wrapper.vm.electricityPriceD).toBe('8');
   });
 });

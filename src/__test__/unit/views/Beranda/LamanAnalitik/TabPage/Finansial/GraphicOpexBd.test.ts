@@ -156,8 +156,8 @@ describe('GraphicOpexBd.vue - Complete Coverage Test', () => {
     mockPetaService = {};
 
     // Mock constructors
-    (GrafikService as any).mockImplementation(() => mockGrafikService);
-    (PetaService as any).mockImplementation(() => mockPetaService);
+    (GrafikService as any).mockImplementation(function() { return mockGrafikService; });
+    (PetaService as any).mockImplementation(function() { return mockPetaService; });
   });
 
   afterEach(() => {
@@ -724,6 +724,46 @@ describe('GraphicOpexBd.vue - Complete Coverage Test', () => {
       const badges = wrapper.findAll('.badge');
       expect(badges.length).toBeGreaterThan(0);
     });
+
+    it('should render modal internals and trigger reset/apply actions for both paths', async () => {
+      wrapper = createWrapper('full');
+      wrapper.vm.showModal = true;
+      wrapper.vm.value = ['PLTU', 'PLTG', 'PLTS'];
+      wrapper.vm.dmn = ['1', '2', '3'];
+      wrapper.vm.isPembangkitDropdownOpen = true;
+      wrapper.vm.isDmnDropdownOpen = true;
+
+      await nextTick();
+
+      expect(wrapper.text()).toContain('Select All Items');
+      expect(wrapper.text()).toContain('Tahun');
+      expect(wrapper.text()).toContain('DMN hanya akan muncul jika Anda memilih PLTU dari Kategori');
+
+      const resetButton = wrapper.findAll('button').find((btn: any) => btn.text().trim() === 'Reset');
+      expect(resetButton).toBeTruthy();
+      await resetButton!.trigger('click');
+      expect(wrapper.vm.value).toEqual([]);
+
+      wrapper.vm.showModal = true;
+      wrapper.vm.value = ['PLTU'];
+      wrapper.vm.filter.tahun = 2024;
+      await nextTick();
+
+      const applyWithDmn = wrapper.findAll('button').find((btn: any) => btn.text().trim() === 'Terapkan');
+      expect(applyWithDmn).toBeTruthy();
+      await applyWithDmn!.trigger('click');
+      expect(wrapper.vm.showModal).toBe(false);
+
+      wrapper.vm.showModal = true;
+      wrapper.vm.value = ['PLTG'];
+      wrapper.vm.filter.tahun = 2024;
+      await nextTick();
+
+      const applyNoDmn = wrapper.findAll('button').find((btn: any) => btn.text().trim() === 'Terapkan');
+      expect(applyNoDmn).toBeTruthy();
+      await applyNoDmn!.trigger('click');
+      expect(wrapper.vm.showModal).toBe(false);
+    });
   });
 
   describe('Edge Cases and Error Handling', () => {
@@ -808,6 +848,159 @@ describe('GraphicOpexBd.vue - Complete Coverage Test', () => {
       expect(wrapper.vm.isLoading).toBeDefined();
       expect(wrapper.vm.graphData).toBeDefined();
       expect(wrapper.vm.filter).toBeDefined();
+    });
+  });
+
+  describe('Dropdown Toggle Functions', () => {
+    it('should toggle pembangkit dropdown open and close', () => {
+      wrapper = createWrapper();
+      expect(wrapper.vm.isPembangkitDropdownOpen).toBe(false);
+      wrapper.vm.togglePembangkitDropdown();
+      expect(wrapper.vm.isPembangkitDropdownOpen).toBe(true);
+      wrapper.vm.togglePembangkitDropdown();
+      expect(wrapper.vm.isPembangkitDropdownOpen).toBe(false);
+    });
+
+    it('should toggle dmn dropdown open and close', () => {
+      wrapper = createWrapper();
+      expect(wrapper.vm.isDmnDropdownOpen).toBe(false);
+      wrapper.vm.toggleDmnDropdown();
+      expect(wrapper.vm.isDmnDropdownOpen).toBe(true);
+      wrapper.vm.toggleDmnDropdown();
+      expect(wrapper.vm.isDmnDropdownOpen).toBe(false);
+    });
+  });
+
+  describe('Remove and Clear Selection Functions', () => {
+    it('should remove a selected pembangkit by id', () => {
+      wrapper = createWrapper();
+      wrapper.vm.value = ['PLTU', 'PLTG'];
+      wrapper.vm.removeSelectedPembangkit('PLTU');
+      expect(wrapper.vm.value).toEqual(['PLTG']);
+    });
+
+    it('should remove a selected dmn by id', () => {
+      wrapper = createWrapper();
+      wrapper.vm.dmn = ['1', '2', '3'];
+      wrapper.vm.removeSelectedDmn('2');
+      expect(wrapper.vm.dmn).toEqual(['1', '3']);
+    });
+
+    it('should clear all pembangkit selections', () => {
+      wrapper = createWrapper();
+      wrapper.vm.value = ['PLTU', 'PLTG'];
+      wrapper.vm.clearPembangkit();
+      expect(wrapper.vm.value).toEqual([]);
+    });
+
+    it('should clear all dmn selections', () => {
+      wrapper = createWrapper();
+      wrapper.vm.dmn = ['1', '2', '3'];
+      wrapper.vm.clearDmn();
+      expect(wrapper.vm.dmn).toEqual([]);
+    });
+  });
+
+  describe('handleClickOutside', () => {
+    it('should close dropdowns when clicking outside .relative', () => {
+      wrapper = createWrapper();
+      wrapper.vm.isPembangkitDropdownOpen = true;
+      wrapper.vm.isDmnDropdownOpen = true;
+
+      const mockEvent = { target: { closest: vi.fn(() => null) } } as unknown as MouseEvent;
+      wrapper.vm.handleClickOutside(mockEvent);
+
+      expect(wrapper.vm.isPembangkitDropdownOpen).toBe(false);
+      expect(wrapper.vm.isDmnDropdownOpen).toBe(false);
+    });
+
+    it('should not close dropdowns when clicking inside .relative', () => {
+      wrapper = createWrapper();
+      wrapper.vm.isPembangkitDropdownOpen = true;
+      wrapper.vm.isDmnDropdownOpen = true;
+
+      const mockEvent = { target: { closest: vi.fn(() => document.createElement('div')) } } as unknown as MouseEvent;
+      wrapper.vm.handleClickOutside(mockEvent);
+
+      expect(wrapper.vm.isPembangkitDropdownOpen).toBe(true);
+      expect(wrapper.vm.isDmnDropdownOpen).toBe(true);
+    });
+  });
+
+  describe('Lifecycle - onUnmounted', () => {
+    it('should remove event listener on unmount', async () => {
+      const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
+      wrapper = createWrapper();
+      await nextTick();
+      wrapper.unmount();
+
+      expect(removeEventListenerSpy).toHaveBeenCalledWith('click', expect.any(Function));
+      removeEventListenerSpy.mockRestore();
+    });
+  });
+
+  describe('Additional closeModal and filter branches', () => {
+    it('should show error when tahun is null only in closeModal', () => {
+      wrapper = createWrapper();
+      wrapper.vm.value = [];
+      wrapper.vm.filter.tahun = null;
+      wrapper.vm.closeModal();
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000);
+    });
+
+    it('should show error when no kategori only in applyFilter', async () => {
+      wrapper = createWrapper();
+      wrapper.vm.value = [];
+      wrapper.vm.filter.tahun = 2024;
+      await wrapper.vm.applyFilter();
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000);
+    });
+
+    it('should show error when no kategori only in applyFilterNoDMN', async () => {
+      wrapper = createWrapper();
+      wrapper.vm.value = [];
+      wrapper.vm.filter.tahun = 2024;
+      await wrapper.vm.applyFilterNoDMN();
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000);
+    });
+
+    it('should show error when no kategori and no tahun in applyFilterNoDMN', async () => {
+      wrapper = createWrapper();
+      wrapper.vm.value = [];
+      wrapper.vm.filter.tahun = null;
+      await wrapper.vm.applyFilterNoDMN();
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000);
+    });
+  });
+
+  describe('getDataGraphNoDMN additional paths', () => {
+    it('should handle null grafik in getDataGraphNoDMN', async () => {
+      const emptyData = {
+        success: true,
+        data: [{
+          grafik: null,
+          legend: [],
+          average_daya_terpasang: 0,
+          average_opex: 0,
+          average_ipp_opex: 0,
+        }]
+      };
+      mockGrafikService.getGraphicOpexBD.mockResolvedValue(emptyData);
+      wrapper = createWrapper();
+
+      await wrapper.vm.getDataGraphNoDMN();
+
+      expect(wrapper.vm.graphData.isEmpty).toBe(true);
+    });
+
+    it('should handle success:false in getDataGraphNoDMN', async () => {
+      mockGrafikService.getGraphicOpexBD.mockResolvedValue({ success: false });
+      wrapper = createWrapper();
+
+      await wrapper.vm.getDataGraphNoDMN();
+      await nextTick();
+
+      expect(wrapper.vm.graphData).toBeDefined();
     });
   });
 });

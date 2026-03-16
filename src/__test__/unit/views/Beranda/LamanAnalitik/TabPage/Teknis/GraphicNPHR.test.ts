@@ -15,7 +15,7 @@ const mockGrafikService = {
 };
 
 // Mock GrafikService constructor
-vi.mocked(GrafikService).mockImplementation(() => mockGrafikService as any);
+vi.mocked(GrafikService).mockImplementation(function() { return mockGrafikService as any; });
 
 const defaultProps = {
   itemsPembangkit: [

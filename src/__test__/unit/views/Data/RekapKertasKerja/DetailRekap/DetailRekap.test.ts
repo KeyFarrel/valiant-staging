@@ -38,16 +38,16 @@ const mockGetPembina = vi.fn();
 // Mock services with default export
 
 vi.mock('@/services/rekap-service', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     getRekap: vi.fn(() => Promise.resolve({ data: { result: 'success' } })),
     downloadEvidence: mockDownloadEvidence,
     getEvidencePath: mockGetEvidencePath,
     downloadExcelKK: mockDownloadExcelKK
-  }))
+  }; })
 }));
 
 vi.mock('@/services/detail-rekap-service', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     getMesinById: mockGetMesinById,
     getAsumsiParameter: mockGetAsumsiParameter,
     getDataTeknis: mockGetDataTeknis,
@@ -59,19 +59,19 @@ vi.mock('@/services/detail-rekap-service', () => ({
     getPembangkitByKode: mockGetPembangkitByKode,
     getPengelolaData: mockGetPengelolaData,
     getTypePeriodic: mockGetTypePeriodic
-  }))
+  }; })
 }));
 
 vi.mock('@/services/grafik-service', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     getRealisasiProyeksiMesin: mockGetRealisasiProyeksiMesin
-  }))
+  }; })
 }));
 
 vi.mock('@/services/user-service', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     getPembina: mockGetPembina
-  }))
+  }; })
 }));
 
 vi.mock('@/services/helper/year-picker-service', () => ({

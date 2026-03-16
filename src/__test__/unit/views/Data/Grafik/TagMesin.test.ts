@@ -47,9 +47,9 @@ vi.mock('@/composables/useMesinSharedData', () => ({
 
 // Mock global format
 vi.mock('@/services/format/global-format', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     formatRupiah: vi.fn((value) => value ? `Rp ${value}` : '-')
-  }))
+  }; })
 }));
 
 describe('TagMesin.vue', () => {

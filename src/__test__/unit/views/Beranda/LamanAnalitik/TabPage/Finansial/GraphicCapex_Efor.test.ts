@@ -86,8 +86,8 @@ describe('GraphicCapex_Efor.vue', () => {
     vi.clearAllMocks();
     
     // Setup default mocks
-    (GrafikService as any).mockImplementation(() => mockGrafikService);
-    (PetaService as any).mockImplementation(() => mockPetaService);
+    (GrafikService as any).mockImplementation(function() { return mockGrafikService; });
+    (PetaService as any).mockImplementation(function() { return mockPetaService; });
     
     mockGrafikService.getInitialPembangkit.mockResolvedValue({
       data: [
@@ -308,6 +308,183 @@ describe('GraphicCapex_Efor.vue', () => {
       // Test badge rendering for filters
       expect(wrapper.text()).toContain('Kategori Pembangkit');
       expect(wrapper.text()).toContain('Tahun');
+    });
+
+    it('should cover close and apply filter validation branches', async () => {
+      wrapper = createWrapper();
+      await nextTick();
+
+      const vm = wrapper.vm as any;
+
+      vm.value = [];
+      vm.filter.tahun = null;
+      vm.closeModal();
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000);
+
+      vi.clearAllMocks();
+      vm.value = [];
+      vm.filter.tahun = 2024;
+      vm.closeModal();
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000);
+
+      vi.clearAllMocks();
+      vm.value = ['PLTU'];
+      vm.showModal = true;
+      await vm.applyFilter();
+      expect(vm.showModal).toBe(false);
+
+      vi.clearAllMocks();
+      vm.value = ['PLTG'];
+      vm.showModal = true;
+      await vm.applyFilterNoDMN();
+      expect(vm.showModal).toBe(false);
+    });
+
+    it('should execute modal template click handlers for reset and apply', async () => {
+      wrapper = createWrapper();
+      await nextTick();
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      const vm = wrapper.vm as any;
+
+      await wrapper.find('#hover-button').trigger('click');
+      expect(vm.showModal).toBe(true);
+
+      vm.value = ['PLTU', 'PLTG'];
+      vm.dmn = ['1', '2', '3'];
+      vm.isPembangkitDropdownOpen = true;
+      vm.isDmnDropdownOpen = true;
+      await nextTick();
+
+      const resetButton = wrapper.findAll('button').find((btn) => btn.text().trim() === 'Reset');
+      expect(resetButton).toBeDefined();
+      await resetButton!.trigger('click');
+      expect(vm.value).toEqual([]);
+
+      vm.value = ['PLTU'];
+      vm.showModal = true;
+      await nextTick();
+      const applyWithDmn = wrapper.findAll('button').find((btn) => btn.text().trim() === 'Terapkan');
+      expect(applyWithDmn).toBeDefined();
+      await applyWithDmn!.trigger('click');
+      await nextTick();
+      expect(vm.showModal).toBe(false);
+
+      vm.showModal = true;
+      vm.value = ['PLTG'];
+      await nextTick();
+      const applyNoDmn = wrapper.findAll('button').find((btn) => btn.text().trim() === 'Terapkan');
+      expect(applyNoDmn).toBeDefined();
+      await applyNoDmn!.trigger('click');
+      await nextTick();
+      expect(vm.showModal).toBe(false);
+    });
+
+    it('should execute dropdown handlers and selection callbacks through DOM events', async () => {
+      const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
+
+      wrapper = createWrapper();
+      await nextTick();
+
+      const vm = wrapper.vm as any;
+      vm.showModal = true;
+      vm.value = ['PLTU', 'PLTG'];
+      vm.dmn = ['1', '2', '3'];
+      vm.togglePembangkitDropdown();
+      vm.toggleDmnDropdown();
+
+      vm.removeSelectedPembangkit('PLTG');
+      vm.value = ['PLTU', 'PLTG'];
+      vm.clearPembangkit();
+      vm.value = ['PLTU', 'PLTG'];
+      vm.removeSelectedDmn('2');
+      vm.dmn = ['1', '2', '3'];
+      vm.clearDmn();
+      vm.dmn = ['1', '2', '3'];
+      await nextTick();
+
+      const removeButtons = wrapper.findAll('button').filter((btn) => (btn.attributes('class') || '').includes('ml-1'));
+      if (removeButtons[0]) {
+        await removeButtons[0].trigger('click');
+      }
+      if (removeButtons[1]) {
+        await removeButtons[1].trigger('click');
+      }
+
+      const checkboxes = wrapper.findAll('input[type="checkbox"]');
+      for (const checkbox of checkboxes) {
+        await checkbox.setValue(true);
+      }
+
+      const datePicker = wrapper.findComponent({ name: 'VueDatePicker' });
+      if (datePicker.exists()) {
+        datePicker.vm.$emit('update:modelValue', 2024);
+      }
+
+      vm.handleClickOutside({ target: { closest: () => null } } as any);
+      expect(vm.isPembangkitDropdownOpen).toBe(false);
+      expect(vm.isDmnDropdownOpen).toBe(false);
+
+      wrapper.unmount();
+      expect(removeEventListenerSpy).toHaveBeenCalledWith('click', expect.any(Function));
+      removeEventListenerSpy.mockRestore();
+    });
+
+    it('should cover remaining Capex branch permutations and template callbacks', async () => {
+      mockGrafikService.getGraphicAnalitikEFOR
+        .mockResolvedValueOnce({ success: false, data: [] })
+        .mockResolvedValueOnce({ success: false, data: [] })
+        .mockResolvedValue(defaultMockData);
+
+      wrapper = createWrapper({ initialPembangkit: [] });
+      await nextTick();
+
+      const vm = wrapper.vm as any;
+
+      // Exercise the "response.success === false" branches.
+      await vm.getDataGraph();
+      await vm.getDataGraphNoDMN();
+
+      vm.value = ['PLTU'];
+      vm.filter.tahun = 2024;
+      vm.showModal = true;
+      vm.closeModal();
+      expect(vm.showModal).toBe(false);
+
+      vm.value = [];
+      vm.filter.tahun = null;
+      await vm.applyFilter();
+      await vm.applyFilterNoDMN();
+
+      vm.filter.tahun = 2024;
+      await vm.applyFilter();
+      await vm.applyFilterNoDMN();
+
+      vm.value = ['PLTU', 'PLTG'];
+      vm.dmn = ['1', '2', '3'];
+      vm.showModal = true;
+      vm.isPembangkitDropdownOpen = true;
+      vm.isDmnDropdownOpen = true;
+      await nextTick();
+
+      const checkboxes = wrapper.findAll('input[type="checkbox"]');
+      for (const checkbox of checkboxes) {
+        await checkbox.setValue(false);
+        await checkbox.setValue(true);
+      }
+
+      const removeButtons = wrapper.findAll('button').filter((btn) => (btn.attributes('class') || '').includes('ml-1'));
+      if (removeButtons[1]) {
+        await removeButtons[1].trigger('click');
+      }
+
+      const datePicker = wrapper.findComponent({ name: 'VueDatePicker' });
+      if (datePicker.exists()) {
+        datePicker.vm.$emit('update:modelValue', 2025);
+      }
+
+      vm.handleClickOutside({ target: { closest: () => document.createElement('div') } } as any);
+      expect(vm.isPembangkitDropdownOpen).toBe(true);
     });
   });
 });

@@ -78,7 +78,7 @@ describe('VerifikasiSSO.vue', () => {
     mockLoginService = {
       verifikasiSSO: vi.fn(),
     };
-    (LoginService as any).mockImplementation(() => mockLoginService);
+    (LoginService as any).mockImplementation(function() { return mockLoginService; });
     
     // Mock import.meta.env
     vi.stubEnv('MODE', 'development');

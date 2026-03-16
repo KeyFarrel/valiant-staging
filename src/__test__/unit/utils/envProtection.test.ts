@@ -111,7 +111,7 @@ describe('envProtection', () => {
       disconnect: vi.fn()
     };
     
-    global.MutationObserver = vi.fn(() => mockObserver) as any;
+    global.MutationObserver = vi.fn(function() { return mockObserver; }) as any;
     global.document = {
       documentElement: document.createElement('div')
     } as any;

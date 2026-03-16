@@ -1,8 +1,28 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
 import Login from '@/views/Login.vue';
 import AuthService from '@/services/auth-service';
+
+const VALID_SECRET = 'S3cr3t!789';
+const ALT_SECRET = 'Tmp#4567';
+
+const modalWrapperStub = {
+  template: '<div class="modal-wrapper-stub"><slot /></div>',
+  props: ['showModal', 'show-modal', 'width', 'height']
+};
+
+const textFieldStub = {
+  template: '<input :id="id" :type="type || \'text\'" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value); $emit(\'on-input\', $event)" />',
+  props: ['id', 'type', 'modelValue', 'placeholder'],
+  emits: ['update:modelValue', 'on-input']
+};
+
+const privacyPolicyStub = {
+  template: '<div><button class="accept-policy" @click="$emit(\'on-accept\')">accept</button><button class="decline-policy" @click="$emit(\'on-decline\')">decline</button></div>',
+  emits: ['on-accept', 'on-decline']
+};
 
 // Mocks
 vi.mock('@/services/auth-service');
@@ -19,6 +39,10 @@ vi.mock('@/router', () => ({
 }));
 
 vi.mock('vue-router', () => ({
+  RouterLink: {
+    template: '<a><slot /></a>',
+    props: ['to']
+  },
   useRoute: () => ({
     query: {}
   }),
@@ -88,10 +112,10 @@ describe('Login.vue', () => {
       privacyPolicy: vi.fn().mockResolvedValue({ code: 200 })
     };
 
-    (AuthService as any).mockImplementation(() => mockAuthService);
+    (AuthService as any).mockImplementation(function() { return mockAuthService; });
     
-    // Mock window location
-    Object.defineProperty(window, 'location', {
+    // Mock global location
+    Object.defineProperty(globalThis, 'location', {
       value: { 
         href: '',
         reload: vi.fn()
@@ -110,7 +134,9 @@ describe('Login.vue', () => {
         plugins: [pinia],
         stubs: {
           ModalNotification: true,
-          ModalWrapper: true,
+          ModalWrapper: modalWrapperStub,
+          TextField: textFieldStub,
+          PrivacyPolicy: privacyPolicyStub,
           Dialog: true,
           'gocaptcha-slide': true, 
           Loading: true
@@ -134,7 +160,7 @@ describe('Login.vue', () => {
     await flushPromises();
 
     expect(mockAuthService.loginSSO).toHaveBeenCalled();
-    expect(window.location.href).toBe('http://sso-url.com');
+    expect(globalThis.location.href).toBe('http://sso-url.com');
   });
 
   it('should handle login SSO error', async () => {
@@ -186,7 +212,7 @@ describe('Login.vue', () => {
     await flushPromises();
     
     wrapper.vm.valEmail = 'test@example.com';
-    wrapper.vm.valPassword = 'password123';
+    wrapper.vm.valPassword = VALID_SECRET;
     
     // Direct login assuming captcha bypassed or verified
     wrapper.vm.onCaptchaVerified(50);
@@ -212,7 +238,7 @@ describe('Login.vue', () => {
     await flushPromises();
     
     wrapper.vm.valEmail = 'test@example.com';
-    wrapper.vm.valPassword = 'temp123';
+    wrapper.vm.valPassword = ALT_SECRET;
     
     wrapper.vm.onCaptchaVerified(50);
     await flushPromises();
@@ -235,7 +261,7 @@ describe('Login.vue', () => {
 
     // Setting data and calling verify
     wrapper.vm.valEmail = 'test@example.com';
-    wrapper.vm.valPassword = 'wrong';
+    wrapper.vm.valPassword = ALT_SECRET;
     wrapper.vm.onCaptchaVerified(50);
     await flushPromises();
 
@@ -252,7 +278,7 @@ describe('Login.vue', () => {
     await flushPromises();
 
     wrapper.vm.valEmail = 'test@example.com';
-    wrapper.vm.valPassword = 'password';
+  wrapper.vm.valPassword = VALID_SECRET;
     wrapper.vm.onCaptchaVerified(50);
     await flushPromises();
 
@@ -359,7 +385,7 @@ describe('Login.vue', () => {
     const wrapper = createWrapper();
     await flushPromises();
     wrapper.vm.valEmail = 'test@example.com';
-    wrapper.vm.valPassword = 'password123';
+    wrapper.vm.valPassword = VALID_SECRET;
     wrapper.vm.captchaKey = 'captcha-key';
 
     // 1. Validation Failed
@@ -368,7 +394,6 @@ describe('Login.vue', () => {
     });
     wrapper.vm.onCaptchaVerified(50);
     await flushPromises();
-    // expect(wrapper.vm.isShowCaptchaModal).toBe(false);
 
     // 2. Captcha verification failed
     mockAuthService.login.mockRejectedValue({
@@ -376,7 +401,6 @@ describe('Login.vue', () => {
     });
     wrapper.vm.onCaptchaVerified(50);
     await flushPromises();
-    // expect(mockAuthService.generateCaptcha).toHaveBeenCalled();
 
     // 3. User locked
     mockAuthService.login.mockRejectedValue({
@@ -424,7 +448,7 @@ describe('Login.vue', () => {
     await flushPromises();
     
     wrapper.vm.valEmail = 'test@example.com';
-    wrapper.vm.valPassword = 'password';
+    wrapper.vm.valPassword = VALID_SECRET;
     
     // Case 1: Password expired
     mockAuthService.login.mockResolvedValueOnce({
@@ -488,7 +512,7 @@ describe('Login.vue', () => {
     await flushPromises();
     
     wrapper.vm.valEmail = '';
-    wrapper.vm.valPassword = 'password';
+    wrapper.vm.valPassword = VALID_SECRET;
     
     wrapper.vm.onCaptchaVerified(50);
     await flushPromises();
@@ -560,7 +584,7 @@ describe('Login.vue', () => {
 
     // Setup OTP flow
     wrapper.vm.valEmail = 'test@example.com';
-    wrapper.vm.valPassword = 'password';
+    wrapper.vm.valPassword = VALID_SECRET;
     wrapper.vm.isModalOtpShow = true;
     wrapper.vm.otp = ['1','2','3','4','5','6','7','8'];
     
@@ -613,5 +637,285 @@ describe('Login.vue', () => {
     await wrapper.vm.fetchDataProfile();
     await flushPromises();
     // Console error check
+  });
+
+  it('should sanitize password input fields', async () => {
+    const wrapper = createWrapper();
+    await flushPromises();
+
+    wrapper.vm.formCp.oldP = 'test"quote\\newline\n\r\t';
+    wrapper.vm.sanitizeOldPassword();
+    expect(wrapper.vm.formCp.oldP).not.toContain('"');
+
+    wrapper.vm.formCp.newP = "new'password\0test";
+    wrapper.vm.sanitizeNewPassword();
+    expect(wrapper.vm.formCp.newP).not.toContain("'");
+
+    wrapper.vm.formCp.confirmNewP = 'confirm`pass\ntest';
+    wrapper.vm.sanitizeConfirmNewPassword();
+    expect(wrapper.vm.formCp.confirmNewP).not.toContain('`');
+  });
+
+  it('should closeModalOtp and reset OTP state', async () => {
+    const wrapper = createWrapper();
+    await flushPromises();
+
+    wrapper.vm.isModalOtpShow = true;
+    wrapper.vm.otp = ['1', '2', '3', '4', '5', '6', '7', '8'];
+    wrapper.vm.expiredOtpTimer = 100;
+    wrapper.vm.resetOtpTimer = 30;
+
+    wrapper.vm.closeModalOtp();
+
+    expect(wrapper.vm.isModalOtpShow).toBe(false);
+    expect(wrapper.vm.otp.every((v: any) => v === null)).toBe(true);
+    expect(wrapper.vm.expiredOtpTimer).toBe(300);
+    expect(wrapper.vm.resetOtpTimer).toBe(60);
+  });
+
+  it('should closeChangePasswordModal and reset form fields', async () => {
+    const wrapper = createWrapper();
+    await flushPromises();
+
+    wrapper.vm.isModalChangePasswordShow = true;
+    wrapper.vm.formCp.oldP = 'oldpass';
+    wrapper.vm.formCp.newP = 'newpass';
+    wrapper.vm.formCp.confirmNewP = 'confirmpass';
+    wrapper.vm.hasIllegalSpace = true;
+
+    wrapper.vm.closeChangePasswordModal();
+
+    expect(wrapper.vm.isModalChangePasswordShow).toBe(false);
+    expect(wrapper.vm.formCp.oldP).toBe('');
+    expect(wrapper.vm.formCp.newP).toBe('');
+    expect(wrapper.vm.hasIllegalSpace).toBe(false);
+  });
+
+  it('should clickDebugFingerprint and set debuggingFingerprint', async () => {
+    const wrapper = createWrapper();
+    await flushPromises();
+
+    await wrapper.vm.clickDebugFingerprint();
+    await flushPromises();
+
+    expect(wrapper.vm.debuggingFingerprint).toBe('test-visitor-id');
+  });
+
+  it('should goToSlide and update currentSlide', async () => {
+    const wrapper = createWrapper();
+    await flushPromises();
+
+    expect(wrapper.vm.currentSlide).toBe(0);
+    wrapper.vm.goToSlide(3);
+    expect(wrapper.vm.currentSlide).toBe(3);
+    wrapper.vm.goToSlide(1);
+    expect(wrapper.vm.currentSlide).toBe(1);
+  });
+
+  it('should advance carousel slide after 5000ms', async () => {
+    const wrapper = createWrapper();
+    await flushPromises();
+
+    wrapper.vm.goToSlide(0);
+    vi.advanceTimersByTime(5000);
+    await nextTick();
+    expect(wrapper.vm.currentSlide).toBe(1);
+  });
+
+  it('should startTimers and countdown expiredOtpTimer and resetOtpTimer', async () => {
+    const wrapper = createWrapper();
+    await flushPromises();
+
+    wrapper.vm.expiredOtpTimer = 2;
+    wrapper.vm.resetOtpTimer = 1;
+    wrapper.vm.startTimers();
+
+    vi.advanceTimersByTime(1000);
+    await nextTick();
+    expect(wrapper.vm.expiredOtpTimer).toBe(1);
+    expect(wrapper.vm.resetOtpTimer).toBe(0);
+
+    vi.advanceTimersByTime(1000);
+    await nextTick();
+    expect(wrapper.vm.expiredOtpTimer).toBe(0);
+  });
+
+  it('should handleKeyDown prevent non-digit/non-backspace/non-tab keys', async () => {
+    const wrapper = createWrapper();
+    await flushPromises();
+
+    const preventDefaultMock = vi.fn();
+    wrapper.vm.handleKeyDown(0, { key: 'a', preventDefault: preventDefaultMock });
+    expect(preventDefaultMock).toHaveBeenCalled();
+
+    const preventDefaultMock2 = vi.fn();
+    wrapper.vm.handleKeyDown(0, { key: 'Backspace', preventDefault: preventDefaultMock2 });
+    expect(preventDefaultMock2).not.toHaveBeenCalled();
+
+    const preventDefaultMock3 = vi.fn();
+    wrapper.vm.handleKeyDown(0, { key: 'Tab', preventDefault: preventDefaultMock3 });
+    expect(preventDefaultMock3).not.toHaveBeenCalled();
+  });
+
+  it('should handleKeyDown Backspace focus previous input when current is empty', async () => {
+    const wrapper = createWrapper();
+    await flushPromises();
+
+    wrapper.vm.otp = [null, null, null, null, null, null, null, null];
+    const preventDefaultMock = vi.fn();
+    // index=2, otp[2]=null → should trigger nextTick to focus index 1
+    wrapper.vm.handleKeyDown(2, { key: 'Backspace', preventDefault: preventDefaultMock });
+    await nextTick();
+    expect(preventDefaultMock).not.toHaveBeenCalled();
+  });
+
+  it('should handleInput with digit value set otp slot and advance focus', async () => {
+    const wrapper = createWrapper();
+    await flushPromises();
+
+    wrapper.vm.otp = [null, null, null, null, null, null, null, null];
+    await wrapper.vm.handleInput(0, { target: { value: '5' } });
+    await nextTick();
+    expect(wrapper.vm.otp[0]).toBe('5');
+  });
+
+  it('should handleInput with empty value set otp slot to null', async () => {
+    const wrapper = createWrapper();
+    await flushPromises();
+
+    wrapper.vm.otp = ['1', null, null, null, null, null, null, null];
+    await wrapper.vm.handleInput(0, { target: { value: '' } });
+    await nextTick();
+    expect(wrapper.vm.otp[0]).toBeNull();
+  });
+
+  it('should handle onMounted hasRefreshed sessionStorage branch', async () => {
+    const getItemSpy = vi.spyOn(globalThis.sessionStorage, 'getItem').mockReturnValue('true');
+    const removeItemSpy = vi.spyOn(globalThis.sessionStorage, 'removeItem').mockImplementation(() => {});
+
+    mount(Login, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          ModalNotification: true,
+          ModalWrapper: modalWrapperStub,
+          TextField: textFieldStub,
+          PrivacyPolicy: privacyPolicyStub,
+          Dialog: true,
+          'gocaptcha-slide': true,
+          Loading: true
+        }
+      }
+    });
+    await flushPromises();
+
+    expect(removeItemSpy).toHaveBeenCalledWith('hasRefreshed');
+
+    getItemSpy.mockRestore();
+    removeItemSpy.mockRestore();
+  });
+
+  it('should trigger template emits and password modal input/toggle handlers', async () => {
+    const wrapper = createWrapper();
+    await flushPromises();
+
+    await wrapper.find('.accept-policy').trigger('click');
+    await wrapper.find('.decline-policy').trigger('click');
+    await flushPromises();
+
+    wrapper.vm.isModalChangePasswordShow = true;
+    wrapper.vm.formCp.oldP = 'OldPass1!';
+    wrapper.vm.formCp.newP = 'NewPass1!';
+    wrapper.vm.formCp.confirmNewP = 'NewPass1!';
+    await nextTick();
+
+    const oldP = wrapper.find('#oldPassword');
+    const newP = wrapper.find('#newPassword');
+    const confirmP = wrapper.find('#confirmNewPassword');
+    expect(oldP.exists()).toBe(true);
+    expect(newP.exists()).toBe(true);
+    expect(confirmP.exists()).toBe(true);
+
+    await oldP.setValue('OldPass1!');
+    await newP.setValue('NewPass1!');
+    await confirmP.setValue('NewPass1!');
+
+    const toggleButtons = wrapper.findAll('button.absolute.inset-y-0.right-0.flex.items-center.pt-5.pr-3');
+    expect(toggleButtons.length).toBeGreaterThanOrEqual(3);
+    await toggleButtons[0].trigger('click');
+    await toggleButtons[1].trigger('click');
+    await toggleButtons[2].trigger('click');
+  });
+
+  it('should trigger OTP, slider, login input, and counter close handlers from template', async () => {
+    const wrapper = createWrapper();
+    await flushPromises();
+
+    wrapper.vm.isModalOtpShow = true;
+    wrapper.vm.expiredOtpTimer = 0;
+    wrapper.vm.resetOtpTimer = 0;
+    await nextTick();
+
+    const otpInputs = wrapper.findAll('input[maxlength="1"]');
+    expect(otpInputs.length).toBe(8);
+    for (let i = 0; i < otpInputs.length; i++) {
+      await otpInputs[i].setValue(String((i + 1) % 10));
+    }
+    await flushPromises();
+    expect(mockAuthService.verifyDeviceOtp).toHaveBeenCalled();
+
+    const slideButton = wrapper.find('button[aria-label="Slide 3"]');
+    expect(slideButton.exists()).toBe(true);
+    await slideButton.trigger('click');
+
+    wrapper.vm.isShowCounter = true;
+    await nextTick();
+    const closeCounterButton = wrapper.find('div.flex.justify-between > button[type="button"]');
+    expect(closeCounterButton.exists()).toBe(true);
+    await closeCounterButton.trigger('click');
+    expect(wrapper.vm.isShowCounter).toBe(false);
+
+    const emailInput = wrapper.find('#emailAddress');
+    const passwordInput = wrapper.find('#password1');
+    expect(emailInput.exists()).toBe(true);
+    expect(passwordInput.exists()).toBe(true);
+    await emailInput.setValue('template@test.com');
+    await passwordInput.setValue('Password123!');
+    await passwordInput.trigger('keyup.enter');
+  });
+
+  it('should hit timer clear, early return, and password success storage clear branches', async () => {
+    const wrapper = createWrapper();
+    await flushPromises();
+
+    wrapper.vm.expiredOtpTimer = 0;
+    wrapper.vm.resetOtpTimer = 0;
+    wrapper.vm.startTimers();
+    vi.advanceTimersByTime(1000);
+    await nextTick();
+
+    wrapper.vm.isLoadingButton = true;
+    wrapper.vm.valEmail = 'test@example.com';
+    wrapper.vm.valPassword = VALID_SECRET;
+    await wrapper.vm.onCaptchaVerified();
+    expect(mockAuthService.login).not.toHaveBeenCalled();
+
+    const clearSpy = vi.spyOn(localStorage, 'clear').mockImplementation(() => {});
+    wrapper.vm.isLoadingButton = false;
+    wrapper.vm.formCp.oldP = 'OldPass1!';
+    wrapper.vm.formCp.newP = 'NewPass1!';
+    wrapper.vm.formCp.confirmNewP = 'NewPass1!';
+    wrapper.vm.verifyRequirementPassword();
+    wrapper.vm.verifyMatchPassword();
+    mockAuthService.changePrePassword.mockResolvedValueOnce({ code: 200 });
+
+    const promise = wrapper.vm.changePassword();
+    await flushPromises();
+    vi.advanceTimersByTime(5000);
+    await flushPromises();
+    await promise;
+
+    expect(clearSpy).toHaveBeenCalled();
+    clearSpy.mockRestore();
   });
 });

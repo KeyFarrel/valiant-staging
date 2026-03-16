@@ -25,10 +25,10 @@ const mockDetailRekapService = {
 }
 
 // Mock Constructors
-vi.mock('@/services/log-activity-service', () => ({ default: vi.fn(() => mockLogActivityService) }))
-vi.mock('@/services/rekap-service', () => ({ default: vi.fn(() => mockRekapService) }))
-vi.mock('@/services/feasibility-study', () => ({ default: vi.fn(() => mockFeasibilityStudyService) }))
-vi.mock('@/services/detail-rekap-service', () => ({ default: vi.fn(() => mockDetailRekapService) }))
+vi.mock('@/services/log-activity-service', () => ({ default: vi.fn(function() { return mockLogActivityService; }) }))
+vi.mock('@/services/rekap-service', () => ({ default: vi.fn(function() { return mockRekapService; }) }))
+vi.mock('@/services/feasibility-study', () => ({ default: vi.fn(function() { return mockFeasibilityStudyService; }) }))
+vi.mock('@/services/detail-rekap-service', () => ({ default: vi.fn(function() { return mockDetailRekapService; }) }))
 
 // Mock URL and Document
 global.URL.createObjectURL = vi.fn(() => 'blob:test-url')

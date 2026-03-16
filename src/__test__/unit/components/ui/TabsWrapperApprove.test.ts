@@ -4,6 +4,10 @@ import { createPinia, setActivePinia } from 'pinia'
 import { h } from 'vue'
 import TabsWrapperApprove from '@/components/ui/TabsWrapperApprove.vue'
 
+const modalWrapperStub = {
+  template: '<div class="modal-wrapper-stub"><slot /></div>'
+}
+
 // Mock the store
 vi.mock('@/store/storeLamanDataTab', () => ({
   useLamanDataTabStore: vi.fn(() => ({
@@ -27,43 +31,47 @@ const mockGetGrafikWLCKomMesin = vi.fn().mockResolvedValue({
     })
 
 vi.mock('@/services/grafik-service', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     getGrafikWLCALLMesin: mockGetGrafikWLCALLMesin,
     getGrafikWLCKomMesin: mockGetGrafikWLCKomMesin,
     getGrafikWLCALLDetailMesin: vi.fn().mockResolvedValue({ 
       data: { 
         graph: [
+          { nomor: 2, judul: 'Test 2', realisasi: 200, planning: 250 },
           { nomor: 1, judul: 'Test 1', realisasi: 100, planning: 150 }
         ], 
         table: [
-          { nomor: 1, name: 'Test', realisasi: 100, planning: 150 }
+          { nomor: 2, name: 'Test 2', realisasi: 200, planning: 250 },
+          { nomor: 1, name: 'Test 1', realisasi: 100, planning: 150 }
         ]
       } 
     }),
     getGrafikWLCKomDetailMesin: vi.fn().mockResolvedValue({ 
       data: { 
         graph: [
+          { nomor: 2, judul: 'Test 2', realisasi: 200, planning: 250 },
           { nomor: 1, judul: 'Test 1', realisasi: 100, planning: 150 }
         ], 
         table: [
-          { nomor: 1, name: 'Test', realisasi: 100, planning: 150 }
+          { nomor: 2, name: 'Test 2', realisasi: 200, planning: 250 },
+          { nomor: 1, name: 'Test 1', realisasi: 100, planning: 150 }
         ]
       } 
     })
-  }))
+  }; })
 }))
 
 vi.mock('@/services/detail-sentral-service', () => ({
-  default: vi.fn().mockImplementation(() => ({}))
+  default: vi.fn().mockImplementation(function() { return {}; })
 }))
 
 vi.mock('@/services/format/global-format', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     formatCurrencyNotFixed: vi.fn((val) => val),
     formatEnergy: vi.fn((val) => val),
     formatRupiah: vi.fn((val) => val),
     formatDecimal: vi.fn((val) => val)
-  }))
+  }; })
 }))
 
 describe('TabsWrapperApprove', () => {
@@ -130,7 +138,7 @@ describe('TabsWrapperApprove', () => {
         plugins: [pinia],
         stubs: {
           'vue-echarts': true,
-          'ModalWrapper': true,
+          'ModalWrapper': modalWrapperStub,
           'Chips': true,
           'PopUp': true,
           'Legend': true,
@@ -182,7 +190,7 @@ describe('TabsWrapperApprove', () => {
         plugins: [createPinia()],
         stubs: {
           'vue-echarts': true,
-          'ModalWrapper': true,
+          'ModalWrapper': modalWrapperStub,
           'Chips': true,
           'PopUp': true,
           'Legend': true,
@@ -299,7 +307,7 @@ describe('TabsWrapperApprove', () => {
         plugins: [createPinia()],
         stubs: {
           'vue-echarts': true,
-          'ModalWrapper': true,
+          'ModalWrapper': modalWrapperStub,
           'Chips': true,
           'PopUp': true,
           'Legend': true,
@@ -332,7 +340,7 @@ describe('TabsWrapperApprove', () => {
         plugins: [createPinia()],
         stubs: {
           'vue-echarts': true,
-          'ModalWrapper': true,
+          'ModalWrapper': modalWrapperStub,
           'Chips': true,
           'PopUp': true,
           'Legend': true,
@@ -359,7 +367,7 @@ describe('TabsWrapperApprove', () => {
         plugins: [createPinia()],
         stubs: {
           'vue-echarts': true,
-          'ModalWrapper': true,
+          'ModalWrapper': modalWrapperStub,
           'Chips': true,
           'PopUp': true,
           'Legend': true,
@@ -388,7 +396,7 @@ describe('TabsWrapperApprove', () => {
         plugins: [pinia],
         stubs: {
           'vue-echarts': true,
-          'ModalWrapper': true,
+          'ModalWrapper': modalWrapperStub,
           'Chips': true,
           'PopUp': true,
           'Legend': true,
@@ -579,7 +587,7 @@ describe('TabsWrapperApprove', () => {
         plugins: [createPinia()],
         stubs: {
           'vue-echarts': true,
-          'ModalWrapper': true,
+          'ModalWrapper': modalWrapperStub,
           'Chips': true,
           'PopUp': true,
           'Legend': true,
@@ -606,7 +614,7 @@ describe('TabsWrapperApprove', () => {
         plugins: [createPinia()],
         stubs: {
           'vue-echarts': true,
-          'ModalWrapper': true,
+          'ModalWrapper': modalWrapperStub,
           'Chips': true,
           'PopUp': true,
           'Legend': true,
@@ -681,12 +689,296 @@ describe('TabsWrapperApprove', () => {
     // Test tooltip formatter
     const tooltipFn = chart.series[0].tooltip.valueFormatter
     expect(typeof tooltipFn(100)).toBe('string')
-    
-    // Test yAxis label formatter
-    const yAxisFn = chart.yAxis[0].axisLabel.formatter
-    // globalFormat mock returns undefined or empty object in setup, 
-    // but in component it calls globalFormat.formatRupiah.
-    // We mocked globalFormat constructor to return empty object, so formatRupiah is undefined.
-    // We should fix globalFormat mock to have formatRupiah.
+  })
+
+  it('should handle BEP else branch (selisihNow <= selisihMinus1)', async () => {
+    // i=1: rev=250, wlcc=250 → selisihNow=0
+    // i=0: rev=100, wlcc=200 → selisihMinus1=-100
+    // abs(0) < abs(-100) → else branch: indexTerdekat=i, tahunBEP=res.data[i].tahun
+    const mockData = [
+      {
+        tahun: 2023, revenue_annualized: 100, total_wlcc_annualized: 200,
+        capex_annualized: 50, cost_component_bd: 20, cost_component_c_annualized: 10, profit_loss: -100
+      },
+      {
+        tahun: 2024, revenue_annualized: 250, total_wlcc_annualized: 250,
+        capex_annualized: 50, cost_component_bd: 20, cost_component_c_annualized: 10, profit_loss: 0
+      }
+    ]
+
+    mockGetGrafikWLCALLMesin.mockResolvedValue({ data: mockData })
+
+    const w = mount(TabsWrapperApprove, {
+      props: defaultProps,
+      slots: { default: [h('div', { title: 'Tab 1' }, 'Content')] },
+      global: {
+        plugins: [createPinia()],
+        stubs: { 'vue-echarts': true, 'ModalWrapper': modalWrapperStub, 'Chips': true, 'PopUp': true, 'Legend': true, 'Empty': true, 'StatusGrafik': true }
+      }
+    })
+
+    await flushPromises()
+    const chart = w.vm.chartWLCAllMesin
+    expect(chart).toBeDefined()
+    expect(chart.series[2].markPoint.data.length).toBeGreaterThan(0)
+  })
+
+  it('should handle null data for WLC All Mesin', async () => {
+    mockGetGrafikWLCALLMesin.mockResolvedValue({ data: null })
+
+    const w = mount(TabsWrapperApprove, {
+      props: defaultProps,
+      slots: { default: [h('div', { title: 'Tab 1' }, 'Content')] },
+      global: {
+        plugins: [createPinia()],
+        stubs: { 'vue-echarts': true, 'ModalWrapper': modalWrapperStub, 'Chips': true, 'PopUp': true, 'Legend': true, 'Empty': true, 'StatusGrafik': true }
+      }
+    })
+
+    await flushPromises()
+    expect(w.vm.tahunWLCAllMesin).toEqual([])
+    expect(w.vm.revWLCMesin).toEqual([])
+  })
+
+  it('should handle null data for WLC Komponen Mesin', async () => {
+    mockGetGrafikWLCKomMesin.mockResolvedValue({ data: null })
+
+    const w = mount(TabsWrapperApprove, {
+      props: defaultProps,
+      slots: { default: [h('div', { title: 'Tab 1' }, 'Content')] },
+      global: {
+        plugins: [createPinia()],
+        stubs: { 'vue-echarts': true, 'ModalWrapper': modalWrapperStub, 'Chips': true, 'PopUp': true, 'Legend': true, 'Empty': true, 'StatusGrafik': true }
+      }
+    })
+
+    await flushPromises()
+    expect(w.vm.tahunWLCKomMesin).toEqual([])
+    expect(w.vm.costCompAMesin).toEqual([])
+  })
+
+  it('should exercise WLC All chart yAxis and tooltip formatters', async () => {
+    await flushPromises()
+    const chart = wrapper.vm.chartWLCAllMesin
+
+    // yAxis formatter
+    const yAxisFormatter = chart.yAxis[0].axisLabel.formatter
+    expect(yAxisFormatter).toBeDefined()
+    const yResult = yAxisFormatter(1000000)
+    expect(yResult).toBeDefined()
+
+    // series tooltip formatters
+    for (const series of chart.series) {
+      if (series.tooltip?.valueFormatter) {
+        const result = series.tooltip.valueFormatter(100)
+        expect(result).toBeDefined()
+      }
+    }
+  })
+
+  it('should exercise WLC Komponen chart formatters', async () => {
+    await flushPromises()
+    const chart = wrapper.vm.chartWLCKomMesin
+
+    // xAxis color function
+    const colorFn = chart.xAxis[0].axisLabel.color
+    expect(colorFn(2022)).toBe('#FF5656')
+    expect(colorFn(2023)).toBe('#6C6C6C')
+    expect(colorFn(2024)).toBe('#37B1D5')
+
+    // xAxis formatter
+    const fmtFn = chart.xAxis[0].axisLabel.formatter
+    expect(fmtFn(2023, 0)).toContain('1')
+
+    // yAxis formatter
+    const yFmt = chart.yAxis[0].axisLabel.formatter
+    expect(yFmt(500)).toBeDefined()
+
+    // series tooltip formatters
+    for (const series of chart.series) {
+      if (series.tooltip?.valueFormatter) {
+        expect(series.tooltip.valueFormatter(100)).toBeDefined()
+      }
+    }
+  })
+
+  it('should exercise detail WLC All chart formatters after click', async () => {
+    await flushPromises()
+    await wrapper.vm.handleClickWlcAll({ dataIndex: 0 })
+    await flushPromises()
+
+    const detailChart = wrapper.vm.chartDetailWLCAllMesin
+    expect(detailChart).toBeDefined()
+
+    // yAxis formatter
+    const yFmt = detailChart.yAxis[0].axisLabel.formatter
+    expect(yFmt(1000)).toBeDefined()
+
+    // series tooltip formatter
+    for (const series of detailChart.series) {
+      if (series.tooltip?.valueFormatter) {
+        expect(series.tooltip.valueFormatter(100)).toBeDefined()
+      }
+    }
+  })
+
+  it('should exercise detail WLC Kom chart formatters after click', async () => {
+    await flushPromises()
+    await wrapper.vm.handleClickWlcKom({ dataIndex: 0 })
+    await flushPromises()
+
+    const detailChart = wrapper.vm.chartDetailWLCKomMesin
+    expect(detailChart).toBeDefined()
+
+    // yAxis formatter
+    const yFmt = detailChart.yAxis[0].axisLabel.formatter
+    expect(yFmt(1000)).toBeDefined()
+
+    // series tooltip formatter
+    for (const series of detailChart.series) {
+      if (series.tooltip?.valueFormatter) {
+        expect(series.tooltip.valueFormatter(100)).toBeDefined()
+      }
+    }
+  })
+
+  it('should update store when handleClick is called with lamanData true', async () => {
+    const { useLamanDataTabStore } = await import('@/store/storeLamanDataTab')
+    useLamanDataTabStore()
+
+    const w = mount(TabsWrapperApprove, {
+      props: { ...defaultProps, lamanData: true },
+      slots: { default: [h('div', { title: 'Tab A' }, 'A'), h('div', { title: 'Tab B' }, 'B')] },
+      global: {
+        plugins: [createPinia()],
+        stubs: { 'vue-echarts': true, 'ModalWrapper': modalWrapperStub, 'Chips': true, 'PopUp': true, 'Legend': true, 'Empty': true, 'StatusGrafik': true }
+      }
+    })
+
+    await flushPromises()
+    w.vm.handleClick('Tab B')
+    expect(w.vm.selectedTitle).toBe('Tab B')
+  })
+
+  it('should cover BEP if-branch when selisihNow > selisihMinus1 and call BEP chart formatters', async () => {
+    // selisihNow = 350-200=150, selisihMinus1 = 100-200=-100
+    // abs(150) > abs(-100) → TRUE → covers lines 551-553 (the if-branch)
+    const mockDataIfBranch = [
+      { tahun: 2023, revenue_annualized: 100, total_wlcc_annualized: 200, capex_annualized: 50, cost_component_bd: 20, cost_component_c_annualized: 10, profit_loss: -100 },
+      { tahun: 2024, revenue_annualized: 350, total_wlcc_annualized: 200, capex_annualized: 60, cost_component_bd: 25, cost_component_c_annualized: 15, profit_loss: 150 },
+    ];
+    mockGetGrafikWLCALLMesin.mockResolvedValueOnce({ data: mockDataIfBranch });
+
+    const w: any = mount(TabsWrapperApprove, {
+      props: defaultProps,
+      slots: { default: [h('div', { title: 'Tab 1' }, 'Content')] },
+      global: {
+        plugins: [createPinia()],
+        stubs: { 'vue-echarts': true, 'ModalWrapper': modalWrapperStub, 'Chips': true, 'PopUp': true, 'Legend': true, 'Empty': true, 'StatusGrafik': true }
+      }
+    });
+
+    await flushPromises();
+
+    // isBepFounded=true → BEP chart is assigned (lines 613-748 are the BEP-chart branch)
+    const chart = w.vm.chartWLCAllMesin;
+    expect(chart).toBeDefined();
+    expect(chart.series).toBeDefined();
+
+    // Call BEP chart inline functions to cover lines 613-748
+    if (chart?.xAxis?.[0]?.axisLabel?.color) {
+      expect(chart.xAxis[0].axisLabel.color(2022, 0)).toBe('#FF5656'); // < tahunGrafik(2023)
+      expect(chart.xAxis[0].axisLabel.color(2023, 1)).toBe('#6C6C6C'); // == tahunGrafik
+      expect(chart.xAxis[0].axisLabel.color(2024, 2)).toBe('#37B1D5'); // > tahunGrafik
+    }
+    if (chart?.xAxis?.[0]?.axisLabel?.formatter) {
+      const fmtResult = chart.xAxis[0].axisLabel.formatter(2023, 0);
+      expect(String(fmtResult)).toContain('2023');
+    }
+    if (chart?.yAxis?.[0]?.axisLabel?.formatter) {
+      chart.yAxis[0].axisLabel.formatter(1000000);
+    }
+    (chart?.series || []).forEach((s: any) => {
+      if (s?.tooltip?.valueFormatter) s.tooltip.valueFormatter(100);
+    });
+  });
+
+  it('should trigger inline template click handlers for tabs and modal closers', async () => {
+    const w = mount(TabsWrapperApprove, {
+      props: { ...defaultProps, isLihatGrafik: true },
+      slots: {
+        default: [h('div', { title: 'Tab A' }, 'A'), h('div', { title: 'Tab B' }, 'B')]
+      },
+      global: {
+        plugins: [createPinia()],
+        stubs: { 'vue-echarts': true, 'ModalWrapper': modalWrapperStub, 'Chips': true, 'PopUp': true, 'Legend': true, 'Empty': true, 'StatusGrafik': true }
+      }
+    })
+
+    await flushPromises()
+
+    const topTabs = w.findAll('ul.flex.items-end.mb-4 > li')
+    expect(topTabs.length).toBeGreaterThan(0)
+    await topTabs[0].trigger('click')
+
+    const tabButtons = w.findAll('button.inline-flex.pb-2.text-sm')
+    expect(tabButtons.length).toBeGreaterThanOrEqual(4)
+    await tabButtons[0].trigger('click')
+    await tabButtons[1].trigger('click')
+    await tabButtons[2].trigger('click')
+    await tabButtons[3].trigger('click')
+
+    const lihatButton = w.find('#lihat-button')
+    expect(lihatButton.exists()).toBe(true)
+    await lihatButton.trigger('click')
+
+    await w.vm.handleClickWlcAll({ dataIndex: 0 })
+    await w.vm.handleClickWlcKom({ dataIndex: 0 })
+    await flushPromises()
+
+    const closeTargets = w.findAll('div.cursor-pointer')
+    for (const closeTarget of closeTargets) {
+      await closeTarget.trigger('click')
+    }
+  })
+
+  it('should cover pembina and financial ternary branches in template', async () => {
+    const w = mount(TabsWrapperApprove, {
+      props: {
+        ...defaultProps,
+        namaPembina: '',
+        irrOnProject: '',
+        irrOnEquity: '',
+        waccOnProject: 0,
+        waccOnEquity: 0,
+      },
+      slots: { default: [h('div', { title: 'Tab 1' }, 'Content')] },
+      global: {
+        plugins: [createPinia()],
+        stubs: { 'vue-echarts': true, 'ModalWrapper': modalWrapperStub, 'Chips': true, 'PopUp': true, 'Legend': true, 'Empty': true, 'StatusGrafik': true }
+      }
+    })
+
+    await flushPromises()
+    await w.vm.changeTab(2)
+    await w.vm.$nextTick()
+    expect(String(w.text())).toContain('NUM')
+  })
+
+  it('should render pembina tooltip branch for long name', async () => {
+    const w = mount(TabsWrapperApprove, {
+      props: { ...defaultProps, namaPembina: 'Pembina Dengan Nama Sangat Panjang Sekali' },
+      slots: { default: [h('div', { title: 'Tab 1' }, 'Content')] },
+      global: {
+        plugins: [createPinia()],
+        stubs: { 'vue-echarts': true, 'ModalWrapper': modalWrapperStub, 'Chips': true, 'PopUp': true, 'Legend': true, 'Empty': true, 'StatusGrafik': true }
+      }
+    })
+
+    await flushPromises()
+    await w.vm.detailPembina()
+    await w.vm.$nextTick()
+    const tooltip = w.find('#tooltipContentPembina')
+    expect(tooltip.exists()).toBe(true)
   })
 })

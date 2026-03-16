@@ -29,7 +29,7 @@ const mockGetGrafikPlanKomMesin = vi.fn().mockResolvedValue({
     })
 
 vi.mock('@/services/grafik-service', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     getGrafikPlanMesin: mockGetGrafikPlanMesin,
     getGrafikPlanKomMesin: mockGetGrafikPlanKomMesin,
     getGrafikPlanDetailMesin: vi.fn().mockResolvedValue({
@@ -52,7 +52,7 @@ vi.mock('@/services/grafik-service', () => ({
         ]
       }
     })
-  }))
+  }; })
 }));
 
 const defaultProps = {

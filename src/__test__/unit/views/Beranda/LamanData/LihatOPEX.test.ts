@@ -58,7 +58,7 @@ const mockAsumsiData = {
 
 // Mock services - all mocks return synchronously resolved promises
 vi.mock('@/services/lihat-opex-service', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     getMesinById: vi.fn().mockResolvedValue({ data: mockMesinData }),
     getPembangkitByKode: vi.fn().mockResolvedValue({ data: mockPembangkitData }),
     getPengelolaData: vi.fn().mockResolvedValue({ data: mockPengelolaData }),
@@ -66,19 +66,19 @@ vi.mock('@/services/lihat-opex-service', () => ({
     getOPEXKomponenB: vi.fn().mockResolvedValue({ data: mockKomponenB }),
     getOPEXKomponenC: vi.fn().mockResolvedValue({ data: mockKomponenC }),
     getOPEXKomponenD: vi.fn().mockResolvedValue({ data: mockKomponenD })
-  }))
+  }; })
 }))
 
 vi.mock('@/services/user-service', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     getPembina: vi.fn().mockResolvedValue({ data: mockPembinaData })
-  }))
+  }; })
 }))
 
 vi.mock('@/services/format/global-format', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     formatRupiah: vi.fn((val) => val != null ? `Rp ${val}` : 'Rp 0')
-  }))
+  }; })
 }))
 
 // Mock vue-router

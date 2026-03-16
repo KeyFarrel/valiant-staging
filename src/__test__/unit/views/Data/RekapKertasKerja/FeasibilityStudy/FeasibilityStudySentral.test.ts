@@ -81,7 +81,7 @@ describe('FeasibilityStudySentral', () => {
     };
 
     // Replace the mocked constructor
-    vi.mocked(FeasibilityStudyService).mockImplementation(() => mockFeasibilityStudyService);
+    vi.mocked(FeasibilityStudyService).mockImplementation(function() { return mockFeasibilityStudyService; });
   });
 
   it('should render component successfully', () => {

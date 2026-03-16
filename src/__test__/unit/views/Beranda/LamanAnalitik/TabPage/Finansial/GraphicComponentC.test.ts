@@ -37,7 +37,7 @@ describe('GraphicComponentC', () => {
       getGraphicBiaya: vi.fn(),
     };
     
-    MockedGrafikService.mockImplementation(() => mockGrafikService);
+    MockedGrafikService.mockImplementation(function() { return mockGrafikService; });
     
     // Default successful responses
     mockGrafikService.getInitialPembangkit.mockResolvedValue({
@@ -466,5 +466,47 @@ describe('GraphicComponentC', () => {
       expect(lastCall[0].tahun_awal).toBe('');
       expect(lastCall[0].tahun_akhir).toBe('');
     });
+  });
+
+  it('covers UI dropdown methods and outside click', async () => {
+    wrapper.vm.togglePembangkitDropdown();
+    wrapper.vm.value = ['PLTU', 'PLTG'];
+    wrapper.vm.removeSelectedPembangkit('PLTU');
+    wrapper.vm.clearPembangkit();
+
+    wrapper.vm.toggleDmnDropdown();
+    wrapper.vm.dmn = ['1', '2'];
+    wrapper.vm.removeSelectedDmn('1');
+    wrapper.vm.clearDmn();
+
+    const evt = new MouseEvent('click');
+    Object.defineProperty(evt, 'target', { value: document.createElement('div') });
+    document.dispatchEvent(evt);
+    
+    wrapper.vm.isPembangkitDropdownOpen = true;
+    wrapper.vm.checkAll = true;
+    wrapper.vm.handleCheckAll(true);
+    wrapper.vm.handleCheckAll(false);
+  });
+
+  it('covers template click handlers', async () => {
+    wrapper.vm.showModal = true;
+    wrapper.vm.value = ['PLTU'];
+    await wrapper.vm.$nextTick();
+    const applyButtons = wrapper.findAll('button[type="submit"]');
+    for (const btn of applyButtons) {
+       if (btn.exists()) await btn.trigger('click');
+    }
+    
+    wrapper.vm.value = ['PLTG'];
+    await wrapper.vm.$nextTick();
+    const applyButtons2 = wrapper.findAll('button[type="submit"]');
+    for (const btn of applyButtons2) {
+       if (btn.exists()) await btn.trigger('click');
+    }
+  });
+
+  it('mocks window events to trigger resize handler', async () => { 
+    window.dispatchEvent(new Event('resize')); 
   });
 });

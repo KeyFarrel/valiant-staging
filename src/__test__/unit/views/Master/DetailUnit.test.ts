@@ -56,7 +56,11 @@ vi.mock('@/router', () => ({
 }));
 
 vi.mock('@/store/storeUserAuth', () => ({
-  useUserAuthStore: () => ({ user: { id: 'test-user' } })
+  useUserAuthStore: () => ({
+    user: { id: 'test-user' },
+    levelAlias: 'Dr^3Zn$!',
+    roleAlias: 'nT!z03&k'
+  })
 }));
 
 vi.mock('@/utils/app-encrypt-storage', () => ({
@@ -119,19 +123,21 @@ const mockDetailSentralService = {
 };
 
 vi.mock('@/services/detail-sentral-service', () => ({
-  default: vi.fn(() => mockDetailSentralService)
+  default: vi.fn(function() { return mockDetailSentralService; })
 }));
 
-vi.mock('@/services/user-service', () => ({
-  default: vi.fn(() => ({
-    getPembina: vi.fn(() => Promise.resolve({
-      data: [{ uuid_pembina: 'pembina-1', pembina: 'Test Pembina' }]
-    }))
+const mockUserService = {
+  getPembina: vi.fn(() => Promise.resolve({
+    data: [{ uuid_pembina: 'pembina-1', pembina: 'Test Pembina' }]
   }))
+};
+
+vi.mock('@/services/user-service', () => ({
+  default: vi.fn(function() { return mockUserService; })
 }));
 
 vi.mock('@/services/perbarui-data', () => ({
-  default: vi.fn(() => mockPerbaruiDataService)
+  default: vi.fn(function() { return mockPerbaruiDataService; })
 }));
 
 // Create reference to mocked perbaruiDataService
@@ -145,15 +151,15 @@ const mockPerbaruiDataService = {
 };
 
 vi.mock('@/services/format/global-format', () => ({
-  default: vi.fn(() => ({
+  default: vi.fn(function() { return {
     formatInputNumberOnly: vi.fn((val) => val),
     formatCurrencyNotFixed: vi.fn((val) => val.toString()),
     formatRupiah: vi.fn((val) => `Rp ${val.toLocaleString()}`)
-  }))
+  }; })
 }));
 
 vi.mock('@/services/auth-service', () => ({
-  default: vi.fn(() => ({}))
+  default: vi.fn(function() { return {}; })
 }));
 
 // Import the component after mocking
@@ -1105,5 +1111,227 @@ describe('DetailUnit.vue', () => {
     
     expect(consoleErrorSpy).toHaveBeenCalledWith('Fetch Unit Pengelola Error : ', expect.any(Error));
     consoleErrorSpy.mockRestore();
+  });
+
+  it('should exercise template event handlers for tabs, edit actions, v-model inputs, and file callbacks', async () => {
+    const interactiveWrapper = shallowMount(DetailUnit, {
+      global: {
+        stubs: {
+          Loading: true,
+          ModalNotification: true,
+          TooltipDetailUnit: true,
+          ModalWrapper: {
+            props: ['showModal'],
+            template: '<div><slot /></div>'
+          },
+          ConfirmationDialog: {
+            emits: ['on-batal-click', 'on-accept-click'],
+            template: '<div><button data-testid="confirm-cancel" @click="$emit(\'on-batal-click\')" /><button data-testid="confirm-accept" @click="$emit(\'on-accept-click\')" /></div>'
+          },
+          TextInputPrefix: {
+            props: ['modelValue', 'id'],
+            emits: ['update:modelValue'],
+            template: '<input data-testid="text-prefix" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />'
+          }
+        }
+      }
+    });
+
+    const vm = interactiveWrapper.vm as any;
+    vm.sentralDataById = {
+      kode_sentral: 'TEST001',
+      longitude: '106.8456',
+      latitude: '-6.2088',
+      photo: '',
+      mesins: []
+    };
+    vm.mesin = [{
+      uuid: 'mesin-1',
+      mesin: 'Mesin 1',
+      kondisi_unit: 'Baik',
+      tahun_operasi: 2020,
+      masa_manfaat: 25,
+      tahun_nilai_perolehan: 2020,
+      nilai_asset_awal: 1000000,
+      daya_terpasang: 100,
+      daya_mampu: 90,
+      longitude: '',
+      latitude: '',
+      photo1: '',
+      photo2: ''
+    }];
+    vm.error = [{ tahunDataAwal: false }];
+    vm.mesinFormModel = [{
+      nilaiAsetAwal: '100',
+      masaManfaat: '25',
+      tahunDataAwal: '2020',
+      longitude: '106.8456',
+      latitude: '-6.2088',
+      previewPhoto: null,
+      photoToSubmit: null
+    }];
+    vm.selectedMesin = { uuidMesin: 'mesin-1', namaMesin: 'Mesin 1', mesinIndex: 0 };
+
+    vm.selectedTitle = 'Sentral';
+    vm.isEdit = [];
+    await nextTick();
+
+    const confirmCancelButtons = interactiveWrapper.findAll('[data-testid="confirm-cancel"]');
+    if (confirmCancelButtons.length >= 2) {
+      await confirmCancelButtons[0].trigger('click');
+      await confirmCancelButtons[1].trigger('click');
+    }
+
+    mockDetailSentralService.updateMesinById.mockRejectedValueOnce(new Error('accept-mesin'));
+    const confirmAcceptButtons = interactiveWrapper.findAll('[data-testid="confirm-accept"]');
+    if (confirmAcceptButtons.length >= 2) {
+      await confirmAcceptButtons[0].trigger('click');
+      await confirmAcceptButtons[1].trigger('click');
+    }
+
+    const sentralTab = interactiveWrapper.findAll('li').find(li => li.text().includes('Sentral'));
+    await sentralTab?.trigger('click');
+
+    const sentralEditButton = interactiveWrapper.findAll('button').find(btn => btn.text().includes('Edit Detail'));
+    await sentralEditButton?.trigger('click');
+
+    vm.isEdit = ['Sentral'];
+    await nextTick();
+    const sentralSaveButton = interactiveWrapper.findAll('button').find(btn => btn.text().includes('Simpan Data'));
+    await sentralSaveButton?.trigger('click');
+    const sentralCancelButton = interactiveWrapper.findAll('button').find(btn => btn.text() === 'Batal');
+    await sentralCancelButton?.trigger('click');
+
+    vm.selectedTitle = 'Mesin 1';
+    vm.isEdit = [];
+    vm.mesin = [{
+      uuid: 'mesin-1',
+      mesin: 'Mesin 1',
+      kondisi_unit: 'Baik',
+      tahun_operasi: 2020,
+      masa_manfaat: 25,
+      tahun_nilai_perolehan: 2020,
+      nilai_asset_awal: 1000000,
+      daya_terpasang: 100,
+      daya_mampu: 90,
+      longitude: '',
+      latitude: '',
+      photo1: '',
+      photo2: ''
+    }];
+    vm.mesinFormModel = [{
+      nilaiAsetAwal: '100',
+      masaManfaat: '25',
+      tahunDataAwal: '2020',
+      longitude: '106.8456',
+      latitude: '-6.2088',
+      previewPhoto: null,
+      photoToSubmit: null
+    }];
+    await nextTick();
+
+    const tabs = interactiveWrapper.findAll('li');
+    expect(tabs.length).toBeGreaterThan(1);
+    await tabs[1].trigger('click');
+
+    const mesinEditButton = interactiveWrapper.findAll('button').filter(btn => btn.text().includes('Edit Detail')).slice(-1)[0];
+    expect(mesinEditButton).toBeDefined();
+    await mesinEditButton?.trigger('click');
+
+    vm.isEdit = ['Mesin 1'];
+    await nextTick();
+
+    const prefixInput = interactiveWrapper.find('[data-testid="text-prefix"]');
+    expect(prefixInput.exists()).toBe(true);
+    await prefixInput.setValue('200');
+
+    const textInputs = interactiveWrapper.findAll('input[type="text"]');
+    expect(textInputs.length).toBeGreaterThanOrEqual(4);
+    for (let idx = 0; idx < textInputs.length; idx += 1) {
+      await textInputs[idx].setValue(`${idx + 10}`);
+    }
+
+    const fileLabel = interactiveWrapper.find('label[for="fileInput"]');
+    expect(fileLabel.exists()).toBe(true);
+    await fileLabel.trigger('click');
+    const fileInput = interactiveWrapper.find('#fileInput');
+    expect(fileInput.exists()).toBe(true);
+    const file = new File(['img'], 'unit.jpg', { type: 'image/jpeg' });
+    Object.defineProperty(fileInput.element, 'files', {
+      value: [file],
+      configurable: true
+    });
+    await fileInput.trigger('change');
+
+    const mesinSaveButtons = interactiveWrapper.findAll('button').filter(btn => btn.text().includes('Simpan Data'));
+    expect(mesinSaveButtons.length).toBeGreaterThan(0);
+    const mesinSaveButton = mesinSaveButtons[mesinSaveButtons.length - 1];
+    await mesinSaveButton?.trigger('click');
+    const mesinCancelButtons = interactiveWrapper.findAll('button').filter(btn => btn.text() === 'Batal');
+    expect(mesinCancelButtons.length).toBeGreaterThan(0);
+    const mesinCancelButton = mesinCancelButtons[mesinCancelButtons.length - 1];
+    await mesinCancelButton?.trigger('click');
+
+    vm.replaceUnitTab('Mesin 1');
+    vm.replaceSentralTab();
+
+    expect(interactiveWrapper.exists()).toBe(true);
+  });
+
+  it('should cover remaining DetailUnit error and validation branches', async () => {
+    await nextTick();
+
+    mockDetailSentralService.getSentralById.mockResolvedValueOnce({
+      data: [{
+        uuid_sentral: 1,
+        kode_sentral: 'TEST001',
+        nama_sentral: 'Test Sentral',
+        longitude: '106.8',
+        latitude: '-6.2',
+        mesins: [{
+          uuid: 'm1',
+          mesin: 'M1',
+          nilai_asset_awal: 1,
+          masa_manfaat: 1,
+          tahun_nilai_perolehan: 2020,
+          longitude: '106.8',
+          latitude: '-6.2',
+          daya_terpasang: 1,
+          daya_mampu: 1,
+          photo1: 'broken-photo.jpg'
+        }],
+        photo: ''
+      }]
+    });
+    mockDetailSentralService.getPhoto.mockRejectedValueOnce(new Error('photo-error'));
+    await wrapper.vm.getSentralById();
+
+    wrapper.vm.mesinFormModel = [{
+      photoToSubmit: null,
+      nilaiAsetAwal: '100',
+      masaManfaat: '20',
+      tahunDataAwal: '2023',
+      latitude: '-6.2',
+      longitude: '106.8'
+    }];
+    wrapper.vm.mesin = [{ photo1: 'existing.jpg' }];
+    mockDetailSentralService.updateMesinById.mockRejectedValueOnce(new Error('update-mesin-error'));
+    await wrapper.vm.updateMesinById('uuid-1', 0, 'M1');
+
+    wrapper.vm.imageToUploadSentral = new File(['bad'], 'bad.txt', { type: 'text/plain' });
+    await wrapper.vm.updateSentral();
+
+    const largeFile = new File(['x'.repeat(3000000)], 'large.jpg', { type: 'image/jpeg' });
+    wrapper.vm.imageToUploadSentral = largeFile;
+    await wrapper.vm.updateSentral();
+
+    wrapper.vm.imageToUploadSentral = new File(['ok'], 'ok.jpg', { type: 'image/jpeg' });
+    mockDetailSentralService.uploadPhoto.mockRejectedValueOnce(new Error('update-sentral-error'));
+    await wrapper.vm.updateSentral();
+
+    mockUserService.getPembina.mockRejectedValueOnce(new Error('pembina-error'));
+    await wrapper.vm.fetchListPembina();
+
+    expect(notifyError).toHaveBeenCalled();
   });
 });

@@ -109,8 +109,8 @@ describe('FinansialTab.vue', () => {
     };
 
     // Mock the service constructors
-    vi.mocked(GrafikService).mockImplementation(() => mockGrafikService);
-    vi.mocked(LamanService).mockImplementation(() => mockLamanService);
+    vi.mocked(GrafikService).mockImplementation(function() { return mockGrafikService; });
+    vi.mocked(LamanService).mockImplementation(function() { return mockLamanService; });
   });
 
   it('should render component successfully', async () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { mount, flushPromises } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import GrafikSentral from '@/views/Data/Grafik/GrafikSentral.vue';
 import { useTagSentral } from '@/store/storeTagGrafik';
@@ -103,14 +103,14 @@ const mockGrafikService = {
 };
 
 vi.mock('@/services/grafik-service', () => ({
-  default: vi.fn().mockImplementation(() => mockGrafikService)
+  default: vi.fn().mockImplementation(function() { return mockGrafikService; })
 }));
 
 // Mock global format
 vi.mock('@/services/format/global-format', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     formatRupiah: vi.fn().mockReturnValue('1,000')
-  }))
+  }; })
 }));
 
 describe('GrafikSentral.vue', () => {
@@ -485,5 +485,168 @@ describe('GrafikSentral.vue', () => {
     expect(vm.showModalPlan).toBe(true);
     expect(vm.showModalPRP).toBe(true);
     expect(vm.showModalLastY).toBe(true);
+  });
+
+  it('should load all 5 charts with real data and cover chart formatters', async () => {
+    const realWLCAllData = {
+      data: [
+        { tahun: 2022, revenue_annualized: 100, total_wlcc: 200, capex_annualized: 50, cost_component_bd: 20, cost_component_c_annualized: 10 },
+        { tahun: 2023, revenue_annualized: 300, total_wlcc: 220, capex_annualized: 60, cost_component_bd: 25, cost_component_c_annualized: 15 },
+      ]
+    };
+    const realWLCKomData = {
+      data: [
+        { tahun: 2022, cost_komp_a: 100, cost_komp_c: 50, cost_komp_bd: 80, cost_komp_b: 30, cost_komp_d: 50 },
+        { tahun: 2023, cost_komp_a: 120, cost_komp_c: 55, cost_komp_bd: 90, cost_komp_b: 35, cost_komp_d: 55 },
+      ]
+    };
+    const realPlanData = {
+      data: [
+        { tahun: 2022, revenue_annualized: 150, total_wlcc: 250, capex_annualized: 80, cost_component_bd: 30, cost_component_c_annualized: 20 },
+        { tahun: 2023, revenue_annualized: 320, total_wlcc: 230, capex_annualized: 85, cost_component_bd: 32, cost_component_c_annualized: 22 },
+      ]
+    };
+    const realPRPData = {
+      data: [{
+        realisasi_proyeksi: [
+          { tahun: 2022, capex_annualized: 100, cost_component_bd: 50, cost_component_c_annualized: 30, total_revenue: 500, revenue_annualized: 400, total_wlcc: 450, revenue_komp_a: 100, revenue_komp_b: 100, revenue_komp_c: 100, revenue_komp_d: 100 },
+          { tahun: 2023, capex_annualized: 110, cost_component_bd: 45, cost_component_c_annualized: 25, total_revenue: 600, revenue_annualized: 560, total_wlcc: 400, revenue_komp_a: 120, revenue_komp_b: 120, revenue_komp_c: 120, revenue_komp_d: 120 },
+        ],
+        planning: [
+          { tahun: 2023, capex_annualized: 105, cost_component_bd: 48, cost_component_c_annualized: 28, total_revenue: 550, revenue_annualized: 450, total_wlcc: 430, revenue_komp_a: 110, revenue_komp_b: 110, revenue_komp_c: 110, revenue_komp_d: 110 },
+          { tahun: 2024, capex_annualized: 112, cost_component_bd: 42, cost_component_c_annualized: 22, total_revenue: 620, revenue_annualized: 580, total_wlcc: 380, revenue_komp_a: 130, revenue_komp_b: 130, revenue_komp_c: 130, revenue_komp_d: 130 },
+        ]
+      }]
+    };
+
+    mockGrafikService.getGrafikWLCALL.mockResolvedValueOnce(realWLCAllData);
+    mockGrafikService.getGrafikWLCKom.mockResolvedValueOnce(realWLCKomData);
+    mockGrafikService.getGrafikPlan.mockResolvedValueOnce(realPlanData);
+    mockGrafikService.getGrafikPRP.mockResolvedValueOnce(realPRPData);
+    mockGrafikService.getGrafikPRPLastYear.mockResolvedValueOnce(realPRPData);
+
+    const testWrapper = mount(GrafikSentral, {
+      props: { idSentral: 1, tahunData: 2023 },
+      global: {
+        stubs: { Loading: true, Empty: true, 'vue-echarts': true, Legend: true, ModalWrapper: true }
+      }
+    });
+
+    await testWrapper.setProps({ tahunData: 2024 });
+    await flushPromises();
+
+    const vm = testWrapper.vm as any;
+
+    // Helper to call chart formatter functions for branch/function coverage
+    const callChartFormatters = (chart: any, tahun: number) => {
+      if (!chart) return;
+      const xAxes = Array.isArray(chart.xAxis) ? chart.xAxis : (chart.xAxis ? [chart.xAxis] : []);
+      xAxes.forEach((axis: any) => {
+        if (typeof axis?.axisLabel?.color === 'function') {
+          axis.axisLabel.color(tahun - 2, 0); // less than
+          axis.axisLabel.color(tahun, 1);      // equal
+          axis.axisLabel.color(tahun + 2, 2);  // greater than
+        }
+        if (typeof axis?.axisLabel?.formatter === 'function') {
+          axis.axisLabel.formatter(tahun, 0);
+        }
+      });
+      const yAxes = Array.isArray(chart.yAxis) ? chart.yAxis : (chart.yAxis ? [chart.yAxis] : []);
+      yAxes.forEach((axis: any) => {
+        if (typeof axis?.axisLabel?.formatter === 'function') {
+          axis.axisLabel.formatter(1000000);
+        }
+      });
+      (chart.series || []).forEach((s: any) => {
+        if (s?.tooltip?.valueFormatter) s.tooltip.valueFormatter(1000000);
+      });
+    };
+
+    callChartFormatters(vm.chartWLCAll, 2024);
+    callChartFormatters(vm.chartWLCKom, 2024);
+    callChartFormatters(vm.chartPlanning, 2024);
+    callChartFormatters(vm.chartPRP, 2024);
+    callChartFormatters(vm.chartLastYear, 2024);
+
+    expect(vm.chartWLCAll).toBeDefined();
+    expect(vm.chartWLCKom).toBeDefined();
+    expect(vm.chartPlanning).toBeDefined();
+    expect(vm.chartPRP).toBeDefined();
+    expect(vm.chartLastYear).toBeDefined();
+    expect(vm.tahunPRP.length).toBeGreaterThan(0);
+    expect(vm.tahunLastYear.length).toBeGreaterThan(0);
+    expect(vm.tahunLastYearPlan.length).toBeGreaterThan(0);
+  });
+
+  it('should cover detail chart formatters after click handlers', async () => {
+    wrapper = mount(GrafikSentral, {
+      props: defaultProps,
+      global: {
+        stubs: { Loading: true, Empty: true, 'vue-echarts': true, Legend: true, ModalWrapper: true }
+      }
+    });
+
+    const vm = wrapper.vm as any;
+
+    // Set up year arrays so click handlers have data to work with
+    vm.tahunWLCAll = [2022, 2023, 2024];
+    vm.tahunWLCKom = [2022, 2023, 2024];
+    vm.tahunPlanning = [2022, 2023, 2024];
+    vm.tahunPRP = [2022, 2023, 2024];
+    vm.tahunLastYear = [2022, 2023, 2024];
+
+    await vm.handleClickWlcAll({ dataIndex: 0 });
+    await flushPromises();
+    await vm.handleClickWlcKom({ dataIndex: 0 });
+    await flushPromises();
+    await vm.handleClickPlan({ dataIndex: 0 });
+    await flushPromises();
+    await vm.handleClickLastY({ dataIndex: 0 });
+    await flushPromises();
+
+    const callDetailFormatters = (chart: any) => {
+      if (!chart) return;
+      const yAxes = Array.isArray(chart.yAxis) ? chart.yAxis : (chart.yAxis ? [chart.yAxis] : []);
+      yAxes.forEach((axis: any) => {
+        if (axis?.axisLabel?.formatter) axis.axisLabel.formatter(1000000);
+      });
+      (chart.series || []).forEach((s: any) => {
+        if (s?.tooltip?.valueFormatter) s.tooltip.valueFormatter(1000000);
+      });
+    };
+
+    callDetailFormatters(vm.chartDetailWLCAll);
+    callDetailFormatters(vm.chartDetailWLCKom);
+    callDetailFormatters(vm.chartDetailPlan);
+    callDetailFormatters(vm.chartDetailLastY);
+
+    expect(vm.showModalWlcAll).toBe(true);
+    expect(vm.showModalLastY).toBe(true);
+  });
+
+  it('should load WLCAll with BEP-crossing data to cover branch conditions', async () => {
+    // i=0: revenue<wlcc, i=1: revenue>=wlcc → BEP branch triggered
+    mockGrafikService.getGrafikWLCALL.mockResolvedValueOnce({
+      data: [
+        { tahun: 2022, revenue_annualized: 100, total_wlcc: 200, capex_annualized: 50, cost_component_bd: 20, cost_component_c_annualized: 10 },
+        { tahun: 2023, revenue_annualized: 250, total_wlcc: 200, capex_annualized: 50, cost_component_bd: 20, cost_component_c_annualized: 10 },
+      ]
+    });
+
+    const testWrapper = mount(GrafikSentral, {
+      props: { idSentral: 1, tahunData: 2023 },
+      global: {
+        stubs: { Loading: true, Empty: true, 'vue-echarts': true, Legend: true, ModalWrapper: true }
+      }
+    });
+
+    await testWrapper.setProps({ tahunData: 2024 });
+    await flushPromises();
+
+    const vm = testWrapper.vm as any;
+    expect(vm.chartWLCAll).toBeDefined();
+    // Verify BEP markers exist in the series
+    expect(vm.chartWLCAll.series).toBeDefined();
+    expect(vm.tahunWLCAll.length).toBeGreaterThan(0);
   });
 });

@@ -89,7 +89,7 @@ describe('VerifikasiPersetujuan', () => {
       })
     };
 
-    vi.mocked(PersetujuanService).mockImplementation(() => mockPersetujuanService);
+    vi.mocked(PersetujuanService).mockImplementation(function() { return mockPersetujuanService; });
   });
 
   it('should render component successfully', async () => {

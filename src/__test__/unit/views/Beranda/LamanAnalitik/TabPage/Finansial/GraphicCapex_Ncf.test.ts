@@ -71,7 +71,7 @@ describe('GraphicCapex_Ncf.vue', () => {
       getGraphicAnalitikCF: vi.fn().mockResolvedValue(mockGraphicData)
     }
     
-    vi.mocked(GrafikService).mockImplementation(() => mockGrafikService)
+    vi.mocked(GrafikService).mockImplementation(function() { return mockGrafikService; })
 
     wrapper = mount(GraphicCapexNcf, {
       props: defaultProps,

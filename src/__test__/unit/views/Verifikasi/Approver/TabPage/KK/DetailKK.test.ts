@@ -4,7 +4,7 @@ import DetailKK from '@/views/Verifikasi/Approver/TabPage/KK/DetailKK.vue';
 
 // Mock services
 vi.mock('@/services/persetujuan-service', () => ({
-  default: vi.fn(() => ({
+  default: vi.fn(function() { return {
     getPersetujuanKKSentral: vi.fn().mockResolvedValue({
       data: {
         sentral: 'Test Sentral',
@@ -17,7 +17,7 @@ vi.mock('@/services/persetujuan-service', () => ({
         umur_teknis: '25'
       }
     })
-  }))
+  }; })
 }));
 
 // Mock vue-router

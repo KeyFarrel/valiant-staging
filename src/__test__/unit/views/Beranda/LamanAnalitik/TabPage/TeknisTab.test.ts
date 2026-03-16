@@ -63,8 +63,8 @@ describe('TeknisTab.vue', () => {
     };
 
     // Mock the constructor calls
-    (GrafikService as any).mockImplementation(() => mockGrafikService);
-    (LamanService as any).mockImplementation(() => mockLamanService);
+    (GrafikService as any).mockImplementation(function() { return mockGrafikService; });
+    (LamanService as any).mockImplementation(function() { return mockLamanService; });
   });
 
   describe('Component Rendering', () => {

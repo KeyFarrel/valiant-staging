@@ -56,12 +56,12 @@ vi.mock('@/store/storeTagGrafik', () => ({
 
 // Mock GrafikService
 vi.mock('@/services/grafik-service', () => ({
-  default: vi.fn(() => mockGrafikService)
+  default: vi.fn(function() { return mockGrafikService; })
 }));
 
 // Mock GlobalFormat
 vi.mock('@/services/format/global-format', () => ({
-  default: vi.fn(() => ({
+  default: vi.fn(function() { return {
     formatCurrency: (value: any) => value ? `Rp ${value}` : '0',
     formatPercentage: (value: any) => value ? `${value}%` : '0%',
     formatEnergy: (value: any) => value ? `${value}` : '0',
@@ -75,7 +75,7 @@ vi.mock('@/services/format/global-format', () => ({
     formatInputNumberOnly: (value: any) => value ? `${value}` : '0',
     formatNumberFiveDigits: (value: any) => value ? `${value}` : '00000',
     formatBytes: (value: any) => value ? `${value} Bytes` : '0 Bytes'
-  }))
+  }; })
 }));
 
 // Mock all the icon components

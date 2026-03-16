@@ -227,47 +227,47 @@ const createMockService = (overrides: any = {}) => {
 }
 
 vi.mock('@/services/perbarui-data', () => ({
-  default: vi.fn().mockImplementation(() => createMockService())
+  default: vi.fn().mockImplementation(function() { return createMockService(); })
 }))
 
 vi.mock('@/services/format/global-format', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     formatCurrency: vi.fn().mockReturnValue('Rp 1.000.000'),
     formatNumber: vi.fn().mockReturnValue('1.000'),
     formatCurrencyNotFixed: vi.fn().mockReturnValue('1000000'),
     formatBytes: vi.fn().mockReturnValue('1 MB')
-  }))
+  }; })
 }))
 
 vi.mock('@/services/user-service', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     getListPembina: vi.fn().mockResolvedValue({ success: true, data: [] })
-  }))
+  }; })
 }))
 
 vi.mock('@/services/auth-service', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     checkIntegrasi: vi.fn().mockResolvedValue({ success: true, data: false })
-  }))
+  }; })
 }))
 
 vi.mock('@/services/rekap-service', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     getUnitPengelola: vi.fn().mockResolvedValue({ success: true, data: [] }),
     uploadEvidence: vi.fn().mockResolvedValue({ success: true, data: 'file-path.xlsx' }),
     updateEvidencePath: vi.fn().mockResolvedValue({ success: true }),
     uploadSimulasi1: vi.fn().mockResolvedValue({ success: true, data: 'simulasi1.xlsx' }),
     uploadSimulasi2: vi.fn().mockResolvedValue({ success: true, data: 'simulasi2.xlsx' })
-  }))
+  }; })
 }))
 
 vi.mock('@/services/persetujuan-service', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     getPersetujuanKK: vi.fn().mockResolvedValue({ 
       success: true, 
       data: { id_status: 'approved' } 
     })
-  }))
+  }; })
 }))
 
 vi.mock('@/services/helper/toast-notification', () => ({

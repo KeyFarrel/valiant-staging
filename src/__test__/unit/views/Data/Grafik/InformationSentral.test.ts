@@ -63,7 +63,7 @@ describe('InformationSentral.vue', () => {
     });
 
     // Mock the constructor
-    vi.mocked(GrafikService).mockImplementation(() => mockGrafikService as any);
+    vi.mocked(GrafikService).mockImplementation(function() { return mockGrafikService as any; });
   });
 
   it('should render component with correct structure', () => {

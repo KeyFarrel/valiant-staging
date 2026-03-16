@@ -51,6 +51,9 @@ vi.mock('@/services/input-asumsi-parameter-service', () => ({
     getComboBahanBakar() { return Promise.resolve({ data: [] }) }
     updateAsumsi() { return Promise.resolve({}) }
     createParameter() { return Promise.resolve({}) }
+    getPembangkitByKode() { return Promise.resolve({}) }
+    getPengelolaData() { return Promise.resolve({}) }
+
   }
 }))
 
@@ -420,4 +423,82 @@ describe('InputAsumsiParameter.vue', () => {
     expect(uploadTemplateSpy).toHaveBeenCalled()
     expect(wrapper.vm.isUploadSuccess).toBe(false) // After wait
   })
+
+  it('should handle fetchAsumsiParameter for isCreate false', async () => {
+    vi.spyOn(wrapper.vm.inputAsumsiParameterService, 'getAsumsiMakroData').mockResolvedValueOnce({
+      code: 200,
+      data: {
+        tahun: 2024,
+        status: 'status',
+        id_asumsi: 'id',
+        harga_bahan_bakars: [
+          { harga_bahan_bakar: 100, sfc: 200 }
+        ],
+        asumsi_makro: {
+          interest_rate: 5,
+          loan_tenor: 10,
+          loan_portion: 15
+        },
+        parameter_teknis_financial: {
+          nphr: 10,
+          auxiliary: 20,
+          susut_trafo: 30,
+          ps: 40,
+          electricity_price_a_rp_per_kwbln: 50,
+          electricity_price_b_rp_per_kwbln: 60,
+          electricity_price_c_rp_per_kwh: 70,
+          electricity_price_d_rp_per_kwh: 80
+        }
+      }
+    });
+    
+    await wrapper.vm.fetchAsumsiParameter(false);
+    expect(wrapper.vm.interestRate).toBeDefined();
+  });
+
+  it('should cover error paths for fetch combo dan pembina', async () => {
+    vi.spyOn(wrapper.vm.inputAsumsiParameterService, 'getComboBahanBakar').mockRejectedValueOnce(new Error('err'));
+    await wrapper.vm.fetchComboBahanBakar();
+
+    vi.spyOn(wrapper.vm.userService, 'getPembina').mockRejectedValueOnce(new Error('err'));
+    await wrapper.vm.fetchListPembina();
+    
+    vi.spyOn(wrapper.vm.inputAsumsiParameterService, 'getAsumsiMakroData').mockRejectedValueOnce(new Error('err'));
+    await wrapper.vm.fetchAsumsiParameter(false);
+  });
+
+  it('should cover fetchUnitPengelola success and error', async () => {
+    vi.spyOn(wrapper.vm.inputAsumsiParameterService, 'getPembangkitByKode').mockResolvedValueOnce({
+      data: { kode_pengelola: 'K1', uuid_pembina: 'U1' }
+    });
+    vi.spyOn(wrapper.vm.inputAsumsiParameterService, 'getPengelolaData').mockResolvedValueOnce({
+      data: [{ kode_pengelola: 'K1', pengelola: 'Pengelola 1' }]
+    });
+    vi.spyOn(wrapper.vm.userService, 'getPembina').mockResolvedValueOnce({
+      data: [{ uuid_pembina: 'U1', pembina: 'Pembina 1' }]
+    });
+    
+    wrapper.vm.mesin = { ...wrapper.vm.mesin, kode_sentral: 'S1', daya_terpasang: 100, tahun_operasi: 2020, mesin: 'M1' };
+    await wrapper.vm.fetchUnitPengelola();
+    expect(wrapper.vm.namaPengelola).toBe('Pengelola 1');
+    expect(wrapper.vm.namaPembina).toBe('Pembina 1');
+    
+    vi.spyOn(wrapper.vm.inputAsumsiParameterService, 'getPembangkitByKode').mockRejectedValueOnce(new Error('err2'));
+    await wrapper.vm.fetchUnitPengelola();
+  });
+
+  it('should test upload error catch blocks', async () => {
+    wrapper.vm.selectedFile = { name: 'valid.xlsx', size: 1000000 };
+    vi.spyOn(wrapper.vm.rekapService, 'uploadTemplateAwalKK').mockRejectedValueOnce(new Error('upload err'));
+    await wrapper.vm.uploadFile();
+    expect(wrapper.vm.isUploadSuccess).toBe(false);
+  });
+
+  it('should test download template error', async () => {
+    vi.spyOn(wrapper.vm.rekapService, 'downloadTemplateRekap').mockRejectedValueOnce(new Error('dl err'));
+    await wrapper.vm.handleDownloadTemplateRekap();
+  });
+
+
+
 })

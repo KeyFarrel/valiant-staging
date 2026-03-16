@@ -14,11 +14,11 @@ const mockPetaService = {};
 
 // Mock the service imports
 vi.mock('@/services/grafik-service', () => ({
-  default: vi.fn().mockImplementation(() => mockGrafikService)
+  default: vi.fn().mockImplementation(function() { return mockGrafikService; })
 }));
 
 vi.mock('@/services/peta-service', () => ({
-  default: vi.fn().mockImplementation(() => mockPetaService)
+  default: vi.fn().mockImplementation(function() { return mockPetaService; })
 }));
 
 // Mock child components
@@ -954,11 +954,9 @@ describe('GraphicRnfa_Ebitda.vue', () => {
     });
 
     it('should handle network timeout gracefully', async () => {
-      mockGrafikService.getGraphicRNFA.mockImplementation(() => 
-        new Promise((_, reject) => 
+      mockGrafikService.getGraphicRNFA.mockImplementation(function() { return new Promise((_, reject) => 
           setTimeout(() => reject(new Error('Network timeout')), 100)
-        )
-      );
+        ); });
 
       const wrapper = mount(GraphicRnfa_Ebitda, {
         props: defaultProps,
@@ -1041,6 +1039,200 @@ describe('GraphicRnfa_Ebitda.vue', () => {
       expect(vm.filter.tahun).toBe(initialTahun); // Should not affect other reactive data
       expect(vm.value).toEqual(['PLTU']);
       expect(vm.dmn).toEqual(['1']);
+    });
+  });
+
+  describe('Template Interactions', () => {
+    it('should execute dropdown helper methods and both outside-click branches', async () => {
+      const wrapper = mount(GraphicRnfa_Ebitda, {
+        props: defaultProps,
+        global: {
+          components: { ElSelect, ElOption, ElCheckbox }
+        }
+      });
+
+      await nextTick();
+      const vm = wrapper.vm as any;
+
+      vm.value = ['PLTU', 'PLTG'];
+      vm.dmn = ['1', '2', '3'];
+
+      vm.togglePembangkitDropdown();
+      vm.toggleDmnDropdown();
+      expect(vm.isPembangkitDropdownOpen).toBe(true);
+      expect(vm.isDmnDropdownOpen).toBe(true);
+
+      vm.removeSelectedPembangkit('PLTG');
+      vm.removeSelectedDmn('2');
+      expect(vm.value).toEqual(['PLTU']);
+      expect(vm.dmn).toEqual(['1', '3']);
+
+      vm.clearPembangkit();
+      vm.clearDmn();
+      expect(vm.value).toEqual([]);
+      expect(vm.dmn).toEqual([]);
+
+      const outside = document.createElement('div');
+      vm.isPembangkitDropdownOpen = true;
+      vm.isDmnDropdownOpen = true;
+      vm.handleClickOutside({ target: outside });
+      expect(vm.isPembangkitDropdownOpen).toBe(false);
+      expect(vm.isDmnDropdownOpen).toBe(false);
+
+      const relative = document.createElement('div');
+      relative.className = 'relative';
+      const child = document.createElement('span');
+      relative.appendChild(child);
+
+      vm.isPembangkitDropdownOpen = true;
+      vm.isDmnDropdownOpen = true;
+      vm.handleClickOutside({ target: child });
+      expect(vm.isPembangkitDropdownOpen).toBe(true);
+      expect(vm.isDmnDropdownOpen).toBe(true);
+    });
+
+    it('should trigger filter modal buttons from template', async () => {
+      const wrapper = mount(GraphicRnfa_Ebitda, {
+        props: defaultProps,
+        global: {
+          components: { ElSelect, ElOption, ElCheckbox }
+        }
+      });
+
+      await nextTick();
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      const vm = wrapper.vm as any;
+      const filterButton = wrapper.find('#hover-button');
+      await filterButton.trigger('click');
+      expect(vm.showModal).toBe(true);
+
+      const resetButton = wrapper.findAll('button').find(btn => btn.text().includes('Reset'));
+      vm.value = ['PLTU'];
+      await wrapper.vm.$nextTick();
+      await resetButton?.trigger('click');
+      expect(vm.value).toEqual([]);
+
+      vm.value = ['PLTU'];
+      vm.filter.tahun = 2024;
+      await wrapper.vm.$nextTick();
+      const applyButton = wrapper.findAll('button').find(btn => btn.text().includes('Terapkan'));
+      await applyButton?.trigger('click');
+      expect(mockGrafikService.getGraphicRNFA).toHaveBeenCalled();
+    });
+
+    it('should cover remaining close/apply branches and inline chip/checkbox handlers', async () => {
+      const wrapper = mount(GraphicRnfa_Ebitda, {
+        props: defaultProps,
+        global: {
+          components: { ElSelect, ElOption, ElCheckbox }
+        }
+      });
+
+      await nextTick();
+      const vm = wrapper.vm as any;
+
+      vm.value = {
+        length: undefined,
+        join: () => '',
+        includes: () => false,
+        slice: () => []
+      } as any;
+      vm.filter.tahun = null;
+      vm.closeModal();
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih 1 tahun!', 5000);
+
+      vm.value = [];
+      vm.filter.tahun = 2024;
+      vm.closeModal();
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000);
+
+      vm.value = {
+        length: undefined,
+        join: () => '',
+        includes: () => false,
+        slice: () => []
+      } as any;
+      vm.filter.tahun = null;
+      await vm.applyFilter();
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih 1 tahun!', 5000);
+
+      vm.showModal = true;
+      vm.value = ['PLTU', 'PLTG'];
+      vm.dmn = ['1', '2', '3'];
+      vm.isPembangkitDropdownOpen = true;
+      vm.isDmnDropdownOpen = true;
+      await wrapper.vm.$nextTick();
+
+      const removeButtons = wrapper.findAll('button').filter(btn => btn.classes().includes('ml-1'));
+      if (removeButtons.length) {
+        await removeButtons[0].trigger('click');
+      }
+
+      const checkboxes = wrapper.findAll('input[type="checkbox"]');
+      if (checkboxes.length >= 2) {
+        await checkboxes[0].setValue(true);
+        await checkboxes[0].trigger('change');
+        await checkboxes[1].setValue(true);
+        await checkboxes[1].trigger('change');
+      }
+
+      expect(wrapper.exists()).toBe(true);
+    });
+
+    it('should execute datepicker updates, explicit apply-filter else branch, legends fallback, and unmount cleanup', async () => {
+      const wrapper = mount(GraphicRnfa_Ebitda, {
+        props: defaultProps,
+        global: {
+          components: { ElSelect, ElOption, ElCheckbox }
+        }
+      });
+
+      await nextTick();
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      const vm = wrapper.vm as any;
+      vm.showModal = true;
+      vm.value = ['PLTU', 'PLTG'];
+      vm.dmn = ['1', '2'];
+      vm.isPembangkitDropdownOpen = true;
+      vm.isDmnDropdownOpen = true;
+      await wrapper.vm.$nextTick();
+
+      const datePicker = wrapper.findComponent({ name: 'VueDatePicker' });
+      if (datePicker.exists()) {
+        datePicker.vm.$emit('update:modelValue', 2024);
+      }
+
+      vm.checkAll = true;
+      vm.checkDmn = true;
+      await wrapper.vm.$nextTick();
+
+      const checkboxes = wrapper.findAll('input[type="checkbox"]');
+      if (checkboxes.length) {
+        await checkboxes[0].trigger('change');
+      }
+      if (checkboxes.length > 4) {
+        await checkboxes[4].trigger('change');
+      }
+
+      const removeButtons = wrapper.findAll('button').filter(btn => btn.classes().includes('ml-1'));
+      if (removeButtons.length > 1) {
+        await removeButtons[1].trigger('click');
+      }
+
+      vm.value = [];
+      vm.filter.tahun = 2024;
+      await vm.applyFilter();
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000);
+
+      vm.isLoading = false;
+      vm.graphData.isEmpty = false;
+      vm.graphData.legends = null;
+      await wrapper.vm.$nextTick();
+
+      expect(wrapper.find('[data-testid="scatter-plot"]').exists()).toBe(true);
+      wrapper.unmount();
     });
   });
 });

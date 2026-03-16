@@ -110,7 +110,7 @@ describe('GraphicComponentA.vue', () => {
     };
 
     // Mock the constructor calls
-    (GrafikService as any).mockImplementation(() => mockGrafikService);
+    (GrafikService as any).mockImplementation(function() { return mockGrafikService; });
   });
 
   describe('Component Rendering', () => {
@@ -597,6 +597,208 @@ describe('GraphicComponentA.vue', () => {
       // Test uncheck all DMN
       componentInstance.handleCheckDmn(false);
       expect(componentInstance.dmn).toEqual([]);
+    });
+  });
+
+  describe('Template Interactions', () => {
+    it('should execute dropdown helper methods and outside click branches', async () => {
+      mockGrafikService.getGraphicBiaya.mockResolvedValue({
+        success: true,
+        data: { data: [], legend: [] }
+      });
+
+      const wrapper = mount(GraphicComponentA, { props: defaultProps });
+      await wrapper.vm.$nextTick();
+
+      const vm = wrapper.vm as any;
+      vm.value = ['PLTU', 'PLTG'];
+      vm.dmn = ['1', '2', '3'];
+      await wrapper.vm.$nextTick();
+
+      vm.togglePembangkitDropdown();
+      vm.toggleDmnDropdown();
+      expect(vm.isPembangkitDropdownOpen).toBe(true);
+      expect(vm.isDmnDropdownOpen).toBe(true);
+
+      vm.removeSelectedPembangkit('PLTG');
+      vm.removeSelectedDmn('2');
+      expect(vm.value).toEqual(['PLTU']);
+      expect(vm.dmn).toEqual(['1', '3']);
+
+      vm.clearPembangkit();
+      vm.clearDmn();
+      expect(vm.value).toEqual([]);
+      expect(vm.dmn).toEqual([]);
+
+      const outside = document.createElement('div');
+      vm.isPembangkitDropdownOpen = true;
+      vm.isDmnDropdownOpen = true;
+      vm.handleClickOutside({ target: outside });
+      expect(vm.isPembangkitDropdownOpen).toBe(false);
+      expect(vm.isDmnDropdownOpen).toBe(false);
+
+      const inside = document.createElement('div');
+      inside.className = 'relative';
+      const child = document.createElement('span');
+      inside.appendChild(child);
+      vm.isPembangkitDropdownOpen = true;
+      vm.isDmnDropdownOpen = true;
+      vm.handleClickOutside({ target: child });
+      expect(vm.isPembangkitDropdownOpen).toBe(true);
+      expect(vm.isDmnDropdownOpen).toBe(true);
+    });
+
+    it('should run reset and apply buttons from template for PLTU and non-PLTU flows', async () => {
+      mockGrafikService.getGraphicBiaya.mockResolvedValue({
+        success: true,
+        data: {
+          data: [{ kode_jenis_kit: 'PLTU', data: { tahun: '2023', value: 12 }, nama_mesin: 'M1' }],
+          legend: [{ label: 'PLTU', color: '#f00' }]
+        }
+      });
+
+      const wrapper = mount(GraphicComponentA, { props: defaultProps });
+      await wrapper.vm.$nextTick();
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      const vm = wrapper.vm as any;
+      const filterButton = wrapper.find('#hover-button');
+      await filterButton.trigger('click');
+
+      vm.value = ['PLTU'];
+      vm.dmn = ['1', '2', '3'];
+      await wrapper.vm.$nextTick();
+
+      const resetButton = wrapper.findAll('button').find(btn => btn.text().includes('Reset'));
+      expect(resetButton).toBeTruthy();
+      await resetButton?.trigger('click');
+      expect(vm.value).toEqual([]);
+
+      vm.value = ['PLTU'];
+      await wrapper.vm.$nextTick();
+      const applyButtonPLTU = wrapper.findAll('button').find(btn => btn.text().includes('Terapkan'));
+      expect(applyButtonPLTU).toBeTruthy();
+      await applyButtonPLTU?.trigger('click');
+      expect(mockGrafikService.getGraphicBiaya).toHaveBeenCalled();
+
+      vm.showModal = true;
+      vm.value = ['PLTG'];
+      await wrapper.vm.$nextTick();
+      const applyButtonNoDMN = wrapper.findAll('button').find(btn => btn.text().includes('Terapkan'));
+      expect(applyButtonNoDMN).toBeTruthy();
+      await applyButtonNoDMN?.trigger('click');
+      expect(mockGrafikService.getGraphicBiaya).toHaveBeenCalled();
+    });
+
+    it('should cover remaining close/apply validation branches and inline chip/checkbox handlers', async () => {
+      const { notifyError } = await import('@/services/helper/toast-notification');
+      mockGrafikService.getGraphicBiaya.mockResolvedValue({
+        success: true,
+        data: { data: [], legend: [] }
+      });
+
+      const wrapper = mount(GraphicComponentA, { props: defaultProps });
+      await wrapper.vm.$nextTick();
+      const vm = wrapper.vm as any;
+
+      vm.value = {
+        length: undefined,
+        join: () => '',
+        includes: () => false,
+        slice: () => []
+      } as any;
+      vm.filter.periode = null;
+      vm.closeModal();
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih 1 tahun!', 5000);
+
+      vm.value = [];
+      vm.filter.periode = [2020, 2021];
+      vm.closeModal();
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000);
+
+      vm.value = {
+        length: undefined,
+        join: () => '',
+        includes: () => false,
+        slice: () => []
+      } as any;
+      vm.filter.periode = null;
+      await vm.applyFilter();
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih 1 tahun!', 5000);
+
+      vm.value = [];
+      vm.filter.periode = [2020, 2021];
+      await vm.applyFilterNoDMN();
+      expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000);
+
+      vm.showModal = true;
+      vm.value = ['PLTU', 'PLTG', 'PLTS'];
+      vm.dmn = ['1', '2', '3'];
+      vm.isPembangkitDropdownOpen = true;
+      vm.isDmnDropdownOpen = true;
+      await wrapper.vm.$nextTick();
+
+      const removeButtons = wrapper.findAll('button').filter(btn => btn.classes().includes('ml-1'));
+      if (removeButtons.length) {
+        await removeButtons[0].trigger('click');
+      }
+
+      const checkboxes = wrapper.findAll('input[type="checkbox"]');
+      if (checkboxes.length >= 2) {
+        await checkboxes[0].setValue(true);
+        await checkboxes[0].trigger('change');
+        await checkboxes[1].setValue(true);
+        await checkboxes[1].trigger('change');
+      }
+
+      expect(wrapper.exists()).toBe(true);
+    });
+
+    it('should execute datepicker model updates, DMN chip removal, checkbox changes, and unmount cleanup', async () => {
+      mockGrafikService.getGraphicBiaya.mockResolvedValue({
+        success: true,
+        data: {
+          data: [{ kode_jenis_kit: 'PLTU', data: { tahun: '2024', value: 10 }, nama_mesin: 'M-1' }],
+          legend: [{ label: 'PLTU', color: '#f00' }]
+        }
+      });
+
+      const wrapper = mount(GraphicComponentA, { props: defaultProps });
+      await wrapper.vm.$nextTick();
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      const vm = wrapper.vm as any;
+      vm.showModal = true;
+      vm.value = ['PLTU', 'PLTG'];
+      vm.dmn = ['1', '2'];
+      vm.isPembangkitDropdownOpen = true;
+      vm.isDmnDropdownOpen = true;
+      await wrapper.vm.$nextTick();
+
+      const datePicker = wrapper.findComponent({ name: 'VueDatePicker' });
+      if (datePicker.exists()) {
+        datePicker.vm.$emit('update:modelValue', [2022, 2024]);
+      }
+
+      vm.checkAll = true;
+      vm.checkDmn = true;
+      await wrapper.vm.$nextTick();
+
+      const checkboxes = wrapper.findAll('input[type="checkbox"]');
+      if (checkboxes.length) {
+        await checkboxes[0].trigger('change');
+      }
+      if (checkboxes.length > 4) {
+        await checkboxes[4].trigger('change');
+      }
+
+      const removeButtons = wrapper.findAll('button').filter(btn => btn.classes().includes('ml-1'));
+      if (removeButtons.length > 1) {
+        await removeButtons[1].trigger('click');
+      }
+
+      expect(wrapper.exists()).toBe(true);
+      wrapper.unmount();
     });
   });
 });

@@ -251,4 +251,166 @@ describe('PageTeknis', () => {
     
     expect(mockLamanService.getInfoSFC).toHaveBeenCalled();
   });
+
+  it('should render info panel fallback and nested teknis rows', async () => {
+    const wrapper = mount(PageTeknis);
+    const vm = wrapper.vm as any;
+
+    vm.dataSFC = [
+      { jenis_kit: 'PLTU', bahan_bakar: 'Coal', satuan_sfc: null },
+      { jenis_kit: 'PLTG', bahan_bakar: 'Gas', satuan_sfc: 'kg/kWh' },
+    ];
+    vm.teknisData = [
+      {
+        kode_pengelola: 'P1',
+        pengelola: 'Pengelola A',
+        pembangkits: [
+          {
+            uuid_sentral: 's1',
+            kode_sentral: 'S1',
+            sentral: 'Sentral A',
+            kode_jenis_pembangkit: 'PLTU',
+            mesins: [
+              {
+                uuid_mesin: 'm1',
+                mesin: 'Mesin 1',
+                kode_jenis_pembangkit: 'PLTU',
+                detail_teknis: [
+                  {
+                    tahun: 2024,
+                    net_capacity_factor: 80,
+                    eaf: 90,
+                    nphr: 100,
+                    sfc: 110,
+                    produksi_netto: 120,
+                    kondisi_unit: 'Operasi',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        kode_pengelola: 'P2',
+        pengelola: 'Tanpa Pembangkit',
+        pembangkits: [],
+      },
+    ];
+
+    await wrapper.vm.$nextTick();
+
+    // Open SFC info panel.
+    await wrapper.find('#button-hover-putih').trigger('click');
+    await wrapper.vm.$nextTick();
+
+    const pengelolaRow = wrapper.findAll('tr').find(row => row.text().includes('Pengelola A'));
+    expect(pengelolaRow).toBeTruthy();
+    await pengelolaRow!.trigger('click');
+
+    const pembangkitRow = wrapper.findAll('tr').find(row => row.text().includes('Sentral A'));
+    expect(pembangkitRow).toBeTruthy();
+    await pembangkitRow!.trigger('click');
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.text()).toContain('Specific Fuel Consumption (SFC)');
+    expect(wrapper.text()).toContain('Sentral A');
+    expect(wrapper.text()).toContain('Mesin 1');
+    expect(wrapper.text()).toContain('Operasi');
+    expect(wrapper.text()).toContain('-');
+    expect(wrapper.text()).toContain('kg/kWh');
+
+    // Force the date-picker v-else branch.
+    vm.periodeTahun = null;
+    await wrapper.vm.$nextTick();
+    expect(wrapper.findComponent({ name: 'ShimmerLoading' }).exists()).toBe(true);
+  });
+
+  it('should set empty dataSFC when watcher receives null info response', async () => {
+    const wrapper = mount(PageTeknis);
+    const vm = wrapper.vm as any;
+
+    mockLamanService.getInfoSFC.mockResolvedValue({ data: null });
+    mockLamanService.getDataTeknis.mockResolvedValue({
+      data: [],
+      meta: { totalPages: 1, totalRecords: 0, limit: 10 },
+    });
+
+    vm.dataSFC = [];
+    vm.teknisData = [];
+
+    mockStore.currentTab = 'Other';
+    await wrapper.vm.$nextTick();
+    mockStore.currentTab = 'Teknis';
+    await wrapper.vm.$nextTick();
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    expect(vm.dataSFC).toEqual([]);
+  });
+
+  it('should run handleSearch debounce and call fetchDataTeknis', async () => {
+    vi.useFakeTimers();
+    const wrapper = mount(PageTeknis);
+    const vm = wrapper.vm as any;
+
+    vm.handleSearch();
+    vi.advanceTimersByTime(500);
+    await wrapper.vm.$nextTick();
+
+    expect(mockLamanService.getDataTeknis).toHaveBeenCalled();
+    vi.useRealTimers();
+  });
+
+  it('should filter out pengelola entries without pembangkits in fetchDataTeknis', async () => {
+    mockLamanService.getDataTeknis.mockResolvedValue({
+      data: [
+        { kode_pengelola: 'A', pengelola: 'A', pembangkits: [{ sentral: 'S' }] },
+        { kode_pengelola: 'B', pengelola: 'B', pembangkits: [] },
+      ],
+      meta: { totalPages: 2, totalRecords: 2, limit: 10 },
+    });
+
+    const wrapper = mount(PageTeknis);
+    const vm = wrapper.vm as any;
+    await vm.fetchDataTeknis();
+
+    expect(vm.teknisData).toHaveLength(1);
+    expect(vm.teknisData[0].kode_pengelola).toBe('A');
+  });
+
+  it('should use fallback export filename when content-disposition is missing', async () => {
+    const createObjectURLSpy = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock');
+    const appendChildSpy = vi.spyOn(document.body, 'appendChild').mockImplementation(() => document.body as any);
+    const removeChildSpy = vi.spyOn(document.body, 'removeChild').mockImplementation(() => document.body as any);
+    const originalCreateElement = document.createElement.bind(document);
+    const createElementSpy = vi.spyOn(document, 'createElement').mockImplementation(((tagName: string) => {
+      if (tagName === 'a') {
+        return {
+          href: '',
+          setAttribute: vi.fn(),
+          click: vi.fn(),
+        } as any;
+      }
+      return originalCreateElement(tagName);
+    }) as any);
+
+    mockLamanService.downloadExcelTeknis.mockResolvedValue({
+      data: new Blob(['x']),
+      headers: {},
+    });
+
+    const wrapper = mount(PageTeknis);
+    const vm = wrapper.vm as any;
+    vm.yearRangePicked = [2020, 2023];
+    vm.searchQ = 'abc';
+    await vm.handleExport();
+
+    expect(mockLamanService.downloadExcelTeknis).toHaveBeenCalled();
+    expect(createObjectURLSpy).toHaveBeenCalled();
+
+    createElementSpy.mockRestore();
+    appendChildSpy.mockRestore();
+    removeChildSpy.mockRestore();
+    createObjectURLSpy.mockRestore();
+  });
 });

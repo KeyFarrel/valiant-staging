@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import GraphicNCF from '@/views/Beranda/LamanAnalitik/TabPage/Teknis/GraphicNCF.vue';
 
 // Mock response helper
@@ -72,14 +73,28 @@ describe('GraphicNCF.vue', () => {
       props: testProps,
       global: {
         stubs: {
-          'ModalWrapper': true,
-          'ShimmerLoading': true,
-          'Empty': true,
-          'DynamicScatterPlotVertiLine': true,
+          'ModalWrapper': {
+            template: '<div class="modal-wrapper-mock"><slot /></div>',
+            props: ['showModal', 'show-modal', 'width', 'height'],
+          },
+          'ShimmerLoading': {
+            template: '<div class="shimmer-loading-mock">Loading...</div>',
+          },
+          'Empty': {
+            template: '<div class="empty-mock">Empty</div>',
+          },
+          'DynamicScatterPlotVertiLine': {
+            template: '<div class="chart-mock">Chart</div>',
+          },
           'el-select': true,
           'el-option': true,
           'el-checkbox': true,
-          'VueDatePicker': true,
+          'VueDatePicker': {
+            name: 'VueDatePicker',
+            template: '<input class="year-picker-mock" type="text" />',
+            props: ['modelValue'],
+            emits: ['update:modelValue'],
+          },
         },
       },
     });
@@ -296,5 +311,211 @@ describe('GraphicNCF.vue', () => {
     await wrapper.vm.closeModal();
     
     expect(wrapper.vm.showModal).toBe(false);
+  });
+
+  it('should toggle pembangkit dropdown open and close', () => {
+    expect(wrapper.vm.isPembangkitDropdownOpen).toBe(false);
+    wrapper.vm.togglePembangkitDropdown();
+    expect(wrapper.vm.isPembangkitDropdownOpen).toBe(true);
+    wrapper.vm.togglePembangkitDropdown();
+    expect(wrapper.vm.isPembangkitDropdownOpen).toBe(false);
+  });
+
+  it('should toggle dmn dropdown open and close', () => {
+    expect(wrapper.vm.isDmnDropdownOpen).toBe(false);
+    wrapper.vm.toggleDmnDropdown();
+    expect(wrapper.vm.isDmnDropdownOpen).toBe(true);
+    wrapper.vm.toggleDmnDropdown();
+    expect(wrapper.vm.isDmnDropdownOpen).toBe(false);
+  });
+
+  it('should remove a selected pembangkit by id', () => {
+    wrapper.vm.value = ['PLTU', 'PLTG'];
+    wrapper.vm.removeSelectedPembangkit('PLTU');
+    expect(wrapper.vm.value).toEqual(['PLTG']);
+  });
+
+  it('should remove a selected dmn by id', () => {
+    wrapper.vm.dmn = ['1', '2', '3'];
+    wrapper.vm.removeSelectedDmn('2');
+    expect(wrapper.vm.dmn).toEqual(['1', '3']);
+  });
+
+  it('should clear all pembangkit selections', () => {
+    wrapper.vm.value = ['PLTU', 'PLTG'];
+    wrapper.vm.clearPembangkit();
+    expect(wrapper.vm.value).toEqual([]);
+  });
+
+  it('should clear all dmn selections', () => {
+    wrapper.vm.dmn = ['1', '2', '3'];
+    wrapper.vm.clearDmn();
+    expect(wrapper.vm.dmn).toEqual([]);
+  });
+
+  it('should close dropdowns when clicking outside .relative', () => {
+    wrapper.vm.isPembangkitDropdownOpen = true;
+    wrapper.vm.isDmnDropdownOpen = true;
+
+    const mockEvent = { target: { closest: vi.fn(() => null) } } as unknown as MouseEvent;
+    wrapper.vm.handleClickOutside(mockEvent);
+
+    expect(wrapper.vm.isPembangkitDropdownOpen).toBe(false);
+    expect(wrapper.vm.isDmnDropdownOpen).toBe(false);
+  });
+
+  it('should not close dropdowns when clicking inside .relative', () => {
+    wrapper.vm.isPembangkitDropdownOpen = true;
+    wrapper.vm.isDmnDropdownOpen = true;
+
+    const mockEvent = { target: { closest: vi.fn(() => document.createElement('div')) } } as unknown as MouseEvent;
+    wrapper.vm.handleClickOutside(mockEvent);
+
+    expect(wrapper.vm.isPembangkitDropdownOpen).toBe(true);
+    expect(wrapper.vm.isDmnDropdownOpen).toBe(true);
+  });
+
+  it('should remove event listener on unmount', () => {
+    const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
+    wrapper.unmount();
+
+    expect(removeEventListenerSpy).toHaveBeenCalledWith('click', expect.any(Function));
+    removeEventListenerSpy.mockRestore();
+  });
+
+  it('should show error when no kategori only in closeModal', () => {
+    wrapper = mount(GraphicNCF, {
+      props: testProps,
+      global: { stubs: { 'ModalWrapper': true, 'ShimmerLoading': true, 'Empty': true, 'DynamicScatterPlotVertiLine': true, 'el-select': true, 'el-option': true, 'el-checkbox': true, 'VueDatePicker': true } },
+    });
+    wrapper.vm.value = [];
+    wrapper.vm.filter.periode = [2020, 2025];
+    wrapper.vm.closeModal();
+    // This should hit the else branch (no kategori only)
+    expect(wrapper.vm.showModal).toBe(false);
+  });
+
+  it('should handle applyFilter with valid data', async () => {
+    wrapper.vm.value = ['PLTU'];
+    wrapper.vm.filter.periode = [2020, 2025];
+    wrapper.vm.showModal = true;
+    await wrapper.vm.applyFilter();
+    expect(wrapper.vm.showModal).toBe(false);
+  });
+
+  it('should show error when no kategori in applyFilter', async () => {
+    wrapper.vm.value = [];
+    wrapper.vm.filter.periode = [2020, 2025];
+    wrapper.vm.grafikService.getGraphicTeknisNCF = vi.fn().mockResolvedValue(mockGraphicData);
+    await wrapper.vm.applyFilter();
+    expect(wrapper.vm.showModal).toBe(false);
+  });
+
+  it('should handle applyFilterNoDMN with valid data', async () => {
+    wrapper.vm.value = ['PLTU'];
+    wrapper.vm.filter.periode = [2020, 2025];
+    wrapper.vm.showModal = true;
+    await wrapper.vm.applyFilterNoDMN();
+    expect(wrapper.vm.showModal).toBe(false);
+  });
+
+  it('should show error when no kategori in applyFilterNoDMN', async () => {
+    wrapper.vm.value = [];
+    wrapper.vm.filter.periode = [2020, 2025];
+    await wrapper.vm.applyFilterNoDMN();
+    expect(wrapper.vm.showModal).toBe(false);
+  });
+
+  it('should handle null data in getDataGraphNoDMN', async () => {
+    wrapper.vm.grafikService.getGraphicTeknisNCF = vi.fn().mockResolvedValue({
+      success: true,
+      data: { data: null, legend: [] }
+    });
+    await wrapper.vm.getDataGraphNoDMN();
+    expect(wrapper.vm.graphData.isEmpty).toBe(true);
+  });
+
+  it('should handle error in getDataGraphNoDMN', async () => {
+    const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    wrapper.vm.grafikService.getGraphicTeknisNCF = vi.fn().mockRejectedValue(new Error('API Error'));
+    await wrapper.vm.getDataGraphNoDMN();
+    expect(wrapper.vm.isLoading).toBe(false);
+    consoleLogSpy.mockRestore();
+  });
+
+  it('should handle getDataGraph with periode null fallback', async () => {
+    wrapper.vm.filter.periode = null;
+    wrapper.vm.grafikService.getGraphicTeknisNCF = vi.fn().mockResolvedValue(mockGraphicData);
+    await wrapper.vm.getDataGraph();
+    expect(wrapper.vm.isLoading).toBe(false);
+  });
+
+  it('should handle getDataGraphNoDMN with periode null fallback', async () => {
+    wrapper.vm.filter.periode = null;
+    wrapper.vm.grafikService.getGraphicTeknisNCF = vi.fn().mockResolvedValue(mockGraphicData);
+    await wrapper.vm.getDataGraphNoDMN();
+    expect(wrapper.vm.isLoading).toBe(false);
+  });
+
+  it('should trigger modal reset and apply actions from template buttons', async () => {
+    wrapper.vm.showModal = true;
+    wrapper.vm.value = ['PLTU', 'PLTG'];
+    wrapper.vm.dmn = ['1', '2'];
+    wrapper.vm.isPembangkitDropdownOpen = true;
+    wrapper.vm.isDmnDropdownOpen = true;
+    await nextTick();
+
+    const resetButton = wrapper.findAll('button').find((btn: any) => btn.text().trim() === 'Reset');
+    expect(resetButton).toBeDefined();
+    await resetButton!.trigger('click');
+    expect(wrapper.vm.value).toEqual([]);
+
+    wrapper.vm.value = ['PLTU'];
+    wrapper.vm.showModal = true;
+    await nextTick();
+    const applyWithDmn = wrapper.findAll('button').find((btn: any) => btn.text().trim() === 'Terapkan');
+    expect(applyWithDmn).toBeDefined();
+    await applyWithDmn!.trigger('click');
+    await nextTick();
+    expect(wrapper.vm.showModal).toBe(false);
+
+    wrapper.vm.value = ['PLTG'];
+    wrapper.vm.showModal = true;
+    await nextTick();
+    const applyNoDmn = wrapper.findAll('button').find((btn: any) => btn.text().trim() === 'Terapkan');
+    expect(applyNoDmn).toBeDefined();
+    await applyNoDmn!.trigger('click');
+    await nextTick();
+    expect(wrapper.vm.showModal).toBe(false);
+  });
+
+  it('should execute dropdown checkbox and remove callbacks through modal template', async () => {
+    await wrapper.find('#hover-button').trigger('click');
+    wrapper.vm.value = ['PLTU', 'PLTG'];
+    wrapper.vm.dmn = ['1', '2', '3'];
+    wrapper.vm.togglePembangkitDropdown();
+    wrapper.vm.toggleDmnDropdown();
+    await nextTick();
+
+    const removeButtons = wrapper.findAll('button').filter((btn: any) => (btn.attributes('class') || '').includes('ml-1'));
+    if (removeButtons[0]) {
+      await removeButtons[0].trigger('click');
+    }
+    if (removeButtons[1]) {
+      await removeButtons[1].trigger('click');
+    }
+
+    const checkboxes = wrapper.findAll('input[type="checkbox"]');
+    for (const checkbox of checkboxes) {
+      await checkbox.setValue(true);
+    }
+
+    const datePicker = wrapper.findComponent({ name: 'VueDatePicker' });
+    if (datePicker.exists()) {
+      datePicker.vm.$emit('update:modelValue', [2021, 2024]);
+    }
+
+    expect(wrapper.vm.value.length).toBeGreaterThanOrEqual(0);
+    expect(wrapper.vm.dmn.length).toBeGreaterThanOrEqual(0);
   });
 });

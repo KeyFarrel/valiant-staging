@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { ref } from 'vue';
 import TabDataFinansial from '@/views/Data/RekapKertasKerja/PerbaruiData/TabPage/TabDataFinansial.vue';
 
 // Mock the dependencies
@@ -13,6 +14,40 @@ vi.mock('@/services/format/global-format', () => ({
 
 describe('TabDataFinansial.vue', () => {
   let wrapper: any;
+  let selectedTitle: any;
+
+  const mountComponent = (props = {}) => {
+    selectedTitle = ref('Test Title');
+    return mount(TabDataFinansial, {
+      props: {
+        ...defaultProps,
+        ...props
+      },
+      global: {
+        provide: {
+          selectedTitle
+        },
+        stubs: {
+          ModalWrapper: {
+            name: 'ModalWrapper',
+            props: ['showModal'],
+            template: '<div v-if="showModal"><slot /></div>'
+          },
+          ConfirmationDialog: {
+            name: 'ConfirmationDialog',
+            emits: ['on-batal-click', 'on-accept-click'],
+            template: '<div><button data-testid="batal" @click="$emit(\'on-batal-click\')" /><button data-testid="accept" @click="$emit(\'on-accept-click\')" /></div>'
+          },
+          TextField: {
+            name: 'TextField',
+            props: ['modelValue', 'disabled'],
+            emits: ['update:modelValue', 'on-input'],
+            template: '<input type="text" :value="modelValue" :disabled="disabled" @input="$emit(\'update:modelValue\', $event.target.value); $emit(\'on-input\')" />'
+          }
+        }
+      }
+    });
+  };
 
   const defaultProps = {
     tahun: '2024',
@@ -51,14 +86,7 @@ describe('TabDataFinansial.vue', () => {
   };
 
   beforeEach(() => {
-    wrapper = mount(TabDataFinansial, {
-      props: defaultProps,
-      global: {
-        provide: {
-          selectedTitle: 'Test Title'
-        }
-      }
-    });
+    wrapper = mountComponent();
   });
 
   it('should render component correctly', () => {
@@ -246,22 +274,118 @@ describe('TabDataFinansial.vue', () => {
 
   it('should handle different picked states', async () => {
     // Test with picked = 'gabung'
-    const gabungWrapper = mount(TabDataFinansial, {
-      props: {
-        ...defaultProps,
-        picked: 'gabung'
-      },
-      global: {
-        provide: {
-          selectedTitle: 'Test Title'
-        }
-      }
-    });
+    const gabungWrapper = mountComponent({ picked: 'gabung' });
 
     await gabungWrapper.vm.$nextTick();
     
     // When picked is 'gabung', cost component D section should not be visible
     expect(gabungWrapper.text()).toContain('Cost Component B dan D');
     expect(gabungWrapper.text()).not.toContain('Cost Component D');
+  });
+
+  it('should execute all input handlers in pisah mode through template events', async () => {
+    wrapper = mountComponent({
+      picked: 'pisah',
+      costComponentCDetail: [{ kode_bahan_bakar: 'BB001', fuel_cost: '1000' }, { kode_bahan_bakar: 'UNKNOWN', fuel_cost: '2000' }],
+      costComponentA: '1000',
+      costComponentB: '1000',
+      biayaKepegawaian: '1000',
+      biayaPemeliharaanRutin: '1000',
+      biayaAdministrasiUmum: '1000',
+      biayaPembelianTenagaListrik: '1000',
+      biayaLainLain: '1000',
+      costComponentC: '1000',
+      costComponentD: '1000',
+      biayaMinyakPelumas: '1000',
+      bahanKimia: '1000',
+      totalRevenue: '1000',
+      revenueKompA: '1000',
+      revenueKompB: '1000',
+      revenueKompC: '1000',
+      revenueKompD: '1000'
+    });
+
+    const inputs = wrapper.findAll('input[type="text"]');
+    expect(inputs.length).toBeGreaterThan(0);
+
+    for (const input of inputs) {
+      await input.setValue('1234567');
+      await input.trigger('input');
+    }
+
+    expect(wrapper.text()).toContain('Solar');
+  });
+
+  it('should execute gabung mode handlers and audited badges', async () => {
+    wrapper = mountComponent({
+      picked: 'gabung',
+      isIntegrasi: true,
+      isAudited: true,
+      costComponentB: '1000',
+      oMCost: '1000',
+      periodicMaintenanceCost: '1000',
+      costComponentCDetail: [{ kode_bahan_bakar: 'BB001', fuel_cost: '1000' }]
+    });
+
+    const inputs = wrapper.findAll('input[type="text"]');
+    for (const input of inputs) {
+      await input.setValue('9999');
+      await input.trigger('input');
+    }
+
+    expect(wrapper.text()).toContain('Audited');
+    expect(wrapper.find('h3').text()).toContain('Cost Component A');
+  });
+
+  it('should execute gabung mode non-integrasi input handlers', async () => {
+    wrapper = mountComponent({
+      picked: 'gabung',
+      isIntegrasi: false,
+      isAudited: false,
+      costComponentB: '1000',
+      oMCost: '2000',
+      periodicMaintenanceCost: '3000'
+    });
+
+    const gabungInputs = wrapper.findAll('input[type="text"]');
+    expect(gabungInputs.length).toBeGreaterThan(0);
+
+    for (const input of gabungInputs) {
+      await input.setValue('1234');
+      await input.trigger('input');
+    }
+
+    expect(wrapper.text()).toContain('Cost Component B dan D');
+  });
+
+  it('should render pisah mode with integrasi branches', async () => {
+    wrapper = mountComponent({
+      picked: 'pisah',
+      isIntegrasi: true,
+      isAudited: false,
+      costComponentCDetail: [{ kode_bahan_bakar: 'BB001', fuel_cost: '1000' }]
+    });
+
+    expect(wrapper.text()).toContain('Unaudited');
+    expect(wrapper.text()).toContain('Cost Component D');
+  });
+
+  it('should run confirmation accept and cancel template paths', async () => {
+    wrapper = mountComponent();
+
+    const submitButton = wrapper.findAll('button').find((btn: any) => btn.text().includes('Kirim'));
+    expect(submitButton).toBeTruthy();
+    await submitButton?.trigger('click');
+
+    const cancelButton = wrapper.find('[data-testid="batal"]');
+    expect(cancelButton.exists()).toBe(true);
+    await cancelButton.trigger('click');
+
+    await submitButton?.trigger('click');
+    const acceptButton = wrapper.find('[data-testid="accept"]');
+    await acceptButton.trigger('click');
+
+    expect(wrapper.emitted('on-save')).toBeTruthy();
+    expect(selectedTitle.value).toBe('Opsi Simulasi');
   });
 });

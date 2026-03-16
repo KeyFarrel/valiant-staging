@@ -44,7 +44,7 @@ describe('DetailFS.vue', () => {
     persetujuanServiceMock = {
       getPersetujuanFSSentral: vi.fn()
     }
-    vi.mocked(PersetujuanService).mockImplementation(() => persetujuanServiceMock)
+    vi.mocked(PersetujuanService).mockImplementation(function() { return persetujuanServiceMock; })
   })
 
   it('should render component successfully', () => {

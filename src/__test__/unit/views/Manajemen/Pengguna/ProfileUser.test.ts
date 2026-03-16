@@ -15,11 +15,11 @@ const mockUserService = {
 
 // Mock dependencies
 vi.mock('@/services/auth-service', () => ({
-  default: vi.fn(() => mockAuthService)
+  default: vi.fn(function() { return mockAuthService; })
 }));
 
 vi.mock('@/services/user-service', () => ({
-  default: vi.fn(() => mockUserService)
+  default: vi.fn(function() { return mockUserService; })
 }));
 
 vi.mock('@/store/storeSession', () => ({
@@ -50,9 +50,9 @@ vi.mock('@/services/helper/toast-notification', () => ({
 }));
 
 vi.mock('@/services/format/time-format-otp', () => ({
-  default: vi.fn(() => ({
+  default: vi.fn(function() { return {
     formatTime: vi.fn((time) => `${Math.floor(time / 60)}:${(time % 60).toString().padStart(2, '0')}`)
-  }))
+  }; })
 }));
 
 // Mock components

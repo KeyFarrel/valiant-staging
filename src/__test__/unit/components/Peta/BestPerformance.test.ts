@@ -29,7 +29,7 @@ describe('BestPerformance', () => {
       getYearListBPA: vi.fn()
     };
     
-    (PetaService as any).mockImplementation(() => mockPetaService);
+    (PetaService as any).mockImplementation(function() { return mockPetaService; });
   });
 
   it('should render the component with initial state', async () => {

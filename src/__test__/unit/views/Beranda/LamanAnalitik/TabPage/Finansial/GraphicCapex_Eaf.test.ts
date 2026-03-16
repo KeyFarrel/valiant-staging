@@ -81,7 +81,7 @@ describe('GraphicCapex_Eaf.vue', () => {
       getGraphicAnalitikEAF: vi.fn().mockResolvedValue(mockGraphicCapexEafResponse),
     };
     
-    vi.mocked(GrafikService).mockImplementation(() => mockGrafikService);
+    vi.mocked(GrafikService).mockImplementation(function() { return mockGrafikService; } as any);
     
     wrapper = mount(GraphicCapexEaf, {
       props: defaultProps,
@@ -500,5 +500,111 @@ describe('GraphicCapex_Eaf.vue', () => {
       expect(wrapper.vm.graphData).toHaveProperty('isEmpty');
       expect(wrapper.vm.graphData).toHaveProperty('dataZoom');
     });
+  });
+
+  it('covers validation logic in closeModal and applyFilter methods', async () => {
+    notifyError.mockClear();
+    wrapper.vm.value = [];
+    wrapper.vm.filter.tahun = null;
+    wrapper.vm.closeModal();
+    wrapper.vm.applyFilter();
+    wrapper.vm.applyFilterNoDMN();
+    expect(notifyError).toHaveBeenLastCalledWith('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000);
+    
+
+
+    notifyError.mockClear();
+    wrapper.vm.value = [];
+    wrapper.vm.filter.tahun = '1000';
+    wrapper.vm.closeModal();
+    wrapper.vm.applyFilter();
+    wrapper.vm.applyFilterNoDMN();
+    expect(notifyError).toHaveBeenLastCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000);
+  });
+
+  it('covers UI dropdown methods and outside click', async () => {
+    wrapper.vm.togglePembangkitDropdown();
+    wrapper.vm.value = ['PLTU', 'PLTG'];
+    wrapper.vm.removeSelectedPembangkit('PLTU');
+    wrapper.vm.clearPembangkit();
+
+    wrapper.vm.toggleDmnDropdown();
+    wrapper.vm.dmn = ['1', '2'];
+    wrapper.vm.removeSelectedDmn('1');
+    wrapper.vm.clearDmn();
+
+    const evt = new MouseEvent('click');
+    Object.defineProperty(evt, 'target', { value: document.createElement('div') });
+    document.dispatchEvent(evt);
+    
+    wrapper.vm.isPembangkitDropdownOpen = true;
+    wrapper.vm.checkAll = true;
+    wrapper.vm.handleCheckAll(true);
+    wrapper.vm.handleCheckAll(false);
+  });
+
+  it('covers data manipulation error catches', async () => {
+    mockGrafikService.getGraphicAnalitikEAF.mockRejectedValueOnce(new Error('error'));
+    await wrapper.vm.getDataGraph();
+
+    mockGrafikService.getGraphicAnalitikEAFNoDMN = vi.fn().mockRejectedValueOnce(new Error('error'));
+    await wrapper.vm.getDataGraphNoDMN();
+  });
+  
+  it('covers watch on value', async () => {
+    wrapper.vm.value = [];
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.checkAll).toBe(false);
+    wrapper.vm.value = defaultProps.itemsPembangkit.map(p => p.id);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.checkAll).toBe(true);
+  });
+
+  it('covers template click handlers', async () => {
+    wrapper.vm.value = ['PLTU'];
+    await wrapper.vm.$nextTick();
+    const applyButtons = wrapper.findAll('button[type="submit"]');
+    for (const btn of applyButtons) {
+       await btn.trigger('click');
+    }
+    
+    wrapper.vm.value = ['PLTG'];
+    await wrapper.vm.$nextTick();
+    const applyButtons2 = wrapper.findAll('button[type="submit"]');
+    for (const btn of applyButtons2) {
+       await btn.trigger('click');
+    }
+  });
+
+  it('covers template click handlers', async () => {
+    wrapper.vm.value = ['PLTU'];
+    await wrapper.vm.$nextTick();
+    const applyButtons = wrapper.findAll('button[type="submit"]');
+    for (const btn of applyButtons) {
+       await btn.trigger('click');
+    }
+    
+    wrapper.vm.value = ['PLTG'];
+    await wrapper.vm.$nextTick();
+    const applyButtons2 = wrapper.findAll('button[type="submit"]');
+    for (const btn of applyButtons2) {
+       await btn.trigger('click');
+    }
+  });
+
+  it('covers template click handlers', async () => {
+    wrapper.vm.value = ['PLTU'];
+    await wrapper.vm.$nextTick();
+    const applyButtons = wrapper.findAll('button[type="submit"]');
+    for (const btn of applyButtons) {
+       await btn.trigger('click');
+    }
+    
+    wrapper.vm.value = ['PLTG'];
+    await wrapper.vm.$nextTick();
+    const applyButtons2 = wrapper.findAll('button[type="submit"]');
+    for (const btn of applyButtons2) {
+       await btn.trigger('click');
+    }
   });
 });

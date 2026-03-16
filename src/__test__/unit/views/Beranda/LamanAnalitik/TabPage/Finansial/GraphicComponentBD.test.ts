@@ -68,7 +68,7 @@ describe('GraphicComponentBD', () => {
       getGraphicBiaya: vi.fn(),
     };
     
-    vi.mocked(GrafikService).mockImplementation(() => mockGrafikService);
+    vi.mocked(GrafikService).mockImplementation(function() { return mockGrafikService; });
     
     wrapper = mount(GraphicComponentBD, {
       props: defaultProps,
@@ -621,6 +621,104 @@ describe('GraphicComponentBD', () => {
       await wrapper.vm.getDataGraph();
       
       expect(wrapper.vm.graphData.series[0].data).toEqual([]);
+    });
+  });
+
+  describe('Additional Branch Coverage', () => {
+    it('should cover dropdown utility methods and click outside behavior', () => {
+      wrapper.vm.value = ['PLTU', 'PLTG'];
+      wrapper.vm.dmn = ['1', '2'];
+
+      wrapper.vm.togglePembangkitDropdown();
+      expect(wrapper.vm.isPembangkitDropdownOpen).toBe(true);
+
+      wrapper.vm.toggleDmnDropdown();
+      expect(wrapper.vm.isDmnDropdownOpen).toBe(true);
+
+      wrapper.vm.removeSelectedPembangkit('PLTU');
+      expect(wrapper.vm.value).toEqual(['PLTG']);
+
+      wrapper.vm.removeSelectedDmn('1');
+      expect(wrapper.vm.dmn).toEqual(['2']);
+
+      wrapper.vm.clearPembangkit();
+      expect(wrapper.vm.value).toEqual([]);
+
+      wrapper.vm.clearDmn();
+      expect(wrapper.vm.dmn).toEqual([]);
+
+      wrapper.vm.isPembangkitDropdownOpen = true;
+      wrapper.vm.isDmnDropdownOpen = true;
+      wrapper.vm.handleClickOutside({ target: document.createElement('div') } as any);
+
+      expect(wrapper.vm.isPembangkitDropdownOpen).toBe(false);
+      expect(wrapper.vm.isDmnDropdownOpen).toBe(false);
+    });
+
+    it('should render modal internals and trigger reset/apply buttons', async () => {
+      mockGrafikService.getGraphicBiaya.mockResolvedValue(mockGraphicData);
+
+      const wrapperWithModalSlot = mount(GraphicComponentBD, {
+        props: {
+          ...defaultProps,
+          initialPembangkit: ['PLTU', 'PLTG', 'PLTS'],
+        },
+        global: {
+          stubs: {
+            'el-select': true,
+            'el-option': true,
+            'el-checkbox': true,
+            'VueDatePicker': {
+              template: '<div>Pilih Periode</div>',
+            },
+            'ModalWrapper': {
+              template: '<div><slot /></div>',
+            },
+            'ShimmerLoading': true,
+            'DynamicScatterPlotVertiLine': true,
+            'Empty': true,
+          },
+        },
+      });
+
+      wrapperWithModalSlot.vm.showModal = true;
+      wrapperWithModalSlot.vm.value = ['PLTU', 'PLTG', 'PLTS'];
+      wrapperWithModalSlot.vm.dmn = ['1', '2', '3'];
+      wrapperWithModalSlot.vm.isPembangkitDropdownOpen = true;
+      wrapperWithModalSlot.vm.isDmnDropdownOpen = true;
+      await nextTick();
+
+      expect(wrapperWithModalSlot.text()).toContain('Select All Items');
+      expect(wrapperWithModalSlot.text()).toContain('Pilih Periode');
+
+      const resetButton = wrapperWithModalSlot
+        .findAll('button')
+        .find(btn => btn.text().trim() === 'Reset');
+      expect(resetButton).toBeTruthy();
+      await resetButton!.trigger('click');
+
+      wrapperWithModalSlot.vm.value = ['PLTU'];
+      await nextTick();
+      const applyWithDmn = wrapperWithModalSlot
+        .findAll('button')
+        .find(btn => btn.text().trim() === 'Terapkan');
+      expect(applyWithDmn).toBeTruthy();
+      await applyWithDmn!.trigger('click');
+
+      wrapperWithModalSlot.vm.value = ['PLTG'];
+      await nextTick();
+      const applyNoDmn = wrapperWithModalSlot
+        .findAll('button')
+        .find(btn => btn.text().trim() === 'Terapkan');
+      expect(applyNoDmn).toBeTruthy();
+      await applyNoDmn!.trigger('click');
+    });
+
+    it('should remove document click listener on unmount', () => {
+      const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
+      wrapper.unmount();
+      expect(removeEventListenerSpy).toHaveBeenCalled();
+      removeEventListenerSpy.mockRestore();
     });
   });
 });

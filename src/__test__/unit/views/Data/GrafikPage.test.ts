@@ -5,10 +5,10 @@ import GrafikPage from '@/views/Data/GrafikPage.vue';
 
 // Mock window.Go for WASM
 Object.defineProperty(window, 'Go', {
-  value: vi.fn().mockImplementation(() => ({
+  value: vi.fn().mockImplementation(function() { return {
     run: vi.fn(),
     importObject: {}
-  })),
+  }; }),
   writable: true
 });
 
@@ -54,7 +54,7 @@ vi.mock('@/router', () => ({
 
 // Mock the services
 vi.mock('@/services/peta-service', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     getSentralByKode: vi.fn().mockResolvedValue({
       data: {
         uuid_sentral: 'test-sentral-id',
@@ -84,11 +84,11 @@ vi.mock('@/services/peta-service', () => ({
         }
       ]
     })
-  }))
+  }; })
 }));
 
 vi.mock('@/services/grafik-service', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     getYearSentral: vi.fn().mockResolvedValue({
       data: [
         { tahun: 2022 },
@@ -103,25 +103,25 @@ vi.mock('@/services/grafik-service', () => ({
         { tahun: 2024 }
       ]
     })
-  }))
+  }; })
 }));
 
 vi.mock('@/services/detail-sentral-service', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     getPhoto: vi.fn().mockResolvedValue({
       data: new ArrayBuffer(8)
     })
-  }))
+  }; })
 }));
 
 vi.mock('@/services/auth-service', () => ({
-  default: vi.fn().mockImplementation(() => ({}))
+  default: vi.fn().mockImplementation(function() { return {}; })
 }));
 
 vi.mock('@/services/helper/year-picker-service', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     filterYears: vi.fn().mockReturnValue([])
-  }))
+  }; })
 }));
 
 // Mock app-encrypt-storage
@@ -168,9 +168,9 @@ vi.mock('@/services/helper/toast-notification', () => ({
 }));
 
 vi.mock('@/services/format/global-format', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     formatRupiah: vi.fn((value) => `Rp ${value}`)
-  }))
+  }; })
 }));
 
 describe('GrafikPage', () => {

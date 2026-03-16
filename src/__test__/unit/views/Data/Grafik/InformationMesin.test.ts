@@ -25,7 +25,7 @@ vi.mock('@/composables/useMesinSharedData', () => ({
 }));
 
 vi.mock('@/services/format/global-format', () => ({
-  default: vi.fn(() => mockGlobalFormat),
+  default: vi.fn(function() { return mockGlobalFormat; }),
 }));
 
 // Mock the components

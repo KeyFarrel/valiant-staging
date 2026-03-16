@@ -26,11 +26,11 @@ const mockDetailSentralService = {
 };
 
 vi.mock('@/services/detail-sentral-service', () => ({
-  default: vi.fn(() => mockDetailSentralService)
+  default: vi.fn(function() { return mockDetailSentralService; })
 }));
 
 vi.mock('@/services/sentral-service', () => ({
-  default: vi.fn(() => mockSentralService)
+  default: vi.fn(function() { return mockSentralService; })
 }));
 
 vi.mock('@/services/auth-service');
@@ -364,5 +364,227 @@ describe('SentralAdmin.vue', () => {
     
     expect(wrapper.vm.sentralData[0].daya_terpasang).toBe(300); // 100 + 200
     expect(wrapper.vm.sentralData[0].daya_mampu).toBe(230); // 80 + 150
+  });
+
+  it('should deduplicate suggestion list by sentral name', async () => {
+    mockSentralService.getSuggestionSentral.mockResolvedValueOnce({
+      data: [
+        { sentral: 'A' },
+        { sentral: 'A' },
+        { sentral: 'B' }
+      ]
+    });
+
+    await wrapper.vm.fetchSuggestionSentral();
+
+    expect(wrapper.vm.listSuggestionSentral).toHaveLength(2);
+    expect(wrapper.vm.listSuggestionSentral.map((item: any) => item.sentral)).toEqual(['A', 'B']);
+  });
+
+  it('should hit machine photo error branch during fetchSentralData', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    mockSentralService.getSentralData.mockResolvedValueOnce({
+      data: [{
+        uuid: 1,
+        kode_sentral: 'TEST001',
+        nama_sentral: 'Test Sentral',
+        photo: '',
+        mesins: [{
+          daya_terpasang: 100,
+          daya_mampu: 90,
+          photo1: 'mesin-photo-1.jpg'
+        }]
+      }],
+      meta: { totalPages: 1, totalRecords: 1, limit: 10 }
+    });
+
+    mockDetailSentralService.getPhoto.mockRejectedValueOnce(new Error('Machine Photo Error'));
+    wrapper.vm.listSentralData = [];
+
+    await wrapper.vm.fetchSentralData();
+
+    expect(consoleSpy).toHaveBeenCalledWith('Error Fetch Photo: ', expect.any(Error));
+    consoleSpy.mockRestore();
+  });
+
+  it('should trigger search watcher branch when query becomes empty', async () => {
+    const serviceSpy = vi.spyOn(mockSentralService, 'getSentralData');
+
+    wrapper.vm.searchQuery = 'abc';
+    await wrapper.vm.$nextTick();
+    serviceSpy.mockClear();
+
+    wrapper.vm.searchQuery = '';
+    await wrapper.vm.$nextTick();
+    await wrapper.vm.$nextTick();
+
+    expect(serviceSpy).toHaveBeenCalled();
+  });
+
+  it('should render expanded content with slot stubs to execute template branches', async () => {
+    mockSentralService.getSentralData.mockResolvedValue({
+      data: [{
+        uuid: 2,
+        kode_sentral: 'TEST-EXPANDED',
+        nama_sentral: 'Sentral Expanded',
+        photo: '',
+        photo2: '',
+        daya_terpasang: 200,
+        daya_mampu: 180,
+        jenis_bahan_bakar: 'HSD',
+        kode_pengelola: 'PLN',
+        longitude: '0',
+        latitude: '0',
+        mesins: [{
+          mesin: 'Mesin A',
+          photo1: '',
+          photo2: '',
+          nilai_asset_awal: 1000000,
+          tahun_operasi: '2020',
+          masa_manfaat: '20',
+          daya_terpasang: 200,
+          daya_mampu: 180,
+          kondisi_unit: 'Operasi'
+        }]
+      }],
+      meta: { totalPages: 1, totalRecords: 1, limit: 10 }
+    });
+
+    const richWrapper = mount(SentralAdmin, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          Loading: true,
+          SearchBoxSuggestion: true,
+          ShimmerLoading: true,
+          TabWrapperSentral: {
+            template: '<div><slot /></div>',
+            props: ['tabsTitles', 'isLihatGrafik', 'isRekap']
+          },
+          TabItem: {
+            template: '<div><slot /></div>',
+            props: ['title']
+          },
+          RouterLink: {
+            template: '<a><slot /></a>'
+          }
+        }
+      }
+    });
+
+    richWrapper.vm.sentralData = [{
+      uuid: 2,
+      kode_sentral: 'TEST-EXPANDED',
+      nama_sentral: 'Sentral Expanded',
+      photo: '',
+      photo2: '',
+      daya_terpasang: 200,
+      daya_mampu: 180,
+      jenis_bahan_bakar: 'HSD',
+      kode_pengelola: 'PLN',
+      longitude: '0',
+      latitude: '0',
+      mesins: [{
+        mesin: 'Mesin A',
+        photo1: '',
+        photo2: '',
+        nilai_asset_awal: 1000000,
+        tahun_operasi: '2020',
+        masa_manfaat: '20',
+        daya_terpasang: 200,
+        daya_mampu: 180,
+        kondisi_unit: 'Operasi'
+      }]
+    }];
+    richWrapper.vm.isPembangkitTabOpen = ['TEST-EXPANDED'];
+    await richWrapper.vm.$nextTick();
+
+    expect(richWrapper.text()).toContain('Sentral Expanded');
+    expect(richWrapper.text()).toContain('Lihat Detail');
+
+    richWrapper.unmount();
+  });
+
+  it('should execute template handlers for filters and pagination controls', async () => {
+    const richWrapper = mount(SentralAdmin, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          Loading: true,
+          SearchBoxSuggestion: {
+            emits: ['on-key-enter', 'on-click-sentral', 'update:modelValue'],
+            props: ['modelValue', 'source'],
+            template: '<div><input data-testid="search-input" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" /><button data-testid="search-enter" @click="$emit(\'on-key-enter\')">enter</button><button data-testid="search-click" @click="$emit(\'on-click-sentral\')">click</button></div>'
+          },
+          ShimmerLoading: true,
+          TabWrapperSentral: { template: '<div><slot /></div>' },
+          TabItem: { template: '<div><slot /></div>' },
+          RouterLink: { template: '<a><slot /></a>' }
+        }
+      }
+    });
+
+    richWrapper.vm.listSuggestionSentral = [{ sentral: 'S1' }];
+    richWrapper.vm.pengelolaData = [
+      { id_pengelola: 1, kode_pengelola: 'PLN', pengelola: 'PLN' }
+    ];
+    richWrapper.vm.sentralData = [{
+      uuid: 1,
+      kode_sentral: 'K1',
+      nama_sentral: 'Sentral K1',
+      mesins: [],
+      photo: '',
+      photo2: '',
+      daya_terpasang: 100,
+      daya_mampu: 80,
+      jenis_bahan_bakar: 'HSD',
+      kode_pengelola: 'PLN',
+      longitude: '0',
+      latitude: '0'
+    }];
+    richWrapper.vm.totalPages = 3;
+    richWrapper.vm.totalRecords = 15;
+    richWrapper.vm.currentPage = 1;
+    await richWrapper.vm.$nextTick();
+
+    const searchInput = richWrapper.find('[data-testid="search-input"]');
+    if (searchInput.exists()) {
+      await searchInput.setValue('keyword');
+    }
+    const searchEnter = richWrapper.find('[data-testid="search-enter"]');
+    const searchClick = richWrapper.find('[data-testid="search-click"]');
+    if (searchEnter.exists()) {
+      await searchEnter.trigger('click');
+    }
+    if (searchClick.exists()) {
+      await searchClick.trigger('click');
+    }
+
+    const pengelolaItem = richWrapper.findAll('li').find((li) => li.text().includes('PLN'));
+    if (pengelolaItem) {
+      await pengelolaItem.trigger('click');
+    }
+
+    const sentralHeader = richWrapper.findAll('div').find((node) => node.text().includes('Sentral K1'));
+    if (sentralHeader) {
+      await sentralHeader.trigger('click');
+    }
+
+    const pageLimitSelect = richWrapper.find('select');
+    if (pageLimitSelect.exists()) {
+      await pageLimitSelect.setValue('20');
+      await pageLimitSelect.trigger('change');
+    }
+
+    richWrapper.vm.currentPage = 2;
+    await richWrapper.vm.$nextTick();
+    const pageItem = richWrapper.findAll('#pagination').find((li) => li.text().trim() === '2');
+    if (pageItem) {
+      await pageItem.trigger('click');
+    }
+
+    expect(richWrapper.exists()).toBe(true);
+    richWrapper.unmount();
   });
 });

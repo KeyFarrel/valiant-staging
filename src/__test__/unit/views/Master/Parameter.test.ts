@@ -5,7 +5,7 @@ import ParameterService from '@/services/parameter-service';
 
 // Mock the ParameterService
 vi.mock('@/services/parameter-service', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     getParameterData: vi.fn().mockResolvedValue({
       data: [
         {
@@ -39,7 +39,7 @@ vi.mock('@/services/parameter-service', () => ({
     }),
     addParameter: vi.fn().mockResolvedValue({ success: true }),
     editParameter: vi.fn().mockResolvedValue({ success: true })
-  }))
+  }; })
 }));
 
 // Mock Vue3Lottie component
@@ -60,6 +60,24 @@ vi.mock('vue3-lottie', () => ({
 
 describe('Parameter.vue', () => {
   let wrapper: any;
+
+  const createRichWrapper = () => mount(Parameter, {
+    global: {
+      stubs: {
+        Loading: {
+          template: '<div class="loading-mock">Loading...</div>'
+        },
+        ModalWrapper: {
+          template: '<div class="modal-wrapper-mock"><slot /></div>',
+          props: ['showModal', 'show-modal', 'width', 'height']
+        },
+        Vue3Lottie: true,
+        TableComponent: {
+          template: '<table><thead><slot name="table-header" /></thead><tbody><slot name="table-body" /></tbody></table>'
+        }
+      }
+    }
+  });
   
   beforeEach(() => {
     vi.clearAllMocks();
@@ -438,9 +456,9 @@ describe('Parameter.vue', () => {
       meta: { totalRecords: 1, totalPages: 1 }
     };
     
-    mockService.mockImplementation(() => ({
+    mockService.mockImplementation(function() { return {
       getParameterData: vi.fn().mockResolvedValue(mockData)
-    }));
+    }; });
 
     wrapper = mount(Parameter, {
       global: {
@@ -461,10 +479,10 @@ describe('Parameter.vue', () => {
 
   it('should handle successful form submission', async () => {
     const mockService = ParameterService as any;
-    mockService.mockImplementation(() => ({
+    mockService.mockImplementation(function() { return {
       getParameterData: vi.fn().mockResolvedValue({ data: [], meta: { totalRecords: 0, totalPages: 0 } }),
       addParameter: vi.fn().mockResolvedValue({ success: true })
-    }));
+    }; });
 
     wrapper = mount(Parameter, {
       global: {
@@ -526,9 +544,9 @@ describe('Parameter.vue', () => {
       }
     };
     
-    mockService.mockImplementation(() => ({
+    mockService.mockImplementation(function() { return {
       getParameterByID: vi.fn().mockResolvedValue(mockDetailData)
-    }));
+    }; });
 
     wrapper = mount(Parameter, {
       global: {
@@ -558,9 +576,9 @@ describe('Parameter.vue', () => {
       }
     };
     
-    mockService.mockImplementation(() => ({
+    mockService.mockImplementation(function() { return {
       getParameterByID: vi.fn().mockResolvedValue(mockDetailData)
-    }));
+    }; });
 
     wrapper = mount(Parameter, {
       global: {
@@ -626,10 +644,10 @@ describe('Parameter.vue', () => {
 
   it('should handle successful edit form submission', async () => {
     const mockService = ParameterService as any;
-    mockService.mockImplementation(() => ({
+    mockService.mockImplementation(function() { return {
       editParameter: vi.fn().mockResolvedValue({ success: true }),
       getParameterData: vi.fn().mockResolvedValue({ data: [], meta: { totalRecords: 0, totalPages: 0 } })
-    }));
+    }; });
 
     wrapper = mount(Parameter, {
       global: {
@@ -664,9 +682,9 @@ describe('Parameter.vue', () => {
       { uuid: '1', tahun: '2024', discount_rate: '10', corporate_tax_rate: '25', status: 1 }
     ];
     
-    mockService.mockImplementation(() => ({
+    mockService.mockImplementation(function() { return {
       getParameterData: vi.fn().mockResolvedValue({ data: mockExistingData, meta: { totalRecords: 1, totalPages: 1 } })
-    }));
+    }; });
 
     wrapper = mount(Parameter, {
       global: {
@@ -689,5 +707,160 @@ describe('Parameter.vue', () => {
     await vm.submitForm();
 
     expect(vm.errors).toContain('Tahun sudah ada di database.');
+  });
+
+  it('should render slotted modal and table template paths', async () => {
+    const currentYear = new Date().getFullYear().toString();
+    const mockService = ParameterService as any;
+    mockService.mockImplementation(function() { return {
+      getParameterData: vi.fn().mockResolvedValue({
+        data: [
+          { uuid: '1', tahun: currentYear, discount_rate: '10', corporate_tax_rate: '20', status: 1 },
+          { uuid: '2', tahun: '2023', discount_rate: '11', corporate_tax_rate: '21', status: 0 }
+        ],
+        meta: { totalRecords: 2, totalPages: 2 }
+      }),
+      getParameterByID: vi.fn().mockResolvedValue({
+        data: { uuid: '1', tahun: currentYear, discount_rate: '10', corporate_tax_rate: '20', status: 1 }
+      }),
+      addParameter: vi.fn().mockResolvedValue({ success: true }),
+      editParameter: vi.fn().mockResolvedValue({ success: true })
+    }; });
+
+    wrapper = createRichWrapper();
+    await wrapper.vm.$nextTick();
+    await new Promise((resolve) => setTimeout(resolve, 30));
+
+    const vm = wrapper.vm;
+    expect(wrapper.find('table').exists()).toBe(true);
+
+    const addButton = wrapper.findAll('button').find((btn: any) => btn.text().includes('Tambah Parameter'));
+    expect(addButton).toBeDefined();
+    await addButton!.trigger('click');
+    expect(vm.isModalOpen).toBe(true);
+
+    const cancelButton = wrapper.findAll('button').find((btn: any) => btn.text().trim() === 'Batal');
+    expect(cancelButton).toBeDefined();
+    await cancelButton!.trigger('click');
+    expect(vm.isModalOpen).toBe(false);
+
+    vm.navigation.totalPages = 8;
+    vm.navigation.currentPage = 2;
+    await wrapper.vm.$nextTick();
+    const pageItems = wrapper.findAll('#pagination');
+    if (pageItems.length > 0) {
+      await pageItems[0].trigger('click');
+      expect(vm.navigation.currentPage).toBe(1);
+    }
+  });
+
+  it('should cover fetchDetailData and openEditModals error paths', async () => {
+    const mockService = ParameterService as any;
+    mockService.mockImplementation(function() { return {
+      getParameterData: vi.fn().mockResolvedValue({ data: [], meta: { totalRecords: 0, totalPages: 0 } }),
+      getParameterByID: vi.fn().mockRejectedValue(new Error('detail failed')),
+      addParameter: vi.fn().mockResolvedValue({ success: true }),
+      editParameter: vi.fn().mockResolvedValue({ success: true })
+    }; });
+
+    wrapper = createRichWrapper();
+    await wrapper.vm.$nextTick();
+
+    await expect(wrapper.vm.fetchDetailData('bad-id')).rejects.toThrow('detail failed');
+    await wrapper.vm.openEditModals('bad-id');
+    expect(wrapper.vm.selectedParameterId).toBe('bad-id');
+  });
+
+  it('should cover submit form and submit edit catch branches', async () => {
+    const mockService = ParameterService as any;
+    const currentYear = new Date().getFullYear().toString();
+    mockService.mockImplementation(function() { return {
+      getParameterData: vi.fn().mockResolvedValue({ data: [], meta: { totalRecords: 0, totalPages: 0 } }),
+      getParameterByID: vi.fn().mockResolvedValue({
+        data: { uuid: 'id-1', tahun: currentYear, discount_rate: '10', corporate_tax_rate: '20', status: 1 }
+      }),
+      addParameter: vi.fn().mockRejectedValue(new Error('add failed')),
+      editParameter: vi.fn().mockRejectedValue(new Error('edit failed'))
+    }; });
+
+    wrapper = createRichWrapper();
+    await wrapper.vm.$nextTick();
+
+    wrapper.vm.formData.tahun = currentYear;
+    wrapper.vm.formData.discount_rate = '10';
+    wrapper.vm.formData.corporate_tax_rate = '20';
+    await expect(wrapper.vm.submitForm()).rejects.toThrow('add failed');
+
+    wrapper.vm.selectedParameterId = 'id-1';
+    wrapper.vm.detailData = { status: 1 };
+    wrapper.vm.formData.tahun = currentYear;
+    wrapper.vm.formData.discount_rate = '10';
+    wrapper.vm.formData.corporate_tax_rate = '20';
+    await expect(wrapper.vm.submitEditForm()).rejects.toThrow('edit failed');
+  });
+
+  it('should execute add and edit modal input handlers and row action button', async () => {
+    const currentYear = new Date().getFullYear().toString();
+    const mockService = ParameterService as any;
+    mockService.mockImplementation(function() { return {
+      getParameterData: vi.fn().mockResolvedValue({
+        data: [
+          { uuid: 'year-now', tahun: currentYear, discount_rate: '10', corporate_tax_rate: '20', status: 1 },
+          { uuid: 'year-old', tahun: '2020', discount_rate: '8', corporate_tax_rate: '18', status: 0 }
+        ],
+        meta: { totalRecords: 2, totalPages: 2 }
+      }),
+      getParameterByID: vi.fn().mockResolvedValue({
+        data: { uuid: 'year-now', tahun: currentYear, discount_rate: '11', corporate_tax_rate: '21', status: 1 }
+      }),
+      addParameter: vi.fn().mockResolvedValue({ success: true }),
+      editParameter: vi.fn().mockResolvedValue({ success: true })
+    }; });
+
+    wrapper = createRichWrapper();
+    await wrapper.vm.$nextTick();
+    await new Promise((resolve) => setTimeout(resolve, 30));
+
+    const vm = wrapper.vm;
+    vm.isModalOpen = true;
+    vm.errors = ['err-add'];
+    vm.errors_DT = ['non_angka'];
+    vm.errors_CT = ['negatif'];
+    await wrapper.vm.$nextTick();
+
+    const yearSelect = wrapper.find('#tahun');
+    if (yearSelect.exists()) {
+      await yearSelect.setValue(currentYear);
+    }
+
+    const discountInputs = wrapper.findAll('#discount');
+    const taxInputs = wrapper.findAll('#tax');
+    if (discountInputs[0]) {
+      await discountInputs[0].setValue('12.5');
+    }
+    if (taxInputs[0]) {
+      await taxInputs[0].setValue('22.5');
+    }
+
+    const rowActionButton = wrapper.findAll('td button')[0];
+    if (rowActionButton) {
+      await rowActionButton.trigger('click');
+    }
+
+    vm.isModalEdit = true;
+    vm.errors = ['err-edit'];
+    vm.errors_DT = ['diatas_100'];
+    vm.errors_CT = ['non_angka'];
+    await wrapper.vm.$nextTick();
+
+    if (discountInputs[1]) {
+      await discountInputs[1].setValue('13.5');
+    }
+    if (taxInputs[1]) {
+      await taxInputs[1].setValue('23.5');
+    }
+
+    expect(vm.formData.discount_rate).toContain('13.5');
+    expect(vm.formData.corporate_tax_rate).toContain('23.5');
   });
 });

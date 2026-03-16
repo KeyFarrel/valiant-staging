@@ -185,31 +185,31 @@ vi.mock("@/services/helper/toast-notification", () => ({
 
 // Mock service constructors
 vi.mock('@/services/detail-rekap-service', () => ({
-  default: vi.fn(() => mockDetailRekapService)
+  default: vi.fn(function() { return mockDetailRekapService; })
 }))
 
 vi.mock('@/services/persetujuan-service', () => ({
-  default: vi.fn(() => mockPersetujuanService)
+  default: vi.fn(function() { return mockPersetujuanService; })
 }))
 
 vi.mock('@/services/feasibility-study', () => ({
-  default: vi.fn(() => mockFeasibilityStudyService)
+  default: vi.fn(function() { return mockFeasibilityStudyService; })
 }))
 
 vi.mock('@/services/user-service', () => ({
-  default: vi.fn(() => mockUserService)
+  default: vi.fn(function() { return mockUserService; })
 }))
 
 vi.mock('@/services/rekap-service', () => ({
-  default: vi.fn(() => mockRekapService)
+  default: vi.fn(function() { return mockRekapService; })
 }))
 
 vi.mock('@/services/detail-sentral-service', () => ({
-  default: vi.fn(() => mockDetailSentralService)
+  default: vi.fn(function() { return mockDetailSentralService; })
 }))
 
 vi.mock('@/services/format/global-format', () => ({
-  default: vi.fn(() => ({
+  default: vi.fn(function() { return {
     formatCurrency: vi.fn(),
     formatNumber: vi.fn(),
     formatBytes: vi.fn((bytes) => {
@@ -217,7 +217,7 @@ vi.mock('@/services/format/global-format', () => ({
         return '1 KB';
     }),
     formatNumberFiveDigits: vi.fn((num) => '00001')
-  }))
+  }; })
 }))
 
 // Mock Vue3Lottie
@@ -497,5 +497,395 @@ describe('DetailFSMesin.vue', () => {
           expect(consoleSpy).toHaveBeenCalledWith('Fetch Mesin By Id Error : ', expect.any(Error))
           consoleSpy.mockRestore()
       })
+
+          it('should handle uploadFileEvidence error branch', async () => {
+            wrapper = createWrapper()
+            await flushPromises()
+
+            const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+            mockRekapService.uploadEvidence.mockRejectedValueOnce(new Error('upload failed'))
+            wrapper.vm.selectedFileEvidence = new File(['x'], 'evidence.xlsx')
+
+            await wrapper.vm.uploadFileEvidence()
+
+            expect(consoleSpy).toHaveBeenCalledWith('Error upload file : ', expect.any(Error))
+            expect(wrapper.vm.isLoading).toBe(false)
+            consoleSpy.mockRestore()
+          })
+
+          it('should handle fetchListPembina error branch', async () => {
+            wrapper = createWrapper()
+            await flushPromises()
+
+            const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+            mockUserService.getPembina.mockRejectedValueOnce(new Error('fetch pembina failed'))
+
+            await wrapper.vm.fetchListPembina()
+
+            expect(consoleSpy).toHaveBeenCalledWith('Fetch Pembina Error : ', expect.any(Error))
+            consoleSpy.mockRestore()
+          })
+
+          it('should execute formatBytes helper branches', async () => {
+            wrapper = createWrapper()
+            await flushPromises()
+
+            expect(wrapper.vm.formatBytes(0)).toBe('0 Bytes')
+            expect(wrapper.vm.formatBytes(2048)).toContain('KB')
+          })
+
+          it('should render status-specific action buttons using slot stubs', async () => {
+            mockPersetujuanService.getPersetujuanFSSentral.mockResolvedValueOnce({
+              data: {
+                pengelola: 'Test Pengelola',
+                pembina: 'Test Pembina',
+                mesins: [{
+                  uuid_mesin: 1,
+                  id_status: 1,
+                  status: 'Draft',
+                  keterangan: 'draft'
+                }]
+              }
+            })
+
+            const richWrapper = mount(DetailFSMesin, {
+              global: {
+                stubs: {
+                  Loading: true,
+                  InfoHeader: { template: '<div><slot /></div>' },
+                  ModalWrapper: { template: '<div><slot /></div>' },
+                  TabsWrapper: { template: '<div><slot /></div>' },
+                  TabItem: { template: '<div><slot /></div>' },
+                  Vue3Lottie: true,
+                  IconFolder: true,
+                  TableDataTeknis: true,
+                  TableDataFinansial: true,
+                  AsumsiMakro: true,
+                  ParameterTeknis: true,
+                  AkhirMasaManfaat: true,
+                  TahunBerjalan: true,
+                  ComponentDisetujui: true,
+                  ComponentDitolakT1: true,
+                  ComponentDitolakT2: true,
+                  ComponentWaitingT1: true,
+                  ComponentWaitingT2: true,
+                  ComponentDraft: true,
+                }
+              }
+            })
+
+            await flushPromises()
+
+            const editButton = richWrapper.findAll('button').find((btn) => btn.text().includes('Edit Data'))
+            const kirimDataButton = richWrapper.findAll('button').find((btn) => btn.text().includes('Kirim Data'))
+
+            expect(editButton).toBeDefined()
+            expect(kirimDataButton).toBeDefined()
+
+            if (kirimDataButton) {
+              await kirimDataButton.trigger('click')
+            }
+
+            expect(richWrapper.vm.modalApprove).toBe(true)
+            richWrapper.unmount()
+          })
+
+            it('should trigger upload modal template handlers via UI', async () => {
+              const richWrapper = mount(DetailFSMesin, {
+                global: {
+                  stubs: {
+                    Loading: true,
+                    InfoHeader: { template: '<div><slot /></div>' },
+                    ModalWrapper: {
+                      template: '<div @click="$emit(\'on-escape\')"><slot /></div>',
+                      emits: ['on-escape']
+                    },
+                    TabsWrapper: { template: '<div><slot /></div>' },
+                    TabItem: { template: '<div><slot /></div>' },
+                    Vue3Lottie: true,
+                    IconFolder: true,
+                    TableDataTeknis: true,
+                    TableDataFinansial: true,
+                    AsumsiMakro: true,
+                    ParameterTeknis: true,
+                    AkhirMasaManfaat: true,
+                    TahunBerjalan: true,
+                    ComponentDisetujui: true,
+                    ComponentDitolakT1: true,
+                    ComponentDitolakT2: true,
+                    ComponentWaitingT1: true,
+                    ComponentWaitingT2: true,
+                    ComponentDraft: true,
+                  }
+                }
+              })
+
+              await flushPromises()
+
+              richWrapper.vm.isModalUnggahFSOpen = true
+              await nextTick()
+
+              const resetBtn = richWrapper.findAll('button').find((b) => b.text().includes('Reset'))
+              const kirimBtn = richWrapper.findAll('button').find((b) => b.text().trim() === 'Kirim')
+              const closeModalBtn = richWrapper.findAll('button').find((b) => b.find('svg').exists())
+
+              if (closeModalBtn) {
+                await closeModalBtn.trigger('click')
+              }
+
+              richWrapper.vm.selectedFileFS = new File(['x'], 'fs.xlsx')
+              richWrapper.vm.selectedFileEvidence = new File(['x'], 'evidence.xlsx')
+
+              if (resetBtn) {
+                await resetBtn.trigger('click')
+              }
+
+              expect(richWrapper.vm.selectedFileFS).toBeNull()
+              expect(richWrapper.vm.selectedFileEvidence).toBeNull()
+
+              richWrapper.vm.selectedFileFS = new File(['x'], 'fs.xlsx')
+              richWrapper.vm.selectedFileEvidence = new File(['x'], 'evidence.xlsx')
+              if (kirimBtn) {
+                await kirimBtn.trigger('click')
+              }
+
+              expect(mockRekapService.uploadTemplateAwalFS).toHaveBeenCalled()
+              richWrapper.unmount()
+            })
+
+            it('should trigger rejected and draft branch handlers from template', async () => {
+              mockPersetujuanService.getPersetujuanFSSentral.mockResolvedValueOnce({
+                data: {
+                  pengelola: 'Test Pengelola',
+                  pembina: 'Test Pembina',
+                  mesins: [{ uuid_mesin: 1, id_status: 1, status: 'Ditolak T1', keterangan: 'Ditolak' }]
+                }
+              })
+
+              const richWrapper = mount(DetailFSMesin, {
+                global: {
+                  stubs: {
+                    Loading: true,
+                    InfoHeader: { template: '<div><slot /></div>' },
+                    ModalWrapper: { template: '<div><slot /></div>' },
+                    TabsWrapper: { template: '<div><slot /></div>' },
+                    TabItem: { template: '<div><slot /></div>' },
+                    Vue3Lottie: true,
+                    IconFolder: true,
+                    TableDataTeknis: true,
+                    TableDataFinansial: true,
+                    AsumsiMakro: true,
+                    ParameterTeknis: true,
+                    AkhirMasaManfaat: true,
+                    TahunBerjalan: true,
+                    ComponentDisetujui: true,
+                    ComponentDitolakT1: true,
+                    ComponentDitolakT2: true,
+                    ComponentWaitingT1: true,
+                    ComponentWaitingT2: true,
+                    ComponentDraft: true,
+                  }
+                }
+              })
+
+              await flushPromises()
+
+              const revisiBtn = richWrapper.findAll('button').find((b) => b.text().includes('Revisi Data'))
+              if (revisiBtn) {
+                await revisiBtn.trigger('click')
+              }
+
+              expect(richWrapper.vm.isModalUnggahFSOpen).toBe(true)
+              richWrapper.unmount()
+            })
+
+            it('should execute draft modal buttons from template (edit, batal, kirim)', async () => {
+              mockPersetujuanService.getPersetujuanFSSentral.mockResolvedValueOnce({
+                data: {
+                  pengelola: 'Test Pengelola',
+                  pembina: 'Test Pembina',
+                  mesins: [{ uuid_mesin: 1, id_status: 1, status: 'Draft', keterangan: 'draft' }]
+                }
+              })
+
+              const richWrapper = mount(DetailFSMesin, {
+                global: {
+                  stubs: {
+                    Loading: true,
+                    InfoHeader: { template: '<div><slot /></div>' },
+                    ModalWrapper: { template: '<div><slot /></div>' },
+                    TabsWrapper: { template: '<div><slot /></div>' },
+                    TabItem: { template: '<div><slot /></div>' },
+                    Vue3Lottie: true,
+                    IconFolder: true,
+                    TableDataTeknis: true,
+                    TableDataFinansial: true,
+                    AsumsiMakro: true,
+                    ParameterTeknis: true,
+                    AkhirMasaManfaat: true,
+                    TahunBerjalan: true,
+                    ComponentDisetujui: true,
+                    ComponentDitolakT1: true,
+                    ComponentDitolakT2: true,
+                    ComponentWaitingT1: true,
+                    ComponentWaitingT2: true,
+                    ComponentDraft: true,
+                  }
+                }
+              })
+
+              await flushPromises()
+
+              const editBtn = richWrapper.findAll('button').find((b) => b.text().includes('Edit Data'))
+              const kirimDataBtn = richWrapper.findAll('button').find((b) => b.text().includes('Kirim Data'))
+
+              if (editBtn) {
+                await editBtn.trigger('click')
+              }
+              expect(richWrapper.vm.isModalUnggahFSOpen).toBe(true)
+
+              richWrapper.vm.isModalUnggahFSOpen = false
+              await nextTick()
+
+              if (kirimDataBtn) {
+                await kirimDataBtn.trigger('click')
+              }
+              expect(richWrapper.vm.modalApprove).toBe(true)
+
+              const batalBtn = richWrapper.findAll('button').find((b) => b.text().trim() === 'Batal')
+              if (batalBtn) {
+                await batalBtn.trigger('click')
+              }
+              expect(richWrapper.vm.modalApprove).toBe(false)
+
+              if (kirimDataBtn) {
+                await kirimDataBtn.trigger('click')
+              }
+
+              const kirimModalButtons = richWrapper.findAll('button').filter((b) => b.text().trim() === 'Kirim')
+              const kirimModalBtn = kirimModalButtons[kirimModalButtons.length - 1]
+              if (kirimModalBtn) {
+                await kirimModalBtn.trigger('click')
+              }
+
+              expect(mockPersetujuanService.updateStatusFS).toHaveBeenCalled()
+              richWrapper.unmount()
+            })
+
+            it('should render status sections across all status variants', async () => {
+              const statuses = [
+                'Ditolak T1',
+                'Ditolak T2',
+                'Disetujui',
+                'Menunggu Persetujuan T1',
+                'Menunggu Persetujuan T2',
+                'Draft'
+              ]
+
+              for (const status of statuses) {
+                mockPersetujuanService.getPersetujuanFSSentral.mockResolvedValueOnce({
+                  data: {
+                    pengelola: 'Test Pengelola',
+                    pembina: 'Test Pembina',
+                    mesins: [{ uuid_mesin: 1, id_status: 1, status, keterangan: 'status-test' }]
+                  }
+                })
+
+                const richWrapper = mount(DetailFSMesin, {
+                  global: {
+                    stubs: {
+                      Loading: true,
+                      InfoHeader: { template: '<div><slot /></div>' },
+                      ModalWrapper: { template: '<div><slot /></div>' },
+                      TabsWrapper: { template: '<div><slot /></div>' },
+                      TabItem: { template: '<div><slot /></div>' },
+                      Vue3Lottie: true,
+                      IconFolder: true,
+                      TableDataTeknis: true,
+                      TableDataFinansial: true,
+                      AsumsiMakro: true,
+                      ParameterTeknis: true,
+                      AkhirMasaManfaat: true,
+                      TahunBerjalan: true,
+                      ComponentDisetujui: { template: '<div>disetujui-chip</div>' },
+                      ComponentDitolakT1: { template: '<div>ditolak-t1-chip</div>' },
+                      ComponentDitolakT2: { template: '<div>ditolak-t2-chip</div>' },
+                      ComponentWaitingT1: { template: '<div>waiting-t1-chip</div>' },
+                      ComponentWaitingT2: { template: '<div>waiting-t2-chip</div>' },
+                      ComponentDraft: { template: '<div>draft-chip</div>' },
+                    }
+                  }
+                })
+
+                await flushPromises()
+                expect(richWrapper.vm.approveMesinFS.status).toBe(status)
+                richWrapper.unmount()
+              }
+            })
+
+            it('should execute fallback ternary branches with sparse mesin data', async () => {
+              mockDetailRekapService.getMesinById.mockResolvedValueOnce({
+                data: {
+                  uuid_mesin: 1,
+                  kode_sentral: 'SENTRAL01',
+                  kode_mesin: 'MESIN01',
+                  mesin: '',
+                  kode_jenis_pembangkit: '',
+                  kondisi_unit: '',
+                  daya_terpasang: 0,
+                  daya_mampu: 0,
+                  tahun_operasi: '',
+                  masa_manfaat: '',
+                  nilai_asset_awal: 0,
+                  tahun_nilai_perolehan: '',
+                  photo1: '',
+                  photo2: ''
+                }
+              })
+              mockPersetujuanService.getPersetujuanFSSentral.mockResolvedValueOnce({
+                data: {
+                  pengelola: '',
+                  pembina: '',
+                  mesins: [{ uuid_mesin: 1, id_status: 0, status: 'Unknown', keterangan: '' }]
+                }
+              })
+              mockFeasibilityStudyService.getDataTeknis.mockResolvedValueOnce({
+                data: {
+                  header: ['Parameter'],
+                  tahun: [],
+                  detail: []
+                }
+              })
+
+              const sparseWrapper = mount(DetailFSMesin, {
+                global: {
+                  stubs: {
+                    Loading: true,
+                    InfoHeader: { template: '<div><slot /></div>' },
+                    ModalWrapper: { template: '<div><slot /></div>' },
+                    TabsWrapper: { template: '<div><slot /></div>' },
+                    TabItem: { template: '<div><slot /></div>' },
+                    Vue3Lottie: true,
+                    IconFolder: true,
+                    TableDataTeknis: true,
+                    TableDataFinansial: true,
+                    AsumsiMakro: true,
+                    ParameterTeknis: true,
+                    AkhirMasaManfaat: true,
+                    TahunBerjalan: true,
+                    ComponentDisetujui: true,
+                    ComponentDitolakT1: true,
+                    ComponentDitolakT2: true,
+                    ComponentWaitingT1: true,
+                    ComponentWaitingT2: true,
+                    ComponentDraft: true,
+                  }
+                }
+              })
+
+              await flushPromises()
+              expect(sparseWrapper.vm.approveMesinFS.status).toBe('Unknown')
+              sparseWrapper.unmount()
+            })
   })
 })

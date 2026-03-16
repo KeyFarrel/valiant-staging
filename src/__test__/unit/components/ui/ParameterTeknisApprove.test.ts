@@ -4,7 +4,7 @@ import ParameterTeknisApprove from '@/components/ui/ParameterTeknisApprove.vue'
 
 // Mock GlobalFormat
 vi.mock('@/services/format/global-format', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     formatRupiah: (val: any) => {
       // Simple mock for format to verify calls
       if (typeof val === 'number') {
@@ -12,7 +12,7 @@ vi.mock('@/services/format/global-format', () => ({
       }
       return val
     }
-  }))
+  }; })
 }))
 
 // Override mock to match previous test expectations exactly
@@ -26,9 +26,9 @@ const mockFormatRupiah = vi.fn((val) => {
 })
 
 vi.mock('@/services/format/global-format', () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function() { return {
     formatRupiah: mockFormatRupiah
-  }))
+  }; })
 }))
 
 describe('ParameterTeknisApprove', () => {

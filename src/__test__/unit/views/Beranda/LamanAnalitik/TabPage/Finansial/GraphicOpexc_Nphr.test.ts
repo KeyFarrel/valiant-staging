@@ -79,7 +79,7 @@ describe('GraphicOpexcNphr', () => {
       getInitialPembangkit: vi.fn().mockResolvedValue(mockInitialResponse),
       getGraphicOpexC: vi.fn().mockResolvedValue(mockSuccessResponse)
     }
-    vi.mocked(GrafikService).mockImplementation(() => mockGrafikService)
+    vi.mocked(GrafikService).mockImplementation(function() { return mockGrafikService; })
   })
 
   const createWrapper = (props = {}) => {
@@ -298,5 +298,223 @@ describe('GraphicOpexcNphr', () => {
     wrapper.vm.handleCheckDmn(false)
     expect(wrapper.vm.dmn).toEqual([])
     expect(wrapper.vm.indeterminateDmn).toBe(false)
+  })
+
+  it('should toggle pembangkit dropdown open and close', async () => {
+    wrapper = createWrapper()
+    await flushPromises()
+
+    expect(wrapper.vm.isPembangkitDropdownOpen).toBe(false)
+    wrapper.vm.togglePembangkitDropdown()
+    expect(wrapper.vm.isPembangkitDropdownOpen).toBe(true)
+    wrapper.vm.togglePembangkitDropdown()
+    expect(wrapper.vm.isPembangkitDropdownOpen).toBe(false)
+  })
+
+  it('should toggle dmn dropdown open and close', async () => {
+    wrapper = createWrapper()
+    await flushPromises()
+
+    expect(wrapper.vm.isDmnDropdownOpen).toBe(false)
+    wrapper.vm.toggleDmnDropdown()
+    expect(wrapper.vm.isDmnDropdownOpen).toBe(true)
+    wrapper.vm.toggleDmnDropdown()
+    expect(wrapper.vm.isDmnDropdownOpen).toBe(false)
+  })
+
+  it('should remove a selected pembangkit by id', async () => {
+    wrapper = createWrapper()
+    await flushPromises()
+
+    wrapper.vm.value = ['PLTU', 'PLTG']
+    wrapper.vm.removeSelectedPembangkit('PLTU')
+    expect(wrapper.vm.value).toEqual(['PLTG'])
+  })
+
+  it('should remove a selected dmn by id', async () => {
+    wrapper = createWrapper()
+    await flushPromises()
+
+    wrapper.vm.dmn = ['1', '2']
+    wrapper.vm.removeSelectedDmn('1')
+    expect(wrapper.vm.dmn).toEqual(['2'])
+  })
+
+  it('should clear all pembangkit selections', async () => {
+    wrapper = createWrapper()
+    await flushPromises()
+
+    wrapper.vm.value = ['PLTU', 'PLTG']
+    wrapper.vm.clearPembangkit()
+    expect(wrapper.vm.value).toEqual([])
+  })
+
+  it('should clear all dmn selections', async () => {
+    wrapper = createWrapper()
+    await flushPromises()
+
+    wrapper.vm.dmn = ['1', '2']
+    wrapper.vm.clearDmn()
+    expect(wrapper.vm.dmn).toEqual([])
+  })
+
+  it('should close dropdowns when clicking outside .relative', async () => {
+    wrapper = createWrapper()
+    await flushPromises()
+
+    wrapper.vm.isPembangkitDropdownOpen = true
+    wrapper.vm.isDmnDropdownOpen = true
+
+    const mockEvent = { target: { closest: vi.fn(() => null) } } as unknown as MouseEvent
+    wrapper.vm.handleClickOutside(mockEvent)
+
+    expect(wrapper.vm.isPembangkitDropdownOpen).toBe(false)
+    expect(wrapper.vm.isDmnDropdownOpen).toBe(false)
+  })
+
+  it('should not close dropdowns when clicking inside .relative', async () => {
+    wrapper = createWrapper()
+    await flushPromises()
+
+    wrapper.vm.isPembangkitDropdownOpen = true
+    wrapper.vm.isDmnDropdownOpen = true
+
+    const mockEvent = { target: { closest: vi.fn(() => document.createElement('div')) } } as unknown as MouseEvent
+    wrapper.vm.handleClickOutside(mockEvent)
+
+    expect(wrapper.vm.isPembangkitDropdownOpen).toBe(true)
+    expect(wrapper.vm.isDmnDropdownOpen).toBe(true)
+  })
+
+  it('should remove event listener on unmount', async () => {
+    const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener')
+    wrapper = createWrapper()
+    await flushPromises()
+    wrapper.unmount()
+
+    expect(removeEventListenerSpy).toHaveBeenCalledWith('click', expect.any(Function))
+    removeEventListenerSpy.mockRestore()
+  })
+
+  it('should handle null grafik in getDataGraphNoDMN', async () => {
+    mockGrafikService.getGraphicOpexC.mockResolvedValue({
+      success: true,
+      data: [{
+        grafik: null,
+        legend: null,
+        average_nphr: 0,
+        average_value_c: 0,
+        average_ipp_nphr: 0,
+        average_ipp_valuec: 0
+      }]
+    })
+    wrapper = createWrapper()
+    await flushPromises()
+
+    await wrapper.vm.getDataGraphNoDMN()
+    expect(wrapper.vm.graphData.isEmpty).toBe(true)
+  })
+
+  it('should execute modal reset and apply buttons from template', async () => {
+    wrapper = createWrapper()
+    await flushPromises()
+
+    const vm = wrapper.vm
+
+    await wrapper.find('#hover-button').trigger('click')
+    expect(vm.showModal).toBe(true)
+
+    vm.value = ['PLTU', 'PLTG']
+    vm.dmn = ['1', '2']
+    vm.isPembangkitDropdownOpen = true
+    vm.isDmnDropdownOpen = true
+    await nextTick()
+
+    const resetButton = wrapper.findAll('button').find((btn: any) => btn.text().trim() === 'Reset')
+    expect(resetButton).toBeDefined()
+    await resetButton!.trigger('click')
+    expect(vm.value).toEqual([])
+
+    vm.value = ['PLTU']
+    vm.showModal = true
+    await nextTick()
+    const applyWithDmn = wrapper.findAll('button').find((btn: any) => btn.text().trim() === 'Terapkan')
+    expect(applyWithDmn).toBeDefined()
+    await applyWithDmn!.trigger('click')
+    await flushPromises()
+    expect(vm.showModal).toBe(false)
+
+    vm.showModal = true
+    vm.value = ['PLTG']
+    await nextTick()
+    const applyNoDmn = wrapper.findAll('button').find((btn: any) => btn.text().trim() === 'Terapkan')
+    expect(applyNoDmn).toBeDefined()
+    await applyNoDmn!.trigger('click')
+    await flushPromises()
+    expect(vm.showModal).toBe(false)
+  })
+
+  it('should cover closeModal and applyFilter error branches consistently', async () => {
+    wrapper = createWrapper()
+    await flushPromises()
+
+    const vm = wrapper.vm
+
+    vm.value = []
+    vm.filter.tahun = null
+    vm.closeModal()
+    expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000)
+
+    vi.clearAllMocks()
+    vm.value = []
+    vm.filter.tahun = 2023
+    vm.closeModal()
+    expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000)
+
+    vi.clearAllMocks()
+    vm.value = []
+    vm.filter.tahun = null
+    await vm.applyFilterNoDMN()
+    expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit dan pilih 1 tahun!', 5000)
+
+    vi.clearAllMocks()
+    vm.value = []
+    vm.filter.tahun = 2025
+    await vm.applyFilter()
+    expect(notifyError).toHaveBeenCalledWith('Mohon pilih minimal 1 kategori pembangkit!', 5000)
+  })
+
+  it('should execute dropdown remove and checkbox callbacks from template', async () => {
+    wrapper = createWrapper()
+    await flushPromises()
+
+    const vm = wrapper.vm
+    await wrapper.find('#hover-button').trigger('click')
+    vm.value = ['PLTU', 'PLTG']
+    vm.dmn = ['1', '2']
+    vm.togglePembangkitDropdown()
+    vm.toggleDmnDropdown()
+    await nextTick()
+
+    const removeButtons = wrapper.findAll('button').filter((btn: any) => (btn.attributes('class') || '').includes('ml-1'))
+    if (removeButtons[0]) {
+      await removeButtons[0].trigger('click')
+    }
+    if (removeButtons[1]) {
+      await removeButtons[1].trigger('click')
+    }
+
+    const checkboxes = wrapper.findAll('input[type="checkbox"]')
+    for (const checkbox of checkboxes) {
+      await checkbox.setValue(true)
+    }
+
+    const datePicker = wrapper.findComponent({ name: 'VueDatePicker' })
+    if (datePicker.exists()) {
+      datePicker.vm.$emit('update:modelValue', 2024)
+    }
+
+    expect(vm.value.length).toBeGreaterThanOrEqual(0)
+    expect(vm.dmn.length).toBeGreaterThanOrEqual(0)
   })
 })

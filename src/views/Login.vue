@@ -373,18 +373,13 @@
           class="text-[#0099AD] duration-300 bg-white w-[350px] hover:bg-blue-100 border border-blue-200 focus:ring-4 focus:outline-none focus:ring-blue-100 font-medium rounded-lg text-xs p-3 text-center mr-2">
           LOGIN SSO
         </button>
-        <div class="mt-4 text-center">
-          <RouterLink to="/kebijakan-privasi" class="text-xs text-[#0099AD] hover:underline">
-            Kebijakan Privasi
-          </RouterLink>
-        </div>
       </form>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useRouter, RouterLink } from "vue-router";
+import { useRouter } from "vue-router";
 import { ref, onMounted, onUnmounted, nextTick, reactive } from "vue";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
 import { notifyError, notifySuccess } from "@/services/helper/toast-notification";

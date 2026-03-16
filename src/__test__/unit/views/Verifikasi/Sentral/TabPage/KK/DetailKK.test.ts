@@ -46,7 +46,7 @@ describe('DetailKK', () => {
     mockPersetujuanService = {
       getPersetujuanKKSentral: vi.fn()
     };
-    vi.mocked(PersetujuanService).mockImplementation(() => mockPersetujuanService);
+    vi.mocked(PersetujuanService).mockImplementation(function() { return mockPersetujuanService; });
   });
 
   it('should mount component successfully', async () => {

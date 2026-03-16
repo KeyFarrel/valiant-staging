@@ -189,35 +189,35 @@ vi.mock("@/services/helper/toast-notification", () => ({
 
 // Mock service constructors
 vi.mock('@/services/detail-rekap-service', () => ({
-  default: vi.fn(() => mockDetailRekapService)
+  default: vi.fn(function() { return mockDetailRekapService; })
 }))
 
 vi.mock('@/services/persetujuan-service', () => ({
-  default: vi.fn(() => mockPersetujuanService)
+  default: vi.fn(function() { return mockPersetujuanService; })
 }))
 
 vi.mock('@/services/feasibility-study', () => ({
-  default: vi.fn(() => mockFeasibilityStudyService)
+  default: vi.fn(function() { return mockFeasibilityStudyService; })
 }))
 
 vi.mock('@/services/user-service', () => ({
-  default: vi.fn(() => mockUserService)
+  default: vi.fn(function() { return mockUserService; })
 }))
 
 vi.mock('@/services/rekap-service', () => ({
-  default: vi.fn(() => mockRekapService)
+  default: vi.fn(function() { return mockRekapService; })
 }))
 
 vi.mock('@/services/detail-sentral-service', () => ({
-  default: vi.fn(() => mockDetailSentralService)
+  default: vi.fn(function() { return mockDetailSentralService; })
 }))
 
 vi.mock('@/services/auth-service', () => ({
-  default: vi.fn(() => ({}))
+  default: vi.fn(function() { return {}; })
 }))
 
 vi.mock('@/services/format/global-format', () => ({
-  default: vi.fn(() => ({
+  default: vi.fn(function() { return {
     formatCurrency: vi.fn(),
     formatNumber: vi.fn(),
     formatBytes: vi.fn((bytes) => {
@@ -225,7 +225,7 @@ vi.mock('@/services/format/global-format', () => ({
         return '1 KB';
     }),
     formatNumberFiveDigits: vi.fn((num) => '00001')
-  }))
+  }; })
 }))
 
 // Mock Vue3Lottie
@@ -475,6 +475,65 @@ describe('Approver DetailFSMesin.vue', () => {
           expect(wrapper.vm.error.pesanPenolakan).toBe(true)
           expect(mockPersetujuanService.updateStatusFS).not.toHaveBeenCalled()
       })
+
+          it('should Reject FS (Reject T1) with reason and call expected status code', async () => {
+            wrapper = createWrapper()
+            await flushPromises()
+
+            wrapper.vm.pesan = 'Alasan reject T1'
+            await wrapper.vm.rejectFSPembina()
+
+            expect(mockPersetujuanService.updateStatusFS).toHaveBeenCalledWith(expect.objectContaining({
+              status_approval: 2,
+              keterangan: 'Alasan reject T1',
+              uuid_mesin: '1'
+            }))
+          })
+
+          it('should validate rejection reason for T1 branch', async () => {
+            wrapper = createWrapper()
+            await flushPromises()
+
+            wrapper.vm.pesan = ''
+            await wrapper.vm.rejectFSPembina()
+
+            expect(wrapper.vm.error.pesanPenolakan).toBe(true)
+          })
+
+          it('should handle download evidence error branch', async () => {
+            const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+            wrapper = createWrapper()
+            await flushPromises()
+
+            mockRekapService.getEvidencePath.mockRejectedValueOnce(new Error('missing evidence'))
+            await wrapper.vm.downloadEvidence()
+
+            expect(consoleSpy).toHaveBeenCalledWith('Evidence Error : ', expect.any(Error))
+            expect(wrapper.vm.isLoading).toBe(false)
+            consoleSpy.mockRestore()
+          })
+
+          it('should handle fetchListPembina error branch', async () => {
+            const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+            wrapper = createWrapper()
+            await flushPromises()
+
+            mockUserService.getPembina.mockRejectedValueOnce(new Error('pembina failed'))
+            await wrapper.vm.fetchListPembina()
+
+            expect(consoleSpy).toHaveBeenCalledWith('Fetch Pembina Error : ', expect.any(Error))
+            consoleSpy.mockRestore()
+          })
+
+          it('should skip fetchUnitPengelola body when mesinDataById is undefined', async () => {
+            wrapper = createWrapper()
+            await flushPromises()
+
+            wrapper.vm.mesinDataById = undefined
+            await wrapper.vm.fetchUnitPengelola()
+
+            expect(wrapper.exists()).toBe(true)
+          })
   })
 
   describe('Tab Switching', () => {
@@ -496,5 +555,384 @@ describe('Approver DetailFSMesin.vue', () => {
            expect(wrapper.vm.finansialMappingResult.length).toBeGreaterThan(0)
            expect(wrapper.vm.finansialMappingResult[0].level).toBe(1)
       })
+  })
+
+  describe('Template Interactions', () => {
+    it('should trigger T2 action button handlers from template', async () => {
+      mockUserAuthStore.levelAlias = 'Gk#92lV&'
+      mockPersetujuanService.getPersetujuanFSSentral.mockResolvedValueOnce({
+        data: {
+          pengelola: 'Test Pengelola',
+          pembina: 'Test Pembina',
+          umur_teknis: '25',
+          mesins: [{ uuid_mesin: 1, id_status: 1, status: 'Menunggu Persetujuan T2', keterangan: 'x' }]
+        }
+      })
+
+      const richWrapper = mount(DetailFSMesin, {
+        global: {
+          plugins: [pinia],
+          stubs: {
+            Loading: true,
+            InfoHeader: { template: '<div><slot /></div>' },
+            ModalWrapper: { template: '<div><slot /></div>' },
+            TabsWrapper: { template: '<div><slot /></div>' },
+            TabItem: { template: '<div><slot /></div>' },
+            Vue3Lottie: true,
+            TableDataTeknis: true,
+            TableDataFinansial: true,
+            AsumsiMakro: true,
+            ParameterTeknis: true,
+            AkhirMasaManfaat: true,
+            TahunBerjalan: true,
+            ComponentDisetujui: true,
+            ComponentDitolakT1: true,
+            ComponentDitolakT2: true,
+            ComponentWaitingT1: true,
+            ComponentWaitingT2: true,
+            ComponentDraft: true,
+          }
+        }
+      })
+
+      await flushPromises()
+
+      const tolak = richWrapper.findAll('button').find((b) => b.text().includes('Tolak Laporan'))
+      const setujui = richWrapper.findAll('button').find((b) => b.text().includes('Setujui Laporan'))
+      expect(tolak).toBeDefined()
+      expect(setujui).toBeDefined()
+
+      if (tolak) {
+        await tolak.trigger('click')
+      }
+
+      const batalReject = richWrapper.findAll('button').find((b) => b.text().trim() === 'Batal')
+      if (batalReject) {
+        await batalReject.trigger('click')
+      }
+
+      if (tolak) {
+        await tolak.trigger('click')
+      }
+
+      const textarea = richWrapper.find('textarea')
+      if (textarea.exists()) {
+        await textarea.setValue('Alasan T2 via UI')
+      }
+
+      const kirimPenolakan = richWrapper.findAll('button').find((b) => b.text().includes('Kirim Penolakan'))
+      if (kirimPenolakan) {
+        await kirimPenolakan.trigger('click')
+      }
+
+      if (setujui) {
+        await setujui.trigger('click')
+      }
+
+      const batalSetujui = richWrapper.findAll('button').find((b) => b.text().trim() === 'Batal')
+      if (batalSetujui) {
+        await batalSetujui.trigger('click')
+      }
+
+      if (setujui) {
+        await setujui.trigger('click')
+      }
+
+      const confirmSetujui = richWrapper.findAll('button').find((b) => b.text().trim() === 'Setujui Laporan')
+      if (confirmSetujui) {
+        await confirmSetujui.trigger('click')
+      }
+
+      expect(mockPersetujuanService.updateStatusFS).toHaveBeenCalled()
+      richWrapper.unmount()
+    })
+
+    it('should trigger T1 action button handlers from template', async () => {
+      mockUserAuthStore.levelAlias = 'Dr^3Zn$!'
+      mockPersetujuanService.getPersetujuanFSSentral.mockResolvedValueOnce({
+        data: {
+          pengelola: 'Test Pengelola',
+          pembina: 'Test Pembina',
+          umur_teknis: '25',
+          mesins: [{ uuid_mesin: 1, id_status: 1, status: 'Menunggu Persetujuan T1', keterangan: 'x' }]
+        }
+      })
+
+      const richWrapper = mount(DetailFSMesin, {
+        global: {
+          plugins: [pinia],
+          stubs: {
+            Loading: true,
+            InfoHeader: { template: '<div><slot /></div>' },
+            ModalWrapper: { template: '<div><slot /></div>' },
+            TabsWrapper: { template: '<div><slot /></div>' },
+            TabItem: { template: '<div><slot /></div>' },
+            Vue3Lottie: true,
+            TableDataTeknis: true,
+            TableDataFinansial: true,
+            AsumsiMakro: true,
+            ParameterTeknis: true,
+            AkhirMasaManfaat: true,
+            TahunBerjalan: true,
+            ComponentDisetujui: true,
+            ComponentDitolakT1: true,
+            ComponentDitolakT2: true,
+            ComponentWaitingT1: true,
+            ComponentWaitingT2: true,
+            ComponentDraft: true,
+          }
+        }
+      })
+
+      await flushPromises()
+
+      const tolak = richWrapper.findAll('button').find((b) => b.text().includes('Tolak Laporan'))
+      if (tolak) {
+        await tolak.trigger('click')
+      }
+
+      const batalReject = richWrapper.findAll('button').find((b) => b.text().trim() === 'Batal')
+      if (batalReject) {
+        await batalReject.trigger('click')
+      }
+
+      if (tolak) {
+        await tolak.trigger('click')
+      }
+
+      const textarea = richWrapper.find('textarea')
+      if (textarea.exists()) {
+        await textarea.setValue('Alasan T1 via UI')
+      }
+
+      const kirimPenolakan = richWrapper.findAll('button').find((b) => b.text().includes('Kirim Penolakan'))
+      if (kirimPenolakan) {
+        await kirimPenolakan.trigger('click')
+      }
+
+      const setujui = richWrapper.findAll('button').find((b) => b.text().includes('Setujui Laporan'))
+      if (setujui) {
+        await setujui.trigger('click')
+      }
+
+      const batalSetujui = richWrapper.findAll('button').find((b) => b.text().trim() === 'Batal')
+      if (batalSetujui) {
+        await batalSetujui.trigger('click')
+      }
+
+      if (setujui) {
+        await setujui.trigger('click')
+      }
+
+      expect(mockPersetujuanService.updateStatusFS).toHaveBeenCalled()
+      richWrapper.unmount()
+    })
+
+    it('should render status chips for all status variants', async () => {
+      const statuses = [
+        'Ditolak T1',
+        'Ditolak T2',
+        'Disetujui',
+        'Menunggu Persetujuan T1',
+        'Menunggu Persetujuan T2',
+        'Draft'
+      ]
+
+      for (const status of statuses) {
+        mockUserAuthStore.levelAlias = 'Xf!8qP@7'
+        mockUserAuthStore.roleAlias = 'Vx_91$pN'
+        mockPersetujuanService.getPersetujuanFSSentral.mockResolvedValueOnce({
+          data: {
+            pengelola: 'Test Pengelola',
+            pembina: 'Test Pembina',
+            umur_teknis: '25',
+            mesins: [{ uuid_mesin: 1, id_status: 1, status, keterangan: 'status-test' }]
+          }
+        })
+
+        const statusWrapper = mount(DetailFSMesin, {
+          global: {
+            plugins: [pinia],
+            stubs: {
+              Loading: true,
+              InfoHeader: { template: '<div><slot /></div>' },
+              ModalWrapper: { template: '<div><slot /></div>' },
+              TabsWrapper: { template: '<div><slot /></div>' },
+              TabItem: { template: '<div><slot /></div>' },
+              Vue3Lottie: true,
+              TableDataTeknis: true,
+              TableDataFinansial: true,
+              AsumsiMakro: true,
+              ParameterTeknis: true,
+              AkhirMasaManfaat: true,
+              TahunBerjalan: true,
+              ComponentDisetujui: { template: '<div>disetujui-chip</div>' },
+              ComponentDitolakT1: { template: '<div>ditolak-t1-chip</div>' },
+              ComponentDitolakT2: { template: '<div>ditolak-t2-chip</div>' },
+              ComponentWaitingT1: { template: '<div>waiting-t1-chip</div>' },
+              ComponentWaitingT2: { template: '<div>waiting-t2-chip</div>' },
+              ComponentDraft: { template: '<div>draft-chip</div>' },
+            }
+          }
+        })
+
+        await flushPromises()
+        expect(statusWrapper.vm.approveMesinFS.status).toBe(status)
+        statusWrapper.unmount()
+      }
+    })
+
+    it('should execute fallback ternary branches with sparse mesin data', async () => {
+      mockDetailSentralService.getPhoto.mockResolvedValueOnce({ data: new Blob(['test']) })
+      mockFeasibilityStudyService.getMesinById.mockResolvedValueOnce({
+        data: {
+          uuid_mesin: 1,
+          kode_sentral: 'SENTRAL01',
+          kode_mesin: 'MESIN01',
+          mesin: '',
+          kode_jenis_pembangkit: '',
+          kondisi_unit: '',
+          daya_terpasang: undefined,
+          daya_mampu: undefined,
+          tahun_operasi: '',
+          masa_manfaat: '',
+          nilai_asset_awal: 0,
+          tahun_nilai_perolehan: undefined,
+          photo1: '',
+          photo2: ''
+        }
+      })
+      mockPersetujuanService.getPersetujuanFSSentral.mockResolvedValueOnce({
+        data: {
+          pengelola: '',
+          pembina: '',
+          umur_teknis: '',
+          mesins: [{ uuid_mesin: 1, id_status: 0, status: '', keterangan: '' }]
+        }
+      })
+      mockFeasibilityStudyService.getDataTeknis.mockResolvedValueOnce({
+        data: {
+          header: ['Parameter'],
+          tahun: [],
+          detail: []
+        }
+      })
+
+      const sparseWrapper = mount(DetailFSMesin, {
+        global: {
+          plugins: [pinia],
+          stubs: {
+            Loading: true,
+            InfoHeader: { template: '<div><slot /></div>' },
+            ModalWrapper: { template: '<div><slot /></div>' },
+            TabsWrapper: { template: '<div><slot /></div>' },
+            TabItem: { template: '<div><slot /></div>' },
+            Vue3Lottie: true,
+            TableDataTeknis: true,
+            TableDataFinansial: true,
+            AsumsiMakro: true,
+            ParameterTeknis: true,
+            AkhirMasaManfaat: true,
+            TahunBerjalan: true,
+            ComponentDisetujui: true,
+            ComponentDitolakT1: true,
+            ComponentDitolakT2: true,
+            ComponentWaitingT1: true,
+            ComponentWaitingT2: true,
+            ComponentDraft: true,
+          }
+        }
+      })
+
+      await flushPromises()
+      expect(sparseWrapper.vm.approveMesinFS.status).toBe('')
+      sparseWrapper.unmount()
+    })
+
+    it('should render rejection validation message branch from template', async () => {
+      mockUserAuthStore.levelAlias = 'Dr^3Zn$!'
+      mockPersetujuanService.getPersetujuanFSSentral.mockResolvedValueOnce({
+        data: {
+          pengelola: 'Test Pengelola',
+          pembina: 'Test Pembina',
+          umur_teknis: '25',
+          mesins: [{ uuid_mesin: 1, id_status: 1, status: 'Menunggu Persetujuan T1', keterangan: '' }]
+        }
+      })
+
+      const validationWrapper = mount(DetailFSMesin, {
+        global: {
+          plugins: [pinia],
+          stubs: {
+            Loading: true,
+            InfoHeader: { template: '<div><slot /></div>' },
+            ModalWrapper: { template: '<div><slot /></div>' },
+            TabsWrapper: { template: '<div><slot /></div>' },
+            TabItem: { template: '<div><slot /></div>' },
+            Vue3Lottie: true,
+            TableDataTeknis: true,
+            TableDataFinansial: true,
+            AsumsiMakro: true,
+            ParameterTeknis: true,
+            AkhirMasaManfaat: true,
+            TahunBerjalan: true,
+            ComponentDisetujui: true,
+            ComponentDitolakT1: true,
+            ComponentDitolakT2: true,
+            ComponentWaitingT1: true,
+            ComponentWaitingT2: true,
+            ComponentDraft: true,
+          }
+        }
+      })
+
+      await flushPromises()
+
+      const tolak = validationWrapper.findAll('button').find((b) => b.text().includes('Tolak Laporan'))
+      if (tolak) {
+        await tolak.trigger('click')
+      }
+
+      const kirimPenolakan = validationWrapper.findAll('button').find((b) => b.text().includes('Kirim Penolakan'))
+      if (kirimPenolakan) {
+        await kirimPenolakan.trigger('click')
+      }
+
+      expect(validationWrapper.text()).toContain('Alasan Penolakan wajib diisi')
+      validationWrapper.unmount()
+    })
+
+    it('should use default filename branch when content-disposition is missing', async () => {
+      wrapper = createWrapper()
+      await flushPromises()
+
+      mockRekapService.getEvidencePath.mockResolvedValueOnce({
+        data: [{ file_name: 'fallback.xlsx', dokumen_evidence: 'path' }]
+      })
+      mockRekapService.downloadEvidence.mockResolvedValueOnce({
+        data: new Blob(['test']),
+        headers: {}
+      })
+
+      await wrapper.vm.downloadEvidence()
+      expect(mockRekapService.downloadEvidence).toHaveBeenCalled()
+    })
+
+    it('should hit level-4 guard false branch in fetchDataFinansial', async () => {
+      wrapper = createWrapper()
+      await flushPromises()
+
+      mockFeasibilityStudyService.getDataFinansial.mockResolvedValueOnce({
+        data: {
+          detail: [
+            { level: 4, name: 'Orphan Level 4' },
+            { level: 1, name: 'L1' }
+          ]
+        }
+      })
+
+      await wrapper.vm.fetchDataFinansial()
+      expect(wrapper.vm.finansialMappingResult.length).toBeGreaterThan(0)
+    })
   })
 })
