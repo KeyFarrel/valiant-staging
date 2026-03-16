@@ -257,7 +257,7 @@ import ValiantLogo from '@/components/icons/ValiantLogo.vue'
 import router from "@/router";
 import Loading from "@/components/ui/LoadingSpinner.vue";
 
-const nodeMode: any = import.meta.env.MODE;
+const nodeMode: any = (globalThis as any).__TEST_NODE_MODE__ ?? import.meta.env.MODE;
 const levelSentral = ref('');
 const tahunBerjalan = new Date().getFullYear();
 const isSidebarOpen = ref<boolean>(false);
