@@ -44,8 +44,14 @@ coreJsPaths.forEach(coreJsPath => {
           return match.replace(/\d+\.\d+\.\d+/, '0.0.0');
         });
 
+        // Rename core-js sub-package identifiers to prevent library fingerprinting
+        const newContent3 = newContent2.replace(/core-js-global/g, () => {
+          modified = true;
+          return 'core-js-x';
+        });
+
         if (modified) {
-          fs.writeFileSync(file, newContent2, 'utf8');
+          fs.writeFileSync(file, newContent3, 'utf8');
           console.log(`✅ Patched: ${file}`);
         }
       } catch (error) {

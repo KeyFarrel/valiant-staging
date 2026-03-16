@@ -66,6 +66,9 @@ function removeVersionSignatures(): Plugin {
             '"version":"0.0.0"',
           );
 
+          // Rename core-js sub-package identifiers to prevent library fingerprinting
+          code = code.replace(/core-js-global/g, "core-js-x");
+
           asset.source = code;
         }
       });
@@ -297,6 +300,7 @@ export default defineConfig(({ mode }) => {
 
                   code = code.replace(/core-js-pure/g, "core-js-x");
                   code = code.replace(/core-js-compat/g, "core-js-x");
+                  code = code.replace(/core-js-global/g, "core-js-x");
 
                   asset.source = code;
                 }
