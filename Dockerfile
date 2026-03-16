@@ -1,3 +1,26 @@
+# Stage 0: Build the Go WebAssembly binary with security-hardened flags.
+#
+# -trimpath removes all local filesystem paths embedded by the Go compiler,
+# which prevents CWE-248 (path disclosure through exception/debug data).
+# -ldflags="-s -w" strips the symbol table and DWARF debug sections.
+#
+# This stage only runs when a wasm/go.mod is present (i.e. the Go source has
+# been committed to the repository).  Until then the pre-built binary in
+# public/wasm/main.wasm is used as-is.  See wasm/README.md for instructions
+# on rebuilding the binary with these flags.
+FROM harbor.pln.co.id/library/golang:1.24-alpine AS wasm-build
+WORKDIR /wasm-src
+# Copy the wasm source directory; if no *.go files exist the build is skipped.
+COPY wasm/ ./
+RUN mkdir -p /wasm-output && \
+    if [ -f go.mod ]; then \
+      GOOS=js GOARCH=wasm go build \
+        -trimpath \
+        -ldflags="-s -w" \
+        -o /wasm-output/main.wasm \
+        . ; \
+    fi
+
 # Stage 1: Build the Vue.js app
 FROM harbor.pln.co.id/library/node:20-alpine AS build
 
@@ -40,6 +63,12 @@ RUN addgroup -g 1001 -S appgroup && \
 
 # Copy the built files from the previous stage
 COPY --from=build /app/dist /usr/share/nginx/html
+
+# Overlay the WASM binary built with -trimpath if the Go source was present.
+# When the wasm-build stage produced a binary (i.e. wasm/go.mod exists and the
+# Go source is committed), it replaces the pre-built binary from the dist copy
+# above, ensuring no local filesystem paths are embedded (CWE-248 fix).
+COPY --from=wasm-build /wasm-output/ /usr/share/nginx/html/wasm/
 
 # Copy the custom Nginx configuration file
 COPY Docker-nginx.conf /etc/nginx/conf.d/default.conf
