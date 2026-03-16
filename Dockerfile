@@ -44,11 +44,6 @@ COPY --from=build /app/dist /usr/share/nginx/html
 # Copy the custom Nginx configuration file
 COPY Docker-nginx.conf /etc/nginx/conf.d/default.conf
 
-# Create SSL directory for certificate mounting (certs provided at runtime via volume or secret)
-RUN mkdir -p /etc/nginx/ssl && \
-  chown -R appuser:appgroup /etc/nginx/ssl && \
-  chmod 750 /etc/nginx/ssl
-
 # Set proper permissions for Nginx directories
 RUN chown -R appuser:appgroup /usr/share/nginx/html && \
   chown -R appuser:appgroup /var/cache/nginx && \
@@ -60,8 +55,8 @@ RUN chown -R appuser:appgroup /usr/share/nginx/html && \
 # Switch to non-root user
 USER appuser
 
-# Expose HTTP and HTTPS ports
-EXPOSE 80 443
+# Expose port 80
+EXPOSE 80
 
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]

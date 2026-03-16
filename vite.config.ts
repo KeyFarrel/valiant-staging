@@ -232,10 +232,9 @@ export default defineConfig(({ mode }) => {
             /<meta[^>]*http-equiv=["']X-Frame-Options["'][^>]*>/gi,
             "",
           );
-          html = html.replace(
-            /<meta[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/gi,
-            "",
-          );
+          // Content-Security-Policy meta tag is intentionally preserved so the
+          // built HTML enforces CSP in browsers and is detected by DAST scanners
+          // even when the HTTP response header is not set by the server.
           html = html.replace(
             /<meta[^>]*http-equiv=["']X-XSS-Protection["'][^>]*>/gi,
             "",
