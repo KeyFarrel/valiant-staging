@@ -1,6 +1,6 @@
 import BaseService from "./base-service";
 import { encryptStoragePromise } from '@/utils/app-encrypt-storage';
-import CryptoJS from "crypto-js";
+import HmacSHA512 from "crypto-js/hmac-sha512";
 
 const nodeMode: any = import.meta.env.MODE;
 const url: any = import.meta.env.VITE_API_URL;
@@ -21,7 +21,7 @@ export default class AuthService extends BaseService {
           : response.data.id_sentral;
 
       const dataString = `${levelSentral}:${namaPegawai}`;
-      const hash = CryptoJS.HmacSHA512(
+      const hash = HmacSHA512(
         dataString,
         (window as any).userHashSecretKey(),
       ).toString();

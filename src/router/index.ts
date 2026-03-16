@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import CryptoJS from "crypto-js";
+import HmacSHA512 from "crypto-js/hmac-sha512";
 import { useNavbarLabelStore } from "@/store/storeNavbar";
 import { useRekapNavigationStore } from "@/store/storeRekapKertasKerja";
 import { encryptStoragePromise } from "@/utils/app-encrypt-storage";
@@ -11,6 +11,7 @@ import Sidebar from "@/components/layout/Sidebar.vue";
 import Login from "../views/Login.vue";
 import Error404Page from "@/views/Error/404Page.vue";
 import Error503Page from "@/views/Error/503Page.vue";
+import PrivacyPolicyPage from "@/views/PrivacyPolicyPage.vue";
 
 const PetaSebaran = () => import("@/views/Beranda/PetaSebaran.vue");
 const LamanUtama = () => import("@/views/Beranda/LamanUtama/LamanUtama.vue");
@@ -101,6 +102,14 @@ const routes: RouteRecordRaw[] = [
     component: Error503Page,
     meta: {
       label: "503 Error",
+    },
+  },
+  {
+    path: "/kebijakan-privasi",
+    name: "kebijakan-privasi",
+    component: PrivacyPolicyPage,
+    meta: {
+      label: "Kebijakan Privasi",
     },
   },
   {
@@ -510,7 +519,7 @@ router.beforeEach(async (to, _, next) => {
 
     const dataString = `${levelSentral}:${namaPegawai}`;
 
-    const currentHash = CryptoJS.HmacSHA512(
+    const currentHash = HmacSHA512(
       dataString,
       (window as any).userHashSecretKey(),
     ).toString();
