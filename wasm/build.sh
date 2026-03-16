@@ -27,7 +27,7 @@ GOOS=js GOARCH=wasm go build \
 echo "[wasm/build.sh] Build complete → ${OUTPUT}"
 
 # Verify no local paths remain embedded in the binary
-LEAKED=$(strings "${OUTPUT}" | grep -cE "(homebrew|Cellar|/Users/|/home/[^r])" || true)
+LEAKED=$(strings "${OUTPUT}" | grep -cE "(homebrew|Cellar|/Users/|/home/)" || true)
 if [ "${LEAKED}" -gt 0 ]; then
   echo "[wasm/build.sh] WARNING: ${LEAKED} local path(s) still found in binary — check build flags."
   exit 1
