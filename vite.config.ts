@@ -101,7 +101,6 @@ export default defineConfig(({ mode }) => {
         "X-Frame-Options": "SAMEORIGIN",
         "Access-Control-Allow-Origin": "http://10.14.152.139:30051",
         "Access-Control-Allow-Credentials": "true",
-        "X-XSS-Protection": "1; mode=block",
         "Strict-Transport-Security":
           "max-age=63072000; includeSubDomains; preload",
         "Permissions-Policy":
