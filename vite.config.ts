@@ -245,8 +245,6 @@ export default defineConfig(({ mode }) => {
 
           const safeHeaders = {
             "Referrer-Policy": "strict-origin-when-cross-origin",
-            "X-Content-Type-Options": "nosniff",
-            "X-DNS-Prefetch-Control": "off",
           };
 
           return html.replace(
