@@ -120,8 +120,12 @@ axios.interceptors.response.use(
     const isNetworkError = error.code === "ERR_NETWORK";
     const isRecordNotFound = error.response?.data?.message === "record not found";
     
-    const ignoredNetworkUrl = "https://stg-be-valiant.pln.co.id/v1/mutasiasset/download/";
-    const shouldIgnoreNetworkError = error.config?.url === ignoredNetworkUrl;
+    const apiBaseUrl = (secureEnv.VITE_API_URL || "").replace(/\/+$/, "");
+    const ignoredNetworkUrlPrefix = `${apiBaseUrl}/mutasiasset/download/`;
+    const shouldIgnoreNetworkError =
+      apiBaseUrl.length > 0 &&
+      typeof error.config?.url === "string" &&
+      error.config.url.startsWith(ignoredNetworkUrlPrefix);
 
     if (isUnauthorized && !isUserNotRegistered && !isLoginPage) {
       console.log(
